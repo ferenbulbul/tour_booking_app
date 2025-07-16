@@ -1,0 +1,89 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/ui/ui_helper.dart';
+import 'package:tour_booking/features/login/widgets/login_view_model.dart';
+
+class LoginForm extends StatefulWidget {
+  const LoginForm({super.key});
+
+  @override
+  State<LoginForm> createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<LoginForm> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  void _login() async {
+    final vm = Provider.of<LoginViewModel>(context, listen: false);
+    final result = await vm.login(
+      _emailController.text.trim(),
+      _passwordController.text,
+    );
+
+    if (result.isSuccess) {
+      final emailConfirmed = result.data?.emailConfirmed ?? 0;
+
+      if (emailConfirmed == false) {
+        context.go('/email-confirmed');
+      } else {
+        context.go('/home');
+      }
+    } else {
+      if (vm.message != null) {
+        UIHelper.showError(context, vm.message!);
+      }
+      if (vm.validationErrors.isNotEmpty) {
+        UIHelper.showValidationErrors(context, vm.validationErrors);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        TextField(
+          controller: _emailController,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(labelText: 'E-posta'),
+        ),
+        const SizedBox(height: AppSpacing.elementSpacing),
+        TextField(
+          controller: _passwordController,
+          obscureText: true,
+          decoration: const InputDecoration(labelText: 'Şifre'),
+        ),
+        const SizedBox(height: 8),
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton(
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: const Size(0, 0),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            onPressed: () {
+              context.push('/forgot-password');
+            },
+            child: Text(
+              'Şifremi Unuttum',
+              style: AppTextStyles.body.copyWith(
+                fontSize: 12, // ✅ Daha ince görünüm
+                fontWeight: FontWeight.w400,
+                color: Theme.of(context).primaryColor,
+                decoration: TextDecoration.none,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sectionSpacing),
+        ElevatedButton(onPressed: _login, child: const Text('Giriş Yap')),
+      ],
+    );
+  }
+}
