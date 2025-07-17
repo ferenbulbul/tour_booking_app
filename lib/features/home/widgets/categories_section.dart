@@ -63,7 +63,7 @@ class CategoriesSection extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.asset(
-              'assets/logo.png',
+              'assets/images/logo.png',
               width: 60,
               height: 60,
               fit: BoxFit.contain,

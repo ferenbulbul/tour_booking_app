@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tour_booking/services/auth/secure_token_storage.dart';
 
 class ProfileHeader extends StatelessWidget {
   final String name;
@@ -21,6 +23,14 @@ class ProfileHeader extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(email),
+        ElevatedButton(
+          onPressed: () {
+            context.go('/login');
+            final SecureTokenStorage _tokenStorage = SecureTokenStorage();
+            _tokenStorage.clearTokens();
+          },
+          child: Text('____'),
+        ),
       ],
     );
   }

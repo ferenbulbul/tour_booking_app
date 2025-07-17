@@ -1,0 +1,18 @@
+{
+    "login": "Login",
+    "email": "Email",
+    "password": "Password",
+    "forgot_password": "Forgot Password",
+    "welcome_title": "Welcome",
+    "welcome_subtitle": "Sign in to your account and get started",
+    "login_with_facebook": "Login with Facebook",
+    "login_with_google": "Login with Google",
+    "email_verification_title": "Email Verification",
+    "enter_code_instruction": "Please enter the 6-digit code sent to your email.",
+    "code_must_be_6_digits": "Code must be 6 digits.",
+    "verify": "Verify",
+    "resend_code": "Resend Code",
+    "resend_in_prefix": "Resend in",
+    "dont_have_account": "Don't have an account?",
+    "create_account": "Create Account"
+}

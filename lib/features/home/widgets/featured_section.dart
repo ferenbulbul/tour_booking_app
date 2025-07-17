@@ -73,7 +73,7 @@ class FeaturedSection extends StatelessWidget {
               height: 100, // Resim alanını biraz daha büyüttüm
               width: double.infinity,
               child: Image.asset(
-                'assets/logo.png',
+                'assets/images/logo.png',
                 fit: BoxFit.cover, // İster cover ister contain!
               ),
             ),

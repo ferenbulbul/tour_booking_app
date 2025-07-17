@@ -19,6 +19,7 @@ dependencies:
   provider: ^6.1.5
   flutter_secure_storage: ^4.2.1
   pinput: ^5.0.1
+  easy_localization: ^3.0.7+1
 
 dev_dependencies:
   flutter_test:
@@ -31,4 +32,5 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/
+   - assets/images/
+   - assets/translations/

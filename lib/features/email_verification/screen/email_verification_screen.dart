@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
@@ -51,13 +52,13 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('E-Posta Doğrulama')),
+      appBar: AppBar(title: Text('email_verification_title'.tr())),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
-            const Text(
-              'Lütfen e-posta adresinize gelen 6 haneli kodu giriniz.',
+            Text(
+              'enter_code_instruction'.tr(),
               style: TextStyle(fontSize: 16),
               textAlign: TextAlign.center,
             ),
@@ -84,7 +85,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               onPressed: () async {
                 final code = _codeController.text.trim();
                 if (code.length != 6) {
-                  UIHelper.showError(context, 'Kod 6 haneli olmalıdır.');
+                  UIHelper.showError(context, 'code_must_be_6_digits'.tr());
                   return;
                 }
                 final result = await vm.verifyCode(code);
@@ -92,7 +93,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   context.go('/home');
                 }
               },
-              child: const Text('Doğrula'),
+              child: Text('verify'.tr()),
             ),
 
             const SizedBox(height: 24),
@@ -101,11 +102,11 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             if (vm.resendCooldown == 0)
               TextButton(
                 onPressed: vm.resendCode,
-                child: const Text('Kodu tekrar gönder'),
+                child: Text('resend_code'.tr()),
               )
             else
               Text(
-                'Yeniden göndermek için ${vm.resendCooldown ~/ 60}:${(vm.resendCooldown % 60).toString().padLeft(2, '0')}',
+                '${'resend_in_prefix'.tr()} ${vm.resendCooldown ~/ 60}:${(vm.resendCooldown % 60).toString().padLeft(2, '0')}',
                 style: const TextStyle(color: Colors.grey),
               ),
           ],

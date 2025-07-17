@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
@@ -28,7 +29,7 @@ class SocialLoginButtons extends StatelessWidget {
               const SizedBox(width: 12),
               Icon(Icons.facebook, color: AppColors.primary, size: 30),
               const SizedBox(width: 12),
-              const Text('Facebook ile Giriş Yap'),
+              Text('login_with_facebook'.tr()),
             ],
           ),
         ),
@@ -50,12 +51,12 @@ class SocialLoginButtons extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Image.asset(
-                'assets/google_logo.png',
+                'assets/images/google_logo.png',
                 width: 25, // Facebook ikonunla aynı boy!
                 height: 25,
               ),
               const SizedBox(width: 12),
-              const Text('Google ile Giriş Yap'),
+              Text('login_with_google'.tr()),
             ],
           ),
         ),

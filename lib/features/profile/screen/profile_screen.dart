@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tour_booking/features/profile/widget/language_select.dart';
 import 'package:tour_booking/features/profile/widget/profile_header.dart';
 import 'package:tour_booking/features/profile/widget/profile_actions_button.dart';
 
@@ -16,6 +17,7 @@ class ProfileScreen extends StatelessWidget {
             ProfileHeader(name: 'Ege Çetin', email: 'ege@mail.com'),
             SizedBox(height: 32),
             ProfileActionsButton(),
+            LanguageSelector(),
           ],
         ),
       ),

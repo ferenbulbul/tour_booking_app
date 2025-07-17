@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
@@ -48,13 +49,13 @@ class _RegisterPrompt extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text("Hesabın yok mu? ", style: TextStyle(fontSize: 14)),
+          Text('dont_have_account'.tr(), style: TextStyle(fontSize: 14)),
           TextButton(
             onPressed: () {
               context.push('/register');
             },
-            child: const Text(
-              "Hesap oluştur",
+            child: Text(
+              'create_account'.tr(),
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
           ),

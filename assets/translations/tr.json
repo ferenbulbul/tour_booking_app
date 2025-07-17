@@ -1,0 +1,18 @@
+{
+    "login": "Giriş Yap",
+    "email": "E-posta",
+    "password": "Şifre",
+    "forgot_password": "Şifremi Unuttum",
+    "welcome_title": "Hoş Geldin",
+    "welcome_subtitle": "Hesabına giriş yap ve hemen devam et",
+    "login_with_facebook": "Facebook ile Giriş Yap",
+    "login_with_google": "Google ile Giriş Yap",
+    "email_verification_title": "E-Posta Doğrulama",
+    "enter_code_instruction": "Lütfen e-posta adresinize gelen 6 haneli kodu giriniz.",
+    "code_must_be_6_digits": "Kod 6 haneli olmalıdır.",
+    "verify": "Doğrula",
+    "resend_code": "Kodu tekrar gönder",
+    "resend_in_prefix": "Yeniden göndermek için",
+    "dont_have_account": "Hesabın yok mu?",
+    "create_account": "Hesap oluştur"
+}

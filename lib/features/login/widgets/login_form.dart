@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -50,13 +51,13 @@ class _LoginFormState extends State<LoginForm> {
         TextField(
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
-          decoration: const InputDecoration(labelText: 'E-posta'),
+          decoration: InputDecoration(labelText: 'email'.tr()),
         ),
         const SizedBox(height: AppSpacing.elementSpacing),
         TextField(
           controller: _passwordController,
           obscureText: true,
-          decoration: const InputDecoration(labelText: 'Şifre'),
+          decoration: InputDecoration(labelText: 'password'.tr()),
         ),
         const SizedBox(height: 8),
         Align(
@@ -71,7 +72,7 @@ class _LoginFormState extends State<LoginForm> {
               context.push('/forgot-password');
             },
             child: Text(
-              'Şifremi Unuttum',
+              'forgot_password'.tr(),
               style: AppTextStyles.body.copyWith(
                 fontSize: 12, // ✅ Daha ince görünüm
                 fontWeight: FontWeight.w400,
@@ -82,7 +83,7 @@ class _LoginFormState extends State<LoginForm> {
           ),
         ),
         const SizedBox(height: AppSpacing.sectionSpacing),
-        ElevatedButton(onPressed: _login, child: const Text('Giriş Yap')),
+        ElevatedButton(onPressed: _login, child: const Text('login').tr()),
       ],
     );
   }
