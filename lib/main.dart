@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/localization/localization_setup.dart';
 import 'package:tour_booking/core/theme/app_theme.dart';
@@ -9,11 +10,11 @@ import 'package:tour_booking/features/splash/widget/splash_view_model.dart';
 import 'package:tour_booking/navigation/app_router.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await LocalizationSetup.init();
-
   runApp(
     LocalizationSetup.wrapWithLocalization(
-      // ✅ BU ŞEKİLDE ÇAĞIR!
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => LoginViewModel()),

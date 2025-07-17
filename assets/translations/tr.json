@@ -14,5 +14,9 @@
     "resend_code": "Kodu tekrar gönder",
     "resend_in_prefix": "Yeniden göndermek için",
     "dont_have_account": "Hesabın yok mu?",
-    "create_account": "Hesap oluştur"
+    "create_account": "Hesap oluştur",
+    "home":"Anasayfa",
+    "favorite":"Favori",
+    "settings":"Ayarlar",
+    "profile":"Profil"
 }

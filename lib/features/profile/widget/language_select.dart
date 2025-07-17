@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:go_router/go_router.dart';
 
 class LanguageSelector extends StatelessWidget {
   const LanguageSelector({super.key});
@@ -41,7 +42,10 @@ class _LanguageButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      onPressed: () => context.setLocale(locale),
+      onPressed: () async {
+        await context.setLocale(locale);
+        context.go('/home');
+      },
       style: OutlinedButton.styleFrom(
         foregroundColor: isSelected ? Colors.white : Colors.black,
         backgroundColor: isSelected ? Theme.of(context).primaryColor : null,

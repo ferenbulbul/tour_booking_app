@@ -14,5 +14,9 @@
     "resend_code": "Resend Code",
     "resend_in_prefix": "Resend in",
     "dont_have_account": "Don't have an account?",
-    "create_account": "Create Account"
+    "create_account": "Create Account",
+    "home":"Home",
+    "favorite":"Favorite",
+    "settings":"Settings",
+    "profile":"Profile"
 }

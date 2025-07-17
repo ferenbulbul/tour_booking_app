@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -42,15 +43,21 @@ class RootScaffold extends StatelessWidget {
               break;
           }
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Favori'),
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'home'.tr()),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'favorite'.tr(),
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            label: 'Settings',
+            label: 'settings'.tr(),
           ),
 
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'profile'.tr(),
+          ),
         ],
       ),
     );

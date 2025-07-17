@@ -6,11 +6,13 @@ import 'package:tour_booking/features/login/screens/login_screen.dart';
 import 'package:tour_booking/features/profile/screen/profile_screen.dart';
 import 'package:tour_booking/features/root/wigdet/root_scaffold.dart';
 import 'package:tour_booking/features/settings/screen/settings_screen.dart';
+import 'package:tour_booking/navigation/app_navigator.dart';
 import '../features/splash/screen/splash_screen.dart';
 import '../features/register/screen/register_screen.dart';
 import '../features/home/screen/home_screen.dart';
 
 final GoRouter router = GoRouter(
+  navigatorKey: appNavigatorKey,
   debugLogDiagnostics: true,
   routes: [
     GoRoute(path: '/', builder: (context, state) => const SplashScreen()),

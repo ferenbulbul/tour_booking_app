@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/profile/widget/language_select.dart';
 import 'package:tour_booking/features/profile/widget/profile_header.dart';
 import 'package:tour_booking/features/profile/widget/profile_actions_button.dart';
@@ -9,7 +11,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Profil'), centerTitle: true),
+      appBar: CustomAppBar(title: 'profile'.tr()),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
