@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:tour_booking/models/base/base_response.dart';
 import 'package:tour_booking/models/login/login_request.dart';
@@ -63,5 +65,29 @@ class AuthService {
 
     final json = jsonDecode(response.body);
     return BaseResponse<void>.fromJson(json, (_) => null);
+  }
+
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+
+  Future<User?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return null;
+
+      final googleAuth = await googleUser.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential = await _firebaseAuth
+          .signInWithCredential(credential);
+      return userCredential.user;
+    } catch (e) {
+      print("🚨 AuthService error: $e");
+      rethrow;
+    }
   }
 }
