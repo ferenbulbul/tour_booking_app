@@ -56,7 +56,7 @@ class AuthService {
   Future<BaseResponse<void>> resendVerificationCode() async {
     final token = await SecureTokenStorage().getAccessToken();
     final response = await http.post(
-      Uri.parse('$mobileAndroid/send-verification-email'),
+      Uri.parse('$baseUrl/send-verification-email'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',

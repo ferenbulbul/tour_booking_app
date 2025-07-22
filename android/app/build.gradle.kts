@@ -31,6 +31,8 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["onesignal_app_id"] = "f8fa783c-24c8-4655-b17d-2ecbc6a8ab22"
+        manifestPlaceholders["onesignal_google_project_number"] = "REMOTE"
     }
 
     buildTypes {
@@ -44,4 +46,9 @@ android {
 
 flutter {
     source = "../.."
+}
+dependencies {
+    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    // OneSignal Flutter plugin kendisi native SDK’yı getiriyor, ekstra şart değil.
 }

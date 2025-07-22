@@ -5,6 +5,7 @@ pluginManagement {
         val flutterSdkPath = properties.getProperty("flutter.sdk")
         require(flutterSdkPath != null) { "flutter.sdk not set in local.properties" }
         flutterSdkPath
+        
     }
 
     includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
@@ -23,6 +24,15 @@ plugins {
     id("com.google.gms.google-services") version("4.3.10") apply false
     // END: FlutterFire Configuration
     id("org.jetbrains.kotlin.android") version "2.1.0" apply false
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        google()
+        mavenCentral()
+        // Flutter plugin'in eklemeye çalıştığı repo'yu biz ekleyelim:
+        maven { url = uri("https://storage.googleapis.com/download.flutter.io") }
+    }
 }
 
 include(":app")
