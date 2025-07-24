@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
@@ -11,9 +12,9 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: Text(tr("register")),
         titleTextStyle: const TextStyle(
-          color: AppColors.primary, // ✅ Siyah renk
+          color: Color.fromARGB(255, 252, 252, 252), // ✅ Siyah renk
           fontSize: 20, // İstediğin boyut
           fontWeight: FontWeight.bold,
         ),

@@ -9,6 +9,7 @@ import 'package:tour_booking/core/theme/app_theme.dart';
 import 'package:tour_booking/features/email_verification/widget/email_verification_view_model.dart';
 import 'package:tour_booking/features/login/widgets/google_view_model.dart';
 import 'package:tour_booking/features/login/widgets/login_view_model.dart';
+import 'package:tour_booking/features/register/widgets/register_view_model.dart';
 import 'package:tour_booking/features/splash/widget/splash_view_model.dart';
 import 'package:tour_booking/firebase_options.dart';
 import 'package:tour_booking/navigation/app_router.dart';
@@ -38,6 +39,7 @@ void main() async {
           ChangeNotifierProvider(create: (_) => SplashViewModel()),
           ChangeNotifierProvider(create: (_) => EmailVerificationViewModel()),
           ChangeNotifierProvider(create: (_) => GoogleViewModel()),
+          ChangeNotifierProvider(create: (_) => RegisterViewModel()),
         ],
         child: const MyApp(),
       ),
