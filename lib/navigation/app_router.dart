@@ -4,6 +4,7 @@ import 'package:tour_booking/features/favorite/screen/favorite_screen.dart';
 import 'package:tour_booking/features/forgot_password/screen/forgot_password_screen.dart';
 import 'package:tour_booking/features/login/screens/login_screen.dart';
 import 'package:tour_booking/features/profile/screen/profile_screen.dart';
+import 'package:tour_booking/features/reset_password/screen/reset_password_screen.dart';
 import 'package:tour_booking/features/root/wigdet/root_scaffold.dart';
 import 'package:tour_booking/features/settings/screen/settings_screen.dart';
 import 'package:tour_booking/navigation/app_navigator.dart';
@@ -15,7 +16,18 @@ final GoRouter router = GoRouter(
   navigatorKey: appNavigatorKey,
   debugLogDiagnostics: true,
   routes: [
-    GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const SplashScreen(),
+      routes: [
+        GoRoute(
+          path: ':email/:token',
+          builder: (context, state) {
+            return const SplashScreen();
+          },
+        ),
+      ],
+    ),
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     GoRoute(
       path: '/email-confirmed',
@@ -31,9 +43,14 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: '/reset-password',
-      builder: (context, state) => const ForgotPasswordScreen(),
+      builder: (context, state) {
+        final email = state.uri.queryParameters['email'];
+        final token = state.uri.queryParameters['token'];
+        return ResetPasswordScreen(email: email!, token: token!);
+      },
     ),
     ShellRoute(
+      navigatorKey: shellNavigatorKey,
       builder: (context, state, child) {
         return RootScaffold(child: child);
       },

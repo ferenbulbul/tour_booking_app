@@ -27,6 +27,7 @@ dependencies:
   onesignal_flutter: ^5.3.4
   shared_preferences: ^2.5.3
   intl_phone_field: ^3.2.0
+  app_links: ^6.4.0
 
 
 
