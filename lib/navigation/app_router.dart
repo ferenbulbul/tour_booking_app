@@ -1,10 +1,12 @@
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:tour_booking/features/email_verification/screen/email_verification_screen.dart';
 import 'package:tour_booking/features/favorite/screen/favorite_screen.dart';
-import 'package:tour_booking/features/forgot_password/screen/forgot_password_screen.dart';
+import 'package:tour_booking/features/forgot_passwords/forgot_password/screen/forgot_password_screen.dart';
+import 'package:tour_booking/features/forgot_passwords/reset_password/screen/reset_password_screen.dart';
+import 'package:tour_booking/features/forgot_passwords/verify_reset_code/screen/%20verify_reset_code_screen.dart';
 import 'package:tour_booking/features/login/screens/login_screen.dart';
 import 'package:tour_booking/features/profile/screen/profile_screen.dart';
-import 'package:tour_booking/features/reset_password/screen/reset_password_screen.dart';
 import 'package:tour_booking/features/root/wigdet/root_scaffold.dart';
 import 'package:tour_booking/features/settings/screen/settings_screen.dart';
 import 'package:tour_booking/navigation/app_navigator.dart';
@@ -16,18 +18,7 @@ final GoRouter router = GoRouter(
   navigatorKey: appNavigatorKey,
   debugLogDiagnostics: true,
   routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const SplashScreen(),
-      routes: [
-        GoRoute(
-          path: ':email/:token',
-          builder: (context, state) {
-            return const SplashScreen();
-          },
-        ),
-      ],
-    ),
+    GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     GoRoute(
       path: '/email-confirmed',
@@ -42,15 +33,21 @@ final GoRouter router = GoRouter(
       builder: (context, state) => const ForgotPasswordScreen(),
     ),
     GoRoute(
-      path: '/reset-password',
+      path: '/verify-reset-code',
       builder: (context, state) {
-        final email = state.uri.queryParameters['email'];
-        final token = state.uri.queryParameters['token'];
-        return ResetPasswordScreen(email: email!, token: token!);
+        final email = state.extra as String;
+        return VerifyResetCodeScreen(email: email);
       },
     ),
+    GoRoute(
+      path: '/reset-password',
+      builder: (context, state) {
+        final email = state.extra as String;
+        return ResetPasswordScreen(email: email);
+      },
+    ),
+
     ShellRoute(
-      navigatorKey: shellNavigatorKey,
       builder: (context, state, child) {
         return RootScaffold(child: child);
       },

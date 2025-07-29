@@ -90,62 +90,60 @@ class AuthService {
     });
   }
 
-  /// Şifre sıfırla
-  Future<BaseResponse<void>> resetPassword(ResetPasswordRequest req) {
+  Future<BaseResponse<void>> forgotPassword(String email) {
+    return safeCall<void>(() async {
+      final res = await _client.post(
+        Uri.parse('$_baseUrl/forgot-password'),
+        headers: _headers(),
+        body: jsonEncode({'email': email}),
+      );
+      final map = jsonDecode(res.body) as Map<String, dynamic>;
+      return BaseResponse<void>.fromJson(map, (_) => null);
+    });
+  }
+
+  Future<BaseResponse<void>> verifyPasswordCode(String email, String code) {
+    return safeCall<void>(() async {
+      final res = await _client.post(
+        Uri.parse('$_baseUrl/verify-password-code'),
+        headers: _headers(),
+        body: jsonEncode({'email': email, 'code': code}),
+      );
+      final map = jsonDecode(res.body) as Map<String, dynamic>;
+      return BaseResponse<void>.fromJson(map, (_) => null);
+    });
+  }
+
+  Future<BaseResponse<void>> resetPassword(String email, String newPassword) {
     return safeCall<void>(() async {
       final res = await _client.post(
         Uri.parse('$_baseUrl/reset-password'),
         headers: _headers(),
-        body: jsonEncode(req.toJson()),
+        body: jsonEncode({'email': email, 'newPassword': newPassword}),
       );
-
-      // Önce body’daki JSON’u parse etmeye çalış
-      if (res.body.isNotEmpty) {
-        try {
-          final map = jsonDecode(res.body) as Map<String, dynamic>;
-          return BaseResponse<void>.fromJson(map, (_) => null);
-        } catch (_) {
-          /* parse hatasıysa alt adımlara geç */
-        }
-      }
-
-      // Body boşsa veya parse edilemediyse kodu kontrol et
-      if (res.statusCode >= 200 && res.statusCode < 300) {
-        return BaseResponse<void>(
-          isSuccess: true,
-          message: 'Şifreniz başarıyla sıfırlandı.',
-          validationErrors: [],
-          data: null,
-        );
-      } else {
-        return BaseResponse<void>(
-          isSuccess: false,
-          message: 'Sunucu hatası: ${res.statusCode}',
-          validationErrors: [],
-          data: null,
-        );
-      }
+      final map = jsonDecode(res.body) as Map<String, dynamic>;
+      return BaseResponse<void>.fromJson(map, (_) => null);
     });
   }
-}
 
-// Google Sign-In & Firebase Auth
-final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+  // Google Sign-In & Firebase Auth
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
 
-Future<User?> signInWithGoogle() async {
-  try {
-    final googleUser = await _googleSignIn.signIn();
-    if (googleUser == null) return null;
-    final googleAuth = await googleUser.authentication;
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    final userCred = await _firebaseAuth.signInWithCredential(credential);
-    return userCred.user;
-  } catch (e) {
-    // Burada da hata fırlatıp global handler’a bırakabilirsin
-    rethrow;
+  Future<User?> signInWithGoogle() async {
+    try {
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return null;
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final userCred = await _firebaseAuth.signInWithCredential(credential);
+      return userCred.user;
+    } catch (e) {
+      // Burada da hata fırlatıp global handler’a bırakabilirsin
+      rethrow;
+    }
   }
 }

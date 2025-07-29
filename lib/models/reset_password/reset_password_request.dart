@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'reset_password_request.freezed.dart';
 part 'reset_password_request.g.dart';
 
+//DEEPLİNK
 @freezed
 class ResetPasswordRequest with _$ResetPasswordRequest {
   const factory ResetPasswordRequest({
