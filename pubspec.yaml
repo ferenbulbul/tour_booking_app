@@ -28,6 +28,8 @@ dependencies:
   shared_preferences: ^2.5.3
   intl_phone_field: ^3.2.0
   app_links: ^6.4.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.6
 
 
 
@@ -45,3 +47,18 @@ flutter:
    - assets/images/
    - assets/translations/
    - .env
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon.png"
+  remove_alpha_ios: true
+
+flutter_native_splash:
+  color: "#FFFFFF"                # Arka plan rengi
+  image: assets/splash.png        # Splash görseli
+  android: true
+  ios: true
+  android_gravity: center
+  ios_content_mode: scaleAspectFit
+  

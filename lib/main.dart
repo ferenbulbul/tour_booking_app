@@ -1,8 +1,10 @@
+// main.dart - GÜNCELLENMİŞ KOD
+
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart'; // EKLENDİ
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/localization/localization_setup.dart';
 import 'package:tour_booking/core/theme/app_theme.dart';
@@ -12,46 +14,48 @@ import 'package:tour_booking/features/login/widgets/google_view_model.dart';
 import 'package:tour_booking/features/login/widgets/login_view_model.dart';
 import 'package:tour_booking/features/register/widgets/register_view_model.dart';
 import 'package:tour_booking/features/splash/widget/splash_view_model.dart';
-import 'package:tour_booking/firebase_options.dart';
+import 'package:tour_booking/firebase_options.dart'; // EKLENDİ
 import 'package:tour_booking/navigation/app_router.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // runApp'ten önce çalışması GEREKENLER:
   await dotenv.load(fileName: ".env");
   await LocalizationSetup.init();
 
-  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
-  OneSignal.initialize('f8fa783c-24c8-4655-b17d-2ecbc6a8ab22');
-  await OneSignal.Notifications.requestPermission(true);
+  // Firebase'i burada başlatarak, Provider'lar oluşturulmadan önce hazır olmasını garantiliyoruz.
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Foreground’da da sistem bildirimi olarak göster
-  OneSignal.Notifications.addForegroundWillDisplayListener((event) {
-    event.preventDefault();
-    event.notification.display();
-  });
+  runApp(const AppProviders());
+}
 
-  runApp(
-    LocalizationSetup.wrapWithLocalization(
+// AppProviders ve MyApp sınıfları aynı kalabilir.
+class AppProviders extends StatelessWidget {
+  const AppProviders({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return LocalizationSetup.wrapWithLocalization(
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => LoginViewModel()),
           ChangeNotifierProvider(create: (_) => SplashViewModel()),
           ChangeNotifierProvider(create: (_) => EmailVerificationViewModel()),
-          ChangeNotifierProvider(create: (_) => GoogleViewModel()),
+          ChangeNotifierProvider(
+            create: (_) => GoogleViewModel(),
+          ), // Artık hata vermeyecek
           ChangeNotifierProvider(create: (_) => RegisterViewModel()),
           ChangeNotifierProvider(create: (_) => ForgotPasswordViewModel()),
         ],
         child: const MyApp(),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(

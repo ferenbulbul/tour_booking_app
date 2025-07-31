@@ -1,7 +1,10 @@
+// splash_screen.dart - YENİDEN BASİTLEŞTİRİLMİŞ KOD
+
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:go_router/go_router.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/features/splash/widget/splash_logo.dart';
 import 'package:tour_booking/features/splash/widget/splash_view_model.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -15,23 +18,49 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus();
+    // UI çizildikten sonra işlemleri başlatıyoruz ki donma hissi azalsın.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeAppAndNavigate();
+    });
   }
 
-  Future<void> _checkLoginStatus() async {
-    await Future.delayed(const Duration(seconds: 2)); // animasyon için gecikme
+  Future<void> _initializeAppAndNavigate() async {
+    try {
+      // Artık sadece OneSignal ve giriş kontrolü kaldı. Bu çok daha hızlı olacaktır.
+      await _initializeOneSignal();
 
-    final splashVM = Provider.of<SplashViewModel>(context, listen: false);
-    var isLoggedIn = await splashVM.isLoggedIn();
-    if (isLoggedIn) {
-      context.go('/home'); // Giriş yapmışsa ana sayfaya
-    } else {
-      context.go('/login'); // Giriş yapmamışsa login'e
+      if (!mounted) return;
+      final splashVM = Provider.of<SplashViewModel>(context, listen: false);
+      final isLoggedIn = await splashVM.isLoggedIn();
+
+      FlutterNativeSplash.remove();
+
+      if (!mounted) return;
+      final targetRoute = isLoggedIn ? '/home' : '/login';
+      context.go(targetRoute);
+    } catch (e, s) {
+      print("Splash Screen başlatma hatası: $e");
+      print(s);
+      FlutterNativeSplash.remove();
+      if (mounted) {
+        context.go('/login');
+      }
     }
+  }
+
+  Future<void> _initializeOneSignal() async {
+    OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+    OneSignal.initialize('f8fa783c-24c8-4655-b17d-2ecbc6a8ab22');
+    await OneSignal.Notifications.requestPermission(true);
+
+    OneSignal.Notifications.addForegroundWillDisplayListener((event) {
+      event.preventDefault();
+      event.notification.display();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: SplashLogo()));
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }
