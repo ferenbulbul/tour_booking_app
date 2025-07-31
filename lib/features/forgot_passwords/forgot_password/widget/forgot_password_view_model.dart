@@ -24,7 +24,7 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     final result = handleResponse<void>(response);
 
     if (result.isSuccess) {
-      message = 'Kod gönderildi';
+      message = response.message;
       startCooldown();
     } else {
       errorMessage = result.error?.message;
@@ -63,7 +63,7 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     final result = handleResponse<void>(response);
 
     if (result.isSuccess) {
-      message = 'Şifre başarıyla değiştirildi';
+      message = response.message;
     } else {
       errorMessage = result.error?.message;
     }

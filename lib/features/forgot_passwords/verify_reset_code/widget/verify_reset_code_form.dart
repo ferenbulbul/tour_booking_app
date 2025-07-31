@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
@@ -36,7 +37,7 @@ class _VerifyResetCodeFormState extends State<VerifyResetCodeForm> {
     final code = _codeController.text.trim();
 
     if (code.length != 6) {
-      UIHelper.showError(context, 'Kod 6 haneli olmalıdır');
+      UIHelper.showError(context, 'code_must_be_6_digits'.tr());
       return;
     }
 
@@ -45,10 +46,7 @@ class _VerifyResetCodeFormState extends State<VerifyResetCodeForm> {
     if (result.isSuccess) {
       context.go('/reset-password', extra: widget.email);
     } else {
-      UIHelper.showError(
-        context,
-        vm.errorMessage ?? 'Kod doğrulama başarısız.',
-      );
+      UIHelper.showError(context, vm.errorMessage!);
     }
   }
 
@@ -68,8 +66,8 @@ class _VerifyResetCodeFormState extends State<VerifyResetCodeForm> {
 
     return Column(
       children: [
-        const Text(
-          'Lütfen e-postanıza gelen 6 haneli kodu girin.',
+        Text(
+          'enter_code_instruction'.tr(),
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 16),
         ),
@@ -86,7 +84,7 @@ class _VerifyResetCodeFormState extends State<VerifyResetCodeForm> {
 
         const SizedBox(height: 24),
 
-        ElevatedButton(onPressed: _verifyCode, child: const Text('Doğrula')),
+        ElevatedButton(onPressed: _verifyCode, child: Text('verify'.tr())),
 
         const SizedBox(height: 24),
 
@@ -96,10 +94,10 @@ class _VerifyResetCodeFormState extends State<VerifyResetCodeForm> {
                 onPressed: () {
                   vm.resendResetCode(widget.email);
                 },
-                child: const Text("Yeniden Gönder"),
+                child: Text("resend_code".tr()),
               )
             : Text(
-                "Yeniden gönderilebilir: ${vm.resendCooldown ~/ 60}:${(vm.resendCooldown % 60).toString().padLeft(2, '0')}",
+                "${'resend_in_prefix.tr'.tr()} ${vm.resendCooldown ~/ 60}:${(vm.resendCooldown % 60).toString().padLeft(2, '0')}",
                 style: const TextStyle(color: Colors.grey),
               ),
       ],

@@ -61,6 +61,9 @@ class EmailVerificationViewModel extends ChangeNotifier {
     _resendTimer?.cancel();
     _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _resendCooldown--;
+
+      notifyListeners(); // 🔥 EKSİK OLAN KISIM
+
       if (_resendCooldown <= 0) {
         _resendTimer?.cancel();
       }

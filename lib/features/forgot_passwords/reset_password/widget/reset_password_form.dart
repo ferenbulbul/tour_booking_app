@@ -78,16 +78,10 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
                     );
 
                     if (result.isSuccess) {
-                      UIHelper.showSuccess(
-                        context,
-                        vm.message ?? "Şifre sıfırlandı",
-                      );
+                      UIHelper.showSuccess(context, vm.message!);
                       context.go('/login');
                     } else {
-                      UIHelper.showError(
-                        context,
-                        vm.message ?? "Beklenmeyen bir hata oluştu",
-                      );
+                      UIHelper.showError(context, vm.message!);
                     }
                   },
                   child: Text(tr("reset_password")),

@@ -37,6 +37,10 @@
     "passwords_do_not_match": "Şifreler uyuşmuyor",
     "phone_required": "Telefon numarası gerekli",
     "birth_date_required": "Doğum tarihi gerekli",
-    "invalid_phone_number": "Geçersiz telefon numarası"
+    "invalid_phone_number": "Geçersiz telefon numarası",
+    "reset_password":	"Şifre Sıfırlama",
+    "send_code":"Kod Gönder",
+    "new_password": "Yeni Şifre",
+    "verify_code":"Kod Doğrulama"
 
 }

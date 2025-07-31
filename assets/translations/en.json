@@ -37,6 +37,10 @@
     "passwords_do_not_match": "Passwords do not match",
     "phone_required": "Phone number is required",
     "birth_date_required": "Birth date is required",
-    "invalid_phone_number": "Invalid phone number"
+    "invalid_phone_number": "Invalid phone number",
+    "reset_password":"Reset Password",
+    "send_code":"Send Code",
+    "new_password": "New Password",
+    "verify_code":"Verify Code"
 
 }
