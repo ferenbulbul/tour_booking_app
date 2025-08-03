@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>423047904244-30kirp95iq53kvltrijiuf12copgit59.apps.googleusercontent.com</string>
+	<string>423047904244-ls89sh0e3mnp1vb01c91gg3kosogrtnm.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.423047904244-30kirp95iq53kvltrijiuf12copgit59</string>
+	<string>com.googleusercontent.apps.423047904244-ls89sh0e3mnp1vb01c91gg3kosogrtnm</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>423047904244-m02l0l59htk8abs5kj02h7ri90tdmtta.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCwlt-pSMoHoOyAGXOWyNOaun1O5OhEMPQ</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.tourbooking.app</string>
+	<string>app.tourrent.ios</string>
 	<key>PROJECT_ID</key>
 	<string>tourbooking-e49bf</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:423047904244:ios:562d2386e98b498e2d57a1</string>
+	<string>1:423047904244:ios:59a765ce08abbde42d57a1</string>
 </dict>
 </plist>

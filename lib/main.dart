@@ -1,7 +1,5 @@
-// main.dart - GÜNCELLENMİŞ KOD
-
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_core/firebase_core.dart'; // EKLENDİ
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -14,7 +12,7 @@ import 'package:tour_booking/features/login/widgets/google_view_model.dart';
 import 'package:tour_booking/features/login/widgets/login_view_model.dart';
 import 'package:tour_booking/features/register/widgets/register_view_model.dart';
 import 'package:tour_booking/features/splash/widget/splash_view_model.dart';
-import 'package:tour_booking/firebase_options.dart'; // EKLENDİ
+import 'package:tour_booking/firebase_options.dart';
 import 'package:tour_booking/navigation/app_router.dart';
 
 void main() async {

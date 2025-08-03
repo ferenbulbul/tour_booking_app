@@ -65,12 +65,13 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCwlt-pSMoHoOyAGXOWyNOaun1O5OhEMPQ',
-    appId: '1:423047904244:ios:562d2386e98b498e2d57a1',
+    appId: '1:423047904244:ios:59a765ce08abbde42d57a1',
     messagingSenderId: '423047904244',
     projectId: 'tourbooking-e49bf',
     storageBucket: 'tourbooking-e49bf.firebasestorage.app',
-    iosClientId: '423047904244-30kirp95iq53kvltrijiuf12copgit59.apps.googleusercontent.com',
-    iosBundleId: 'com.tourbooking.app',
+    androidClientId: '423047904244-m02l0l59htk8abs5kj02h7ri90tdmtta.apps.googleusercontent.com',
+    iosClientId: '423047904244-ls89sh0e3mnp1vb01c91gg3kosogrtnm.apps.googleusercontent.com',
+    iosBundleId: 'app.tourrent.ios',
   );
 
 }
