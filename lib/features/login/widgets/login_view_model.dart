@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tour_booking/core/network/handle_response.dart';
 import 'package:tour_booking/core/network/result.dart';
 import 'package:tour_booking/models/login/login_request.dart';
@@ -13,6 +14,7 @@ class LoginViewModel extends ChangeNotifier {
   String? message;
   List<String> validationErrors = [];
   bool isLoading = false;
+  LoginResponse? loggedInUser;
 
   Future<Result<LoginResponse>> login(String email, String password) async {
     isLoading = true;
@@ -28,6 +30,9 @@ class LoginViewModel extends ChangeNotifier {
       validationErrors = [];
       final token = result.data!.accessToken;
       final refresh = result.data!.refreshToken;
+      loggedInUser = result.data;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_role', result.data!.role);
 
       await _tokenStorage.saveTokens(token, refresh);
     } else {
