@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
-import 'package:tour_booking/services/auth/location_permission_service.dart';
-import 'package:tour_booking/services/auth/location_service.dart';
+import 'package:tour_booking/services/location/location_permission_service.dart';
+import 'package:tour_booking/services/location/location_service.dart';
 
 class LocationViewModel with ChangeNotifier {
   final LocationPermissionService _permissionService =
@@ -39,7 +39,7 @@ class LocationViewModel with ChangeNotifier {
         _hasRequestedCustomerPermissionInThisSession = true;
       }
     } else {
-      // Business için her zaman soran agresif mantık
+      // Driver için her zaman soran agresif mantık
       currentStatus = await _permissionService.checkAndRequestPermission(
         role: role,
         shouldRequest: true,
@@ -63,7 +63,7 @@ class LocationViewModel with ChangeNotifier {
         "❌ [ViewModel]: Yetersiz izin. Rol: [$role]. Durum: $currentStatus",
       );
       stopTracking();
-      if (role == UserRole.business &&
+      if (role == UserRole.driver &&
           currentStatus == LocationPermissionStatus.permanentlyDenied) {
         openAppSettings();
       }
@@ -84,8 +84,8 @@ class LocationViewModel with ChangeNotifier {
     int updateIntervalInSeconds;
     int distanceFilterInMeters;
 
-    if (role == UserRole.business) {
-      // Business: Dakikada bir VEYA her 50 metrede bir
+    if (role == UserRole.driver) {
+      // Driver: Dakikada bir VEYA her 50 metrede bir
       updateIntervalInSeconds = 60;
       distanceFilterInMeters = 50;
     } else {

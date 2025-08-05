@@ -1,10 +1,10 @@
-enum UserRole { customer, business }
+enum UserRole { customer, driver }
 
 extension UserRoleExtension on UserRole {
   static UserRole fromString(String? value) {
     switch (value?.toLowerCase()) {
-      case 'business':
-        return UserRole.business;
+      case 'driver':
+        return UserRole.driver;
       case 'customer':
       default:
         return UserRole.customer;

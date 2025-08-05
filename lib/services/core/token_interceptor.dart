@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:tour_booking/services/auth/secure_token_storage.dart';
+import 'package:tour_booking/services/core/secure_token_storage.dart';
 
 class TokenInterceptor {
   final _client = http.Client();

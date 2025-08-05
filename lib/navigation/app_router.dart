@@ -1,5 +1,4 @@
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:tour_booking/features/email_verification/screen/email_verification_screen.dart';
 import 'package:tour_booking/features/favorite/screen/favorite_screen.dart';
 import 'package:tour_booking/features/forgot_passwords/forgot_password/screen/forgot_password_screen.dart';

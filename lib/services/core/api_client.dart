@@ -4,8 +4,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:tour_booking/models/base/base_response.dart';
 import 'package:tour_booking/navigation/app_navigator.dart';
-import 'package:tour_booking/services/auth/secure_token_storage.dart';
-import 'package:tour_booking/services/safe_call.dart';
+import 'package:tour_booking/services/core/secure_token_storage.dart';
+import 'package:tour_booking/services/core/safe_call.dart';
 
 class ApiClient {
   final http.Client _client;
@@ -80,7 +80,7 @@ class ApiClient {
     return _handle<T>(
       fromJson: fromJson,
       send: (token) => _client.get(
-        Uri.parse('$_mobileUrl$path'),
+        Uri.parse('$_baseUrl$path'),
         headers: _headers(token: token, extra: extraHeaders),
       ),
     );
@@ -96,7 +96,7 @@ class ApiClient {
     return _handle<T>(
       fromJson: fromJson,
       send: (token) => _client.post(
-        Uri.parse('$_mobileUrl$path'),
+        Uri.parse('$_baseUrl$path'),
         headers: _headers(token: token, extra: extraHeaders),
         body: jsonEncode(body ?? {}),
       ),

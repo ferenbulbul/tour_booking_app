@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tour_booking/services/auth/secure_token_storage.dart';
+import 'package:tour_booking/services/core/secure_token_storage.dart';
 
 class SplashViewModel extends ChangeNotifier {
   final SecureTokenStorage _tokenStorage = SecureTokenStorage();

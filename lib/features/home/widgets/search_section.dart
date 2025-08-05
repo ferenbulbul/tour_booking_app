@@ -16,18 +16,6 @@ class SearchSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Hoş Geldiniz',
-          style: textTheme.headlineMedium?.copyWith(color: onPrimaryColor),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Bugün size nasıl yardımcı olabiliriz?',
-          style: textTheme.bodyMedium?.copyWith(
-            color: onPrimaryColor.withOpacity(0.8),
-          ),
-        ),
-        const SizedBox(height: 16),
         Row(
           children: [
             Expanded(

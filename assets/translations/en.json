@@ -41,6 +41,8 @@
     "reset_password":"Reset Password",
     "send_code":"Send Code",
     "new_password": "New Password",
-    "verify_code":"Verify Code"
+    "verify_code":"Verify Code",
+    "discover":"Discover",
+    "categories":"Categories"
 
 }

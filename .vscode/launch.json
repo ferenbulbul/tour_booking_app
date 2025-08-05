@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "name": "tour_booking_app (Flutter devicenew)",
+            "program": "lib/main.dart",
+            "deviceId": "832CCC3F-A974-4F5D-B5E7-6491A5A8037F",
+            "request": "launch",
+            "type": "dart"
+        }
+    ]
+}

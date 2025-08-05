@@ -8,13 +8,14 @@ import 'package:tour_booking/core/localization/localization_setup.dart';
 import 'package:tour_booking/core/theme/app_theme.dart';
 import 'package:tour_booking/features/email_verification/widget/email_verification_view_model.dart';
 import 'package:tour_booking/features/forgot_passwords/forgot_password/widget/forgot_password_view_model.dart';
+import 'package:tour_booking/features/home/home_viewmodel.dart';
 import 'package:tour_booking/features/login/widgets/google_view_model.dart';
 import 'package:tour_booking/features/login/widgets/login_view_model.dart';
 import 'package:tour_booking/features/register/widgets/register_view_model.dart';
 import 'package:tour_booking/features/splash/widget/splash_view_model.dart';
 import 'package:tour_booking/firebase_options.dart';
 import 'package:tour_booking/navigation/app_router.dart';
-import 'package:tour_booking/services/auth/location_viewmodel.dart.dart';
+import 'package:tour_booking/services/location/location_viewmodel.dart.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +44,7 @@ class AppProviders extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => RegisterViewModel()),
           ChangeNotifierProvider(create: (_) => ForgotPasswordViewModel()),
           ChangeNotifierProvider(create: (_) => LocationViewModel()),
+          ChangeNotifierProvider(create: (_) => HomeViewModel()..init()),
         ],
         child: const MyApp(),
       ),

@@ -5,8 +5,8 @@ import 'package:tour_booking/models/base/base_response.dart';
 import 'package:tour_booking/models/login/login_request.dart';
 import 'package:tour_booking/models/login/login_response.dart';
 import 'package:tour_booking/models/register/register_request.dart';
-import 'package:tour_booking/services/api_client.dart';
-import 'package:tour_booking/services/auth/secure_token_storage.dart';
+import 'package:tour_booking/services/core/api_client.dart';
+import 'package:tour_booking/services/core/secure_token_storage.dart';
 
 class AuthService {
   final ApiClient _apiClient;

@@ -6,7 +6,7 @@ import 'package:tour_booking/models/base/base_response.dart';
 import 'package:tour_booking/models/login/login_response.dart';
 import 'package:tour_booking/models/register/register_request.dart';
 import 'package:tour_booking/services/auth/auth_service.dart';
-import 'package:tour_booking/services/auth/secure_token_storage.dart';
+import 'package:tour_booking/services/core/secure_token_storage.dart';
 
 class RegisterViewModel extends ChangeNotifier {
   final AuthService _authService = AuthService();

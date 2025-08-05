@@ -14,7 +14,7 @@ class LocationPermissionService {
     required UserRole role,
     required bool shouldRequest,
   }) async {
-    final permission = (role == UserRole.business)
+    final permission = (role == UserRole.driver)
         ? Permission.locationAlways
         : Permission.locationWhenInUse;
 
@@ -22,8 +22,8 @@ class LocationPermissionService {
 
     // Zaten izin verilmişse, durumu direkt döndür.
     if (status.isGranted) {
-      // Business için bile olsa, 'always' izni verildiyse 'grantedAlways' döndür.
-      if (role == UserRole.business &&
+      // Driver için bile olsa, 'always' izni verildiyse 'grantedAlways' döndür.
+      if (role == UserRole.driver &&
           await Permission.locationAlways.isGranted) {
         return LocationPermissionStatus.grantedAlways;
       }
@@ -43,9 +43,9 @@ class LocationPermissionService {
 
     // --- Bu noktadan sonra shouldRequest == true demektir, yani diyalog göstereceğiz ---
 
-    // Business rolü için karmaşık istek mantığı
-    if (role == UserRole.business) {
-      return _handleBusinessPermissionRequest();
+    // Driver rolü için karmaşık istek mantığı
+    if (role == UserRole.driver) {
+      return _handleDriverPermissionRequest();
     }
     // Customer rolü için basit istek mantığı
     else {
@@ -58,8 +58,8 @@ class LocationPermissionService {
     }
   }
 
-  // Business için izin isteme mantığını ayıran özel metot
-  Future<LocationPermissionStatus> _handleBusinessPermissionRequest() async {
+  // Driver için izin isteme mantığını ayıran özel metot
+  Future<LocationPermissionStatus> _handleDriverPermissionRequest() async {
     // Önce 'WhenInUse' iznini iste, çünkü 'Always' için bu bir ön koşul.
     final whenInUseStatus = await Permission.locationWhenInUse.request();
 

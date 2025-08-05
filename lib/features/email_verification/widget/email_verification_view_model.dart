@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:tour_booking/services/auth/auth_service.dart';
-import 'package:tour_booking/models/base/base_response.dart';
 
 class EmailVerificationViewModel extends ChangeNotifier {
   final AuthService _authService = AuthService();

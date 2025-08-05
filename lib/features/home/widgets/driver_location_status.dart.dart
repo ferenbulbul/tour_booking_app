@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/services/auth/location_permission_service.dart';
-import 'package:tour_booking/services/auth/location_viewmodel.dart.dart';
+import 'package:tour_booking/services/location/location_permission_service.dart';
+import 'package:tour_booking/services/location/location_viewmodel.dart.dart';
 
-/// SADECE Business rolü için gösterilecek durum widget'ı.
-class BusinessLocationStatus extends StatelessWidget {
-  const BusinessLocationStatus({super.key});
+/// SADECE Driver rolü için gösterilecek durum widget'ı.
+class DriverLocationStatus extends StatelessWidget {
+  const DriverLocationStatus({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tour_booking/services/auth/secure_token_storage.dart';
+import 'package:tour_booking/services/core/secure_token_storage.dart';
 
 class ProfileHeader extends StatelessWidget {
   final String name;

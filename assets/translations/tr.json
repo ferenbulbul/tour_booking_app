@@ -41,6 +41,7 @@
     "reset_password":	"Şifre Sıfırlama",
     "send_code":"Kod Gönder",
     "new_password": "Yeni Şifre",
-    "verify_code":"Kod Doğrulama"
+    "verify_code":"Kod Doğrulama",
+    "categories":"Kategoriler"
 
 }

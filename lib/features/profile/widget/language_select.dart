@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:tour_booking/features/home/home_viewmodel.dart';
 
 class LanguageSelector extends StatelessWidget {
   const LanguageSelector({super.key});
@@ -44,6 +46,7 @@ class _LanguageButton extends StatelessWidget {
     return OutlinedButton(
       onPressed: () async {
         await context.setLocale(locale);
+        context.read<HomeViewModel>().init();
         context.go('/home');
       },
       style: OutlinedButton.styleFrom(
