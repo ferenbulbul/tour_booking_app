@@ -12,6 +12,8 @@ import 'package:tour_booking/features/home/home_viewmodel.dart';
 import 'package:tour_booking/features/login/widgets/google_view_model.dart';
 import 'package:tour_booking/features/login/widgets/login_view_model.dart';
 import 'package:tour_booking/features/register/widgets/register_view_model.dart';
+import 'package:tour_booking/features/search/search_viewmodel.dart';
+import 'package:tour_booking/features/search_result/search_result_viewmodel.dart';
 import 'package:tour_booking/features/splash/widget/splash_view_model.dart';
 import 'package:tour_booking/firebase_options.dart';
 import 'package:tour_booking/navigation/app_router.dart';
@@ -45,6 +47,8 @@ class AppProviders extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => ForgotPasswordViewModel()),
           ChangeNotifierProvider(create: (_) => LocationViewModel()),
           ChangeNotifierProvider(create: (_) => HomeViewModel()..init()),
+          ChangeNotifierProvider(create: (_) => SearchViewmodel()),
+          ChangeNotifierProvider(create: (_) => TourSearchResultsViewModel()),
         ],
         child: const MyApp(),
       ),

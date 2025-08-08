@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../tour/tour_type_dto.dart';
+import 'package:tour_booking/models/tour_type/tour_type_dto.dart';
 
 part 'tour_types_dto.freezed.dart';
 part 'tour_types_dto.g.dart';

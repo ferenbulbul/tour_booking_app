@@ -3,7 +3,7 @@ import 'package:tour_booking/core/network/handle_response.dart';
 import 'package:tour_booking/core/network/result.dart';
 import 'package:tour_booking/models/featured_tour_point/featured_tour_point_dto.dart';
 import 'package:tour_booking/models/featured_tour_point_list/featured_tour_point_list_dto.dart';
-import 'package:tour_booking/models/tour/tour_type_dto.dart';
+import 'package:tour_booking/models/tour_type/tour_type_dto.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
 
 class HomeViewModel extends ChangeNotifier {

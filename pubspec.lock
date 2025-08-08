@@ -488,6 +488,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_toggle_tab:
+    dependency: "direct main"
+    description:
+      name: flutter_toggle_tab
+      sha256: b07e49d8e9dfcf253e5c5ee5fea601b47bcf6cfa0c42aaa7a60f94b7e8806dce
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.1"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -710,7 +718,7 @@ packages:
     source: hosted
     version: "4.5.4"
   intl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: intl
       sha256: "3df61194eb431efc39c4ceba583b95633a403f46c9fd341e550ce0bfa50e9aa5"
@@ -1210,6 +1218,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
+  toggle_switch:
+    dependency: "direct main"
+    description:
+      name: toggle_switch
+      sha256: dca04512d7c23ed320d6c5ede1211a404f177d54d353bf785b07d15546a86ce5
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.0"
   typed_data:
     dependency: transitive
     description:

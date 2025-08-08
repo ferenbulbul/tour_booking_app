@@ -74,13 +74,14 @@ class ApiClient {
   // GET
   Future<BaseResponse<T>> get<T>({
     required String path,
+    Map<String, String>? queryParams,
     Map<String, String>? extraHeaders,
     T Function(Object?)? fromJson,
   }) {
     return _handle<T>(
       fromJson: fromJson,
       send: (token) => _client.get(
-        Uri.parse('$_baseUrl$path'),
+        Uri.parse('$_baseUrl$path').replace(queryParameters: queryParams),
         headers: _headers(token: token, extra: extraHeaders),
       ),
     );

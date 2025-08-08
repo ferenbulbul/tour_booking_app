@@ -16,12 +16,13 @@ class RootScaffold extends StatelessWidget {
       currentIndex = 0;
     } else if (location.startsWith('/favorite')) {
       currentIndex = 1;
-    } else if (location.startsWith('/settings')) {
+    } else if (location.startsWith('/search')) {
       currentIndex = 2;
-    } else if (location.startsWith('/profile')) {
+    } else if (location.startsWith('/settings')) {
       currentIndex = 3;
+    } else if (location.startsWith('/profile')) {
+      currentIndex = 4;
     }
-
     return Scaffold(
       body: child,
       bottomNavigationBar: BottomNavigationBar(
@@ -36,9 +37,12 @@ class RootScaffold extends StatelessWidget {
               context.go('/favorite');
               break;
             case 2:
-              context.go('/settings');
+              context.go('/search');
               break;
             case 3:
+              context.go('/settings');
+              break;
+            case 4:
               context.go('/profile');
               break;
           }
@@ -48,6 +52,10 @@ class RootScaffold extends StatelessWidget {
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'favorite'.tr(),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: "Detaylı Arama",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
