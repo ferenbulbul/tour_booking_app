@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/features/search_result/search_result_viewmodel.dart';
 import 'package:tour_booking/models/tour_search_detail_request/tour_search_detailed_request.dart';
@@ -94,7 +95,7 @@ class _TourSearchResultsScreenState extends State<TourSearchResultsScreen> {
                     ],
                   ),
                   onTap: () {
-                    // TODO: Detay sayfasına yönlendirme
+                    context.pushNamed('searchDetail', extra: point.id);
                   },
                 ),
               );

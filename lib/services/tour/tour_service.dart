@@ -4,11 +4,18 @@ import 'package:tour_booking/models/city_list/city_list_response.dart';
 import 'package:tour_booking/models/district_list/district_list_response.dart';
 import 'package:tour_booking/models/featured_tour_point_list/featured_tour_point_list_dto.dart';
 import 'package:tour_booking/models/region_list/region_list_response.dart';
+import 'package:tour_booking/models/tour_point_detail/tour_point_detail.dart';
+import 'package:tour_booking/models/tour_point_detail_wrapper/tour_point_detail_wrapper.dart';
 import 'package:tour_booking/models/tour_search/mobile_tour_points_by_search_dto.dart';
 import 'package:tour_booking/models/tour_search_detail_request/tour_search_detailed_request.dart';
 import 'package:tour_booking/models/tour_search_list/mobile_tour_points_response.dart';
 import 'package:tour_booking/models/tour_search_response/tour_search_response.dart';
 import 'package:tour_booking/models/tour_types/tour_types_dto.dart';
+import 'package:tour_booking/models/tour_vehicle_request/tour_vehicle_request.dart';
+import 'package:tour_booking/models/vehicle/vehicle.dart';
+import 'package:tour_booking/models/vehicle_detail/vehicle_detail.dart';
+import 'package:tour_booking/models/vehicle_detail_response/vehicle_detail_response.dart';
+import 'package:tour_booking/models/vehicle_response/tour_vehicle_response.dart';
 import 'package:tour_booking/services/core/api_client.dart';
 
 class TourService {
@@ -85,6 +92,40 @@ class TourService {
       body: request.toJson(),
       fromJson: (json) =>
           TourSearchResponse.fromJson(json as Map<String, dynamic>),
+    );
+    return response;
+  }
+
+  Future<BaseResponse<TourPointDetailWrapper>> getTourPointDetail(
+    String id,
+  ) async {
+    var response = _apiClient.get<TourPointDetailWrapper>(
+      path: "/Mobile/tour-point-details",
+      queryParams: {'tourPointId': id},
+      fromJson: (json) =>
+          TourPointDetailWrapper.fromJson(json as Map<String, dynamic>),
+    );
+    return response;
+  }
+
+  Future<BaseResponse<TourVehicleResponse>> getVehicles(
+    TourVehicleRequest request,
+  ) async {
+    var response = _apiClient.post<TourVehicleResponse>(
+      path: "/Mobile/search-vehicle",
+      body: request.toJson(),
+      fromJson: (json) =>
+          TourVehicleResponse.fromJson(json as Map<String, dynamic>),
+    );
+    return response;
+  }
+
+  Future<BaseResponse<VehicleResponse>> getVehicle(String vehicleId) async {
+    var response = _apiClient.get<VehicleResponse>(
+      path: "/Mobile/vehicle-detail",
+      queryParams: {'vehicleId': vehicleId},
+      fromJson: (json) =>
+          VehicleResponse.fromJson(json as Map<String, dynamic>),
     );
     return response;
   }

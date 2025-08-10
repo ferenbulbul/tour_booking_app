@@ -11,6 +11,9 @@ import 'package:tour_booking/features/root/wigdet/root_scaffold.dart';
 import 'package:tour_booking/features/search/screen/search.dart';
 import 'package:tour_booking/features/search_result/screen/tour_search_result.dart';
 import 'package:tour_booking/features/settings/screen/settings_screen.dart';
+import 'package:tour_booking/features/tour_search_detail/screen/tour_search_detail_screen.dart';
+import 'package:tour_booking/features/tour_search_detail/screen/tour_vehicle_list_screen.dart';
+import 'package:tour_booking/features/tour_search_detail/screen/vehicle_detail_screen.dart';
 import 'package:tour_booking/navigation/app_navigator.dart';
 import '../features/splash/screen/splash_screen.dart';
 import '../features/register/screen/register_screen.dart';
@@ -66,7 +69,29 @@ final GoRouter router = GoRouter(
         );
       },
     ),
-
+    GoRoute(
+      path: '/search-detail',
+      name: 'searchDetail',
+      builder: (context, state) {
+        final tourPointId = state.extra as String;
+        return TourSearchDetailScreen(tourPointId: tourPointId);
+      },
+    ),
+    GoRoute(
+      path: '/vehicle-list',
+      name: 'vehicleList',
+      builder: (context, state) {
+        return TourVehicleListScreen();
+      },
+    ),
+    GoRoute(
+      path: '/vehicle-detail',
+      name: 'vehicleDetail',
+      builder: (context, state) {
+        final vehicleId = state.extra as String;
+        return VehicleDetailScreen(vehicleId: vehicleId);
+      },
+    ),
     ShellRoute(
       builder: (context, state, child) {
         return RootScaffold(child: child);
