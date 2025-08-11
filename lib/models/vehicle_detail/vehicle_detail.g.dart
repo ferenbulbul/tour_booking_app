@@ -18,6 +18,12 @@ _$VehicleDetailImpl _$$VehicleDetailImplFromJson(Map<String, dynamic> json) =>
       legRoomSpace: json['legRoomSpace'] as String?,
       seatType: json['seatType'] as String?,
       modelYear: (json['modelYear'] as num?)?.toInt(),
+      otherImages: (json['otherImages'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      vehicleFeatures: (json['vehicleFeatures'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
     );
 
 Map<String, dynamic> _$$VehicleDetailImplToJson(_$VehicleDetailImpl instance) =>
@@ -32,4 +38,6 @@ Map<String, dynamic> _$$VehicleDetailImplToJson(_$VehicleDetailImpl instance) =>
       'legRoomSpace': instance.legRoomSpace,
       'seatType': instance.seatType,
       'modelYear': instance.modelYear,
+      'otherImages': instance.otherImages,
+      'vehicleFeatures': instance.vehicleFeatures,
     };

@@ -3,7 +3,6 @@ import 'package:tour_booking/models/tour_point_detail/tour_point_detail.dart';
 import 'package:tour_booking/models/tour_vehicle_request/tour_vehicle_request.dart';
 import 'package:tour_booking/models/vehicle/vehicle.dart';
 import 'package:tour_booking/models/vehicle_detail/vehicle_detail.dart';
-import 'package:tour_booking/models/vehicle_detail_response/vehicle_detail_response.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
 
 class TourSearchDetailViewModel extends ChangeNotifier {
@@ -31,6 +30,7 @@ class TourSearchDetailViewModel extends ChangeNotifier {
 
     try {
       final result = await _tourService.getTourPointDetail(id);
+      print("tourpoint id ${id} ");
       if (result.data != null) {
         detail = result.data!.tourPointDetails;
         errorMessage = null;

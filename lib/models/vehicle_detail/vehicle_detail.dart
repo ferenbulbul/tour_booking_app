@@ -18,7 +18,9 @@ class VehicleDetail with _$VehicleDetail {
     required String image,
     String? legRoomSpace,
     String? seatType,
-    int? modelYear, // JSON’da var, ekledim
+    int? modelYear,
+    List<String>? otherImages,
+    List<String>? vehicleFeatures, // JSON’da var, ekledim
   }) = _VehicleDetail;
 
   factory VehicleDetail.fromJson(Map<String, dynamic> json) =>

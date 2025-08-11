@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/features/tour_search_detail/screen/tour_vehicle_list_screen.dart';
 import 'package:tour_booking/features/tour_search_detail/tour_search_detail_viewmodel.dart';
 
 class TourSearchDetailScreen extends StatefulWidget {

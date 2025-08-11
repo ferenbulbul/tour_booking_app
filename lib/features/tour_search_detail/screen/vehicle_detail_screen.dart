@@ -40,12 +40,6 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     final v = vm.vehicle!;
     final price = vm.setViheclePrice; // senin VM’deki fiyat getter
 
-    // Örnek küçük resim listesi (API'den ayrı alan varsa oraya bağlayabilirsin)
-    final smallImages = List.generate(
-      7,
-      (i) => v.image, // şimdilik hep aynı foto
-    );
-
     return Scaffold(
       appBar: AppBar(title: Text(v.vehicleBrand)),
       body: SingleChildScrollView(
@@ -107,13 +101,13 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
               height: 80,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                itemCount: smallImages.length,
+                itemCount: v.otherImages!.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
                 itemBuilder: (_, i) {
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
-                      smallImages[i],
+                      v.otherImages![i],
                       width: 80,
                       height: 80,
                       fit: BoxFit.cover,
@@ -148,8 +142,27 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
             if (v.seatType != null && v.seatType!.isNotEmpty)
               _info('Koltuk Tipi', v.seatType!, Icons.chair_alt_rounded),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 15),
 
+            // Ek Özellikler
+            if (v.vehicleFeatures != null && v.vehicleFeatures!.isNotEmpty) ...[
+              const Text(
+                'Ek Özellikler',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: v.vehicleFeatures!.map((feature) {
+                  return Chip(
+                    label: Text(feature),
+                    backgroundColor: Colors.blue.shade50,
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 24),
+            ],
             // Devam butonu
             SizedBox(
               width: double.infinity,

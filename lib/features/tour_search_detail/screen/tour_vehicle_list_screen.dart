@@ -80,7 +80,7 @@ class TourVehicleListScreen extends StatelessWidget {
                   child: AspectRatio(
                     aspectRatio: 1.3,
                     child: FadeInImage.assetNetwork(
-                      placeholder: 'assets/images/placeholder_car.png',
+                      placeholder: 'assets/images/icon.png',
                       image: vehicle.image,
                       fit: BoxFit.cover,
                       width: double.infinity,

@@ -10,7 +10,6 @@ class FeaturedPointsWidget extends StatelessWidget {
     final vm = context.watch<HomeViewModel>();
 
     if (vm.isLoading) return const Center(child: CircularProgressIndicator());
-    if (vm.featuredPoints.isEmpty) return const Text("Öne çıkan yer yok");
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

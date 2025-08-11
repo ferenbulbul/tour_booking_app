@@ -32,6 +32,8 @@ mixin _$VehicleDetail {
   String? get legRoomSpace => throw _privateConstructorUsedError;
   String? get seatType => throw _privateConstructorUsedError;
   int? get modelYear => throw _privateConstructorUsedError;
+  List<String>? get otherImages => throw _privateConstructorUsedError;
+  List<String>? get vehicleFeatures => throw _privateConstructorUsedError;
 
   /// Serializes this VehicleDetail to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -61,6 +63,8 @@ abstract class $VehicleDetailCopyWith<$Res> {
     String? legRoomSpace,
     String? seatType,
     int? modelYear,
+    List<String>? otherImages,
+    List<String>? vehicleFeatures,
   });
 }
 
@@ -89,6 +93,8 @@ class _$VehicleDetailCopyWithImpl<$Res, $Val extends VehicleDetail>
     Object? legRoomSpace = freezed,
     Object? seatType = freezed,
     Object? modelYear = freezed,
+    Object? otherImages = freezed,
+    Object? vehicleFeatures = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -132,6 +138,14 @@ class _$VehicleDetailCopyWithImpl<$Res, $Val extends VehicleDetail>
                 ? _value.modelYear
                 : modelYear // ignore: cast_nullable_to_non_nullable
                       as int?,
+            otherImages: freezed == otherImages
+                ? _value.otherImages
+                : otherImages // ignore: cast_nullable_to_non_nullable
+                      as List<String>?,
+            vehicleFeatures: freezed == vehicleFeatures
+                ? _value.vehicleFeatures
+                : vehicleFeatures // ignore: cast_nullable_to_non_nullable
+                      as List<String>?,
           )
           as $Val,
     );
@@ -158,6 +172,8 @@ abstract class _$$VehicleDetailImplCopyWith<$Res>
     String? legRoomSpace,
     String? seatType,
     int? modelYear,
+    List<String>? otherImages,
+    List<String>? vehicleFeatures,
   });
 }
 
@@ -185,6 +201,8 @@ class __$$VehicleDetailImplCopyWithImpl<$Res>
     Object? legRoomSpace = freezed,
     Object? seatType = freezed,
     Object? modelYear = freezed,
+    Object? otherImages = freezed,
+    Object? vehicleFeatures = freezed,
   }) {
     return _then(
       _$VehicleDetailImpl(
@@ -228,6 +246,14 @@ class __$$VehicleDetailImplCopyWithImpl<$Res>
             ? _value.modelYear
             : modelYear // ignore: cast_nullable_to_non_nullable
                   as int?,
+        otherImages: freezed == otherImages
+            ? _value._otherImages
+            : otherImages // ignore: cast_nullable_to_non_nullable
+                  as List<String>?,
+        vehicleFeatures: freezed == vehicleFeatures
+            ? _value._vehicleFeatures
+            : vehicleFeatures // ignore: cast_nullable_to_non_nullable
+                  as List<String>?,
       ),
     );
   }
@@ -247,7 +273,10 @@ class _$VehicleDetailImpl implements _VehicleDetail {
     this.legRoomSpace,
     this.seatType,
     this.modelYear,
-  });
+    final List<String>? otherImages,
+    final List<String>? vehicleFeatures,
+  }) : _otherImages = otherImages,
+       _vehicleFeatures = vehicleFeatures;
 
   factory _$VehicleDetailImpl.fromJson(Map<String, dynamic> json) =>
       _$$VehicleDetailImplFromJson(json);
@@ -274,10 +303,29 @@ class _$VehicleDetailImpl implements _VehicleDetail {
   final String? seatType;
   @override
   final int? modelYear;
+  final List<String>? _otherImages;
+  @override
+  List<String>? get otherImages {
+    final value = _otherImages;
+    if (value == null) return null;
+    if (_otherImages is EqualUnmodifiableListView) return _otherImages;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  final List<String>? _vehicleFeatures;
+  @override
+  List<String>? get vehicleFeatures {
+    final value = _vehicleFeatures;
+    if (value == null) return null;
+    if (_vehicleFeatures is EqualUnmodifiableListView) return _vehicleFeatures;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'VehicleDetail(vehicleId: $vehicleId, price: $price, vehicleBrand: $vehicleBrand, vehicleClass: $vehicleClass, vehicleType: $vehicleType, seatCount: $seatCount, image: $image, legRoomSpace: $legRoomSpace, seatType: $seatType, modelYear: $modelYear)';
+    return 'VehicleDetail(vehicleId: $vehicleId, price: $price, vehicleBrand: $vehicleBrand, vehicleClass: $vehicleClass, vehicleType: $vehicleType, seatCount: $seatCount, image: $image, legRoomSpace: $legRoomSpace, seatType: $seatType, modelYear: $modelYear, otherImages: $otherImages, vehicleFeatures: $vehicleFeatures)';
   }
 
   @override
@@ -302,7 +350,15 @@ class _$VehicleDetailImpl implements _VehicleDetail {
             (identical(other.seatType, seatType) ||
                 other.seatType == seatType) &&
             (identical(other.modelYear, modelYear) ||
-                other.modelYear == modelYear));
+                other.modelYear == modelYear) &&
+            const DeepCollectionEquality().equals(
+              other._otherImages,
+              _otherImages,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._vehicleFeatures,
+              _vehicleFeatures,
+            ));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -319,6 +375,8 @@ class _$VehicleDetailImpl implements _VehicleDetail {
     legRoomSpace,
     seatType,
     modelYear,
+    const DeepCollectionEquality().hash(_otherImages),
+    const DeepCollectionEquality().hash(_vehicleFeatures),
   );
 
   /// Create a copy of VehicleDetail
@@ -347,6 +405,8 @@ abstract class _VehicleDetail implements VehicleDetail {
     final String? legRoomSpace,
     final String? seatType,
     final int? modelYear,
+    final List<String>? otherImages,
+    final List<String>? vehicleFeatures,
   }) = _$VehicleDetailImpl;
 
   factory _VehicleDetail.fromJson(Map<String, dynamic> json) =
@@ -373,6 +433,10 @@ abstract class _VehicleDetail implements VehicleDetail {
   String? get seatType;
   @override
   int? get modelYear;
+  @override
+  List<String>? get otherImages;
+  @override
+  List<String>? get vehicleFeatures;
 
   /// Create a copy of VehicleDetail
   /// with the given fields replaced by the non-null parameter values.
