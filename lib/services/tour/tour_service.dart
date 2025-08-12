@@ -4,6 +4,8 @@ import 'package:tour_booking/models/city_list/city_list_response.dart';
 import 'package:tour_booking/models/district_list/district_list_response.dart';
 import 'package:tour_booking/models/featured_tour_point_list/featured_tour_point_list_dto.dart';
 import 'package:tour_booking/models/region_list/region_list_response.dart';
+import 'package:tour_booking/models/tour_guide_request/tour_guide_request.dart';
+import 'package:tour_booking/models/tour_guides_response/tour_guides_response.dart';
 import 'package:tour_booking/models/tour_point_detail/tour_point_detail.dart';
 import 'package:tour_booking/models/tour_point_detail_wrapper/tour_point_detail_wrapper.dart';
 import 'package:tour_booking/models/tour_search/mobile_tour_points_by_search_dto.dart';
@@ -126,6 +128,18 @@ class TourService {
       queryParams: {'vehicleId': vehicleId},
       fromJson: (json) =>
           VehicleResponse.fromJson(json as Map<String, dynamic>),
+    );
+    return response;
+  }
+
+  Future<BaseResponse<TourGuidesResponse>> searchGuide(
+    TourGuideRequest request,
+  ) async {
+    var response = _apiClient.post<TourGuidesResponse>(
+      path: "/Mobile/search-guide",
+      body: request.toJson(),
+      fromJson: (json) =>
+          TourGuidesResponse.fromJson(json as Map<String, dynamic>),
     );
     return response;
   }

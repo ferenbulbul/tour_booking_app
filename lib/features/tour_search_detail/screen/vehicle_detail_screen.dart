@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/features/tour_search_detail/tour_search_detail_viewmodel.dart';
 
@@ -168,7 +169,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: VM aksiyon
+                  context.push('/search-guide');
                 },
                 child: const Text('Devam Et'),
               ),

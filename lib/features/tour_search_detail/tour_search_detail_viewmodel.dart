@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tour_booking/models/guide/guide.dart';
+import 'package:tour_booking/models/tour_guide_request/tour_guide_request.dart';
 import 'package:tour_booking/models/tour_point_detail/tour_point_detail.dart';
 import 'package:tour_booking/models/tour_vehicle_request/tour_vehicle_request.dart';
 import 'package:tour_booking/models/vehicle/vehicle.dart';
@@ -21,6 +23,8 @@ class TourSearchDetailViewModel extends ChangeNotifier {
   DateTime? selectedDate;
   VehicleDetail? vehicle;
   String? setViheclePrice;
+  List<Guide> guides = [];
+  String? selectedTourPointId;
 
   String? tourPointDetailId;
   Future<void> fetchTourPointDetail(String id) async {
@@ -31,6 +35,7 @@ class TourSearchDetailViewModel extends ChangeNotifier {
     try {
       final result = await _tourService.getTourPointDetail(id);
       print("tourpoint id ${id} ");
+      selectedTourPointId = id;
       if (result.data != null) {
         detail = result.data!.tourPointDetails;
         errorMessage = null;
@@ -138,6 +143,44 @@ class TourSearchDetailViewModel extends ChangeNotifier {
   void setSelectedDate(DateTime date) {
     selectedDate = date;
     notifyListeners();
+  }
+
+  Future<void> fetchGuides() async {
+    if (selectedCityId == null ||
+        selectedDistrictId == null ||
+        selectedTourPointId == null ||
+        selectedDate == null) {
+      return;
+    }
+
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
+
+    try {
+      final req = TourGuideRequest(
+        cityId: selectedCityId!,
+        districtId: selectedDistrictId!,
+        tourPointId: selectedTourPointId!,
+        date: selectedDate!,
+      );
+
+      final resp = await _tourService.searchGuide(req);
+
+      if (resp.isSuccess == true && resp.data != null) {
+        guides = resp.data!.guides;
+        errorMessage = resp.message;
+      } else {
+        guides = [];
+        errorMessage = resp.message ?? 'Bilinmeyen hata';
+      }
+    } catch (e) {
+      guides = [];
+      errorMessage = 'Hata: $e';
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 }
 
