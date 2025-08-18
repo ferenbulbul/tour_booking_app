@@ -37,6 +37,7 @@ dependencies:
   flutter_toggle_tab: ^1.5.1
   intl: ^0.20.2
   toggle_switch: ^2.3.0
+  decimal: ^3.2.4
 
 
 

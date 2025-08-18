@@ -12,6 +12,8 @@ import 'package:tour_booking/features/search/screen/search.dart';
 import 'package:tour_booking/features/search_result/screen/tour_search_result.dart';
 import 'package:tour_booking/features/settings/screen/settings_screen.dart';
 import 'package:tour_booking/features/tour_search_detail/screen/guides_screen.dart';
+import 'package:tour_booking/features/tour_search_detail/screen/payment_screen.dart';
+import 'package:tour_booking/features/tour_search_detail/screen/summary_screen.dart';
 import 'package:tour_booking/features/tour_search_detail/screen/tour_search_detail_screen.dart';
 import 'package:tour_booking/features/tour_search_detail/screen/tour_vehicle_list_screen.dart';
 import 'package:tour_booking/features/tour_search_detail/screen/vehicle_detail_screen.dart';
@@ -100,7 +102,20 @@ final GoRouter router = GoRouter(
         return GuidesScreen();
       },
     ),
-
+    GoRoute(
+      path: '/summary',
+      name: 'summary',
+      builder: (context, state) {
+        return SummaryScreen();
+      },
+    ),
+    GoRoute(
+      path: '/payment',
+      name: 'payment',
+      builder: (context, state) {
+        return PaymentScreen();
+      },
+    ),
     ShellRoute(
       builder: (context, state, child) {
         return RootScaffold(child: child);

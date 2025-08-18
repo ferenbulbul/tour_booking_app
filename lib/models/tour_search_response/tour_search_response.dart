@@ -6,7 +6,7 @@ part 'tour_search_response.g.dart';
 
 @freezed
 class TourSearchResponse with _$TourSearchResponse {
-  const factory TourSearchResponse({required List<TourPoint> tourPoints}) =
+  factory TourSearchResponse({List<TourPoint>? tourPoints}) =
       _TourSearchResponse;
 
   factory TourSearchResponse.fromJson(Map<String, dynamic> json) =>

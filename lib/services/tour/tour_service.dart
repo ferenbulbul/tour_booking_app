@@ -1,8 +1,10 @@
 import 'package:tour_booking/models/base/base_response.dart';
 import 'package:tour_booking/models/city/city_dto.dart';
 import 'package:tour_booking/models/city_list/city_list_response.dart';
+import 'package:tour_booking/models/create_booking_request/create_booking_command.dart';
 import 'package:tour_booking/models/district_list/district_list_response.dart';
 import 'package:tour_booking/models/featured_tour_point_list/featured_tour_point_list_dto.dart';
+import 'package:tour_booking/models/is_valid_response/is_valid_response.dart';
 import 'package:tour_booking/models/region_list/region_list_response.dart';
 import 'package:tour_booking/models/tour_guide_request/tour_guide_request.dart';
 import 'package:tour_booking/models/tour_guides_response/tour_guides_response.dart';
@@ -140,6 +142,20 @@ class TourService {
       body: request.toJson(),
       fromJson: (json) =>
           TourGuidesResponse.fromJson(json as Map<String, dynamic>),
+    );
+    return response;
+  }
+
+  Future<BaseResponse<IsValidResponse>> ControlBooking(
+    CreateBookingCommand request,
+  ) async {
+    var b = request.toJson();
+    print(b);
+    var response = _apiClient.post<IsValidResponse>(
+      path: "/Mobile/create-booking",
+      body: request.toJson(),
+      fromJson: (json) =>
+          IsValidResponse.fromJson(json as Map<String, dynamic>),
     );
     return response;
   }

@@ -21,7 +21,7 @@ TourSearchResponse _$TourSearchResponseFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$TourSearchResponse {
-  List<TourPoint> get tourPoints => throw _privateConstructorUsedError;
+  List<TourPoint>? get tourPoints => throw _privateConstructorUsedError;
 
   /// Serializes this TourSearchResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -40,7 +40,7 @@ abstract class $TourSearchResponseCopyWith<$Res> {
     $Res Function(TourSearchResponse) then,
   ) = _$TourSearchResponseCopyWithImpl<$Res, TourSearchResponse>;
   @useResult
-  $Res call({List<TourPoint> tourPoints});
+  $Res call({List<TourPoint>? tourPoints});
 }
 
 /// @nodoc
@@ -57,13 +57,13 @@ class _$TourSearchResponseCopyWithImpl<$Res, $Val extends TourSearchResponse>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? tourPoints = null}) {
+  $Res call({Object? tourPoints = freezed}) {
     return _then(
       _value.copyWith(
-            tourPoints: null == tourPoints
+            tourPoints: freezed == tourPoints
                 ? _value.tourPoints
                 : tourPoints // ignore: cast_nullable_to_non_nullable
-                      as List<TourPoint>,
+                      as List<TourPoint>?,
           )
           as $Val,
     );
@@ -79,7 +79,7 @@ abstract class _$$TourSearchResponseImplCopyWith<$Res>
   ) = __$$TourSearchResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<TourPoint> tourPoints});
+  $Res call({List<TourPoint>? tourPoints});
 }
 
 /// @nodoc
@@ -95,13 +95,13 @@ class __$$TourSearchResponseImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? tourPoints = null}) {
+  $Res call({Object? tourPoints = freezed}) {
     return _then(
       _$TourSearchResponseImpl(
-        tourPoints: null == tourPoints
+        tourPoints: freezed == tourPoints
             ? _value._tourPoints
             : tourPoints // ignore: cast_nullable_to_non_nullable
-                  as List<TourPoint>,
+                  as List<TourPoint>?,
       ),
     );
   }
@@ -110,18 +110,20 @@ class __$$TourSearchResponseImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$TourSearchResponseImpl implements _TourSearchResponse {
-  const _$TourSearchResponseImpl({required final List<TourPoint> tourPoints})
+  _$TourSearchResponseImpl({final List<TourPoint>? tourPoints})
     : _tourPoints = tourPoints;
 
   factory _$TourSearchResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$TourSearchResponseImplFromJson(json);
 
-  final List<TourPoint> _tourPoints;
+  final List<TourPoint>? _tourPoints;
   @override
-  List<TourPoint> get tourPoints {
+  List<TourPoint>? get tourPoints {
+    final value = _tourPoints;
+    if (value == null) return null;
     if (_tourPoints is EqualUnmodifiableListView) return _tourPoints;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_tourPoints);
+    return EqualUnmodifiableListView(value);
   }
 
   @override
@@ -165,15 +167,14 @@ class _$TourSearchResponseImpl implements _TourSearchResponse {
 }
 
 abstract class _TourSearchResponse implements TourSearchResponse {
-  const factory _TourSearchResponse({
-    required final List<TourPoint> tourPoints,
-  }) = _$TourSearchResponseImpl;
+  factory _TourSearchResponse({final List<TourPoint>? tourPoints}) =
+      _$TourSearchResponseImpl;
 
   factory _TourSearchResponse.fromJson(Map<String, dynamic> json) =
       _$TourSearchResponseImpl.fromJson;
 
   @override
-  List<TourPoint> get tourPoints;
+  List<TourPoint>? get tourPoints;
 
   /// Create a copy of TourSearchResponse
   /// with the given fields replaced by the non-null parameter values.

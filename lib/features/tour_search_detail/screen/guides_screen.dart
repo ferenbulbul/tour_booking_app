@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/features/tour_search_detail/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/models/guide/guide.dart';
@@ -41,31 +42,41 @@ class _GuidesScreenState extends State<GuidesScreen> {
             );
           }
 
-          if (vm.guides.isEmpty) {
-            return const Center(child: Text('Uygun rehber bulunamadı.'));
-          }
+          final hasGuides = vm.guides.isNotEmpty;
 
           return ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            itemCount: vm.guides.length + 1,
+            // Rehber yoksa: 2 eleman (Rehbersiz + bilgilendirme)
+            // Rehber varsa: rehber sayısı + 1 (baştaki Rehbersiz)
+            itemCount: hasGuides ? vm.guides.length + 1 : 2,
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
-              // İlk eleman "Rehbersiz Devam Et" kartı
+              // 0 → her zaman Rehbersiz Devam Et
               if (index == 0) {
                 return WithoutGuideCard(
                   onTap: () {
-                    // TODO: Rehbersiz devam et aksiyonu
-                    print("Rehbersiz devam et seçildi.");
+                    vm.setSelectedGuide(null, 0);
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      context.push('/summary');
+                    }); // (route adında yazım: summary mı sumary mı?)
                   },
                 );
               }
 
+              // Rehber yoksa 1. index bilgilendirme kartı
+              if (!hasGuides && index == 1) {
+                return const _NoGuideFoundCard();
+              }
+
+              // Rehber varsa normal kartlar
               final guide = vm.guides[index - 1];
               return GuideCard(
                 guide: guide,
                 onTap: () {
-                  // TODO: Bu rehberle devam et aksiyonu
-                  print("${guide.firstName} seçildi.");
+                  vm.setSelectedGuide(guide.guideId, guide.price.toInt());
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    context.push('/summary');
+                  });
                 },
               );
             },
@@ -122,6 +133,7 @@ class GuideCard extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+
                     const SizedBox(height: 4),
                     Text(
                       '${guide.price} ₺ / Gün',
@@ -206,6 +218,33 @@ class LanguageChip extends StatelessWidget {
           color: Colors.grey[800],
           fontSize: 12,
           fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+}
+
+class _NoGuideFoundCard extends StatelessWidget {
+  const _NoGuideFoundCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 0.5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            const Icon(Icons.info_outline),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Bu tarihte uygun rehber bulunamadı. İstersen rehbersiz devam edebilirsin.',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+          ],
         ),
       ),
     );

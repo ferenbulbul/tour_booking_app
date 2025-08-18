@@ -16,6 +16,15 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
   DateTime? selectedDate;
 
   void _submitSearch(SearchViewmodel vm) {
+    if (vm.selectedRegionId == null || vm.selectedRegionId!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Lütfen önce bir bölge seçin."),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
     final Map<String, String> queryParams = {
       'type': _selectedToggleIndex.toString(),
     };

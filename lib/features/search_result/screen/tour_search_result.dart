@@ -36,7 +36,10 @@ class _TourSearchResultsScreenState extends State<TourSearchResultsScreen> {
     );
 
     Future.microtask(() {
-      context.read<TourSearchResultsViewModel>().fetchTourPoints(request);
+      context.read<TourSearchResultsViewModel>().fetchTourPoints(
+        request,
+        context,
+      );
     });
   }
 
@@ -46,63 +49,49 @@ class _TourSearchResultsScreenState extends State<TourSearchResultsScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text("Arama Sonuçları")),
-      body: Builder(
-        builder: (context) {
-          if (vm.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (vm.errorMessage != null) {
-            return Center(child: Text(vm.errorMessage!));
-          }
-
-          if (vm.tourPoints.isEmpty) {
-            return const Center(child: Text("Hiçbir sonuç bulunamadı."));
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(12),
-            itemCount: vm.tourPoints.length,
-            itemBuilder: (context, index) {
-              final point = vm.tourPoints[index];
-              return Card(
-                elevation: 4,
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ListTile(
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      point.mainImage,
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                    ),
+      body: vm.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              padding: const EdgeInsets.all(12),
+              itemCount: vm.tourPoints.length,
+              itemBuilder: (context, index) {
+                final point = vm.tourPoints[index];
+                return Card(
+                  elevation: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  title: Text(
-                    point.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("${point.cityName}, ${point.districtName}"),
-                      Text(
-                        "Tür: ${point.tourTypeName} • Zorluk: ${point.tourDifficultyName}",
+                  child: ListTile(
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        point.mainImage,
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
                       ),
-                    ],
+                    ),
+                    title: Text(
+                      point.name,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("${point.cityName}, ${point.districtName}"),
+                        Text(
+                          "Tür: ${point.tourTypeName} • Zorluk: ${point.tourDifficultyName}",
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      context.pushNamed('searchDetail', extra: point.id);
+                    },
                   ),
-                  onTap: () {
-                    context.pushNamed('searchDetail', extra: point.id);
-                  },
-                ),
-              );
-            },
-          );
-        },
-      ),
+                );
+              },
+            ),
     );
   }
 }

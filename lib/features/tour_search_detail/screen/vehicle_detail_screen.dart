@@ -39,7 +39,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     }
 
     final v = vm.vehicle!;
-    final price = vm.setViheclePrice; // senin VM’deki fiyat getter
+    final price = vm.setVehiclePrice; // senin VM’deki fiyat getter
 
     return Scaffold(
       appBar: AppBar(title: Text(v.vehicleBrand)),
@@ -70,7 +70,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                     ),
                   ),
                 ),
-                if (price != null && price.isNotEmpty)
+                if (price != null && price != 0)
                   Positioned(
                     right: 12,
                     top: 12,

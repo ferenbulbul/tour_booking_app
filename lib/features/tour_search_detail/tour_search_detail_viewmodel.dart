@@ -1,4 +1,8 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tour_booking/features/tour_search_detail/screen/summary_screen.dart';
+import 'package:tour_booking/models/create_booking_request/create_booking_command.dart';
 import 'package:tour_booking/models/guide/guide.dart';
 import 'package:tour_booking/models/tour_guide_request/tour_guide_request.dart';
 import 'package:tour_booking/models/tour_point_detail/tour_point_detail.dart';
@@ -15,16 +19,21 @@ class TourSearchDetailViewModel extends ChangeNotifier {
   bool isVehicleLoading = false;
   String? errorMessage;
   TourPointDetail? detail;
+  bool isValid = false;
+  String? bookingId;
 
   List<Vehicle> vehicles = [];
   String? selectedCityId;
   String? selectedDistrictId;
-  String? selectedVehicle;
-  DateTime? selectedDate;
-  VehicleDetail? vehicle;
-  String? setViheclePrice;
-  List<Guide> guides = [];
+  String? selectedVehicleId;
+  String? selectedGuideId;
+  int? selectedGuidePrice;
   String? selectedTourPointId;
+  DateTime? selectedDate;
+
+  VehicleDetail? vehicle;
+  int? setVehiclePrice;
+  List<Guide> guides = [];
 
   String? tourPointDetailId;
   Future<void> fetchTourPointDetail(String id) async {
@@ -100,7 +109,8 @@ class TourSearchDetailViewModel extends ChangeNotifier {
     notifyListeners();
     try {
       final result = await _tourService.getVehicle(vehicleId);
-      selectedVehicle = result.data!.vehicleDtos!.vehicleId;
+      selectedVehicleId = vehicleId;
+      print(selectedVehicleId);
       if (result.isSuccess ?? false) {
         vehicle = result.data!.vehicleDtos;
         errorMessage = result.message;
@@ -135,8 +145,25 @@ class TourSearchDetailViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setSelectedPrice(String? price) {
-    setViheclePrice = price;
+  String? get selectedCityName =>
+      detail?.cities.firstWhereOrNull((c) => c.id == selectedCityId)?.name;
+
+  String? get selectedDistrictName => detail?.districts
+      .firstWhereOrNull((d) => d.id == selectedDistrictId)
+      ?.name;
+
+  // Tur noktası adınız genelde detail.title:
+  String? get selectedTourPointName => detail?.title;
+
+  void setSelectedGuide(String? GuideId, int? Price) {
+    selectedGuideId = GuideId;
+    selectedGuidePrice = Price;
+    print(selectedGuideId);
+    notifyListeners();
+  }
+
+  void setSelectedPrice(int? price) {
+    setVehiclePrice = price;
     notifyListeners();
   }
 
@@ -176,6 +203,58 @@ class TourSearchDetailViewModel extends ChangeNotifier {
       }
     } catch (e) {
       guides = [];
+      errorMessage = 'Hata: $e';
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> ControlBooking() async {
+    if (selectedCityId == null ||
+        selectedDistrictId == null ||
+        selectedTourPointId == null ||
+        selectedVehicleId == null ||
+        selectedDate == null) {
+      return;
+    }
+
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    final roleString = prefs.getString('user_role');
+    try {
+      final req = CreateBookingCommand(
+        vehicleId: selectedVehicleId!,
+        guideId: selectedGuideId,
+        cityId: selectedCityId!,
+        districtId: selectedDistrictId!,
+        tourPointId: selectedTourPointId!,
+        tourPrice: Decimal.parse(setVehiclePrice.toString()),
+        date: selectedDate!,
+        guidePrice: selectedGuidePrice != null
+            ? Decimal.parse(selectedGuidePrice.toString())
+            : null,
+      );
+      final resp = await _tourService.ControlBooking(req);
+
+      if (resp.isSuccess == true && !resp.data!.isValid) {
+        errorMessage = resp.message;
+        isValid = resp.data!.isValid;
+        bookingId = resp.data!.bookingId;
+        errorMessage = resp.message;
+      }
+      if (resp.isSuccess == true && resp.data!.isValid) {
+        errorMessage = resp.message;
+        isValid = resp.data!.isValid;
+        bookingId = resp.data!.bookingId;
+        errorMessage = resp.message;
+      } else {
+        errorMessage = resp.message ?? 'Bilinmeyen hata';
+        isValid = false;
+      }
+    } catch (e) {
       errorMessage = 'Hata: $e';
     } finally {
       isLoading = false;

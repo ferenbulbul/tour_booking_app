@@ -228,7 +228,7 @@ class TourVehicleListScreen extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: () {
                     context.read<TourSearchDetailViewModel>().setSelectedPrice(
-                      vehicle.price.toString(),
+                      vehicle.price,
                     );
 
                     context.pushNamed(
