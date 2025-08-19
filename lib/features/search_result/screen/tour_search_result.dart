@@ -36,10 +36,7 @@ class _TourSearchResultsScreenState extends State<TourSearchResultsScreen> {
     );
 
     Future.microtask(() {
-      context.read<TourSearchResultsViewModel>().fetchTourPoints(
-        request,
-        context,
-      );
+      context.read<TourSearchResultsViewModel>().fetchTourPoints(request);
     });
   }
 
@@ -47,51 +44,71 @@ class _TourSearchResultsScreenState extends State<TourSearchResultsScreen> {
   Widget build(BuildContext context) {
     final vm = context.watch<TourSearchResultsViewModel>();
 
+    Widget body;
+    if (vm.isLoading) {
+      body = const Center(child: CircularProgressIndicator());
+    } else if (vm.errorMessage != null) {
+      body = Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(vm.errorMessage!, textAlign: TextAlign.center),
+        ),
+      );
+    } else if (vm.tourPoints.isEmpty) {
+      body = Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            vm.message.isNotEmpty ? vm.message : "Hiçbir sonuç bulunamadı",
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    } else {
+      body = ListView.builder(
+        padding: const EdgeInsets.all(12),
+        itemCount: vm.tourPoints.length,
+        itemBuilder: (context, index) {
+          final point = vm.tourPoints[index];
+          return Card(
+            elevation: 4,
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: ListTile(
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  point.mainImage,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              title: Text(
+                point.name,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("${point.cityName}, ${point.districtName}"),
+                  Text(
+                    "Tür: ${point.tourTypeName} • Zorluk: ${point.tourDifficultyName}",
+                  ),
+                ],
+              ),
+              onTap: () => context.pushNamed('searchDetail', extra: point.id),
+            ),
+          );
+        },
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text("Arama Sonuçları")),
-      body: vm.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: vm.tourPoints.length,
-              itemBuilder: (context, index) {
-                final point = vm.tourPoints[index];
-                return Card(
-                  elevation: 4,
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ListTile(
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        point.mainImage,
-                        width: 80,
-                        height: 80,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    title: Text(
-                      point.name,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("${point.cityName}, ${point.districtName}"),
-                        Text(
-                          "Tür: ${point.tourTypeName} • Zorluk: ${point.tourDifficultyName}",
-                        ),
-                      ],
-                    ),
-                    onTap: () {
-                      context.pushNamed('searchDetail', extra: point.id);
-                    },
-                  ),
-                );
-              },
-            ),
+      body: body,
     );
   }
 }

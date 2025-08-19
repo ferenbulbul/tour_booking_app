@@ -159,4 +159,15 @@ class TourService {
     );
     return response;
   }
+
+  Future<BaseResponse<TourSearchResponse>> searchTourPointsByTypeId({
+    required String tourTypeId,
+  }) async {
+    return _apiClient.get<TourSearchResponse>(
+      path: "/Mobile/tour-points-by-tour-type",
+      queryParams: {"tourTypeId": tourTypeId},
+      fromJson: (json) =>
+          TourSearchResponse.fromJson(json as Map<String, dynamic>),
+    );
+  }
 }

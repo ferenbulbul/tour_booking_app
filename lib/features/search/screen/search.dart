@@ -13,7 +13,6 @@ class TourSearchScreen extends StatefulWidget {
 
 class _TourSearchScreenState extends State<TourSearchScreen> {
   int _selectedToggleIndex = 0;
-  DateTime? selectedDate;
 
   void _submitSearch(SearchViewmodel vm) {
     if (vm.selectedRegionId == null || vm.selectedRegionId!.isEmpty) {
@@ -28,26 +27,20 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
     final Map<String, String> queryParams = {
       'type': _selectedToggleIndex.toString(),
     };
-    if (vm.selectedRegionId != null) {
+    if (vm.selectedRegionId != null)
       queryParams['regionId'] = vm.selectedRegionId!;
-    }
-    if (vm.selectedCityId != null) {
-      queryParams['cityId'] = vm.selectedCityId!;
-    }
-    if (vm.selectedDistrictId != null) {
+    if (vm.selectedCityId != null) queryParams['cityId'] = vm.selectedCityId!;
+    if (vm.selectedDistrictId != null && vm.selectedDistrictId!.isNotEmpty) {
       queryParams['districtId'] = vm.selectedDistrictId!;
     }
 
-    print("Navigasyon isteği gönderiliyor: $queryParams");
     context.pushNamed('searchResults', queryParameters: queryParams);
   }
 
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      context.read<SearchViewmodel>().fetchRegions();
-    });
+    Future.microtask(() => context.read<SearchViewmodel>().fetchRegions());
   }
 
   @override
@@ -70,102 +63,117 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
               inactiveBgColor: Colors.grey,
               inactiveFgColor: Colors.white,
               totalSwitches: 2,
-              labels: ['Kalkış Noktası', 'Tur Noktası'],
-              icons: [Icons.import_contacts, Icons.add_ic_call],
+              labels: const ['Kalkış Noktası', 'Tur Noktası'],
+              icons: const [Icons.my_location, Icons.location_on_outlined],
               iconSize: 30.0,
-              activeBgColors: [
+              activeBgColors: const [
                 [Color(0xFF6A86D1), Color(0x420672FF)],
-                [Colors.yellow, Colors.orange],
+                [Color(0xFF6A86D1), Color(0x420672FF)],
               ],
               animate: true,
               curve: Curves.bounceInOut,
-              onToggle: (index) {
-                setState(() => _selectedToggleIndex = index!);
-              },
+              onToggle: (index) =>
+                  setState(() => _selectedToggleIndex = index ?? 0),
             ),
+
             const SizedBox(height: 24),
-            vm.isRegionLoading
-                ? LinearProgressIndicator()
-                : DropdownButtonFormField<String>(
-                    value: vm.selectedRegionId,
-                    decoration: const InputDecoration(labelText: "Bölge Seçin"),
-                    items: vm.regions
-                        .map(
-                          (region) => DropdownMenuItem(
-                            value: region.id,
-                            child: Text(region.name),
-                          ),
-                        )
+
+            // --- Bölge
+            if (vm.isRegionLoading)
+              const LinearProgressIndicator()
+            else
+              _SelectField(
+                label: "Bölge Seçin",
+                valueLabel: _nameById(vm.regions, vm.selectedRegionId),
+                icon: Icons.map_outlined,
+                onTap: () async {
+                  final id = await _openPicker(
+                    title: "Bölge Seçin",
+                    initialId: vm.selectedRegionId,
+                    options: vm.regions
+                        .map((r) => _Option(r.id, r.name))
                         .toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        vm.fetchCities(value);
-                      }
-                    },
-                  ),
+                  );
+                  if (id != null) {
+                    // fetchCities genelde selectedRegionId'yi de set eder
+                    vm.fetchCities(id);
+                  }
+                },
+              ),
 
             const SizedBox(height: 16),
 
-            vm.isCityLoading
-                ? LinearProgressIndicator()
-                : DropdownButtonFormField<String>(
-                    value: vm.selectedCityId ?? '',
-                    decoration: const InputDecoration(labelText: "İl Seçin"),
-                    items: [
-                      const DropdownMenuItem(
-                        value: '',
-                        child: Text("Tüm İller"),
-                      ),
-                      ...vm.cities.map(
-                        (city) => DropdownMenuItem(
-                          value: city.id,
-                          child: Text(city.name),
-                        ),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      if (value == null || value.isEmpty) {
-                        vm.selectedCityId = null;
-                        vm.selectedDistrictId = null;
-                        vm.districts = [];
-                        vm.notifyListeners();
-                      } else {
-                        vm.fetchDistricts(value);
-                      }
-                    },
-                  ),
+            // --- İl
+            if (vm.isCityLoading)
+              const LinearProgressIndicator()
+            else
+              _SelectField(
+                label: "İl Seçin",
+                valueLabel: vm.selectedCityId == null
+                    ? "Tüm İller"
+                    : _nameById(vm.cities, vm.selectedCityId),
+                icon: Icons.location_city_outlined,
+                onTap: () async {
+                  // “Tüm İller” seçeneğini liste başına ekle
+                  final options = [
+                    const _Option('', 'Tüm İller'),
+                    ...vm.cities.map((c) => _Option(c.id, c.name)),
+                  ];
+                  final id = await _openPicker(
+                    title: "İl Seçin",
+                    initialId: vm.selectedCityId ?? '',
+                    options: options,
+                  );
+                  if (id != null) {
+                    if (id.isEmpty) {
+                      vm.selectedCityId = null;
+                      vm.selectedDistrictId = null;
+                      vm.districts = [];
+                      vm.notifyListeners();
+                    } else {
+                      vm.fetchDistricts(
+                        id,
+                      ); // genelde selectedCityId'yi de set eder
+                    }
+                  }
+                },
+              ),
 
             const SizedBox(height: 16),
 
-            /// ILÇE DROPDOWN
-            vm.isDistrictLoading
-                ? const Center(child: LinearProgressIndicator())
-                : DropdownButtonFormField<String>(
-                    value: vm.selectedDistrictId ?? '',
-                    decoration: const InputDecoration(labelText: "İlçe Seçin"),
-                    items: [
-                      const DropdownMenuItem(
-                        value: '',
-                        child: Text("Tüm İlçeler"),
-                      ),
-                      ...vm.districts.map(
-                        (district) => DropdownMenuItem(
-                          value: district.id,
-                          child: Text(district.name),
-                        ),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      if (value == null || value.isEmpty) {
-                        vm.selectDistrict('');
-                      } else {
-                        vm.selectDistrict(value);
-                      }
-                    },
-                  ),
+            // --- İlçe
+            if (vm.isDistrictLoading)
+              const LinearProgressIndicator()
+            else
+              _SelectField(
+                label: "İlçe Seçin",
+                valueLabel:
+                    (vm.selectedDistrictId == null ||
+                        vm.selectedDistrictId!.isEmpty)
+                    ? "Tüm İlçeler"
+                    : _nameById(vm.districts, vm.selectedDistrictId),
+                icon: Icons.location_on_outlined,
+                onTap: () async {
+                  final options = [
+                    const _Option('', 'Tüm İlçeler'),
+                    ...vm.districts.map((d) => _Option(d.id, d.name)),
+                  ];
+                  final id = await _openPicker(
+                    title: "İlçe Seçin",
+                    initialId: vm.selectedDistrictId ?? '',
+                    options: options,
+                  );
+                  if (id != null) {
+                    if (id.isEmpty) {
+                      vm.selectDistrict('');
+                    } else {
+                      vm.selectDistrict(id);
+                    }
+                  }
+                },
+              ),
 
-            const SizedBox(height: 24),
-
+            const Spacer(),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -174,6 +182,155 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  // -------- Helpers (bottom sheet + lookup) --------
+
+  Future<String?> _openPicker({
+    required String title,
+    required List<_Option> options,
+    String? initialId,
+  }) async {
+    String query = '';
+    return showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) {
+        return SafeArea(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 12,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+            ),
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                final filtered = options
+                    .where(
+                      (o) => o.name.toLowerCase().contains(query.toLowerCase()),
+                    )
+                    .toList();
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.black12,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            title,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => Navigator.pop(context),
+                          icon: const Icon(Icons.close),
+                          tooltip: 'Kapat',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      autofocus: true,
+                      onChanged: (v) => setState(() => query = v),
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.search),
+                        hintText: 'Ara...',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 420),
+                      child: ListView.separated(
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: filtered.length,
+                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        itemBuilder: (context, i) {
+                          final o = filtered[i];
+                          final selected = o.id == (initialId ?? '');
+                          return ListTile(
+                            title: Text(o.name),
+                            trailing: selected
+                                ? const Icon(Icons.check, size: 20)
+                                : null,
+                            onTap: () => Navigator.pop(context, o.id),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  String? _nameById(List<dynamic> items, String? id) {
+    if (id == null) return null;
+    for (final it in items) {
+      final itemId = (it as dynamic).id as String;
+      if (itemId == id) return (it as dynamic).name as String;
+    }
+    return null;
+  }
+}
+
+// ---- Small UI primitives ----
+class _Option {
+  final String id;
+  final String name;
+  const _Option(this.id, this.name);
+}
+
+class _SelectField extends StatelessWidget {
+  final String label;
+  final String? valueLabel;
+  final VoidCallback onTap;
+  final IconData? icon;
+  const _SelectField({
+    required this.label,
+    required this.valueLabel,
+    required this.onTap,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+          prefixIcon: icon != null ? Icon(icon) : null,
+          suffixIcon: const Icon(Icons.arrow_drop_down),
+        ),
+        child: Text(
+          valueLabel ?? 'Seçiniz',
+          style: const TextStyle(fontSize: 16),
         ),
       ),
     );

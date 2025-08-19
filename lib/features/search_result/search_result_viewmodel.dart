@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:tour_booking/core/ui/ui_helper.dart';
+import 'package:flutter/foundation.dart';
 import 'package:tour_booking/models/tour_point/tour_point.dart';
 import 'package:tour_booking/models/tour_search_detail_request/tour_search_detailed_request.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
@@ -8,37 +7,32 @@ class TourSearchResultsViewModel extends ChangeNotifier {
   final TourService _tourService = TourService();
 
   bool isLoading = false;
+  String message = ""; // boş sonuç vb. için
+  String? errorMessage; // hata mesajı
   List<TourPoint> tourPoints = [];
-  String? errorMessage;
 
-  Future<void> fetchTourPoints(
-    TourSearchRequest request,
-    BuildContext context,
-  ) async {
+  Future<void> fetchTourPoints(TourSearchRequest request) async {
     try {
       isLoading = true;
+      message = "";
+      errorMessage = null;
       notifyListeners();
 
       final response = await _tourService.searchTourPoints(request);
+
       if (response != null && response.data != null) {
         tourPoints = response.data?.tourPoints ?? [];
-        if (tourPoints.isEmpty) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            UIHelper.showError(context, "Hiçbir sonuç bulunamadı");
-          });
-        }
+        message = tourPoints.isEmpty ? "Hiçbir sonuç bulunamadı" : "";
         errorMessage = null;
       } else {
-        errorMessage = response?.message ?? 'Bilinmeyen hata';
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          UIHelper.showError(context, errorMessage!);
-        });
+        tourPoints = [];
+        errorMessage = response?.message ?? "Bilinmeyen hata";
+        message = "";
       }
     } catch (e) {
-      errorMessage = 'Bir hata oluştu: $e';
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        UIHelper.showError(context, errorMessage!);
-      });
+      tourPoints = [];
+      errorMessage = "Bir hata oluştu: $e";
+      message = "";
     } finally {
       isLoading = false;
       notifyListeners();

@@ -1,10 +1,13 @@
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/search_type.dart';
 import 'package:tour_booking/features/email_verification/screen/email_verification_screen.dart';
 import 'package:tour_booking/features/favorite/screen/favorite_screen.dart';
 import 'package:tour_booking/features/forgot_passwords/forgot_password/screen/forgot_password_screen.dart';
 import 'package:tour_booking/features/forgot_passwords/reset_password/screen/reset_password_screen.dart';
 import 'package:tour_booking/features/forgot_passwords/verify_reset_code/screen/%20verify_reset_code_screen.dart';
+import 'package:tour_booking/features/home/widgets/detail_search.dart';
+import 'package:tour_booking/features/home/widgets/tour_search_by_tour_type.dart';
 import 'package:tour_booking/features/login/screens/login_screen.dart';
 import 'package:tour_booking/features/profile/screen/profile_screen.dart';
 import 'package:tour_booking/features/root/wigdet/root_scaffold.dart';
@@ -17,6 +20,7 @@ import 'package:tour_booking/features/tour_search_detail/screen/summary_screen.d
 import 'package:tour_booking/features/tour_search_detail/screen/tour_search_detail_screen.dart';
 import 'package:tour_booking/features/tour_search_detail/screen/tour_vehicle_list_screen.dart';
 import 'package:tour_booking/features/tour_search_detail/screen/vehicle_detail_screen.dart';
+import 'package:tour_booking/features/tour_search_detail/widget/place_saerch_widget.dart';
 import 'package:tour_booking/navigation/app_navigator.dart';
 import '../features/splash/screen/splash_screen.dart';
 import '../features/register/screen/register_screen.dart';
@@ -114,6 +118,26 @@ final GoRouter router = GoRouter(
       name: 'payment',
       builder: (context, state) {
         return PaymentScreen();
+      },
+    ),
+    GoRoute(
+      name: 'placePicker',
+      path: '/place-picker',
+      builder: (context, state) => const PlacePickerPage(),
+    ),
+    GoRoute(
+      path: '/search-location',
+      name: 'searchLocation',
+      builder: (context, state) {
+        return DetailSearchLocationPage();
+      },
+    ),
+    GoRoute(
+      path: '/tour-search-by-type',
+      name: 'tour-search-by-type',
+      builder: (context, state) {
+        final tourTypeId = state.uri.queryParameters['tourTypeId'];
+        return TourSearchResultsByTourTypeScreen(tourTypeId: tourTypeId);
       },
     ),
     ShellRoute(

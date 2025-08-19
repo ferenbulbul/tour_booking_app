@@ -38,6 +38,7 @@ dependencies:
   intl: ^0.20.2
   toggle_switch: ^2.3.0
   decimal: ^3.2.4
+  google_places_flutter: ^2.1.0
 
 
 
@@ -54,7 +55,8 @@ flutter:
   assets:
    - assets/images/
    - assets/translations/
-   - .env
+   - .env.ios
+   - .env.android
 
 flutter_launcher_icons:
   android: true

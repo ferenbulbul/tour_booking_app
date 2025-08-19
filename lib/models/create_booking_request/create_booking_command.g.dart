@@ -16,6 +16,9 @@ _$CreateBookingCommandImpl _$$CreateBookingCommandImplFromJson(
   vehicleId: json['vehicleId'] as String,
   tourPrice: const DecimalConverter().fromJson(json['tourPrice']),
   guidePrice: const DecimalConverter().fromJson(json['guidePrice']),
+  Latitude: (json['Latitude'] as num?)?.toDouble(),
+  Longitude: (json['Longitude'] as num?)?.toDouble(),
+  LocationDescription: json['LocationDescription'] as String?,
   date: DateTime.parse(json['date'] as String),
 );
 
@@ -32,6 +35,9 @@ Map<String, dynamic> _$$CreateBookingCommandImplToJson(
     instance.guidePrice,
     const DecimalConverter().toJson,
   ),
+  'Latitude': instance.Latitude,
+  'Longitude': instance.Longitude,
+  'LocationDescription': instance.LocationDescription,
   'date': _dateToString(instance.date),
 };
 

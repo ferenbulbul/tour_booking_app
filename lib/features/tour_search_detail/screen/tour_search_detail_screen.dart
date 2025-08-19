@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/features/tour_search_detail/tour_search_detail_viewmodel.dart';
+import 'package:tour_booking/features/tour_search_detail/widget/place_saerch_widget.dart';
+import 'package:tour_booking/models/place_section/place_section.dart';
 
 class TourSearchDetailScreen extends StatefulWidget {
   final String tourPointId;
-
   const TourSearchDetailScreen({super.key, required this.tourPointId});
 
   @override
@@ -24,116 +25,194 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
     });
   }
 
+  void _showSnack(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
   @override
   Widget build(BuildContext context) {
-    final viewModel = Provider.of<TourSearchDetailViewModel>(context);
-    final detail = viewModel.detail;
+    final vm = Provider.of<TourSearchDetailViewModel>(context);
+    final detail = vm.detail;
 
-    if (viewModel.isLoading) {
+    if (vm.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-
     if (detail == null) {
       return const Scaffold(body: Center(child: Text("Detay bulunamadı.")));
     }
 
     return Scaffold(
       appBar: AppBar(title: Text(detail.title)),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Ana görsel
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                detail.mainImage,
-                height: 220,
-                width: double.infinity,
-                fit: BoxFit.cover,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Ana görsel
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  detail.mainImage,
+                  height: 220,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
-            // Diğer görseller
-            _buildImageGallery(detail.otherImages),
-            const SizedBox(height: 20),
+              // Diğer görseller (yatay)
+              if (detail.otherImages.isNotEmpty) ...[
+                _buildImageGallery(detail.otherImages),
+                const SizedBox(height: 16),
+              ],
 
-            // Açıklama
-            Text(detail.description, style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 20),
+              // Açıklama + meta (sade kart içinde)
+              Card(
+                elevation: 0.5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        detail.description,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          Chip(
+                            label: Text("Tur Tipi: ${detail.tourTypeName}"),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                          Chip(
+                            label: Text("Zorluk: ${detail.tourDifficultyName}"),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
 
-            // Şehir dropdown
-            _buildCityDropdown(viewModel),
-            const SizedBox(height: 12),
+              // Kalkış Şehri (bottom sheet picker)
+              _buildCityPicker(vm),
+              const SizedBox(height: 12),
 
-            // İlçe dropdown
-            _buildDistrictDropdown(viewModel),
-            const SizedBox(height: 20),
+              // Kalkış İlçesi (bottom sheet picker)
+              _buildDistrictPicker(vm),
+              const SizedBox(height: 10),
 
-            // Tarih seçici
-            const Text(
-              "Tarih Seçin",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            _buildDatePicker(viewModel),
-            const SizedBox(height: 20),
+              // Konum Ekle butonu (Google Places)
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.add_location_alt_outlined),
+                  label: const Text("Tam Konum Ekle"),
+                  onPressed: () async {
+                    final sel = await context.pushNamed<PlaceSelection>(
+                      'placePicker',
+                    );
+                    if (sel != null) {
+                      vm.setSelectedPlace(sel); // VM'e yaz
+                    }
+                  },
+                ),
+              ),
 
-            // Buton
-            ElevatedButton(
-              onPressed: () async {
-                final vm = context.read<TourSearchDetailViewModel>();
-
-                if (vm.selectedCityId == null ||
-                    vm.selectedDistrictId == null ||
-                    vm.selectedDate == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Lütfen tüm alanları doldurun"),
+              // Seçilen konumu göster
+              if (vm.selectedPlaceDesc != null) ...[
+                Card(
+                  color: Colors.transparent,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.outlineVariant, // Border rengi
+                      width: 0.5, // Kalınlık
                     ),
-                  );
-                  return;
-                }
-
-                await vm.fetchVehicles();
-
-                if (vm.vehicles.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Bu tarihte müsait araç bulunamadı"),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "📍 ${vm.selectedPlaceDesc!}",
+                          style: const TextStyle(fontWeight: FontWeight.normal),
+                        ),
+                      ],
                     ),
-                  );
-                } else {
-                  context.pushNamed(
-                    'vehicleList',
-                    queryParameters: {
-                      'cityId': vm.selectedCityId!,
-                      'districtId': vm.selectedDistrictId!,
-                      'tourPointId': widget.tourPointId,
-                      'date': vm.selectedDate!.toIso8601String(),
-                    },
-                  );
-                }
-              },
-              child: const Text("Araçları Gör"),
-            ),
-          ],
+                  ),
+                ),
+              ],
+              const SizedBox(height: 12),
+              // Tarih seçici
+              _buildDatePicker(vm),
+              const SizedBox(height: 20),
+
+              // Araçları Gör (orijinal akış)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (vm.selectedCityId == null ||
+                        vm.selectedDistrictId == null ||
+                        vm.selectedDate == null) {
+                      _showSnack("Lütfen tüm alanları doldurun");
+                      return;
+                    } else if (vm.selectedPlaceDesc == null) {
+                      _showSnack("Lütfen tam konumu ekleyin");
+                      return;
+                    }
+
+                    await vm.fetchVehicles();
+
+                    if (vm.vehicles.isEmpty) {
+                      _showSnack("Bu tarihte müsait araç bulunamadı");
+                    } else {
+                      context.pushNamed(
+                        'vehicleList',
+                        queryParameters: {
+                          'cityId': vm.selectedCityId!,
+                          'districtId': vm.selectedDistrictId!,
+                          'tourPointId': widget.tourPointId,
+                          'date': vm.selectedDate!.toIso8601String(),
+                        },
+                      );
+                    }
+                  },
+                  child: const Text("Araçları Gör"),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // 🔽 Diğer görseller yatay scroll
+  // --- Diğer görseller yatay scroll
   Widget _buildImageGallery(List<String> otherImages) {
     return SizedBox(
       height: 100,
       child: ListView.separated(
+        physics: const BouncingScrollPhysics(),
         scrollDirection: Axis.horizontal,
         itemCount: otherImages.length,
         separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
+          final thumb = otherImages[index];
           return GestureDetector(
             onTap: () {
               showDialog(
@@ -146,7 +225,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
                       child: SizedBox(
-                        height: 300,
+                        height: 320,
                         child: PageView.builder(
                           controller: PageController(initialPage: index),
                           itemCount: otherImages.length,
@@ -163,13 +242,25 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
                 },
               );
             },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                otherImages[index],
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: const [
+                  BoxShadow(
+                    blurRadius: 6,
+                    offset: Offset(0, 2),
+                    color: Colors.black12,
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  thumb,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           );
@@ -178,37 +269,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
     );
   }
 
-  // 🔽 Şehir dropdown
-  Widget _buildCityDropdown(TourSearchDetailViewModel vm) {
-    return DropdownButtonFormField<String>(
-      value: vm.selectedCityId,
-      decoration: const InputDecoration(labelText: "Şehir Seçin"),
-      items: vm.detail?.cities.map((city) {
-        return DropdownMenuItem(value: city.id, child: Text(city.name));
-      }).toList(),
-      onChanged: vm.setSelectedCity,
-    );
-  }
-
-  // 🔽 İlçe dropdown
-  Widget _buildDistrictDropdown(TourSearchDetailViewModel vm) {
-    final filteredDistricts =
-        vm.detail?.districts
-            .where((d) => d.cityId == vm.selectedCityId)
-            .toList() ??
-        [];
-
-    return DropdownButtonFormField<String>(
-      value: vm.selectedDistrictId,
-      decoration: const InputDecoration(labelText: "İlçe Seçin"),
-      items: filteredDistricts.map((district) {
-        return DropdownMenuItem(value: district.id, child: Text(district.name));
-      }).toList(),
-      onChanged: vm.setSelectedDistrict,
-    );
-  }
-
-  // 🔽 Tarih seçici
+  // --- Tarih seçici (outlined görünüm)
   Widget _buildDatePicker(TourSearchDetailViewModel vm) {
     return InkWell(
       onTap: () async {
@@ -218,20 +279,212 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
           firstDate: DateTime.now(),
           lastDate: DateTime.now().add(const Duration(days: 365)),
         );
-        if (pickedDate != null) {
-          vm.setSelectedDate(pickedDate);
-        }
+        if (pickedDate != null) vm.setSelectedDate(pickedDate);
       },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade400),
-          borderRadius: BorderRadius.circular(8),
+      child: InputDecorator(
+        decoration: const InputDecoration(
+          labelText: "Tarih Seçin",
+          border: OutlineInputBorder(),
+          suffixIcon: Icon(Icons.calendar_today_outlined),
         ),
         child: Text(
           vm.selectedDate != null
               ? "${vm.selectedDate!.day}.${vm.selectedDate!.month}.${vm.selectedDate!.year}"
               : "Tarih Seçiniz",
+          style: const TextStyle(fontSize: 16),
+        ),
+      ),
+    );
+  }
+
+  // --- Şehir seçici (bottom sheet açar)
+  Widget _buildCityPicker(TourSearchDetailViewModel vm) {
+    final cities = vm.detail?.cities ?? [];
+    String? currentName;
+    if (vm.selectedCityId != null) {
+      final match = cities.where((c) => c.id == vm.selectedCityId).toList();
+      if (match.isNotEmpty) currentName = match.first.name;
+    }
+
+    return _SelectField(
+      label: "Kalkış Şehri",
+      valueLabel: currentName,
+      icon: Icons.location_city_outlined,
+      onTap: () async {
+        final id = await _openPicker(
+          title: "Kalkış Şehri Seçin",
+          initialId: vm.selectedCityId,
+          options: cities.map<_Option>((c) => _Option(c.id, c.name)).toList(),
+        );
+        if (id != null) vm.setSelectedCity(id);
+      },
+    );
+  }
+
+  // --- İlçe seçici (seçilen şehre göre filtreli)
+  Widget _buildDistrictPicker(TourSearchDetailViewModel vm) {
+    final districts = (vm.detail?.districts ?? [])
+        .where((d) => d.cityId == vm.selectedCityId)
+        .toList();
+
+    String? currentName;
+    if (vm.selectedDistrictId != null) {
+      final match = districts
+          .where((d) => d.id == vm.selectedDistrictId)
+          .toList();
+      if (match.isNotEmpty) currentName = match.first.name;
+    }
+
+    return _SelectField(
+      label: "Kalkış İlçesi",
+      valueLabel: currentName,
+      icon: Icons.location_on_outlined,
+      onTap: () async {
+        final id = await _openPicker(
+          title: "Kalkış İlçesi Seçin",
+          initialId: vm.selectedDistrictId,
+          options: districts
+              .map<_Option>((d) => _Option(d.id, d.name))
+              .toList(),
+        );
+        if (id != null) vm.setSelectedDistrict(id);
+      },
+    );
+  }
+
+  // --- Ortak açılır seçim altlığı (arama + liste)
+  Future<String?> _openPicker({
+    required String title,
+    required List<_Option> options,
+    String? initialId,
+  }) async {
+    String query = '';
+    return showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) {
+        return SafeArea(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 12,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+            ),
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                final filtered = options
+                    .where(
+                      (o) => o.name.toLowerCase().contains(query.toLowerCase()),
+                    )
+                    .toList();
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.black12,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            title,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => Navigator.pop(context),
+                          icon: const Icon(Icons.close),
+                          tooltip: 'Kapat',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      autofocus: true,
+                      onChanged: (v) => setState(() => query = v),
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.search),
+                        hintText: 'Ara...',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 420),
+                      child: ListView.separated(
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: filtered.length,
+                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        itemBuilder: (context, i) {
+                          final o = filtered[i];
+                          final selected = o.id == initialId;
+                          return ListTile(
+                            title: Text(o.name),
+                            trailing: selected
+                                ? const Icon(Icons.check, size: 20)
+                                : null,
+                            onTap: () => Navigator.pop(context, o.id),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// --- Küçük yardımcı sınıflar/widget’lar
+class _Option {
+  final String id;
+  final String name;
+  const _Option(this.id, this.name);
+}
+
+class _SelectField extends StatelessWidget {
+  final String label;
+  final String? valueLabel;
+  final VoidCallback onTap;
+  final IconData? icon;
+  const _SelectField({
+    required this.label,
+    required this.valueLabel,
+    required this.onTap,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+          prefixIcon: icon != null ? Icon(icon) : null,
+          suffixIcon: const Icon(Icons.arrow_drop_down),
+        ),
+        child: Text(
+          valueLabel ?? 'Seçiniz',
           style: const TextStyle(fontSize: 16),
         ),
       ),

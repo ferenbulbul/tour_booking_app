@@ -45,7 +45,11 @@ class SummaryScreen extends StatelessWidget {
         final String cityDisplay = vm.selectedCityName ?? 'Seçilmedi';
         final String districtDisplay = vm.selectedDistrictName ?? 'Seçilmedi';
         final String tourPointDisplay = vm.selectedTourPointName ?? 'Seçilmedi';
-
+        final String placeDisplay = vm.selectedPlaceDesc ?? 'Seçilmedi';
+        final cityDistrict = [
+          cityDisplay ?? '',
+          districtDisplay ?? '',
+        ].where((s) => s.isNotEmpty).join(', ');
         // Fallback textuals — replace with your actual display names if available
 
         return Scaffold(
@@ -60,8 +64,8 @@ class SummaryScreen extends StatelessWidget {
                     title: 'Seyahat Bilgileri',
                     children: [
                       _infoRow('Tarih', _formatDate(date)),
-                      _infoRow('Şehir', cityDisplay),
-                      _infoRow('İlçe', districtDisplay),
+                      _infoRow('Kalkış Bölgesi', cityDistrict),
+                      _infoRow('Tam konum', placeDisplay),
                       _infoRow('Tur Noktası', tourPointDisplay),
                     ],
                   ),

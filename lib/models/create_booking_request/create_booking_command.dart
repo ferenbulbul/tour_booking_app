@@ -16,6 +16,9 @@ class CreateBookingCommand with _$CreateBookingCommand {
     required String vehicleId,
     @DecimalConverter() required Decimal tourPrice,
     @DecimalConverter() Decimal? guidePrice,
+    double? Latitude,
+    double? Longitude,
+    String? LocationDescription,
 
     @JsonKey(toJson: _dateToString) required DateTime date,
   }) = _CreateBookingCommand;

@@ -1,9 +1,12 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+import 'package:google_places_flutter/model/prediction.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tour_booking/features/tour_search_detail/screen/summary_screen.dart';
+import 'package:tour_booking/features/tour_search_detail/widget/place_saerch_widget.dart';
 import 'package:tour_booking/models/create_booking_request/create_booking_command.dart';
 import 'package:tour_booking/models/guide/guide.dart';
+import 'package:tour_booking/models/place_section/place_section.dart';
 import 'package:tour_booking/models/tour_guide_request/tour_guide_request.dart';
 import 'package:tour_booking/models/tour_point_detail/tour_point_detail.dart';
 import 'package:tour_booking/models/tour_vehicle_request/tour_vehicle_request.dart';
@@ -236,6 +239,9 @@ class TourSearchDetailViewModel extends ChangeNotifier {
         guidePrice: selectedGuidePrice != null
             ? Decimal.parse(selectedGuidePrice.toString())
             : null,
+        LocationDescription: selectedPlaceDesc,
+        Latitude: selectedPlaceLat,
+        Longitude: selectedPlaceLng,
       );
       final resp = await _tourService.ControlBooking(req);
 
@@ -260,6 +266,17 @@ class TourSearchDetailViewModel extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  String? selectedPlaceDesc;
+  double? selectedPlaceLat;
+  double? selectedPlaceLng;
+
+  void setSelectedPlace(PlaceSelection s) {
+    selectedPlaceDesc = s.description;
+    selectedPlaceLat = s.lat;
+    selectedPlaceLng = s.lng;
+    notifyListeners();
   }
 }
 

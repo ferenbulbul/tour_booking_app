@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +25,13 @@ import 'package:tour_booking/services/location/location_viewmodel.dart.dart';
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  await dotenv.load(fileName: ".env");
+  String envFile = '.env';
+  if (Platform.isAndroid) {
+    envFile = '.env.android';
+  } else if (Platform.isIOS) {
+    envFile = '.env.ios';
+  }
+  await dotenv.load(fileName: envFile);
   await LocalizationSetup.init();
 
   // Firebase'i burada başlatarak, Provider'lar oluşturulmadan önce hazır olmasını garantiliyoruz.

@@ -33,15 +33,6 @@ class _GuidesScreenState extends State<GuidesScreen> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (vm.errorMessage != null) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(vm.errorMessage!, textAlign: TextAlign.center),
-              ),
-            );
-          }
-
           final hasGuides = vm.guides.isNotEmpty;
 
           return ListView.separated(

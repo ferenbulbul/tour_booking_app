@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/home/widgets/about_section.dart';
-import 'package:tour_booking/features/home/widgets/customer_location_info.dart';
 import 'package:tour_booking/features/home/widgets/driver_location_status.dart.dart';
 import 'package:tour_booking/features/home/widgets/featured_tour_points.dart';
 // SearchLocationPage'i import ettiğinden emin ol
@@ -114,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 horizontal: 16.0,
                 vertical: 10.0,
               ),
-              child: SearchLocationPage(),
+              child: FakeSearchBar(),
             ),
           ],
         ),

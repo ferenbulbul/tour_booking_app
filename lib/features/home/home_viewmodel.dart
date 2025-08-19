@@ -3,6 +3,8 @@ import 'package:tour_booking/core/network/handle_response.dart';
 import 'package:tour_booking/core/network/result.dart';
 import 'package:tour_booking/models/featured_tour_point/featured_tour_point_dto.dart';
 import 'package:tour_booking/models/featured_tour_point_list/featured_tour_point_list_dto.dart';
+import 'package:tour_booking/models/tour_point/tour_point.dart';
+import 'package:tour_booking/models/tour_search_response/tour_search_response.dart';
 import 'package:tour_booking/models/tour_type/tour_type_dto.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
 
@@ -59,5 +61,43 @@ class HomeViewModel extends ChangeNotifier {
 
     isLoading = false;
     notifyListeners();
+  }
+
+  bool isLoadingSearchByType = false;
+  String? messageSearchByType;
+  List<TourPoint> searchItemsByType = [];
+
+  Future<void> fetchTourPointsByType(String tourTypeId) async {
+    if (tourTypeId.isEmpty) {
+      messageSearchByType = "Geçersiz kategori.";
+      notifyListeners();
+      return;
+    }
+
+    try {
+      isLoadingSearchByType = true;
+      messageSearchByType = null;
+      notifyListeners();
+
+      final resp = await _tourService.searchTourPointsByTypeId(
+        tourTypeId: tourTypeId,
+      );
+      final result = handleResponse<TourSearchResponse>(resp);
+
+      if (result.isSuccess && resp.data != null) {
+        // TourSearchResponse içindeki liste alanına göre güncelle
+        searchItemsByType = resp.data?.tourPoints ?? [];
+        messageSearchByType = null;
+      } else {
+        searchItemsByType = [];
+        messageSearchByType = resp.message ?? "Bir hata oluştu";
+      }
+    } catch (e) {
+      searchItemsByType = [];
+      messageSearchByType = e.toString();
+    } finally {
+      isLoadingSearchByType = false;
+      notifyListeners();
+    }
   }
 }

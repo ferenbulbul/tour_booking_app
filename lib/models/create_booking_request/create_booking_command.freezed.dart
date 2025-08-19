@@ -30,6 +30,9 @@ mixin _$CreateBookingCommand {
   Decimal get tourPrice => throw _privateConstructorUsedError;
   @DecimalConverter()
   Decimal? get guidePrice => throw _privateConstructorUsedError;
+  double? get Latitude => throw _privateConstructorUsedError;
+  double? get Longitude => throw _privateConstructorUsedError;
+  String? get LocationDescription => throw _privateConstructorUsedError;
   @JsonKey(toJson: _dateToString)
   DateTime get date => throw _privateConstructorUsedError;
 
@@ -58,6 +61,9 @@ abstract class $CreateBookingCommandCopyWith<$Res> {
     String vehicleId,
     @DecimalConverter() Decimal tourPrice,
     @DecimalConverter() Decimal? guidePrice,
+    double? Latitude,
+    double? Longitude,
+    String? LocationDescription,
     @JsonKey(toJson: _dateToString) DateTime date,
   });
 }
@@ -87,6 +93,9 @@ class _$CreateBookingCommandCopyWithImpl<
     Object? vehicleId = null,
     Object? tourPrice = null,
     Object? guidePrice = freezed,
+    Object? Latitude = freezed,
+    Object? Longitude = freezed,
+    Object? LocationDescription = freezed,
     Object? date = null,
   }) {
     return _then(
@@ -119,6 +128,18 @@ class _$CreateBookingCommandCopyWithImpl<
                 ? _value.guidePrice
                 : guidePrice // ignore: cast_nullable_to_non_nullable
                       as Decimal?,
+            Latitude: freezed == Latitude
+                ? _value.Latitude
+                : Latitude // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            Longitude: freezed == Longitude
+                ? _value.Longitude
+                : Longitude // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            LocationDescription: freezed == LocationDescription
+                ? _value.LocationDescription
+                : LocationDescription // ignore: cast_nullable_to_non_nullable
+                      as String?,
             date: null == date
                 ? _value.date
                 : date // ignore: cast_nullable_to_non_nullable
@@ -146,6 +167,9 @@ abstract class _$$CreateBookingCommandImplCopyWith<$Res>
     String vehicleId,
     @DecimalConverter() Decimal tourPrice,
     @DecimalConverter() Decimal? guidePrice,
+    double? Latitude,
+    double? Longitude,
+    String? LocationDescription,
     @JsonKey(toJson: _dateToString) DateTime date,
   });
 }
@@ -171,6 +195,9 @@ class __$$CreateBookingCommandImplCopyWithImpl<$Res>
     Object? vehicleId = null,
     Object? tourPrice = null,
     Object? guidePrice = freezed,
+    Object? Latitude = freezed,
+    Object? Longitude = freezed,
+    Object? LocationDescription = freezed,
     Object? date = null,
   }) {
     return _then(
@@ -203,6 +230,18 @@ class __$$CreateBookingCommandImplCopyWithImpl<$Res>
             ? _value.guidePrice
             : guidePrice // ignore: cast_nullable_to_non_nullable
                   as Decimal?,
+        Latitude: freezed == Latitude
+            ? _value.Latitude
+            : Latitude // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        Longitude: freezed == Longitude
+            ? _value.Longitude
+            : Longitude // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        LocationDescription: freezed == LocationDescription
+            ? _value.LocationDescription
+            : LocationDescription // ignore: cast_nullable_to_non_nullable
+                  as String?,
         date: null == date
             ? _value.date
             : date // ignore: cast_nullable_to_non_nullable
@@ -223,6 +262,9 @@ class _$CreateBookingCommandImpl implements _CreateBookingCommand {
     required this.vehicleId,
     @DecimalConverter() required this.tourPrice,
     @DecimalConverter() this.guidePrice,
+    this.Latitude,
+    this.Longitude,
+    this.LocationDescription,
     @JsonKey(toJson: _dateToString) required this.date,
   });
 
@@ -246,12 +288,18 @@ class _$CreateBookingCommandImpl implements _CreateBookingCommand {
   @DecimalConverter()
   final Decimal? guidePrice;
   @override
+  final double? Latitude;
+  @override
+  final double? Longitude;
+  @override
+  final String? LocationDescription;
+  @override
   @JsonKey(toJson: _dateToString)
   final DateTime date;
 
   @override
   String toString() {
-    return 'CreateBookingCommand(tourPointId: $tourPointId, guideId: $guideId, cityId: $cityId, districtId: $districtId, vehicleId: $vehicleId, tourPrice: $tourPrice, guidePrice: $guidePrice, date: $date)';
+    return 'CreateBookingCommand(tourPointId: $tourPointId, guideId: $guideId, cityId: $cityId, districtId: $districtId, vehicleId: $vehicleId, tourPrice: $tourPrice, guidePrice: $guidePrice, Latitude: $Latitude, Longitude: $Longitude, LocationDescription: $LocationDescription, date: $date)';
   }
 
   @override
@@ -271,6 +319,12 @@ class _$CreateBookingCommandImpl implements _CreateBookingCommand {
                 other.tourPrice == tourPrice) &&
             (identical(other.guidePrice, guidePrice) ||
                 other.guidePrice == guidePrice) &&
+            (identical(other.Latitude, Latitude) ||
+                other.Latitude == Latitude) &&
+            (identical(other.Longitude, Longitude) ||
+                other.Longitude == Longitude) &&
+            (identical(other.LocationDescription, LocationDescription) ||
+                other.LocationDescription == LocationDescription) &&
             (identical(other.date, date) || other.date == date));
   }
 
@@ -285,6 +339,9 @@ class _$CreateBookingCommandImpl implements _CreateBookingCommand {
     vehicleId,
     tourPrice,
     guidePrice,
+    Latitude,
+    Longitude,
+    LocationDescription,
     date,
   );
 
@@ -315,6 +372,9 @@ abstract class _CreateBookingCommand implements CreateBookingCommand {
     required final String vehicleId,
     @DecimalConverter() required final Decimal tourPrice,
     @DecimalConverter() final Decimal? guidePrice,
+    final double? Latitude,
+    final double? Longitude,
+    final String? LocationDescription,
     @JsonKey(toJson: _dateToString) required final DateTime date,
   }) = _$CreateBookingCommandImpl;
 
@@ -337,6 +397,12 @@ abstract class _CreateBookingCommand implements CreateBookingCommand {
   @override
   @DecimalConverter()
   Decimal? get guidePrice;
+  @override
+  double? get Latitude;
+  @override
+  double? get Longitude;
+  @override
+  String? get LocationDescription;
   @override
   @JsonKey(toJson: _dateToString)
   DateTime get date;
