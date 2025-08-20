@@ -64,30 +64,16 @@ class AuthService {
     );
   }
 
+  Future<BaseResponse<LoginResponse>> verifyGoogleUser(String token) {
+    return _apiClient.post<LoginResponse>(
+      path: '/Auth/signin-with-google',
+      body: {'token': token},
+      fromJson: (json) => LoginResponse.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
   /// 🔓 Logout
   Future<void> logout() async {
     await _tokenStorage.clearTokens();
-  }
-}
-
-// 🔐 Firebase + Google Sign-in
-final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
-
-Future<User?> signInWithGoogle() async {
-  try {
-    final googleUser = await _googleSignIn.signIn();
-    if (googleUser == null) return null;
-    final googleAuth = await googleUser.authentication;
-
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    final userCred = await _firebaseAuth.signInWithCredential(credential);
-    return userCred.user;
-  } catch (e) {
-    rethrow;
   }
 }

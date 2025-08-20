@@ -76,11 +76,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return Scaffold(
       appBar: CustomAppBar(title: 'home'.tr()),
       body: SafeArea(
-        // Ana widget'ı Stack yapıyoruz
         child: Stack(
           children: [
-            // --- KATMAN 1: Altta kalacak ve kaydırılacak olan içerik ---
-            // Bu SingleChildScrollView, ARAMA WIDGET'I DIŞINDA her şeyi içerir.
             SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -93,27 +90,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     //const CustomerLocationInfo(),
                     // SearchLocationPage'in kaplayacağı yer kadar boşluk bırakıyoruz.
                     // Yüksekliği, arama çubuğunun yüksekliğine göre ayarla.
-                    const SizedBox(
-                      height: 70,
-                    ), // Arama çubuğu ve altındaki boşluk için.
-                  // Arama çubuğunun ALTINDAKİ diğer widget'lar
-                  const TourTypeWidget(),
-                  const SizedBox(height: 24),
+                    // Arama çubuğu ve altındaki boşluk için.
+                    // Arama çubuğunun ALTINDAKİ diğer widget'lar
+                    const FakeSearchBar(),
+                  const SizedBox(height: 10),
                   const FeaturedPointsWidget(),
+
+                  const SizedBox(height: 24),
+                  const TourTypeWidget(),
                   const SizedBox(height: 24),
                   const AboutSection(),
                 ],
               ),
-            ),
-
-            // --- KATMAN 2: Her şeyin üzerine gelecek olan arama widget'ı ---
-            // Padding ile onu kenarlardan hizalıyoruz.
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 10.0,
-              ),
-              child: FakeSearchBar(),
             ),
           ],
         ),
@@ -121,5 +109,3 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 }
-
-// UserRoleExtension tanımını buraya ekliyorum (eğer başka bir yerde değilse)

@@ -40,7 +40,28 @@ class SocialLoginButtons extends StatelessWidget {
         const SizedBox(height: 12),
 
         ElevatedButton(
-          onPressed: () => googleVM.signInWithGoogle(),
+          onPressed: () async {
+            final viewModel = Provider.of<GoogleViewModel>(
+              context,
+              listen: false,
+            );
+            final result = await viewModel.signInWithGoogle();
+
+            if (context.mounted) {
+              if (result.isSuccess) {
+                context.go('/home');
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      result.error?.message ?? "Bilinmeyen bir hata oluştu.",
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            }
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white,
             foregroundColor: AppColors.primary,

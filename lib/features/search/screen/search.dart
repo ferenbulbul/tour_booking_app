@@ -55,6 +55,7 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ToggleSwitch(
+              animationDuration: 200,
               minWidth: 200.0,
               minHeight: 70.0,
               initialLabelIndex: _selectedToggleIndex,
@@ -67,8 +68,8 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
               icons: const [Icons.my_location, Icons.location_on_outlined],
               iconSize: 30.0,
               activeBgColors: const [
-                [Color(0xFF6A86D1), Color(0x420672FF)],
-                [Color(0xFF6A86D1), Color(0x420672FF)],
+                [Color.fromARGB(255, 50, 97, 224), Color(0x420672FF)],
+                [Color.fromARGB(255, 50, 97, 224), Color(0x420672FF)],
               ],
               animate: true,
               curve: Curves.bounceInOut,
