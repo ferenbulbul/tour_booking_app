@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
+import 'package:tour_booking/models/location_update/location_dto.dart';
 import 'package:tour_booking/services/location/location_permission_service.dart';
 import 'package:tour_booking/services/location/location_service.dart';
+import 'package:tour_booking/services/tour/tour_service.dart';
 
 class LocationViewModel with ChangeNotifier {
   final LocationPermissionService _permissionService =
       LocationPermissionService();
   final LocationService _locationService = LocationService();
-
+  TourService _service = TourService();
   Position? _currentPosition;
   bool _isTracking = false;
   LocationPermissionStatus? _permissionStatus;
@@ -106,13 +108,18 @@ class LocationViewModel with ChangeNotifier {
           distanceFilter: distanceFilterInMeters,
         )
         .listen(
-          (position) {
+          (position) async {
             _isTracking = true;
             _currentPosition = position;
             final lat = position.latitude;
             final lon = position.longitude;
             print("✅📍 ROL: [$role] - KONUM ALINDI: Enlem=$lat, Boylam=$lon");
             // TODO: Backend'e gönderme işlemini burada yap.
+            final location = LocationDto(
+              latitude: double.parse(lat.toStringAsFixed(6)),
+              longitude: double.parse(lon.toStringAsFixed(6)),
+            );
+            await _service.locationUpdate(location);
             notifyListeners();
           },
           onError: (error) {

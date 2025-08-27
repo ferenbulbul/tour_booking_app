@@ -26,6 +26,7 @@ mixin _$LoginResponse {
   String get userFullName => throw _privateConstructorUsedError;
   String get role => throw _privateConstructorUsedError;
   bool get emailConfirmed => throw _privateConstructorUsedError;
+  bool get isFirstLogin => throw _privateConstructorUsedError;
 
   /// Serializes this LoginResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -50,6 +51,7 @@ abstract class $LoginResponseCopyWith<$Res> {
     String userFullName,
     String role,
     bool emailConfirmed,
+    bool isFirstLogin,
   });
 }
 
@@ -73,6 +75,7 @@ class _$LoginResponseCopyWithImpl<$Res, $Val extends LoginResponse>
     Object? userFullName = null,
     Object? role = null,
     Object? emailConfirmed = null,
+    Object? isFirstLogin = null,
   }) {
     return _then(
       _value.copyWith(
@@ -96,6 +99,10 @@ class _$LoginResponseCopyWithImpl<$Res, $Val extends LoginResponse>
                 ? _value.emailConfirmed
                 : emailConfirmed // ignore: cast_nullable_to_non_nullable
                       as bool,
+            isFirstLogin: null == isFirstLogin
+                ? _value.isFirstLogin
+                : isFirstLogin // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -117,6 +124,7 @@ abstract class _$$LoginResponseImplCopyWith<$Res>
     String userFullName,
     String role,
     bool emailConfirmed,
+    bool isFirstLogin,
   });
 }
 
@@ -139,6 +147,7 @@ class __$$LoginResponseImplCopyWithImpl<$Res>
     Object? userFullName = null,
     Object? role = null,
     Object? emailConfirmed = null,
+    Object? isFirstLogin = null,
   }) {
     return _then(
       _$LoginResponseImpl(
@@ -162,6 +171,10 @@ class __$$LoginResponseImplCopyWithImpl<$Res>
             ? _value.emailConfirmed
             : emailConfirmed // ignore: cast_nullable_to_non_nullable
                   as bool,
+        isFirstLogin: null == isFirstLogin
+            ? _value.isFirstLogin
+            : isFirstLogin // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -176,6 +189,7 @@ class _$LoginResponseImpl implements _LoginResponse {
     required this.userFullName,
     required this.role,
     required this.emailConfirmed,
+    required this.isFirstLogin,
   });
 
   factory _$LoginResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -191,10 +205,12 @@ class _$LoginResponseImpl implements _LoginResponse {
   final String role;
   @override
   final bool emailConfirmed;
+  @override
+  final bool isFirstLogin;
 
   @override
   String toString() {
-    return 'LoginResponse(accessToken: $accessToken, refreshToken: $refreshToken, userFullName: $userFullName, role: $role, emailConfirmed: $emailConfirmed)';
+    return 'LoginResponse(accessToken: $accessToken, refreshToken: $refreshToken, userFullName: $userFullName, role: $role, emailConfirmed: $emailConfirmed, isFirstLogin: $isFirstLogin)';
   }
 
   @override
@@ -210,7 +226,9 @@ class _$LoginResponseImpl implements _LoginResponse {
                 other.userFullName == userFullName) &&
             (identical(other.role, role) || other.role == role) &&
             (identical(other.emailConfirmed, emailConfirmed) ||
-                other.emailConfirmed == emailConfirmed));
+                other.emailConfirmed == emailConfirmed) &&
+            (identical(other.isFirstLogin, isFirstLogin) ||
+                other.isFirstLogin == isFirstLogin));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -222,6 +240,7 @@ class _$LoginResponseImpl implements _LoginResponse {
     userFullName,
     role,
     emailConfirmed,
+    isFirstLogin,
   );
 
   /// Create a copy of LoginResponse
@@ -245,6 +264,7 @@ abstract class _LoginResponse implements LoginResponse {
     required final String userFullName,
     required final String role,
     required final bool emailConfirmed,
+    required final bool isFirstLogin,
   }) = _$LoginResponseImpl;
 
   factory _LoginResponse.fromJson(Map<String, dynamic> json) =
@@ -260,6 +280,8 @@ abstract class _LoginResponse implements LoginResponse {
   String get role;
   @override
   bool get emailConfirmed;
+  @override
+  bool get isFirstLogin;
 
   /// Create a copy of LoginResponse
   /// with the given fields replaced by the non-null parameter values.

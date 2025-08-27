@@ -13,6 +13,7 @@ _$LoginResponseImpl _$$LoginResponseImplFromJson(Map<String, dynamic> json) =>
       userFullName: json['userFullName'] as String,
       role: json['role'] as String,
       emailConfirmed: json['emailConfirmed'] as bool,
+      isFirstLogin: json['isFirstLogin'] as bool,
     );
 
 Map<String, dynamic> _$$LoginResponseImplToJson(_$LoginResponseImpl instance) =>
@@ -22,4 +23,5 @@ Map<String, dynamic> _$$LoginResponseImplToJson(_$LoginResponseImpl instance) =>
       'userFullName': instance.userFullName,
       'role': instance.role,
       'emailConfirmed': instance.emailConfirmed,
+      'isFirstLogin': instance.isFirstLogin,
     };

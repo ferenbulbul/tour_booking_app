@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/services/location/location_permission_service.dart';
-import 'package:tour_booking/services/location/location_viewmodel.dart.dart';
+import 'package:tour_booking/services/location/location_viewmodel.dart';
 
 /// SADECE Driver rolü için gösterilecek durum widget'ı.
 class DriverLocationStatus extends StatelessWidget {

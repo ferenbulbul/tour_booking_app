@@ -29,13 +29,29 @@ class _LoginFormState extends State<LoginForm> {
     final role = UserRoleExtension.fromString(roleString);
 
     if (result.isSuccess) {
-      final emailConfirmed = result.data?.emailConfirmed ?? 0;
+      final data = result.data!;
+      final bool emailConfirmed = data.emailConfirmed == true;
+      final bool isFirstLogin = data.isFirstLogin == true;
 
-      if (emailConfirmed == false) {
-        context.go('/email-confirmed');
-      } else {
-        context.go('/home');
+      if (!context.mounted) return;
+
+      // --- DRIVER AKIŞI ---
+      if (role == UserRole.driver) {
+        if (isFirstLogin) {
+          context.go('/change-password');
+        } else {
+          context.go('/driver'); // ← driver ana sayfanın route’u
+        }
+        return; // başka navigasyonları engelle
       }
+
+      // --- DİĞER ROLLER ---
+      if (!emailConfirmed) {
+        context.go('/email-confirmed');
+        return;
+      }
+
+      context.go('/home');
     } else {
       if (vm.message != null) {
         UIHelper.showError(context, vm.message!);

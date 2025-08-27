@@ -8,6 +8,8 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/localization/localization_setup.dart';
 import 'package:tour_booking/core/theme/app_theme.dart';
+import 'package:tour_booking/features/change_password/change_password_viewmodel.dart';
+import 'package:tour_booking/features/driver_home_page/driver_viewmodel.dart';
 import 'package:tour_booking/features/email_verification/widget/email_verification_view_model.dart';
 import 'package:tour_booking/features/forgot_passwords/forgot_password/widget/forgot_password_view_model.dart';
 import 'package:tour_booking/features/home/home_viewmodel.dart';
@@ -20,7 +22,7 @@ import 'package:tour_booking/features/splash/widget/splash_view_model.dart';
 import 'package:tour_booking/features/tour_search_detail/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/firebase_options.dart';
 import 'package:tour_booking/navigation/app_router.dart';
-import 'package:tour_booking/services/location/location_viewmodel.dart.dart';
+import 'package:tour_booking/services/location/location_viewmodel.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -59,6 +61,8 @@ class AppProviders extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => SearchViewmodel()),
           ChangeNotifierProvider(create: (_) => TourSearchResultsViewModel()),
           ChangeNotifierProvider(create: (_) => TourSearchDetailViewModel()),
+          ChangeNotifierProvider(create: (_) => ChangePasswordViewModel()),
+          ChangeNotifierProvider(create: (_) => DriverHomeViewModel()),
         ],
         child: const MyApp(),
       ),

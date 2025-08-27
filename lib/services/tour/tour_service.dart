@@ -5,6 +5,7 @@ import 'package:tour_booking/models/create_booking_request/create_booking_comman
 import 'package:tour_booking/models/district_list/district_list_response.dart';
 import 'package:tour_booking/models/featured_tour_point_list/featured_tour_point_list_dto.dart';
 import 'package:tour_booking/models/is_valid_response/is_valid_response.dart';
+import 'package:tour_booking/models/location_update/location_dto.dart';
 import 'package:tour_booking/models/region_list/region_list_response.dart';
 import 'package:tour_booking/models/tour_guide_request/tour_guide_request.dart';
 import 'package:tour_booking/models/tour_guides_response/tour_guides_response.dart';
@@ -169,5 +170,16 @@ class TourService {
       fromJson: (json) =>
           TourSearchResponse.fromJson(json as Map<String, dynamic>),
     );
+  }
+
+  Future<BaseResponse<void>> locationUpdate(LocationDto request) async {
+    var b = request.toJson();
+    print(b);
+    var response = _apiClient.post<LocationDto>(
+      path: "/Mobile/location-update",
+      body: request.toJson(),
+      fromJson: (json) => LocationDto.fromJson(json as Map<String, dynamic>),
+    );
+    return response;
   }
 }

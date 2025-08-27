@@ -7,6 +7,8 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tour_booking/core/enum/user_role.dart';
 import 'package:tour_booking/features/splash/widget/splash_view_model.dart';
 
 final appId = "f8fa783c-24c8-4655-b17d-2ecbc6a8ab22";
@@ -39,8 +41,25 @@ class _SplashScreenState extends State<SplashScreen> {
 
       FlutterNativeSplash.remove();
 
+      String targetRoute;
+      if (isLoggedIn) {
+        final prefs = await SharedPreferences.getInstance();
+        final roleStr = prefs.getString('user_role');
+        final role = roleStr != null
+            ? UserRoleExtension.fromString(roleStr)
+            : null;
+
+        if (role == UserRole.driver) {
+          targetRoute = '/driver';
+        } else {
+          targetRoute = '/home';
+        }
+      } else {
+        targetRoute = '/login';
+      }
+
       if (!mounted) return;
-      final targetRoute = isLoggedIn ? '/home' : '/login';
+      FlutterNativeSplash.remove();
       context.go(targetRoute);
     } catch (e, s) {
       print("Splash Screen başlatma hatası: $e");

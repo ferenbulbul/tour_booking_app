@@ -1,12 +1,42 @@
 plugins {
     id("com.android.application")
-    // START: FlutterFire Configuration
     id("com.google.gms.google-services")
-    // END: FlutterFire Configuration
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+/* ---------- ENV HELPER + LOADER (android {}'dan ÖNCE OLMALI) ---------- */
+fun env(name: String): String {
+    val extra = rootProject.extra
+    val fromExtra = if (extra.has(name)) extra[name] as String else null
+    val fromSys = System.getenv(name)
+    val fromProp = project.findProperty(name) as String?
+    return fromExtra ?: fromSys ?: fromProp
+        ?: throw GradleException("Missing env: $name")
+}
+
+fun loadDotEnvIntoExtra(envFileName: String) {
+    val f = rootProject.file(envFileName)
+    if (!f.exists()) return
+    println("Loading env from ${f.absolutePath}")
+    f.readLines().forEach { raw ->
+        val line = raw.trim()
+        if (line.isEmpty() || line.startsWith("#")) return@forEach
+        val eq = line.indexOf('=')
+        if (eq <= 0) return@forEach
+        val key = line.substring(0, eq).trim()
+        var value = line.substring(eq + 1).trim()
+        if ((value.startsWith("\"") && value.endsWith("\"")) ||
+            (value.startsWith("'") && value.endsWith("'"))) {
+            value = value.substring(1, value.length - 1)
+        }
+        rootProject.extensions.extraProperties.set(key, value)
+    }
+}
+
+// dosya adın hangisiyse; ikisini de deniyoruz
+loadDotEnvIntoExtra(".env.android")
+/* ---------------------------------------------------------------------- */
 
 android {
     namespace = "com.tourbooking.app"
@@ -17,16 +47,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
+    kotlinOptions { jvmTarget = JavaVersion.VERSION_11.toString() }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.tourbooking.app"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -35,20 +59,27 @@ android {
         manifestPlaceholders["onesignal_google_project_number"] = "REMOTE"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(env("ANDROID_STORE_FILE"))
+            storePassword = env("ANDROID_STORE_PASSWORD")
+            keyAlias = env("ANDROID_KEY_ALIAS")
+            keyPassword = env("ANDROID_KEY_PASSWORD")
+        }
+    }
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // 🔴 debug imzası KULLANMA
+            signingConfig = signingConfigs.getByName("release")  // ✅
+            isMinifyEnabled = false
+            isShrinkResources = false 
         }
     }
 }
 
-flutter {
-    source = "../.."
-}
+flutter { source = "../.." }
+
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
     implementation("com.google.firebase:firebase-messaging-ktx")
-    // OneSignal Flutter plugin kendisi native SDK’yı getiriyor, ekstra şart değil.
 }

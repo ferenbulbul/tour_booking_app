@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/search_type.dart';
+import 'package:tour_booking/features/change_password/screen/change_password.dart';
+import 'package:tour_booking/features/driver_home_page/screen/driver_home_page.dart';
 import 'package:tour_booking/features/email_verification/screen/email_verification_screen.dart';
 import 'package:tour_booking/features/favorite/screen/favorite_screen.dart';
 import 'package:tour_booking/features/forgot_passwords/forgot_password/screen/forgot_password_screen.dart';
@@ -130,6 +132,17 @@ final GoRouter router = GoRouter(
       name: 'searchLocation',
       builder: (context, state) {
         return DetailSearchLocationPage();
+      },
+    ),
+    GoRoute(
+      path: '/driver',
+      builder: (context, state) => const DriverHomePage(),
+    ),
+    GoRoute(
+      path: '/change-password',
+      name: 'changePassword',
+      builder: (context, state) {
+        return ChangePasswordScreen();
       },
     ),
     GoRoute(

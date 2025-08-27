@@ -5,7 +5,7 @@
 		<key>NSLocalNetworkUsageDescription</key>
 		<string>Bu uygulama, yerel ağ bağlantısı gerektirir.</string>
 		<key>CADisableMinimumFrameDurationOnPhone</key>
-		<true />
+		<true/>
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
@@ -53,34 +53,29 @@
 			<string>423047904244-ls89sh0e3mnp1vb01c91gg3kosogrtnm.apps.googleusercontent.com</string>
 		</dict>
 		<key>LSRequiresIPhoneOS</key>
-		<true />
-
+		<true/>
 		<!-- === KONUM İZİNLERİ (DÜZELTİLMİŞ VE EKLENMİŞ) === -->
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>Yakınınızdaki turları ve etkinlikleri bulmak için konumunuza ihtiyaç duyuyoruz.</string>
-
 		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-		<string>İşletme olarak, müşterilerin sizi haritada canlı olarak takip edebilmesi için
-			uygulama arka plandayken bile konumunuzun paylaşılması gerekmektedir.</string>
-
+		<string>İşletme olarak, müşterilerin sizi haritada canlı olarak takip edebilmesi için uygulama arka plandayken bile konumunuzun paylaşılması gerekmektedir.</string>
 		<key>NSLocationAlwaysUsageDescription</key>
-		<string>İşletme olarak, müşterilerin sizi haritada canlı olarak takip edebilmesi için
-			uygulama arka plandayken bile konumunuzun paylaşılması gerekmektedir.</string>
+		<string>İşletme olarak, müşterilerin sizi haritada canlı olarak takip edebilmesi için uygulama arka plandayken bile konumunuzun paylaşılması gerekmektedir.</string>
 		<!-- ============================================= -->
-
 		<key>UIApplicationSupportsIndirectInputEvents</key>
-		<true />
+		<true/>
 		<key>UIBackgroundModes</key>
 		<array>
 			<string>remote-notification</string>
-			<string>location</string> <!-- Bu zaten doğruydu, harika! -->
+			<string>location</string>
+			<!-- Bu zaten doğruydu, harika! -->
 		</array>
 		<key>UILaunchStoryboardName</key>
 		<string>LaunchScreen</string>
 		<key>UIMainStoryboardFile</key>
 		<string>Main</string>
 		<key>UIStatusBarHidden</key>
-		<false />
+		<false/>
 		<key>UISupportedInterfaceOrientations</key>
 		<array>
 			<string>UIInterfaceOrientationPortrait</string>

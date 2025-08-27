@@ -72,6 +72,14 @@ class AuthService {
     );
   }
 
+  Future<BaseResponse<LoginResponse>> changePassword(String password) {
+    return _apiClient.post<LoginResponse>(
+      path: '/Auth/new-password',
+      body: {'password': password},
+      fromJson: (json) => LoginResponse.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
   /// 🔓 Logout
   Future<void> logout() async {
     await _tokenStorage.clearTokens();
