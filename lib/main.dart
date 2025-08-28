@@ -15,6 +15,9 @@ import 'package:tour_booking/features/forgot_passwords/forgot_password/widget/fo
 import 'package:tour_booking/features/home/home_viewmodel.dart';
 import 'package:tour_booking/features/login/widgets/google_view_model.dart';
 import 'package:tour_booking/features/login/widgets/login_view_model.dart';
+import 'package:tour_booking/features/phone_verification/verify_phone_viewmodel.dart';
+import 'package:tour_booking/features/profile/profile_viewmodel.dart';
+import 'package:tour_booking/features/profile/profile_status_viewmodel.dart';
 import 'package:tour_booking/features/register/widgets/register_view_model.dart';
 import 'package:tour_booking/features/search/search_viewmodel.dart';
 import 'package:tour_booking/features/search_result/search_result_viewmodel.dart';
@@ -63,6 +66,11 @@ class AppProviders extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => TourSearchDetailViewModel()),
           ChangeNotifierProvider(create: (_) => ChangePasswordViewModel()),
           ChangeNotifierProvider(create: (_) => DriverHomeViewModel()),
+          ChangeNotifierProvider(
+            create: (_) => ProfileStatusViewModel()..init(),
+          ),
+          ChangeNotifierProvider(create: (_) => ProfileViewModel()),
+          ChangeNotifierProvider(create: (_) => VerifyPhoneViewModel()),
         ],
         child: const MyApp(),
       ),

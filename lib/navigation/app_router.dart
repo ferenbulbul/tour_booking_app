@@ -11,6 +11,7 @@ import 'package:tour_booking/features/forgot_passwords/verify_reset_code/screen/
 import 'package:tour_booking/features/home/widgets/detail_search.dart';
 import 'package:tour_booking/features/home/widgets/tour_search_by_tour_type.dart';
 import 'package:tour_booking/features/login/screens/login_screen.dart';
+import 'package:tour_booking/features/phone_verification/screen/verify_phone_screen.dart';
 import 'package:tour_booking/features/profile/screen/profile_screen.dart';
 import 'package:tour_booking/features/root/wigdet/root_scaffold.dart';
 import 'package:tour_booking/features/search/screen/search.dart';
@@ -116,6 +117,13 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
+      path: '/verify-phone',
+      name: 'verifyPhone',
+      builder: (context, state) {
+        return VerifyPhoneScreen();
+      },
+    ),
+    GoRoute(
       path: '/payment',
       name: 'payment',
       builder: (context, state) {
@@ -166,10 +174,6 @@ final GoRouter router = GoRouter(
         GoRoute(
           path: '/search',
           builder: (context, state) => const TourSearchScreen(),
-        ),
-        GoRoute(
-          path: '/settings',
-          builder: (context, state) => const SettingsScreen(),
         ),
         GoRoute(
           path: '/profile',

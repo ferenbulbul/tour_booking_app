@@ -68,6 +68,11 @@ class GoogleViewModel extends ChangeNotifier {
         );
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('user_role', result.data!.role);
+        await prefs.setBool(
+          'is_profile_complete',
+          result.data!.isProfileComplete,
+        );
+
         _user = loggedInUser;
         print("✅ Giriş başarılı ve token'lar kaydedildi.");
       } else {
@@ -97,6 +102,9 @@ class GoogleViewModel extends ChangeNotifier {
 
       final SecureTokenStorage _tokenStorage = SecureTokenStorage();
       _tokenStorage.clearTokens();
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
 
       _user = null;
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tour_booking/core/network/failure_model.dart';
 import 'package:tour_booking/core/network/handle_response.dart';
 import 'package:tour_booking/core/network/result.dart';
@@ -29,6 +30,12 @@ class RegisterViewModel extends ChangeNotifier {
         await _tokenStorage.saveTokens(
           loginResponse.accessToken,
           loginResponse.refreshToken,
+        );
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_role', result.data!.role);
+        await prefs.setBool(
+          'is_profile_complete',
+          result.data!.isProfileComplete,
         );
       }
       message = null;

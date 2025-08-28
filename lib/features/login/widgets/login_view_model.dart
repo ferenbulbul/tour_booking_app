@@ -33,6 +33,10 @@ class LoginViewModel extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       print(result.data!.isFirstLogin);
       await prefs.setString('user_role', result.data!.role);
+      await prefs.setBool(
+        'is_profile_complete',
+        result.data!.isProfileComplete,
+      );
       await _tokenStorage.saveTokens(token, refresh);
     } else {
       message = result.error?.message;

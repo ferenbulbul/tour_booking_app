@@ -27,6 +27,7 @@ mixin _$LoginResponse {
   String get role => throw _privateConstructorUsedError;
   bool get emailConfirmed => throw _privateConstructorUsedError;
   bool get isFirstLogin => throw _privateConstructorUsedError;
+  bool get isProfileComplete => throw _privateConstructorUsedError;
 
   /// Serializes this LoginResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -52,6 +53,7 @@ abstract class $LoginResponseCopyWith<$Res> {
     String role,
     bool emailConfirmed,
     bool isFirstLogin,
+    bool isProfileComplete,
   });
 }
 
@@ -76,6 +78,7 @@ class _$LoginResponseCopyWithImpl<$Res, $Val extends LoginResponse>
     Object? role = null,
     Object? emailConfirmed = null,
     Object? isFirstLogin = null,
+    Object? isProfileComplete = null,
   }) {
     return _then(
       _value.copyWith(
@@ -103,6 +106,10 @@ class _$LoginResponseCopyWithImpl<$Res, $Val extends LoginResponse>
                 ? _value.isFirstLogin
                 : isFirstLogin // ignore: cast_nullable_to_non_nullable
                       as bool,
+            isProfileComplete: null == isProfileComplete
+                ? _value.isProfileComplete
+                : isProfileComplete // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -125,6 +132,7 @@ abstract class _$$LoginResponseImplCopyWith<$Res>
     String role,
     bool emailConfirmed,
     bool isFirstLogin,
+    bool isProfileComplete,
   });
 }
 
@@ -148,6 +156,7 @@ class __$$LoginResponseImplCopyWithImpl<$Res>
     Object? role = null,
     Object? emailConfirmed = null,
     Object? isFirstLogin = null,
+    Object? isProfileComplete = null,
   }) {
     return _then(
       _$LoginResponseImpl(
@@ -175,6 +184,10 @@ class __$$LoginResponseImplCopyWithImpl<$Res>
             ? _value.isFirstLogin
             : isFirstLogin // ignore: cast_nullable_to_non_nullable
                   as bool,
+        isProfileComplete: null == isProfileComplete
+            ? _value.isProfileComplete
+            : isProfileComplete // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -190,6 +203,7 @@ class _$LoginResponseImpl implements _LoginResponse {
     required this.role,
     required this.emailConfirmed,
     required this.isFirstLogin,
+    required this.isProfileComplete,
   });
 
   factory _$LoginResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -207,10 +221,12 @@ class _$LoginResponseImpl implements _LoginResponse {
   final bool emailConfirmed;
   @override
   final bool isFirstLogin;
+  @override
+  final bool isProfileComplete;
 
   @override
   String toString() {
-    return 'LoginResponse(accessToken: $accessToken, refreshToken: $refreshToken, userFullName: $userFullName, role: $role, emailConfirmed: $emailConfirmed, isFirstLogin: $isFirstLogin)';
+    return 'LoginResponse(accessToken: $accessToken, refreshToken: $refreshToken, userFullName: $userFullName, role: $role, emailConfirmed: $emailConfirmed, isFirstLogin: $isFirstLogin, isProfileComplete: $isProfileComplete)';
   }
 
   @override
@@ -228,7 +244,9 @@ class _$LoginResponseImpl implements _LoginResponse {
             (identical(other.emailConfirmed, emailConfirmed) ||
                 other.emailConfirmed == emailConfirmed) &&
             (identical(other.isFirstLogin, isFirstLogin) ||
-                other.isFirstLogin == isFirstLogin));
+                other.isFirstLogin == isFirstLogin) &&
+            (identical(other.isProfileComplete, isProfileComplete) ||
+                other.isProfileComplete == isProfileComplete));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -241,6 +259,7 @@ class _$LoginResponseImpl implements _LoginResponse {
     role,
     emailConfirmed,
     isFirstLogin,
+    isProfileComplete,
   );
 
   /// Create a copy of LoginResponse
@@ -265,6 +284,7 @@ abstract class _LoginResponse implements LoginResponse {
     required final String role,
     required final bool emailConfirmed,
     required final bool isFirstLogin,
+    required final bool isProfileComplete,
   }) = _$LoginResponseImpl;
 
   factory _LoginResponse.fromJson(Map<String, dynamic> json) =
@@ -282,6 +302,8 @@ abstract class _LoginResponse implements LoginResponse {
   bool get emailConfirmed;
   @override
   bool get isFirstLogin;
+  @override
+  bool get isProfileComplete;
 
   /// Create a copy of LoginResponse
   /// with the given fields replaced by the non-null parameter values.

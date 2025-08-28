@@ -12,6 +12,7 @@ class LoginResponse with _$LoginResponse {
     required String role,
     required bool emailConfirmed,
     required bool isFirstLogin,
+    required bool isProfileComplete,
   }) = _LoginResponse;
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) =>

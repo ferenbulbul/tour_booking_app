@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
@@ -11,6 +12,8 @@ import 'package:tour_booking/features/home/widgets/featured_tour_points.dart';
 
 import 'package:tour_booking/features/home/widgets/search_section.dart';
 import 'package:tour_booking/features/home/widgets/tour_type.dart';
+import 'package:tour_booking/features/profile/profile_status_viewmodel.dart';
+import 'package:tour_booking/features/profile_warning_banner/profile_warning_banner.dart';
 
 import 'package:tour_booking/services/location/location_viewmodel.dart'; // Örnek dosya yolu
 
@@ -29,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _loadUserRole();
+    Future.microtask(() => context.read<ProfileStatusViewModel>().init());
   }
 
   Future<void> _loadUserRole() async {
@@ -83,16 +87,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  ProfileWarningBanner(
+                    onAction: () {
+                      context.go('/profile');
+                    },
+                  ),
                   // Konum durumu widget'ı
-                  if (_currentUserRole == UserRole.driver)
-                    const DriverLocationStatus()
-                  else
-                    //const CustomerLocationInfo(),
-                    // SearchLocationPage'in kaplayacağı yer kadar boşluk bırakıyoruz.
-                    // Yüksekliği, arama çubuğunun yüksekliğine göre ayarla.
-                    // Arama çubuğu ve altındaki boşluk için.
-                    // Arama çubuğunun ALTINDAKİ diğer widget'lar
-                    const FakeSearchBar(),
+                  const FakeSearchBar(),
                   const SizedBox(height: 10),
                   const FeaturedPointsWidget(),
 
