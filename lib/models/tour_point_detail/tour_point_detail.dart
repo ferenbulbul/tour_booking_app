@@ -21,6 +21,7 @@ class TourPointDetail with _$TourPointDetail {
     required String tourDifficultyName,
     required List<CityDto> cities,
     required List<DistrictDto> districts,
+    required bool isFavorites,
   }) = _TourPointDetail;
 
   factory TourPointDetail.fromJson(Map<String, dynamic> json) =>

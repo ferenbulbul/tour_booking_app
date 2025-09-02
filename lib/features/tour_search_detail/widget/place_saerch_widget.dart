@@ -82,7 +82,7 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
         });
     final res = await http.get(uri);
     if (res.statusCode != 200) {
-      _snack('Details hata: ${res.statusCode}');
+      _snack('Beklenmeyen bir hata oluştu');
       return;
     }
     final body = jsonDecode(res.body) as Map<String, dynamic>;

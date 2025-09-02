@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -79,8 +80,11 @@ class _TourSearchResultsScreenState extends State<TourSearchResultsScreen> {
             child: ListTile(
               leading: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  point.mainImage,
+                child: CachedNetworkImage(
+                  imageUrl: point.mainImage,
+                  placeholder: (context, url) =>
+                      const CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
                   width: 80,
                   height: 80,
                   fit: BoxFit.cover,

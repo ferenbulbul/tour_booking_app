@@ -1,4 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/features/tour_search_detail/tour_search_detail_viewmodel.dart';
@@ -7,7 +10,12 @@ import 'package:tour_booking/models/place_section/place_section.dart';
 
 class TourSearchDetailScreen extends StatefulWidget {
   final String tourPointId;
-  const TourSearchDetailScreen({super.key, required this.tourPointId});
+  final void Function(String)? onSelected;
+  const TourSearchDetailScreen({
+    super.key,
+    required this.tourPointId,
+    this.onSelected,
+  });
 
   @override
   State<TourSearchDetailScreen> createState() => _TourSearchDetailScreenState();
@@ -23,6 +31,8 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
         listen: false,
       ).fetchTourPointDetail(widget.tourPointId);
     });
+    times = _generateTimes();
+    selectedTime = times.first;
   }
 
   void _showSnack(String msg) {
@@ -41,29 +51,57 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
       return const Scaffold(body: Center(child: Text("Detay bulunamadı.")));
     }
 
+    // --- YENİLİK: Ana resim ve diğer resimleri tek bir listede birleştiriyoruz ---
+    final allImages = [detail.mainImage, ...detail.otherImages];
+
     return Scaffold(
-      appBar: AppBar(title: Text(detail.title)),
+      appBar: AppBar(
+        title: Text(detail.title),
+        actions: [
+          IconButton(
+            icon: Icon(
+              vm.isFavorite ? Icons.star : Icons.star_border,
+              color: vm.isFavorite
+                  ? Colors.yellow
+                  : Colors.white, // tema rengine göre
+            ),
+            onPressed: () {
+              vm.toggleFavorite(detail.isFavorites); // itemId veya detail.id
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Ana görsel
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  detail.mainImage,
-                  height: 220,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
+              // --- YENİLİK: Ana görsel artık tıklanabilir ---
+              GestureDetector(
+                onTap: () =>
+                    _openGallery(context, images: allImages, initialIndex: 0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: CachedNetworkImage(
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                    imageUrl: detail.mainImage,
+                    height: 220,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
 
               // Diğer görseller (yatay)
               if (detail.otherImages.isNotEmpty) ...[
-                _buildImageGallery(detail.otherImages),
+                _buildImageGallery(
+                  allImages,
+                ), // Artık tüm resim listesini gönderiyoruz
                 const SizedBox(height: 16),
               ],
 
@@ -158,7 +196,14 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
               ],
               const SizedBox(height: 12),
               // Tarih seçici
-              _buildDatePicker(vm),
+              Row(
+                children: [
+                  Expanded(child: _buildDatePicker(vm)),
+                  const SizedBox(width: 12),
+                  Expanded(child: _buildTimePicker(vm)),
+                ],
+              ),
+
               const SizedBox(height: 20),
 
               // Araçları Gör (orijinal akış)
@@ -202,8 +247,51 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
     );
   }
 
+  // --- YENİLİK: Galeri açma mantığını tek bir fonksiyona taşıdık ---
+  void _openGallery(
+    BuildContext context, {
+    required List<String> images,
+    required int initialIndex,
+  }) {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.3,
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: PageView.builder(
+                controller: PageController(initialPage: initialIndex),
+                itemCount: images.length,
+                itemBuilder: (context, pageIndex) {
+                  return CachedNetworkImage(
+                    // BURADA DA DEĞİŞİKLİK
+                    imageUrl: images[pageIndex],
+                    fit: BoxFit.fill,
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   // --- Diğer görseller yatay scroll
-  Widget _buildImageGallery(List<String> otherImages) {
+  Widget _buildImageGallery(List<String> allImages) {
+    // Ana resmi atlayıp sadece diğer resimleri listeliyoruz
+    final otherImages = allImages.sublist(1);
+
     return SizedBox(
       height: 100,
       child: ListView.separated(
@@ -215,32 +303,9 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
           final thumb = otherImages[index];
           return GestureDetector(
             onTap: () {
-              showDialog(
-                context: context,
-                builder: (_) {
-                  return Dialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: SizedBox(
-                        height: 320,
-                        child: PageView.builder(
-                          controller: PageController(initialPage: index),
-                          itemCount: otherImages.length,
-                          itemBuilder: (context, pageIndex) {
-                            return Image.network(
-                              otherImages[pageIndex],
-                              fit: BoxFit.contain,
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              );
+              // --- YENİLİK: Ortak galeriyi çağırıyoruz, doğru başlangıç index'i ile ---
+              // index + 1 çünkü 'allImages' listesinde ana resim 0. index'te
+              _openGallery(context, images: allImages, initialIndex: index + 1);
             },
             child: Container(
               decoration: BoxDecoration(
@@ -255,8 +320,11 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  thumb,
+                child: CachedNetworkImage(
+                  placeholder: (context, url) =>
+                      const CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                  imageUrl: thumb,
                   width: 100,
                   height: 100,
                   fit: BoxFit.cover,
@@ -290,6 +358,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
         child: Text(
           vm.selectedDate != null
               ? "${vm.selectedDate!.day}.${vm.selectedDate!.month}.${vm.selectedDate!.year}"
+              // Formatlama için intl paketi kullanılabilir: DateFormat('dd.MM.yyyy').format(vm.selectedDate!)
               : "Tarih Seçiniz",
           style: const TextStyle(fontSize: 16),
         ),
@@ -318,6 +387,118 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
         );
         if (id != null) vm.setSelectedCity(id);
       },
+    );
+  }
+
+  late List<String> times;
+  String? selectedTime;
+
+  List<String> _generateTimes() {
+    List<String> result = [];
+    for (int hour = 6; hour < 12; hour++) {
+      result.add("${hour.toString().padLeft(2, '0')}:00");
+      result.add("${hour.toString().padLeft(2, '0')}:30");
+    }
+    result.add("12:00");
+    return result;
+  }
+
+  Widget _buildTimePicker(TourSearchDetailViewModel vm) {
+    return InkWell(
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          builder: (sheetContext) {
+            return SizedBox(
+              height: 300,
+              child: Column(
+                children: [
+                  // Header
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(color: Colors.grey, width: 0.3),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Saat Seç",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(sheetContext);
+                          },
+                          child: const Text("Seç"),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Expanded(
+                    child: CupertinoPicker(
+                      backgroundColor: Colors.white,
+                      itemExtent: 40,
+                      scrollController: FixedExtentScrollController(
+                        initialItem: times.indexOf(selectedTime ?? times.first),
+                      ),
+                      onSelectedItemChanged: (index) {
+                        setState(() {
+                          selectedTime = times[index];
+                        });
+                        vm.setSelectedTime(
+                          times[index],
+                        ); // ViewModel’de güncelle
+                      },
+                      children: times
+                          .map(
+                            (time) => Center(
+                              child: Text(
+                                time,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: "Kalkış Saati",
+          labelStyle: const TextStyle(fontSize: 14),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          suffixIcon: const Icon(Icons.access_time),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 14,
+          ),
+        ),
+        child: Text(
+          vm.selectedTime != null
+              ? "${vm.selectedTime!.toString().padLeft(2, '0')}"
+              : "Saat Seçiniz",
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+        ),
+      ),
     );
   }
 

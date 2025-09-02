@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -53,8 +54,12 @@ class FeaturedPointsWidget extends StatelessWidget {
                       children: [
                         // Resim
                         Positioned.fill(
-                          child: Image.network(
-                            point.mainImage.isNotEmpty
+                          child: CachedNetworkImage(
+                            placeholder: (context, url) =>
+                                const CircularProgressIndicator(),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                            imageUrl: point.mainImage.isNotEmpty
                                 ? point.mainImage
                                 : "https://via.placeholder.com/300",
                             fit: BoxFit.cover,

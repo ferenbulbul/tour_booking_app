@@ -211,4 +211,11 @@ class TourService {
       body: {'code': code},
     );
   }
+
+  Future<BaseResponse<void>> ToggleFavorite(String tourPointId) async {
+    return _apiClient.post<void>(
+      path: '/Mobile/toggle-favorite',
+      body: {'tourPointId': tourPointId},
+    );
+  }
 }

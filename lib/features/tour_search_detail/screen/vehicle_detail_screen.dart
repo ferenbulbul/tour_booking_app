@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/features/tour_search_detail/tour_search_detail_viewmodel.dart';
+import 'package:cached_network_image/cached_network_image.dart'; // CachedNetworkImage için import
 
 class VehicleDetailScreen extends StatefulWidget {
   final String vehicleId;
@@ -18,6 +19,59 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     Future.microtask(() {
       context.read<TourSearchDetailViewModel>().fetchVehicle(widget.vehicleId);
     });
+  }
+
+  // --- YENİLİK: Galeri açma mantığını TourSearchDetailScreen'dan taşıdık ---
+  void _openGallery(
+    BuildContext context, {
+    required List<String> images,
+    required int initialIndex,
+  }) {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: SizedBox(
+              // Ekran boyutuna göre dinamik yükseklik ve genişlik
+              height:
+                  MediaQuery.of(context).size.height *
+                  0.3, // Yüksekliği artırıldı
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: PageView.builder(
+                controller: PageController(initialPage: initialIndex),
+                itemCount: images.length,
+                itemBuilder: (context, pageIndex) {
+                  return CachedNetworkImage(
+                    // CachedNetworkImage kullanıldı
+                    imageUrl: images[pageIndex],
+                    fit: BoxFit
+                        .contain, // Resmin kesilmeden sığması için contain
+                    placeholder: (context, url) => Center(
+                      // Yüklenirken gösterilecek widget
+                      child: CircularProgressIndicator(
+                        color: Theme.of(
+                          context,
+                        ).primaryColor, // Temanızın ana rengini kullan
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => const Icon(
+                      Icons.error_outline, // Hata durumunda ikon
+                      size: 48,
+                      color: Colors.red,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -41,6 +95,9 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     final v = vm.vehicle!;
     final price = vm.setVehiclePrice; // senin VM’deki fiyat getter
 
+    // --- YENİLİK: Tüm resimleri tek bir listede topluyoruz ---
+    final allVehicleImages = [v.image, ...(v.otherImages ?? []).cast<String>()];
+
     return Scaffold(
       appBar: AppBar(title: Text(v.vehicleBrand)),
       body: SingleChildScrollView(
@@ -52,20 +109,38 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
             // Ana resim + fiyat rozet
             Stack(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    v.image,
-                    height: 200,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                GestureDetector(
+                  // Ana resme tıklama özelliği eklendi
+                  onTap: () => _openGallery(
+                    context,
+                    images: allVehicleImages,
+                    initialIndex: 0,
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: CachedNetworkImage(
+                      imageUrl: v.image,
                       height: 200,
-                      color: Colors.grey.shade300,
-                      alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.image_not_supported_outlined,
-                        size: 48,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        height: 200,
+                        color: Colors.grey.shade300,
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                      errorWidget: (_, __, ___) => Container(
+                        // Hata durumunda
+                        height: 200,
+                        color: Colors.grey.shade300,
+                        alignment: Alignment.center,
+                        child: const Icon(
+                          Icons.image_not_supported_outlined,
+                          size: 48,
+                          color: Colors.grey,
+                        ),
                       ),
                     ),
                   ),
@@ -98,32 +173,56 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
             const SizedBox(height: 12),
 
             // Küçük resimler (yatay scroll)
-            SizedBox(
-              height: 80,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: v.otherImages!.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (_, i) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      v.otherImages![i],
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        width: 80,
-                        height: 80,
-                        color: Colors.grey.shade300,
-                        alignment: Alignment.center,
-                        child: const Icon(Icons.image_not_supported_outlined),
+            if (v.otherImages != null && v.otherImages!.isNotEmpty)
+              SizedBox(
+                height: 80,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: v.otherImages!.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (_, i) {
+                    final thumb = v.otherImages![i];
+                    return GestureDetector(
+                      // Küçük resimlere tıklama özelliği eklendi
+                      onTap: () => _openGallery(
+                        context,
+                        images: allVehicleImages,
+                        initialIndex: i + 1,
+                      ), // Doğru index ile aç
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: CachedNetworkImage(
+                          // CachedNetworkImage kullanıldı
+                          imageUrl: thumb,
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            // Yüklenirken placeholder
+                            width: 80,
+                            height: 80,
+                            color: Colors.grey.shade300,
+                            alignment: Alignment.center,
+                            child: CircularProgressIndicator(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          errorWidget: (_, __, ___) => Container(
+                            // Hata durumunda
+                            width: 80,
+                            height: 80,
+                            color: Colors.grey.shade300,
+                            alignment: Alignment.center,
+                            child: const Icon(
+                              Icons.image_not_supported_outlined,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
 
             const SizedBox(height: 16),
 

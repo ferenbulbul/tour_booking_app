@@ -16,7 +16,7 @@ import 'package:tour_booking/services/tour/tour_service.dart';
 
 class TourSearchDetailViewModel extends ChangeNotifier {
   final TourService _tourService = TourService();
-
+  String? selectedTime;
   bool isLoading = false;
   bool isVehiclesLoading = false;
   bool isVehicleLoading = false;
@@ -47,10 +47,12 @@ class TourSearchDetailViewModel extends ChangeNotifier {
     try {
       final result = await _tourService.getTourPointDetail(id);
       print("tourpoint id ${id} ");
+
       selectedTourPointId = id;
       if (result.data != null) {
         detail = result.data!.tourPointDetails;
         errorMessage = null;
+        _isFavorite = detail!.isFavorites;
 
         // Varsayılan seçimleri yapalım:
         selectedCityId = detail?.cities.firstOrNull?.id;
@@ -67,6 +69,19 @@ class TourSearchDetailViewModel extends ChangeNotifier {
       errorMessage = 'Hata oluştu: $e';
     } finally {
       isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> toggleFavorite(bool itemId) async {
+    _isFavorite = !_isFavorite;
+    notifyListeners();
+
+    try {
+      await _tourService.ToggleFavorite(selectedTourPointId!);
+    } catch (e) {
+      // hata → state geri al
+      _isFavorite = !_isFavorite;
       notifyListeners();
     }
   }
@@ -218,6 +233,7 @@ class TourSearchDetailViewModel extends ChangeNotifier {
         selectedDistrictId == null ||
         selectedTourPointId == null ||
         selectedVehicleId == null ||
+        selectedTime == null ||
         selectedDate == null) {
       return;
     }
@@ -242,6 +258,7 @@ class TourSearchDetailViewModel extends ChangeNotifier {
         LocationDescription: selectedPlaceDesc,
         Latitude: selectedPlaceLat,
         Longitude: selectedPlaceLng,
+        departureTime: selectedTime!,
       );
       final resp = await _tourService.ControlBooking(req);
 
@@ -276,6 +293,21 @@ class TourSearchDetailViewModel extends ChangeNotifier {
     selectedPlaceDesc = s.description;
     selectedPlaceLat = s.lat;
     selectedPlaceLng = s.lng;
+    notifyListeners();
+  }
+
+  void setSelectedTime(String time) {
+    selectedTime = time;
+    notifyListeners();
+  }
+
+  bool _isFavorite = false;
+
+  bool get isFavorite => _isFavorite;
+
+  // Item API’den geldiğinde çağır
+  void setInitialFavorite(bool value) {
+    _isFavorite = value;
     notifyListeners();
   }
 }

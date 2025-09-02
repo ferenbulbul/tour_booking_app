@@ -39,6 +39,8 @@ dependencies:
   toggle_switch: ^2.3.0
   decimal: ^3.2.4
   google_places_flutter: ^2.1.0
+  flutter_time_picker_spinner: ^2.0.0
+  cached_network_image: ^3.4.1
 
 
 

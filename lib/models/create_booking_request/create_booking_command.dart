@@ -14,6 +14,7 @@ class CreateBookingCommand with _$CreateBookingCommand {
     required String cityId,
     required String districtId,
     required String vehicleId,
+    required String departureTime,
     @DecimalConverter() required Decimal tourPrice,
     @DecimalConverter() Decimal? guidePrice,
     double? Latitude,

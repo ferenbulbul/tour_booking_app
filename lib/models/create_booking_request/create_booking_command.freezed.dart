@@ -26,6 +26,7 @@ mixin _$CreateBookingCommand {
   String get cityId => throw _privateConstructorUsedError;
   String get districtId => throw _privateConstructorUsedError;
   String get vehicleId => throw _privateConstructorUsedError;
+  String get departureTime => throw _privateConstructorUsedError;
   @DecimalConverter()
   Decimal get tourPrice => throw _privateConstructorUsedError;
   @DecimalConverter()
@@ -59,6 +60,7 @@ abstract class $CreateBookingCommandCopyWith<$Res> {
     String cityId,
     String districtId,
     String vehicleId,
+    String departureTime,
     @DecimalConverter() Decimal tourPrice,
     @DecimalConverter() Decimal? guidePrice,
     double? Latitude,
@@ -91,6 +93,7 @@ class _$CreateBookingCommandCopyWithImpl<
     Object? cityId = null,
     Object? districtId = null,
     Object? vehicleId = null,
+    Object? departureTime = null,
     Object? tourPrice = null,
     Object? guidePrice = freezed,
     Object? Latitude = freezed,
@@ -119,6 +122,10 @@ class _$CreateBookingCommandCopyWithImpl<
             vehicleId: null == vehicleId
                 ? _value.vehicleId
                 : vehicleId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            departureTime: null == departureTime
+                ? _value.departureTime
+                : departureTime // ignore: cast_nullable_to_non_nullable
                       as String,
             tourPrice: null == tourPrice
                 ? _value.tourPrice
@@ -165,6 +172,7 @@ abstract class _$$CreateBookingCommandImplCopyWith<$Res>
     String cityId,
     String districtId,
     String vehicleId,
+    String departureTime,
     @DecimalConverter() Decimal tourPrice,
     @DecimalConverter() Decimal? guidePrice,
     double? Latitude,
@@ -193,6 +201,7 @@ class __$$CreateBookingCommandImplCopyWithImpl<$Res>
     Object? cityId = null,
     Object? districtId = null,
     Object? vehicleId = null,
+    Object? departureTime = null,
     Object? tourPrice = null,
     Object? guidePrice = freezed,
     Object? Latitude = freezed,
@@ -221,6 +230,10 @@ class __$$CreateBookingCommandImplCopyWithImpl<$Res>
         vehicleId: null == vehicleId
             ? _value.vehicleId
             : vehicleId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        departureTime: null == departureTime
+            ? _value.departureTime
+            : departureTime // ignore: cast_nullable_to_non_nullable
                   as String,
         tourPrice: null == tourPrice
             ? _value.tourPrice
@@ -260,6 +273,7 @@ class _$CreateBookingCommandImpl implements _CreateBookingCommand {
     required this.cityId,
     required this.districtId,
     required this.vehicleId,
+    required this.departureTime,
     @DecimalConverter() required this.tourPrice,
     @DecimalConverter() this.guidePrice,
     this.Latitude,
@@ -282,6 +296,8 @@ class _$CreateBookingCommandImpl implements _CreateBookingCommand {
   @override
   final String vehicleId;
   @override
+  final String departureTime;
+  @override
   @DecimalConverter()
   final Decimal tourPrice;
   @override
@@ -299,7 +315,7 @@ class _$CreateBookingCommandImpl implements _CreateBookingCommand {
 
   @override
   String toString() {
-    return 'CreateBookingCommand(tourPointId: $tourPointId, guideId: $guideId, cityId: $cityId, districtId: $districtId, vehicleId: $vehicleId, tourPrice: $tourPrice, guidePrice: $guidePrice, Latitude: $Latitude, Longitude: $Longitude, LocationDescription: $LocationDescription, date: $date)';
+    return 'CreateBookingCommand(tourPointId: $tourPointId, guideId: $guideId, cityId: $cityId, districtId: $districtId, vehicleId: $vehicleId, departureTime: $departureTime, tourPrice: $tourPrice, guidePrice: $guidePrice, Latitude: $Latitude, Longitude: $Longitude, LocationDescription: $LocationDescription, date: $date)';
   }
 
   @override
@@ -315,6 +331,8 @@ class _$CreateBookingCommandImpl implements _CreateBookingCommand {
                 other.districtId == districtId) &&
             (identical(other.vehicleId, vehicleId) ||
                 other.vehicleId == vehicleId) &&
+            (identical(other.departureTime, departureTime) ||
+                other.departureTime == departureTime) &&
             (identical(other.tourPrice, tourPrice) ||
                 other.tourPrice == tourPrice) &&
             (identical(other.guidePrice, guidePrice) ||
@@ -337,6 +355,7 @@ class _$CreateBookingCommandImpl implements _CreateBookingCommand {
     cityId,
     districtId,
     vehicleId,
+    departureTime,
     tourPrice,
     guidePrice,
     Latitude,
@@ -370,6 +389,7 @@ abstract class _CreateBookingCommand implements CreateBookingCommand {
     required final String cityId,
     required final String districtId,
     required final String vehicleId,
+    required final String departureTime,
     @DecimalConverter() required final Decimal tourPrice,
     @DecimalConverter() final Decimal? guidePrice,
     final double? Latitude,
@@ -391,6 +411,8 @@ abstract class _CreateBookingCommand implements CreateBookingCommand {
   String get districtId;
   @override
   String get vehicleId;
+  @override
+  String get departureTime;
   @override
   @DecimalConverter()
   Decimal get tourPrice;

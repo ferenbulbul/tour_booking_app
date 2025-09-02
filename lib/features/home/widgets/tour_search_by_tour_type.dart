@@ -1,4 +1,5 @@
 // features/search_result/tour_search_results_by_tour_type_screen.dart
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -76,8 +77,12 @@ class _TourSearchResultsByTourTypeScreenState
                         (item.mainImage != null && item.mainImage!.isNotEmpty)
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  item.mainImage!,
+                                child: CachedNetworkImage(
+                                  placeholder: (context, url) =>
+                                      const CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.error),
+                                  imageUrl: item.mainImage!,
                                   width: 80,
                                   height: 80,
                                   fit: BoxFit.cover,

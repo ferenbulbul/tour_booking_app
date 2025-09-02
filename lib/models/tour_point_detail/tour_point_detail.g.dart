@@ -28,6 +28,7 @@ _$TourPointDetailImpl _$$TourPointDetailImplFromJson(
   districts: (json['districts'] as List<dynamic>)
       .map((e) => DistrictDto.fromJson(e as Map<String, dynamic>))
       .toList(),
+  isFavorites: json['isFavorites'] as bool,
 );
 
 Map<String, dynamic> _$$TourPointDetailImplToJson(
@@ -46,4 +47,5 @@ Map<String, dynamic> _$$TourPointDetailImplToJson(
   'tourDifficultyName': instance.tourDifficultyName,
   'cities': instance.cities.map((e) => e.toJson()).toList(),
   'districts': instance.districts.map((e) => e.toJson()).toList(),
+  'isFavorites': instance.isFavorites,
 };

@@ -34,6 +34,7 @@ mixin _$TourPointDetail {
   String get tourDifficultyName => throw _privateConstructorUsedError;
   List<CityDto> get cities => throw _privateConstructorUsedError;
   List<DistrictDto> get districts => throw _privateConstructorUsedError;
+  bool get isFavorites => throw _privateConstructorUsedError;
 
   /// Serializes this TourPointDetail to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -66,6 +67,7 @@ abstract class $TourPointDetailCopyWith<$Res> {
     String tourDifficultyName,
     List<CityDto> cities,
     List<DistrictDto> districts,
+    bool isFavorites,
   });
 }
 
@@ -97,6 +99,7 @@ class _$TourPointDetailCopyWithImpl<$Res, $Val extends TourPointDetail>
     Object? tourDifficultyName = null,
     Object? cities = null,
     Object? districts = null,
+    Object? isFavorites = null,
   }) {
     return _then(
       _value.copyWith(
@@ -152,6 +155,10 @@ class _$TourPointDetailCopyWithImpl<$Res, $Val extends TourPointDetail>
                 ? _value.districts
                 : districts // ignore: cast_nullable_to_non_nullable
                       as List<DistrictDto>,
+            isFavorites: null == isFavorites
+                ? _value.isFavorites
+                : isFavorites // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -181,6 +188,7 @@ abstract class _$$TourPointDetailImplCopyWith<$Res>
     String tourDifficultyName,
     List<CityDto> cities,
     List<DistrictDto> districts,
+    bool isFavorites,
   });
 }
 
@@ -211,6 +219,7 @@ class __$$TourPointDetailImplCopyWithImpl<$Res>
     Object? tourDifficultyName = null,
     Object? cities = null,
     Object? districts = null,
+    Object? isFavorites = null,
   }) {
     return _then(
       _$TourPointDetailImpl(
@@ -266,6 +275,10 @@ class __$$TourPointDetailImplCopyWithImpl<$Res>
             ? _value._districts
             : districts // ignore: cast_nullable_to_non_nullable
                   as List<DistrictDto>,
+        isFavorites: null == isFavorites
+            ? _value.isFavorites
+            : isFavorites // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -288,6 +301,7 @@ class _$TourPointDetailImpl implements _TourPointDetail {
     required this.tourDifficultyName,
     required final List<CityDto> cities,
     required final List<DistrictDto> districts,
+    required this.isFavorites,
   }) : _otherImages = otherImages,
        _cities = cities,
        _districts = districts;
@@ -340,8 +354,11 @@ class _$TourPointDetailImpl implements _TourPointDetail {
   }
 
   @override
+  final bool isFavorites;
+
+  @override
   String toString() {
-    return 'TourPointDetail(id: $id, title: $title, description: $description, mainImage: $mainImage, otherImages: $otherImages, cityName: $cityName, districtName: $districtName, regionName: $regionName, countryName: $countryName, tourTypeName: $tourTypeName, tourDifficultyName: $tourDifficultyName, cities: $cities, districts: $districts)';
+    return 'TourPointDetail(id: $id, title: $title, description: $description, mainImage: $mainImage, otherImages: $otherImages, cityName: $cityName, districtName: $districtName, regionName: $regionName, countryName: $countryName, tourTypeName: $tourTypeName, tourDifficultyName: $tourDifficultyName, cities: $cities, districts: $districts, isFavorites: $isFavorites)';
   }
 
   @override
@@ -375,7 +392,9 @@ class _$TourPointDetailImpl implements _TourPointDetail {
             const DeepCollectionEquality().equals(
               other._districts,
               _districts,
-            ));
+            ) &&
+            (identical(other.isFavorites, isFavorites) ||
+                other.isFavorites == isFavorites));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -395,6 +414,7 @@ class _$TourPointDetailImpl implements _TourPointDetail {
     tourDifficultyName,
     const DeepCollectionEquality().hash(_cities),
     const DeepCollectionEquality().hash(_districts),
+    isFavorites,
   );
 
   /// Create a copy of TourPointDetail
@@ -429,6 +449,7 @@ abstract class _TourPointDetail implements TourPointDetail {
     required final String tourDifficultyName,
     required final List<CityDto> cities,
     required final List<DistrictDto> districts,
+    required final bool isFavorites,
   }) = _$TourPointDetailImpl;
 
   factory _TourPointDetail.fromJson(Map<String, dynamic> json) =
@@ -460,6 +481,8 @@ abstract class _TourPointDetail implements TourPointDetail {
   List<CityDto> get cities;
   @override
   List<DistrictDto> get districts;
+  @override
+  bool get isFavorites;
 
   /// Create a copy of TourPointDetail
   /// with the given fields replaced by the non-null parameter values.

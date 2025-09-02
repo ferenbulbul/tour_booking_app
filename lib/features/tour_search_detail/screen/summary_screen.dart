@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -46,6 +47,7 @@ class SummaryScreen extends StatelessWidget {
         final String districtDisplay = vm.selectedDistrictName ?? 'Seçilmedi';
         final String tourPointDisplay = vm.selectedTourPointName ?? 'Seçilmedi';
         final String placeDisplay = vm.selectedPlaceDesc ?? 'Seçilmedi';
+        final String departureTime = vm.selectedTime ?? 'Seçilmedi';
         final cityDistrict = [
           cityDisplay ?? '',
           districtDisplay ?? '',
@@ -63,7 +65,7 @@ class SummaryScreen extends StatelessWidget {
                   _SectionCard(
                     title: 'Seyahat Bilgileri',
                     children: [
-                      _infoRow('Tarih', _formatDate(date)),
+                      _infoRow('Tarih', _formatDate(date, departureTime)),
                       _infoRow('Kalkış Bölgesi', cityDistrict),
                       _infoRow('Tam konum', placeDisplay),
                       _infoRow('Tur Noktası', tourPointDisplay),
@@ -75,8 +77,12 @@ class SummaryScreen extends StatelessWidget {
                     trailing: selectedVehicle?.image != null
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              selectedVehicle!.image,
+                            child: CachedNetworkImage(
+                              placeholder: (context, url) =>
+                                  const CircularProgressIndicator(),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                              imageUrl: selectedVehicle!.image,
                               height: 64,
                               width: 64,
                               fit: BoxFit.cover,
@@ -111,30 +117,36 @@ class SummaryScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  _SectionCard(
-                    title: 'Rehber',
-                    trailing: selectedGuide?.image != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              selectedGuide!.image!,
-                              height: 64,
-                              width: 64,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : null,
-                    children: [
-                      _infoRow('Rehber', _guideTitle(selectedGuide)),
-                      _infoRow(
-                        'Diller',
-                        (selectedGuide?.languages.isNotEmpty == true)
-                            ? selectedGuide!.languages.join(', ')
-                            : '—',
-                      ),
-                      _infoRow('Rehber Ücreti', _formatCurrency(guidePrice)),
-                    ],
-                  ),
+                  if (selectedGuide != null)
+                    _SectionCard(
+                      title: 'Rehber',
+                      trailing: selectedGuide?.image != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: CachedNetworkImage(
+                                placeholder: (context, url) =>
+                                    const CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                                imageUrl: selectedGuide!.image!,
+                                height: 64,
+                                width: 64,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : null,
+                      children: [
+                        _infoRow('Rehber', _guideTitle(selectedGuide)),
+                        _infoRow(
+                          'Diller',
+                          (selectedGuide?.languages.isNotEmpty == true)
+                              ? selectedGuide!.languages.join(', ')
+                              : '—',
+                        ),
+                        _infoRow('Rehber Ücreti', _formatCurrency(guidePrice)),
+                      ],
+                    ),
+
                   const SizedBox(height: 12),
                   _SectionCard(
                     title: 'Ödeme Özeti',
@@ -255,11 +267,15 @@ class SummaryScreen extends StatelessWidget {
     );
   }
 
-  static String _formatDate(DateTime? date) {
+  static String _formatDate(DateTime? date, String departureTime) {
     if (date == null) return 'Seçilmedi';
-    // Example: 13 Ağustos 2025, Çar 14:00
-    final df = DateFormat('d MMMM yyyy, EEE HH:mm', 'tr_TR');
-    return df.format(date);
+
+    // Örn: 13 Ağustos 2025, Çar
+    final df = DateFormat('d MMMM yyyy, EEE', 'tr_TR');
+    final formattedDate = df.format(date);
+
+    // Saati string olarak ekle
+    return "$formattedDate $departureTime";
   }
 
   static String _formatCurrency(num? value) {

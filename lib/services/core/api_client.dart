@@ -42,6 +42,7 @@ class ApiClient {
           response = await send(newToken ?? '');
         } else {
           await _tokenStorage.clearTokens();
+
           throw Exception("Oturum süresi doldu.");
         }
       }

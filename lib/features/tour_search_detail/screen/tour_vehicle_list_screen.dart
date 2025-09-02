@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/features/tour_search_detail/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/models/vehicle/vehicle.dart';
+import 'package:cached_network_image/cached_network_image.dart'; // Yeni paketi import ediyoruz
 
 class TourVehicleListScreen extends StatelessWidget {
   const TourVehicleListScreen({super.key});
@@ -62,9 +63,13 @@ class TourVehicleListScreen extends StatelessWidget {
         ],
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(0),
+        borderRadius: BorderRadius.circular(20),
         onTap: () {
-          // TODO: Detay ekranına yönlendir
+          context.read<TourSearchDetailViewModel>().setSelectedPrice(
+            vehicle.price,
+          );
+
+          context.pushNamed('vehicleDetail', extra: vehicle.vehicleId);
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,14 +82,33 @@ class TourVehicleListScreen extends StatelessWidget {
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20),
                   ),
+                  // FadeInImage yerine CachedNetworkImage kullanıldı
                   child: AspectRatio(
                     aspectRatio: 1.3,
-                    child: FadeInImage.assetNetwork(
-                      placeholder: 'assets/images/icon.png',
-                      image: vehicle.image,
+                    child: CachedNetworkImage(
+                      imageUrl: vehicle.image,
                       fit: BoxFit.cover,
                       width: double.infinity,
                       height: 130,
+                      // Yüklenirken gösterilecek placeholder
+                      placeholder: (context, url) => Container(
+                        color: Colors.grey.shade300,
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ),
+                      // Hata durumunda gösterilecek widget
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey.shade300,
+                        child: const Icon(
+                          Icons.image_not_supported_outlined,
+                          size: 48,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ),
                   ),
                 ),
