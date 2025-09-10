@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/search_type.dart';
@@ -8,6 +9,7 @@ import 'package:tour_booking/features/favorite/screen/favorite_screen.dart';
 import 'package:tour_booking/features/forgot_passwords/forgot_password/screen/forgot_password_screen.dart';
 import 'package:tour_booking/features/forgot_passwords/reset_password/screen/reset_password_screen.dart';
 import 'package:tour_booking/features/forgot_passwords/verify_reset_code/screen/%20verify_reset_code_screen.dart';
+import 'package:tour_booking/features/home/screen/nearby_tourpoiont.dart';
 import 'package:tour_booking/features/home/widgets/detail_search.dart';
 import 'package:tour_booking/features/home/widgets/tour_search_by_tour_type.dart';
 import 'package:tour_booking/features/login/screens/login_screen.dart';
@@ -29,6 +31,8 @@ import '../features/splash/screen/splash_screen.dart';
 import '../features/register/screen/register_screen.dart';
 import '../features/home/screen/home_screen.dart';
 
+final RouteObserver<ModalRoute<void>> globalRouteObserver =
+    RouteObserver<ModalRoute<void>>();
 final GoRouter router = GoRouter(
   navigatorKey: appNavigatorKey,
   debugLogDiagnostics: true,
@@ -143,6 +147,12 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
+      name: "nearbyPoints",
+      path: "/nearby-points",
+      builder: (context, state) => const NearbyPointsPage(),
+    ),
+
+    GoRoute(
       path: '/driver',
       builder: (context, state) => const DriverHomePage(),
     ),
@@ -169,7 +179,7 @@ final GoRouter router = GoRouter(
         GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
         GoRoute(
           path: '/favorite',
-          builder: (context, state) => const FavoriteScreen(),
+          builder: (context, state) => const FavoritePage(),
         ),
         GoRoute(
           path: '/search',

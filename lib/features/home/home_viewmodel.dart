@@ -3,6 +3,8 @@ import 'package:tour_booking/core/network/handle_response.dart';
 import 'package:tour_booking/core/network/result.dart';
 import 'package:tour_booking/models/featured_tour_point/featured_tour_point_dto.dart';
 import 'package:tour_booking/models/featured_tour_point_list/featured_tour_point_list_dto.dart';
+import 'package:tour_booking/models/nearby_list/nearby_list_response.dart';
+import 'package:tour_booking/models/nearby_tourpoint/nearby_tour_point_dto.dart';
 import 'package:tour_booking/models/tour_point/tour_point.dart';
 import 'package:tour_booking/models/tour_search_response/tour_search_response.dart';
 import 'package:tour_booking/models/tour_type/tour_type_dto.dart';
@@ -19,6 +21,7 @@ class HomeViewModel extends ChangeNotifier {
   Future<void> init() async {
     await fetchTourTypes();
     await fetchFeaturedTourPoints();
+    await fetchNearbyTourPoints();
     // ileride başka veri çekme metotları buraya eklenebilir
   }
 
@@ -97,6 +100,35 @@ class HomeViewModel extends ChangeNotifier {
       messageSearchByType = e.toString();
     } finally {
       isLoadingSearchByType = false;
+      notifyListeners();
+    }
+  }
+
+  List<NearbyTourPointDto> nearbyPoints = [];
+  bool isLoadingNearby = false;
+  String? messageNearby;
+
+  Future<void> fetchNearbyTourPoints() async {
+    try {
+      isLoadingNearby = true;
+      messageNearby = null;
+      notifyListeners();
+
+      final resp = await _tourService.getNearbyTourPoints();
+      final result = handleResponse<NearbyListResponse>(resp);
+
+      if (result.isSuccess && result.data != null) {
+        nearbyPoints = result.data!.nearByList;
+        messageNearby = null;
+      } else {
+        nearbyPoints = [];
+        messageNearby = resp.message ?? "Yakın yerler alınamadı";
+      }
+    } catch (e) {
+      nearbyPoints = [];
+      messageNearby = e.toString();
+    } finally {
+      isLoadingNearby = false;
       notifyListeners();
     }
   }

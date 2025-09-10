@@ -11,6 +11,7 @@ import 'package:tour_booking/core/theme/app_theme.dart';
 import 'package:tour_booking/features/change_password/change_password_viewmodel.dart';
 import 'package:tour_booking/features/driver_home_page/driver_viewmodel.dart';
 import 'package:tour_booking/features/email_verification/widget/email_verification_view_model.dart';
+import 'package:tour_booking/features/favorite/favorite_viewmodel.dart';
 import 'package:tour_booking/features/forgot_passwords/forgot_password/widget/forgot_password_view_model.dart';
 import 'package:tour_booking/features/home/home_viewmodel.dart';
 import 'package:tour_booking/features/login/widgets/google_view_model.dart';
@@ -71,6 +72,7 @@ class AppProviders extends StatelessWidget {
           ),
           ChangeNotifierProvider(create: (_) => ProfileViewModel()),
           ChangeNotifierProvider(create: (_) => VerifyPhoneViewModel()),
+          ChangeNotifierProvider(create: (_) => FavoriteViewModel()),
         ],
         child: const MyApp(),
       ),

@@ -10,11 +10,14 @@ class SocialLoginButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final googleVM = Provider.of<GoogleViewModel>(context);
+    // final googleVM = Provider.of<GoogleViewModel>(context); // Bu satır doğrudan build metodu içinde kullanılmadığı için burada durmasına gerek yok.
+
     return Column(
       children: [
         ElevatedButton(
           onPressed: () {
+            // Eğer Facebook girişi de asenkron bir işlem içeriyorsa,
+            // buraya da benzer bir yükleme animasyonu ekleyebilirsiniz.
             context.go('/home');
           },
           style: ElevatedButton.styleFrom(
@@ -41,13 +44,37 @@ class SocialLoginButtons extends StatelessWidget {
 
         ElevatedButton(
           onPressed: () async {
+            // 1. Yükleme animasyonunu göster
+            showDialog(
+              context: context,
+              barrierDismissible:
+                  false, // Kullanıcının dialogu kapatmasını engeller
+              builder: (context) => const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors
+                      .primary, // Temanıza uygun bir renk seçebilirsiniz
+                ),
+              ),
+            );
+
+            // GoogleViewModel'ı dinlemeden alıyoruz çünkü sadece metodunu çağıracağız
             final viewModel = Provider.of<GoogleViewModel>(
               context,
               listen: false,
             );
+
+            // 2. Google giriş işlemini başlat
             final result = await viewModel.signInWithGoogle();
 
+            // 3. Yükleme animasyonunu gizle
+            // context'in hala mounted olup olmadığını kontrol etmek önemlidir.
             if (context.mounted) {
+              Navigator.of(context).pop(); // Yükleme dialogunu kapat
+            }
+
+            // 4. Sonuca göre işlem yap
+            if (context.mounted) {
+              // Dialog kapandıktan sonra context'in hala geçerli olup olmadığını tekrar kontrol et
               if (result.isSuccess) {
                 context.go('/home');
               } else {

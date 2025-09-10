@@ -19,7 +19,7 @@ class ProfileWarningBanner extends StatelessWidget {
 
         // Ana banner'ı ekran kenarlarından boşluk bırakacak şekilde yerleştiriyoruz.
         return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
           child: Container(
             padding: const EdgeInsets.all(12.0),
             decoration: BoxDecoration(

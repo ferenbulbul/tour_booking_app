@@ -5,6 +5,7 @@ import 'package:tour_booking/models/district_list/district_list_response.dart';
 import 'package:tour_booking/models/featured_tour_point_list/featured_tour_point_list_dto.dart';
 import 'package:tour_booking/models/is_valid_response/is_valid_response.dart';
 import 'package:tour_booking/models/location_update/location_dto.dart';
+import 'package:tour_booking/models/nearby_list/nearby_list_response.dart';
 import 'package:tour_booking/models/profile/profile_response.dart';
 import 'package:tour_booking/models/region_list/region_list_response.dart';
 import 'package:tour_booking/models/tour_guide_request/tour_guide_request.dart';
@@ -217,5 +218,25 @@ class TourService {
       path: '/Mobile/toggle-favorite',
       body: {'tourPointId': tourPointId},
     );
+  }
+
+  Future<BaseResponse<NearbyListResponse>> getNearbyTourPoints() async {
+    var response = _apiClient.get<NearbyListResponse>(
+      path: "/Mobile/nearby",
+      queryParams: {},
+      fromJson: (json) =>
+          NearbyListResponse.fromJson(json as Map<String, dynamic>),
+    );
+    return response;
+  }
+
+  Future<BaseResponse<FeaturedTourPointListDto>> getFavorites() async {
+    var response = _apiClient.get<FeaturedTourPointListDto>(
+      path: "/Mobile/favorites",
+      queryParams: {},
+      fromJson: (json) =>
+          FeaturedTourPointListDto.fromJson(json as Map<String, dynamic>),
+    );
+    return response;
   }
 }

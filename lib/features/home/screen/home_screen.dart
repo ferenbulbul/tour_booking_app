@@ -6,8 +6,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/home/widgets/about_section.dart';
+import 'package:tour_booking/features/home/widgets/customer_location_button.dart';
 import 'package:tour_booking/features/home/widgets/driver_location_status.dart';
 import 'package:tour_booking/features/home/widgets/featured_tour_points.dart';
+import 'package:tour_booking/features/home/widgets/location_action_button.dart';
+import 'package:tour_booking/features/home/widgets/near_by_points_button.dart';
+import 'package:tour_booking/features/home/screen/nearby_tourpoiont.dart';
 // SearchLocationPage'i import ettiğinden emin ol
 
 import 'package:tour_booking/features/home/widgets/search_section.dart';
@@ -85,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ProfileWarningBanner(
                     onAction: () {
@@ -95,10 +99,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   // Konum durumu widget'ı
                   const FakeSearchBar(),
                   const SizedBox(height: 10),
+                  const NearbyPointsButton(),
+                  const SizedBox(height: 10),
                   const FeaturedPointsWidget(),
-
                   const SizedBox(height: 24),
+
                   const TourTypeWidget(),
+                  const SizedBox(height: 24),
                   const SizedBox(height: 24),
                   const AboutSection(),
                 ],
