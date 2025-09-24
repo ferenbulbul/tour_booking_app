@@ -57,7 +57,7 @@ class AppProviders extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => LoginViewModel()),
           ChangeNotifierProvider(create: (_) => SplashViewModel()),
           ChangeNotifierProvider(create: (_) => EmailVerificationViewModel()),
-          ChangeNotifierProvider(create: (_) => GoogleViewModel()),
+          ChangeNotifierProvider(create: (_) => AuthViewModel()),
           ChangeNotifierProvider(create: (_) => RegisterViewModel()),
           ChangeNotifierProvider(create: (_) => ForgotPasswordViewModel()),
           ChangeNotifierProvider(create: (_) => LocationViewModel()),

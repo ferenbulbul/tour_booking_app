@@ -8,7 +8,6 @@ import 'package:tour_booking/core/enum/user_role.dart';
 import 'package:tour_booking/features/driver_home_page/driver_viewmodel.dart';
 import 'package:tour_booking/features/home/widgets/driver_location_status.dart';
 import 'package:tour_booking/features/login/widgets/google_view_model.dart';
-import 'package:tour_booking/features/login/widgets/login_view_model.dart';
 import 'package:tour_booking/services/location/location_viewmodel.dart';
 
 class DriverHomePage extends StatefulWidget {
@@ -95,7 +94,7 @@ class _DriverHomePageState extends State<DriverHomePage>
                   tooltip: 'Çıkış yap',
                   onPressed: () async {
                     // önce düzgün çıkış, sonra navigate
-                    final loginVm = context.read<GoogleViewModel>();
+                    final loginVm = context.read<AuthViewModel>();
                     await loginVm
                         .signOut(); // senin imzana göre Result dönebilir, uyarlayabilirsin
                     if (!mounted) return;

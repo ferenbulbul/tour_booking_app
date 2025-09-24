@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tour_booking/models/base/base_response.dart';
+import 'package:tour_booking/models/firebase_token/firebase_token_request.dart';
 import 'package:tour_booking/models/login/login_request.dart';
 import 'package:tour_booking/models/login/login_response.dart';
 import 'package:tour_booking/models/register/register_request.dart';
@@ -64,10 +65,12 @@ class AuthService {
     );
   }
 
-  Future<BaseResponse<LoginResponse>> verifyGoogleUser(String token) {
+  Future<BaseResponse<LoginResponse>> verifyGoogleUser(
+    FirebaseTokenRequest req,
+  ) {
     return _apiClient.post<LoginResponse>(
       path: '/Auth/signin-with-google',
-      body: {'token': token},
+      body: req.toJson(),
       fromJson: (json) => LoginResponse.fromJson(json as Map<String, dynamic>),
     );
   }

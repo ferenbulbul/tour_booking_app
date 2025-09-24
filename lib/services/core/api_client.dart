@@ -1,8 +1,12 @@
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
+import 'package:tour_booking/features/login/widgets/google_view_model.dart';
+import 'package:tour_booking/models/auth_response/auth_response.dart';
 import 'package:tour_booking/models/base/base_response.dart';
+import 'package:tour_booking/models/refresh_token_request/refresh_token_request.dart';
 import 'package:tour_booking/navigation/app_navigator.dart';
 import 'package:tour_booking/services/core/secure_token_storage.dart';
 import 'package:tour_booking/services/core/safe_call.dart';
@@ -13,8 +17,11 @@ class ApiClient {
   final String _baseUrl = dotenv.env['baseUrl'] ?? '';
   final String _mobileUrl = dotenv.env['mobileAndroid'] ?? '';
   final String _cloudUrl = dotenv.env['cloud'] ?? '';
+  final AuthViewModel? _authViewModel;
 
-  ApiClient({http.Client? client}) : _client = client ?? http.Client();
+  ApiClient({AuthViewModel? authViewModel, http.Client? client})
+    : _client = client ?? http.Client(),
+      _authViewModel = authViewModel;
 
   Map<String, String> _headers({String? token, Map<String, String>? extra}) {
     final localeCode =
@@ -40,10 +47,16 @@ class ApiClient {
         if (refreshSuccess) {
           final newToken = await _tokenStorage.getAccessToken();
           response = await send(newToken ?? '');
+          if (response.statusCode == 401) {
+            await _authViewModel?.signOut();
+            appNavigatorKey.currentContext?.pushReplacement('/login');
+            ;
+            return Future.error("Oturum süresi doldu.");
+          }
         } else {
-          await _tokenStorage.clearTokens();
-
-          throw Exception("Oturum süresi doldu.");
+          await _authViewModel?.signOut();
+          appNavigatorKey.currentContext?.pushReplacement('/login');
+          return Future.error("Oturum süresi doldu.");
         }
       }
 
@@ -56,17 +69,22 @@ class ApiClient {
     final refreshToken = await _tokenStorage.getRefreshToken();
     if (refreshToken == null) return false;
 
+    // freezed model kullanarak body hazırla
+    final request = RefreshTokenRequest(refreshToken: refreshToken);
+
     final response = await _client.post(
-      Uri.parse('$_cloudUrl/refresh-token'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'refreshToken': refreshToken}),
+      Uri.parse('$_cloudUrl/auth/refresh-token'),
+      headers: _headers(),
+      body: jsonEncode(request.toJson()), // modelden json
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final access = data['data']['accessToken'];
-      final newRefresh = data['data']['refreshToken'];
-      await _tokenStorage.saveTokens(access, newRefresh);
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+
+      // backend ApiResponse<AuthResponse> dönüyor, önce data’yı çekiyoruz
+      final auth = AuthResponse.fromJson(data['data'] as Map<String, dynamic>);
+
+      await _tokenStorage.saveTokens(auth.accessToken, auth.refreshToken);
       return true;
     }
 

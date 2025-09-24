@@ -10,14 +10,13 @@ class SocialLoginButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final googleVM = Provider.of<GoogleViewModel>(context); // Bu satır doğrudan build metodu içinde kullanılmadığı için burada durmasına gerek yok.
+    final authVM = Provider.of<AuthViewModel>(context, listen: false);
 
     return Column(
       children: [
+        // Facebook
         ElevatedButton(
           onPressed: () {
-            // Eğer Facebook girişi de asenkron bir işlem içeriyorsa,
-            // buraya da benzer bir yükleme animasyonu ekleyebilirsiniz.
             context.go('/home');
           },
           style: ElevatedButton.styleFrom(
@@ -42,50 +41,20 @@ class SocialLoginButtons extends StatelessWidget {
 
         const SizedBox(height: 12),
 
+        // Google
         ElevatedButton(
           onPressed: () async {
-            // 1. Yükleme animasyonunu göster
-            showDialog(
-              context: context,
-              barrierDismissible:
-                  false, // Kullanıcının dialogu kapatmasını engeller
-              builder: (context) => const Center(
-                child: CircularProgressIndicator(
-                  color: AppColors
-                      .primary, // Temanıza uygun bir renk seçebilirsiniz
-                ),
-              ),
-            );
+            _showLoading(context);
 
-            // GoogleViewModel'ı dinlemeden alıyoruz çünkü sadece metodunu çağıracağız
-            final viewModel = Provider.of<GoogleViewModel>(
-              context,
-              listen: false,
-            );
+            final result = await authVM.signIn(AuthProviderType.google);
 
-            // 2. Google giriş işlemini başlat
-            final result = await viewModel.signInWithGoogle();
+            if (context.mounted) Navigator.of(context).pop();
 
-            // 3. Yükleme animasyonunu gizle
-            // context'in hala mounted olup olmadığını kontrol etmek önemlidir.
             if (context.mounted) {
-              Navigator.of(context).pop(); // Yükleme dialogunu kapat
-            }
-
-            // 4. Sonuca göre işlem yap
-            if (context.mounted) {
-              // Dialog kapandıktan sonra context'in hala geçerli olup olmadığını tekrar kontrol et
               if (result.isSuccess) {
                 context.go('/home');
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      result.error?.message ?? "Bilinmeyen bir hata oluştu.",
-                    ),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                _showError(context, result.error?.message);
               }
             }
           },
@@ -103,7 +72,7 @@ class SocialLoginButtons extends StatelessWidget {
             children: [
               Image.asset(
                 'assets/images/google_logo.png',
-                width: 25, // Facebook ikonunla aynı boy!
+                width: 25,
                 height: 25,
               ),
               const SizedBox(width: 12),
@@ -111,7 +80,63 @@ class SocialLoginButtons extends StatelessWidget {
             ],
           ),
         ),
+
+        const SizedBox(height: 12),
+
+        // Apple
+        ElevatedButton(
+          onPressed: () async {
+            _showLoading(context);
+
+            final result = await authVM.signIn(AuthProviderType.apple);
+
+            if (context.mounted) Navigator.of(context).pop();
+
+            if (context.mounted) {
+              if (result.isSuccess) {
+                context.go('/home');
+              } else {
+                _showError(context, result.error?.message);
+              }
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.black, // Apple butonu siyah
+            foregroundColor: Colors.white, // Yazı beyaz
+            minimumSize: const Size.fromHeight(48),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.apple, color: Colors.white, size: 28),
+              const SizedBox(width: 12),
+              Text('Apple ile giriş yap'),
+            ],
+          ),
+        ),
       ],
+    );
+  }
+
+  void _showLoading(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(color: AppColors.primary),
+      ),
+    );
+  }
+
+  void _showError(BuildContext context, String? message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message ?? "Bilinmeyen bir hata oluştu."),
+        backgroundColor: Colors.red,
+      ),
     );
   }
 }

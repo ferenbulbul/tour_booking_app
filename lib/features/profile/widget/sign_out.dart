@@ -13,7 +13,7 @@ class SignOut extends StatelessWidget {
       children: [
         ElevatedButton(
           onPressed: () {
-            final viewModel = Provider.of<GoogleViewModel>(
+            final viewModel = Provider.of<AuthViewModel>(
               context,
               listen: false,
             );
