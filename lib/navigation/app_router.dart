@@ -19,8 +19,11 @@ import 'package:tour_booking/features/root/wigdet/root_scaffold.dart';
 import 'package:tour_booking/features/search/screen/search.dart';
 import 'package:tour_booking/features/search_result/screen/tour_search_result.dart';
 import 'package:tour_booking/features/settings/screen/settings_screen.dart';
+import 'package:tour_booking/features/tour_search_detail/payment_viewmodel.dart';
 import 'package:tour_booking/features/tour_search_detail/screen/guides_screen.dart';
+import 'package:tour_booking/features/tour_search_detail/screen/payment_fail.dart';
 import 'package:tour_booking/features/tour_search_detail/screen/payment_screen.dart';
+import 'package:tour_booking/features/tour_search_detail/screen/payment_success.dart';
 import 'package:tour_booking/features/tour_search_detail/screen/summary_screen.dart';
 import 'package:tour_booking/features/tour_search_detail/screen/tour_search_detail_screen.dart';
 import 'package:tour_booking/features/tour_search_detail/screen/tour_vehicle_list_screen.dart';
@@ -129,9 +132,12 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: '/payment',
-      name: 'payment',
       builder: (context, state) {
-        return PaymentScreen();
+        final bookingId = state.extra as String;
+        return ChangeNotifierProvider(
+          create: (_) => PaymentViewModel(),
+          child: PaymentPage(bookingId: bookingId),
+        );
       },
     ),
     GoRoute(
@@ -170,6 +176,14 @@ final GoRouter router = GoRouter(
         final tourTypeId = state.uri.queryParameters['tourTypeId'];
         return TourSearchResultsByTourTypeScreen(tourTypeId: tourTypeId);
       },
+    ),
+    GoRoute(
+      path: '/payment-success',
+      builder: (context, state) => const PaymentSuccessPage(),
+    ),
+    GoRoute(
+      path: '/payment-fail',
+      builder: (context, state) => const PaymentFailPage(),
     ),
     ShellRoute(
       builder: (context, state, child) {

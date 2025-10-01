@@ -42,6 +42,7 @@ dependencies:
   flutter_time_picker_spinner: ^2.0.0
   cached_network_image: ^3.4.1
   sign_in_with_apple: ^7.0.1
+  webview_flutter: ^4.13.0
 
 
 

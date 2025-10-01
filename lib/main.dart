@@ -23,6 +23,7 @@ import 'package:tour_booking/features/register/widgets/register_view_model.dart'
 import 'package:tour_booking/features/search/search_viewmodel.dart';
 import 'package:tour_booking/features/search_result/search_result_viewmodel.dart';
 import 'package:tour_booking/features/splash/widget/splash_view_model.dart';
+import 'package:tour_booking/features/tour_search_detail/payment_viewmodel.dart';
 import 'package:tour_booking/features/tour_search_detail/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/firebase_options.dart';
 import 'package:tour_booking/navigation/app_router.dart';
@@ -73,6 +74,7 @@ class AppProviders extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => ProfileViewModel()),
           ChangeNotifierProvider(create: (_) => VerifyPhoneViewModel()),
           ChangeNotifierProvider(create: (_) => FavoriteViewModel()),
+          ChangeNotifierProvider(create: (_) => PaymentViewModel()),
         ],
         child: const MyApp(),
       ),

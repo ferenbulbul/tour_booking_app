@@ -166,8 +166,8 @@ class SummaryScreen extends StatelessWidget {
                     onPressed: canConfirm
                         ? () async {
                             await vm.ControlBooking(); // API cevabını bekle
-                            if (vm.isValid) {
-                              context.push('/payment');
+                            if (vm.isValid && vm.bookingId != null) {
+                              context.push('/payment', extra: vm.bookingId);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(vm.errorMessage!)),
                               );

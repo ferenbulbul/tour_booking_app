@@ -1,0 +1,29 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'payment_result_response.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+_$PaymentResultResponseImpl _$$PaymentResultResponseImplFromJson(
+  Map<String, dynamic> json,
+) => _$PaymentResultResponseImpl(
+  paymentStatus: json['paymentStatus'] as String,
+  paymentId: json['paymentId'] as String?,
+  conversationId: json['conversationId'] as String?,
+  price: json['price'] as String?,
+  paidPrice: json['paidPrice'] as String?,
+  erorMessage: json['erorMessage'] as String?,
+);
+
+Map<String, dynamic> _$$PaymentResultResponseImplToJson(
+  _$PaymentResultResponseImpl instance,
+) => <String, dynamic>{
+  'paymentStatus': instance.paymentStatus,
+  'paymentId': instance.paymentId,
+  'conversationId': instance.conversationId,
+  'price': instance.price,
+  'paidPrice': instance.paidPrice,
+  'erorMessage': instance.erorMessage,
+};
