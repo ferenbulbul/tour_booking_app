@@ -6,7 +6,8 @@ part 'payment_result_response.g.dart';
 @freezed
 class PaymentResultResponse with _$PaymentResultResponse {
   const factory PaymentResultResponse({
-    required String paymentStatus, // SUCCESS / FAILURE
+    required String paymentStatus,
+    required String bookingStatus, // SUCCESS / FAILURE
     String? conversationId,
   }) = _PaymentResultResponse;
 

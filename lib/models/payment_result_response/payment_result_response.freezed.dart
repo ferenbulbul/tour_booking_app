@@ -23,7 +23,8 @@ PaymentResultResponse _$PaymentResultResponseFromJson(
 
 /// @nodoc
 mixin _$PaymentResultResponse {
-  String get paymentStatus =>
+  String get paymentStatus => throw _privateConstructorUsedError;
+  String get bookingStatus =>
       throw _privateConstructorUsedError; // SUCCESS / FAILURE
   String? get conversationId => throw _privateConstructorUsedError;
 
@@ -44,7 +45,11 @@ abstract class $PaymentResultResponseCopyWith<$Res> {
     $Res Function(PaymentResultResponse) then,
   ) = _$PaymentResultResponseCopyWithImpl<$Res, PaymentResultResponse>;
   @useResult
-  $Res call({String paymentStatus, String? conversationId});
+  $Res call({
+    String paymentStatus,
+    String bookingStatus,
+    String? conversationId,
+  });
 }
 
 /// @nodoc
@@ -64,12 +69,20 @@ class _$PaymentResultResponseCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? paymentStatus = null, Object? conversationId = freezed}) {
+  $Res call({
+    Object? paymentStatus = null,
+    Object? bookingStatus = null,
+    Object? conversationId = freezed,
+  }) {
     return _then(
       _value.copyWith(
             paymentStatus: null == paymentStatus
                 ? _value.paymentStatus
                 : paymentStatus // ignore: cast_nullable_to_non_nullable
+                      as String,
+            bookingStatus: null == bookingStatus
+                ? _value.bookingStatus
+                : bookingStatus // ignore: cast_nullable_to_non_nullable
                       as String,
             conversationId: freezed == conversationId
                 ? _value.conversationId
@@ -90,7 +103,11 @@ abstract class _$$PaymentResultResponseImplCopyWith<$Res>
   ) = __$$PaymentResultResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String paymentStatus, String? conversationId});
+  $Res call({
+    String paymentStatus,
+    String bookingStatus,
+    String? conversationId,
+  });
 }
 
 /// @nodoc
@@ -107,12 +124,20 @@ class __$$PaymentResultResponseImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? paymentStatus = null, Object? conversationId = freezed}) {
+  $Res call({
+    Object? paymentStatus = null,
+    Object? bookingStatus = null,
+    Object? conversationId = freezed,
+  }) {
     return _then(
       _$PaymentResultResponseImpl(
         paymentStatus: null == paymentStatus
             ? _value.paymentStatus
             : paymentStatus // ignore: cast_nullable_to_non_nullable
+                  as String,
+        bookingStatus: null == bookingStatus
+            ? _value.bookingStatus
+            : bookingStatus // ignore: cast_nullable_to_non_nullable
                   as String,
         conversationId: freezed == conversationId
             ? _value.conversationId
@@ -128,6 +153,7 @@ class __$$PaymentResultResponseImplCopyWithImpl<$Res>
 class _$PaymentResultResponseImpl implements _PaymentResultResponse {
   const _$PaymentResultResponseImpl({
     required this.paymentStatus,
+    required this.bookingStatus,
     this.conversationId,
   });
 
@@ -136,13 +162,15 @@ class _$PaymentResultResponseImpl implements _PaymentResultResponse {
 
   @override
   final String paymentStatus;
+  @override
+  final String bookingStatus;
   // SUCCESS / FAILURE
   @override
   final String? conversationId;
 
   @override
   String toString() {
-    return 'PaymentResultResponse(paymentStatus: $paymentStatus, conversationId: $conversationId)';
+    return 'PaymentResultResponse(paymentStatus: $paymentStatus, bookingStatus: $bookingStatus, conversationId: $conversationId)';
   }
 
   @override
@@ -152,13 +180,16 @@ class _$PaymentResultResponseImpl implements _PaymentResultResponse {
             other is _$PaymentResultResponseImpl &&
             (identical(other.paymentStatus, paymentStatus) ||
                 other.paymentStatus == paymentStatus) &&
+            (identical(other.bookingStatus, bookingStatus) ||
+                other.bookingStatus == bookingStatus) &&
             (identical(other.conversationId, conversationId) ||
                 other.conversationId == conversationId));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, paymentStatus, conversationId);
+  int get hashCode =>
+      Object.hash(runtimeType, paymentStatus, bookingStatus, conversationId);
 
   /// Create a copy of PaymentResultResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -181,6 +212,7 @@ class _$PaymentResultResponseImpl implements _PaymentResultResponse {
 abstract class _PaymentResultResponse implements PaymentResultResponse {
   const factory _PaymentResultResponse({
     required final String paymentStatus,
+    required final String bookingStatus,
     final String? conversationId,
   }) = _$PaymentResultResponseImpl;
 
@@ -188,7 +220,9 @@ abstract class _PaymentResultResponse implements PaymentResultResponse {
       _$PaymentResultResponseImpl.fromJson;
 
   @override
-  String get paymentStatus; // SUCCESS / FAILURE
+  String get paymentStatus;
+  @override
+  String get bookingStatus; // SUCCESS / FAILURE
   @override
   String? get conversationId;
 

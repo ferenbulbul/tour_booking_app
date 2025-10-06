@@ -76,7 +76,8 @@ class _PaymentPageState extends State<PaymentPage> {
                       vm.checkPaymentResult(token).then((_) {
                         if (!mounted) return;
 
-                        if (vm.resultData?.paymentStatus == "Success") {
+                        if (vm.resultData?.paymentStatus == "Success" &&
+                            vm.resultData?.bookingStatus == "Success") {
                           context.replace(
                             '/payment-success',
                             extra: vm.initData?.conversationId,
