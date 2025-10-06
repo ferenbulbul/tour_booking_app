@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/features/tour_search_detail/payment_viewmodel.dart';
-import 'package:tour_booking/features/tour_search_detail/screen/payment_fail.dart';
-import 'package:tour_booking/features/tour_search_detail/screen/payment_success.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class PaymentPage extends StatefulWidget {
@@ -78,8 +76,11 @@ class _PaymentPageState extends State<PaymentPage> {
                       vm.checkPaymentResult(token).then((_) {
                         if (!mounted) return;
 
-                        if (vm.resultData?.paymentStatus == "SUCCESS") {
-                          context.replace('/payment-success');
+                        if (vm.resultData?.paymentStatus == "Success") {
+                          context.replace(
+                            '/payment-success',
+                            extra: vm.initData?.conversationId,
+                          );
                         } else {
                           context.replace('/payment-fail');
                         }

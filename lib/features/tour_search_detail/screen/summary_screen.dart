@@ -168,9 +168,6 @@ class SummaryScreen extends StatelessWidget {
                             await vm.ControlBooking(); // API cevabını bekle
                             if (vm.isValid && vm.bookingId != null) {
                               context.push('/payment', extra: vm.bookingId);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(vm.errorMessage!)),
-                              );
                             } else {
                               // Hata mesajını göstermek istersen:
                               if (vm.errorMessage != null) {

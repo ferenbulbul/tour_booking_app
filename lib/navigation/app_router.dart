@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/search_type.dart';
+import 'package:tour_booking/features/bookings/screen/bookings_screen.dart';
 import 'package:tour_booking/features/change_password/screen/change_password.dart';
 import 'package:tour_booking/features/driver_home_page/screen/driver_home_page.dart';
 import 'package:tour_booking/features/email_verification/screen/email_verification_screen.dart';
@@ -179,7 +180,14 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: '/payment-success',
-      builder: (context, state) => const PaymentSuccessPage(),
+      builder: (context, state) {
+        final conversitationId = state.extra as String;
+        return PaymentSuccessPage(conversitationId: conversitationId);
+      },
+    ),
+    GoRoute(
+      path: '/past-bookings',
+      builder: (context, state) => const BookingsScreen(),
     ),
     GoRoute(
       path: '/payment-fail',

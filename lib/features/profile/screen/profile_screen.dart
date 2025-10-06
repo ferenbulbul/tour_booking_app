@@ -62,6 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 5),
           _buildPhoneSection(context, profile, vm, textTheme),
           const SizedBox(height: 5),
+          _buildPastOrdersButton(context),
           const SignOut(),
         ],
       ),
@@ -77,6 +78,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [const LanguageSelector()],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPastOrdersButton(BuildContext context) {
+    return Card(
+      elevation: 0.5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: FilledButton.icon(
+          onPressed: () => context.push("/past-bookings"), // henüz tanımlamadık
+          icon: const Icon(Icons.history, size: 20),
+          label: const Text("Turlarım"),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:tour_booking/models/base/base_response.dart';
+import 'package:tour_booking/models/booking_list/booking_list_response.dart';
 import 'package:tour_booking/models/city_list/city_list_response.dart';
 import 'package:tour_booking/models/create_booking_request/create_booking_command.dart';
 import 'package:tour_booking/models/district_list/district_list_response.dart';
@@ -236,6 +237,16 @@ class TourService {
       queryParams: {},
       fromJson: (json) =>
           FeaturedTourPointListDto.fromJson(json as Map<String, dynamic>),
+    );
+    return response;
+  }
+
+  Future<BaseResponse<BookingListResponse>> getCustomerBookings() async {
+    var response = _apiClient.get<BookingListResponse>(
+      path: "/Mobile/customer-booking",
+      queryParams: {},
+      fromJson: (json) =>
+          BookingListResponse.fromJson(json as Map<String, dynamic>),
     );
     return response;
   }

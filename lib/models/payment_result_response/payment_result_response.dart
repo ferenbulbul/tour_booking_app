@@ -7,11 +7,7 @@ part 'payment_result_response.g.dart';
 class PaymentResultResponse with _$PaymentResultResponse {
   const factory PaymentResultResponse({
     required String paymentStatus, // SUCCESS / FAILURE
-    String? paymentId,
     String? conversationId,
-    String? price,
-    String? paidPrice,
-    String? erorMessage,
   }) = _PaymentResultResponse;
 
   factory PaymentResultResponse.fromJson(Map<String, dynamic> json) =>
