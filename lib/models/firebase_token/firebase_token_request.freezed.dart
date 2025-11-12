@@ -23,6 +23,8 @@ FirebaseTokenRequest _$FirebaseTokenRequestFromJson(Map<String, dynamic> json) {
 mixin _$FirebaseTokenRequest {
   String get token => throw _privateConstructorUsedError;
   String? get fullName => throw _privateConstructorUsedError;
+  String? get deviceId => throw _privateConstructorUsedError;
+  String? get deviceModel => throw _privateConstructorUsedError;
 
   /// Serializes this FirebaseTokenRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,7 +43,12 @@ abstract class $FirebaseTokenRequestCopyWith<$Res> {
     $Res Function(FirebaseTokenRequest) then,
   ) = _$FirebaseTokenRequestCopyWithImpl<$Res, FirebaseTokenRequest>;
   @useResult
-  $Res call({String token, String? fullName});
+  $Res call({
+    String token,
+    String? fullName,
+    String? deviceId,
+    String? deviceModel,
+  });
 }
 
 /// @nodoc
@@ -61,7 +68,12 @@ class _$FirebaseTokenRequestCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? token = null, Object? fullName = freezed}) {
+  $Res call({
+    Object? token = null,
+    Object? fullName = freezed,
+    Object? deviceId = freezed,
+    Object? deviceModel = freezed,
+  }) {
     return _then(
       _value.copyWith(
             token: null == token
@@ -71,6 +83,14 @@ class _$FirebaseTokenRequestCopyWithImpl<
             fullName: freezed == fullName
                 ? _value.fullName
                 : fullName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            deviceId: freezed == deviceId
+                ? _value.deviceId
+                : deviceId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            deviceModel: freezed == deviceModel
+                ? _value.deviceModel
+                : deviceModel // ignore: cast_nullable_to_non_nullable
                       as String?,
           )
           as $Val,
@@ -87,7 +107,12 @@ abstract class _$$FirebaseTokenRequestImplCopyWith<$Res>
   ) = __$$FirebaseTokenRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String token, String? fullName});
+  $Res call({
+    String token,
+    String? fullName,
+    String? deviceId,
+    String? deviceModel,
+  });
 }
 
 /// @nodoc
@@ -103,7 +128,12 @@ class __$$FirebaseTokenRequestImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? token = null, Object? fullName = freezed}) {
+  $Res call({
+    Object? token = null,
+    Object? fullName = freezed,
+    Object? deviceId = freezed,
+    Object? deviceModel = freezed,
+  }) {
     return _then(
       _$FirebaseTokenRequestImpl(
         token: null == token
@@ -114,6 +144,14 @@ class __$$FirebaseTokenRequestImplCopyWithImpl<$Res>
             ? _value.fullName
             : fullName // ignore: cast_nullable_to_non_nullable
                   as String?,
+        deviceId: freezed == deviceId
+            ? _value.deviceId
+            : deviceId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        deviceModel: freezed == deviceModel
+            ? _value.deviceModel
+            : deviceModel // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -122,7 +160,12 @@ class __$$FirebaseTokenRequestImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$FirebaseTokenRequestImpl implements _FirebaseTokenRequest {
-  const _$FirebaseTokenRequestImpl({required this.token, this.fullName});
+  const _$FirebaseTokenRequestImpl({
+    required this.token,
+    this.fullName,
+    this.deviceId,
+    this.deviceModel,
+  });
 
   factory _$FirebaseTokenRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$FirebaseTokenRequestImplFromJson(json);
@@ -131,10 +174,14 @@ class _$FirebaseTokenRequestImpl implements _FirebaseTokenRequest {
   final String token;
   @override
   final String? fullName;
+  @override
+  final String? deviceId;
+  @override
+  final String? deviceModel;
 
   @override
   String toString() {
-    return 'FirebaseTokenRequest(token: $token, fullName: $fullName)';
+    return 'FirebaseTokenRequest(token: $token, fullName: $fullName, deviceId: $deviceId, deviceModel: $deviceModel)';
   }
 
   @override
@@ -144,12 +191,17 @@ class _$FirebaseTokenRequestImpl implements _FirebaseTokenRequest {
             other is _$FirebaseTokenRequestImpl &&
             (identical(other.token, token) || other.token == token) &&
             (identical(other.fullName, fullName) ||
-                other.fullName == fullName));
+                other.fullName == fullName) &&
+            (identical(other.deviceId, deviceId) ||
+                other.deviceId == deviceId) &&
+            (identical(other.deviceModel, deviceModel) ||
+                other.deviceModel == deviceModel));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, token, fullName);
+  int get hashCode =>
+      Object.hash(runtimeType, token, fullName, deviceId, deviceModel);
 
   /// Create a copy of FirebaseTokenRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -173,6 +225,8 @@ abstract class _FirebaseTokenRequest implements FirebaseTokenRequest {
   const factory _FirebaseTokenRequest({
     required final String token,
     final String? fullName,
+    final String? deviceId,
+    final String? deviceModel,
   }) = _$FirebaseTokenRequestImpl;
 
   factory _FirebaseTokenRequest.fromJson(Map<String, dynamic> json) =
@@ -182,6 +236,10 @@ abstract class _FirebaseTokenRequest implements FirebaseTokenRequest {
   String get token;
   @override
   String? get fullName;
+  @override
+  String? get deviceId;
+  @override
+  String? get deviceModel;
 
   /// Create a copy of FirebaseTokenRequest
   /// with the given fields replaced by the non-null parameter values.

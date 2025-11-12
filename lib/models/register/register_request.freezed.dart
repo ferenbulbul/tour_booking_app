@@ -25,8 +25,9 @@ mixin _$RegisterRequest {
   String get lastName => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   String get password => throw _privateConstructorUsedError;
-  DateTime get birthDate => throw _privateConstructorUsedError;
   String get phoneNumber => throw _privateConstructorUsedError;
+  String? get deviceId => throw _privateConstructorUsedError;
+  String? get deviceModel => throw _privateConstructorUsedError;
 
   /// Serializes this RegisterRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -50,8 +51,9 @@ abstract class $RegisterRequestCopyWith<$Res> {
     String lastName,
     String email,
     String password,
-    DateTime birthDate,
     String phoneNumber,
+    String? deviceId,
+    String? deviceModel,
   });
 }
 
@@ -74,8 +76,9 @@ class _$RegisterRequestCopyWithImpl<$Res, $Val extends RegisterRequest>
     Object? lastName = null,
     Object? email = null,
     Object? password = null,
-    Object? birthDate = null,
     Object? phoneNumber = null,
+    Object? deviceId = freezed,
+    Object? deviceModel = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -95,14 +98,18 @@ class _$RegisterRequestCopyWithImpl<$Res, $Val extends RegisterRequest>
                 ? _value.password
                 : password // ignore: cast_nullable_to_non_nullable
                       as String,
-            birthDate: null == birthDate
-                ? _value.birthDate
-                : birthDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
             phoneNumber: null == phoneNumber
                 ? _value.phoneNumber
                 : phoneNumber // ignore: cast_nullable_to_non_nullable
                       as String,
+            deviceId: freezed == deviceId
+                ? _value.deviceId
+                : deviceId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            deviceModel: freezed == deviceModel
+                ? _value.deviceModel
+                : deviceModel // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -123,8 +130,9 @@ abstract class _$$RegisterRequestImplCopyWith<$Res>
     String lastName,
     String email,
     String password,
-    DateTime birthDate,
     String phoneNumber,
+    String? deviceId,
+    String? deviceModel,
   });
 }
 
@@ -146,8 +154,9 @@ class __$$RegisterRequestImplCopyWithImpl<$Res>
     Object? lastName = null,
     Object? email = null,
     Object? password = null,
-    Object? birthDate = null,
     Object? phoneNumber = null,
+    Object? deviceId = freezed,
+    Object? deviceModel = freezed,
   }) {
     return _then(
       _$RegisterRequestImpl(
@@ -167,14 +176,18 @@ class __$$RegisterRequestImplCopyWithImpl<$Res>
             ? _value.password
             : password // ignore: cast_nullable_to_non_nullable
                   as String,
-        birthDate: null == birthDate
-            ? _value.birthDate
-            : birthDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
         phoneNumber: null == phoneNumber
             ? _value.phoneNumber
             : phoneNumber // ignore: cast_nullable_to_non_nullable
                   as String,
+        deviceId: freezed == deviceId
+            ? _value.deviceId
+            : deviceId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        deviceModel: freezed == deviceModel
+            ? _value.deviceModel
+            : deviceModel // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -188,8 +201,9 @@ class _$RegisterRequestImpl implements _RegisterRequest {
     required this.lastName,
     required this.email,
     required this.password,
-    required this.birthDate,
     required this.phoneNumber,
+    this.deviceId,
+    this.deviceModel,
   });
 
   factory _$RegisterRequestImpl.fromJson(Map<String, dynamic> json) =>
@@ -204,13 +218,15 @@ class _$RegisterRequestImpl implements _RegisterRequest {
   @override
   final String password;
   @override
-  final DateTime birthDate;
-  @override
   final String phoneNumber;
+  @override
+  final String? deviceId;
+  @override
+  final String? deviceModel;
 
   @override
   String toString() {
-    return 'RegisterRequest(firstName: $firstName, lastName: $lastName, email: $email, password: $password, birthDate: $birthDate, phoneNumber: $phoneNumber)';
+    return 'RegisterRequest(firstName: $firstName, lastName: $lastName, email: $email, password: $password, phoneNumber: $phoneNumber, deviceId: $deviceId, deviceModel: $deviceModel)';
   }
 
   @override
@@ -225,10 +241,12 @@ class _$RegisterRequestImpl implements _RegisterRequest {
             (identical(other.email, email) || other.email == email) &&
             (identical(other.password, password) ||
                 other.password == password) &&
-            (identical(other.birthDate, birthDate) ||
-                other.birthDate == birthDate) &&
             (identical(other.phoneNumber, phoneNumber) ||
-                other.phoneNumber == phoneNumber));
+                other.phoneNumber == phoneNumber) &&
+            (identical(other.deviceId, deviceId) ||
+                other.deviceId == deviceId) &&
+            (identical(other.deviceModel, deviceModel) ||
+                other.deviceModel == deviceModel));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -239,8 +257,9 @@ class _$RegisterRequestImpl implements _RegisterRequest {
     lastName,
     email,
     password,
-    birthDate,
     phoneNumber,
+    deviceId,
+    deviceModel,
   );
 
   /// Create a copy of RegisterRequest
@@ -266,8 +285,9 @@ abstract class _RegisterRequest implements RegisterRequest {
     required final String lastName,
     required final String email,
     required final String password,
-    required final DateTime birthDate,
     required final String phoneNumber,
+    final String? deviceId,
+    final String? deviceModel,
   }) = _$RegisterRequestImpl;
 
   factory _RegisterRequest.fromJson(Map<String, dynamic> json) =
@@ -282,9 +302,11 @@ abstract class _RegisterRequest implements RegisterRequest {
   @override
   String get password;
   @override
-  DateTime get birthDate;
-  @override
   String get phoneNumber;
+  @override
+  String? get deviceId;
+  @override
+  String? get deviceModel;
 
   /// Create a copy of RegisterRequest
   /// with the given fields replaced by the non-null parameter values.

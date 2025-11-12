@@ -8,6 +8,8 @@ class FirebaseTokenRequest with _$FirebaseTokenRequest {
   const factory FirebaseTokenRequest({
     required String token,
     String? fullName,
+    String? deviceId,
+    String? deviceModel,
   }) = _FirebaseTokenRequest;
 
   factory FirebaseTokenRequest.fromJson(Map<String, dynamic> json) =>

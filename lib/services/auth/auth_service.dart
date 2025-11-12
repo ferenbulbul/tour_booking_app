@@ -8,6 +8,7 @@ import 'package:tour_booking/models/login/login_response.dart';
 import 'package:tour_booking/models/register/register_request.dart';
 import 'package:tour_booking/services/core/api_client.dart';
 import 'package:tour_booking/services/core/secure_token_storage.dart';
+import 'package:tour_booking/utils/device_info_helper.dart';
 
 class AuthService {
   final ApiClient _apiClient;
@@ -15,20 +16,52 @@ class AuthService {
 
   AuthService({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
 
-  /// 🔐 Login
-  Future<BaseResponse<LoginResponse>> login(LoginRequest req) {
+  /// 🔹 Login
+  Future<BaseResponse<LoginResponse>> login(LoginRequest req) async {
+    final device = await DeviceInfoHelper.getDevice();
+
+    final updatedReq = req.copyWith(
+      deviceId: device.deviceId,
+      deviceModel: device.deviceModel,
+    );
+
     return _apiClient.post<LoginResponse>(
       path: '/Auth/login',
-      body: req.toJson(),
+      body: updatedReq.toJson(),
       fromJson: (json) => LoginResponse.fromJson(json as Map<String, dynamic>),
     );
   }
 
-  /// 🧾 Register
-  Future<BaseResponse<LoginResponse>> register(RegisterRequest req) {
+  /// 🔹 Register
+  Future<BaseResponse<LoginResponse>> register(RegisterRequest req) async {
+    final device = await DeviceInfoHelper.getDevice();
+
+    final updatedReq = req.copyWith(
+      deviceId: device.deviceId,
+      deviceModel: device.deviceModel,
+    );
+
     return _apiClient.post<LoginResponse>(
       path: '/Auth/register',
-      body: req.toJson(),
+      body: updatedReq.toJson(),
+      fromJson: (json) => LoginResponse.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  /// 🔹 Google veya Apple login (Firebase token üzerinden)
+  Future<BaseResponse<LoginResponse>> verifyGoogleUser(
+    FirebaseTokenRequest req,
+  ) async {
+    final device = await DeviceInfoHelper.getDevice();
+
+    final updatedReq = req.copyWith(
+      deviceId: device.deviceId,
+      deviceModel: device.deviceModel,
+    );
+
+    return _apiClient.post<LoginResponse>(
+      path: '/Auth/signin-with-google',
+      body: updatedReq.toJson(),
       fromJson: (json) => LoginResponse.fromJson(json as Map<String, dynamic>),
     );
   }
@@ -62,16 +95,6 @@ class AuthService {
     return _apiClient.post<void>(
       path: '/Auth/reset-password',
       body: {'email': email, 'newPassword': newPassword},
-    );
-  }
-
-  Future<BaseResponse<LoginResponse>> verifyGoogleUser(
-    FirebaseTokenRequest req,
-  ) {
-    return _apiClient.post<LoginResponse>(
-      path: '/Auth/signin-with-google',
-      body: req.toJson(),
-      fromJson: (json) => LoginResponse.fromJson(json as Map<String, dynamic>),
     );
   }
 

@@ -11,8 +11,15 @@ _$FirebaseTokenRequestImpl _$$FirebaseTokenRequestImplFromJson(
 ) => _$FirebaseTokenRequestImpl(
   token: json['token'] as String,
   fullName: json['fullName'] as String?,
+  deviceId: json['deviceId'] as String?,
+  deviceModel: json['deviceModel'] as String?,
 );
 
 Map<String, dynamic> _$$FirebaseTokenRequestImplToJson(
   _$FirebaseTokenRequestImpl instance,
-) => <String, dynamic>{'token': instance.token, 'fullName': instance.fullName};
+) => <String, dynamic>{
+  'token': instance.token,
+  'fullName': instance.fullName,
+  'deviceId': instance.deviceId,
+  'deviceModel': instance.deviceModel,
+};

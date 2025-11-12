@@ -23,10 +23,7 @@ class _RegisterFormState extends State<RegisterForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final _birthDateController = TextEditingController();
   final _phoneNumberController = TextEditingController();
-
-  DateTime? selectedBirthDate;
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -38,7 +35,6 @@ class _RegisterFormState extends State<RegisterForm> {
       lastName: _lastNameController.text.trim(),
       email: _emailController.text.trim(),
       password: _passwordController.text,
-      birthDate: selectedBirthDate!,
       phoneNumber: _phoneNumberController.text.trim(),
     );
 
@@ -155,29 +151,7 @@ class _RegisterFormState extends State<RegisterForm> {
               return null;
             },
           ),
-          const SizedBox(height: AppSpacing.elementSpacing),
-          TextFormField(
-            controller: _birthDateController,
-            readOnly: true,
-            decoration: InputDecoration(labelText: tr("birth_date")),
-            onTap: () async {
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: DateTime(2000),
-                firstDate: DateTime(1900),
-                lastDate: DateTime.now(),
-              );
-              if (picked != null) {
-                setState(() {
-                  selectedBirthDate = picked;
-                  _birthDateController.text =
-                      "${picked.day}/${picked.month}/${picked.year}";
-                });
-              }
-            },
-            validator: (value) =>
-                selectedBirthDate == null ? tr("birth_date_required") : null,
-          ),
+
           const SizedBox(height: AppSpacing.sectionSpacing),
           if (vm.validationErrors.isNotEmpty)
             Column(

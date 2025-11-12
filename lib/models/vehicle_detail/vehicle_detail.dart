@@ -14,11 +14,11 @@ class VehicleDetail with _$VehicleDetail {
     required String vehicleBrand,
     required String vehicleClass,
     required String vehicleType,
+    String? legRoomSpace,
     required int seatCount,
     required String image,
-    String? legRoomSpace,
-    String? seatType,
-    int? modelYear,
+
+    String? modelYear,
     List<String>? otherImages,
     List<String>? vehicleFeatures, // JSON’da var, ekledim
   }) = _VehicleDetail;

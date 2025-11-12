@@ -13,8 +13,9 @@ _$RegisterRequestImpl _$$RegisterRequestImplFromJson(
   lastName: json['lastName'] as String,
   email: json['email'] as String,
   password: json['password'] as String,
-  birthDate: DateTime.parse(json['birthDate'] as String),
   phoneNumber: json['phoneNumber'] as String,
+  deviceId: json['deviceId'] as String?,
+  deviceModel: json['deviceModel'] as String?,
 );
 
 Map<String, dynamic> _$$RegisterRequestImplToJson(
@@ -24,6 +25,7 @@ Map<String, dynamic> _$$RegisterRequestImplToJson(
   'lastName': instance.lastName,
   'email': instance.email,
   'password': instance.password,
-  'birthDate': instance.birthDate.toIso8601String(),
   'phoneNumber': instance.phoneNumber,
+  'deviceId': instance.deviceId,
+  'deviceModel': instance.deviceModel,
 };

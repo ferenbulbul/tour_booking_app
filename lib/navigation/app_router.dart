@@ -15,11 +15,11 @@ import 'package:tour_booking/features/home/widgets/detail_search.dart';
 import 'package:tour_booking/features/home/widgets/tour_search_by_tour_type.dart';
 import 'package:tour_booking/features/login/screens/login_screen.dart';
 import 'package:tour_booking/features/phone_verification/screen/verify_phone_screen.dart';
+import 'package:tour_booking/features/profile/screen/deneme.dart';
 import 'package:tour_booking/features/profile/screen/profile_screen.dart';
 import 'package:tour_booking/features/root/wigdet/root_scaffold.dart';
 import 'package:tour_booking/features/search/screen/search.dart';
 import 'package:tour_booking/features/search_result/screen/tour_search_result.dart';
-import 'package:tour_booking/features/settings/screen/settings_screen.dart';
 import 'package:tour_booking/features/tour_search_detail/payment_viewmodel.dart';
 import 'package:tour_booking/features/tour_search_detail/screen/guides_screen.dart';
 import 'package:tour_booking/features/tour_search_detail/screen/payment_fail.dart';
@@ -192,6 +192,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/payment-fail',
       builder: (context, state) => const PaymentFailPage(),
+    ),
+    GoRoute(
+      path: '/deneme',
+      builder: (context, state) => const StitchHomeScreen(),
     ),
     ShellRoute(
       builder: (context, state, child) {

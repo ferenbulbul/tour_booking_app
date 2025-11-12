@@ -27,11 +27,10 @@ mixin _$VehicleDetail {
   String get vehicleBrand => throw _privateConstructorUsedError;
   String get vehicleClass => throw _privateConstructorUsedError;
   String get vehicleType => throw _privateConstructorUsedError;
+  String? get legRoomSpace => throw _privateConstructorUsedError;
   int get seatCount => throw _privateConstructorUsedError;
   String get image => throw _privateConstructorUsedError;
-  String? get legRoomSpace => throw _privateConstructorUsedError;
-  String? get seatType => throw _privateConstructorUsedError;
-  int? get modelYear => throw _privateConstructorUsedError;
+  String? get modelYear => throw _privateConstructorUsedError;
   List<String>? get otherImages => throw _privateConstructorUsedError;
   List<String>? get vehicleFeatures => throw _privateConstructorUsedError;
 
@@ -58,11 +57,10 @@ abstract class $VehicleDetailCopyWith<$Res> {
     String vehicleBrand,
     String vehicleClass,
     String vehicleType,
+    String? legRoomSpace,
     int seatCount,
     String image,
-    String? legRoomSpace,
-    String? seatType,
-    int? modelYear,
+    String? modelYear,
     List<String>? otherImages,
     List<String>? vehicleFeatures,
   });
@@ -88,10 +86,9 @@ class _$VehicleDetailCopyWithImpl<$Res, $Val extends VehicleDetail>
     Object? vehicleBrand = null,
     Object? vehicleClass = null,
     Object? vehicleType = null,
+    Object? legRoomSpace = freezed,
     Object? seatCount = null,
     Object? image = null,
-    Object? legRoomSpace = freezed,
-    Object? seatType = freezed,
     Object? modelYear = freezed,
     Object? otherImages = freezed,
     Object? vehicleFeatures = freezed,
@@ -118,6 +115,10 @@ class _$VehicleDetailCopyWithImpl<$Res, $Val extends VehicleDetail>
                 ? _value.vehicleType
                 : vehicleType // ignore: cast_nullable_to_non_nullable
                       as String,
+            legRoomSpace: freezed == legRoomSpace
+                ? _value.legRoomSpace
+                : legRoomSpace // ignore: cast_nullable_to_non_nullable
+                      as String?,
             seatCount: null == seatCount
                 ? _value.seatCount
                 : seatCount // ignore: cast_nullable_to_non_nullable
@@ -126,18 +127,10 @@ class _$VehicleDetailCopyWithImpl<$Res, $Val extends VehicleDetail>
                 ? _value.image
                 : image // ignore: cast_nullable_to_non_nullable
                       as String,
-            legRoomSpace: freezed == legRoomSpace
-                ? _value.legRoomSpace
-                : legRoomSpace // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            seatType: freezed == seatType
-                ? _value.seatType
-                : seatType // ignore: cast_nullable_to_non_nullable
-                      as String?,
             modelYear: freezed == modelYear
                 ? _value.modelYear
                 : modelYear // ignore: cast_nullable_to_non_nullable
-                      as int?,
+                      as String?,
             otherImages: freezed == otherImages
                 ? _value.otherImages
                 : otherImages // ignore: cast_nullable_to_non_nullable
@@ -167,11 +160,10 @@ abstract class _$$VehicleDetailImplCopyWith<$Res>
     String vehicleBrand,
     String vehicleClass,
     String vehicleType,
+    String? legRoomSpace,
     int seatCount,
     String image,
-    String? legRoomSpace,
-    String? seatType,
-    int? modelYear,
+    String? modelYear,
     List<String>? otherImages,
     List<String>? vehicleFeatures,
   });
@@ -196,10 +188,9 @@ class __$$VehicleDetailImplCopyWithImpl<$Res>
     Object? vehicleBrand = null,
     Object? vehicleClass = null,
     Object? vehicleType = null,
+    Object? legRoomSpace = freezed,
     Object? seatCount = null,
     Object? image = null,
-    Object? legRoomSpace = freezed,
-    Object? seatType = freezed,
     Object? modelYear = freezed,
     Object? otherImages = freezed,
     Object? vehicleFeatures = freezed,
@@ -226,6 +217,10 @@ class __$$VehicleDetailImplCopyWithImpl<$Res>
             ? _value.vehicleType
             : vehicleType // ignore: cast_nullable_to_non_nullable
                   as String,
+        legRoomSpace: freezed == legRoomSpace
+            ? _value.legRoomSpace
+            : legRoomSpace // ignore: cast_nullable_to_non_nullable
+                  as String?,
         seatCount: null == seatCount
             ? _value.seatCount
             : seatCount // ignore: cast_nullable_to_non_nullable
@@ -234,18 +229,10 @@ class __$$VehicleDetailImplCopyWithImpl<$Res>
             ? _value.image
             : image // ignore: cast_nullable_to_non_nullable
                   as String,
-        legRoomSpace: freezed == legRoomSpace
-            ? _value.legRoomSpace
-            : legRoomSpace // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        seatType: freezed == seatType
-            ? _value.seatType
-            : seatType // ignore: cast_nullable_to_non_nullable
-                  as String?,
         modelYear: freezed == modelYear
             ? _value.modelYear
             : modelYear // ignore: cast_nullable_to_non_nullable
-                  as int?,
+                  as String?,
         otherImages: freezed == otherImages
             ? _value._otherImages
             : otherImages // ignore: cast_nullable_to_non_nullable
@@ -268,10 +255,9 @@ class _$VehicleDetailImpl implements _VehicleDetail {
     required this.vehicleBrand,
     required this.vehicleClass,
     required this.vehicleType,
+    this.legRoomSpace,
     required this.seatCount,
     required this.image,
-    this.legRoomSpace,
-    this.seatType,
     this.modelYear,
     final List<String>? otherImages,
     final List<String>? vehicleFeatures,
@@ -294,15 +280,13 @@ class _$VehicleDetailImpl implements _VehicleDetail {
   @override
   final String vehicleType;
   @override
+  final String? legRoomSpace;
+  @override
   final int seatCount;
   @override
   final String image;
   @override
-  final String? legRoomSpace;
-  @override
-  final String? seatType;
-  @override
-  final int? modelYear;
+  final String? modelYear;
   final List<String>? _otherImages;
   @override
   List<String>? get otherImages {
@@ -325,7 +309,7 @@ class _$VehicleDetailImpl implements _VehicleDetail {
 
   @override
   String toString() {
-    return 'VehicleDetail(vehicleId: $vehicleId, price: $price, vehicleBrand: $vehicleBrand, vehicleClass: $vehicleClass, vehicleType: $vehicleType, seatCount: $seatCount, image: $image, legRoomSpace: $legRoomSpace, seatType: $seatType, modelYear: $modelYear, otherImages: $otherImages, vehicleFeatures: $vehicleFeatures)';
+    return 'VehicleDetail(vehicleId: $vehicleId, price: $price, vehicleBrand: $vehicleBrand, vehicleClass: $vehicleClass, vehicleType: $vehicleType, legRoomSpace: $legRoomSpace, seatCount: $seatCount, image: $image, modelYear: $modelYear, otherImages: $otherImages, vehicleFeatures: $vehicleFeatures)';
   }
 
   @override
@@ -342,13 +326,11 @@ class _$VehicleDetailImpl implements _VehicleDetail {
                 other.vehicleClass == vehicleClass) &&
             (identical(other.vehicleType, vehicleType) ||
                 other.vehicleType == vehicleType) &&
+            (identical(other.legRoomSpace, legRoomSpace) ||
+                other.legRoomSpace == legRoomSpace) &&
             (identical(other.seatCount, seatCount) ||
                 other.seatCount == seatCount) &&
             (identical(other.image, image) || other.image == image) &&
-            (identical(other.legRoomSpace, legRoomSpace) ||
-                other.legRoomSpace == legRoomSpace) &&
-            (identical(other.seatType, seatType) ||
-                other.seatType == seatType) &&
             (identical(other.modelYear, modelYear) ||
                 other.modelYear == modelYear) &&
             const DeepCollectionEquality().equals(
@@ -370,10 +352,9 @@ class _$VehicleDetailImpl implements _VehicleDetail {
     vehicleBrand,
     vehicleClass,
     vehicleType,
+    legRoomSpace,
     seatCount,
     image,
-    legRoomSpace,
-    seatType,
     modelYear,
     const DeepCollectionEquality().hash(_otherImages),
     const DeepCollectionEquality().hash(_vehicleFeatures),
@@ -400,11 +381,10 @@ abstract class _VehicleDetail implements VehicleDetail {
     required final String vehicleBrand,
     required final String vehicleClass,
     required final String vehicleType,
+    final String? legRoomSpace,
     required final int seatCount,
     required final String image,
-    final String? legRoomSpace,
-    final String? seatType,
-    final int? modelYear,
+    final String? modelYear,
     final List<String>? otherImages,
     final List<String>? vehicleFeatures,
   }) = _$VehicleDetailImpl;
@@ -424,15 +404,13 @@ abstract class _VehicleDetail implements VehicleDetail {
   @override
   String get vehicleType;
   @override
+  String? get legRoomSpace;
+  @override
   int get seatCount;
   @override
   String get image;
   @override
-  String? get legRoomSpace;
-  @override
-  String? get seatType;
-  @override
-  int? get modelYear;
+  String? get modelYear;
   @override
   List<String>? get otherImages;
   @override

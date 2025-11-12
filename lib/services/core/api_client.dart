@@ -73,7 +73,7 @@ class ApiClient {
     final request = RefreshTokenRequest(refreshToken: refreshToken);
 
     final response = await _client.post(
-      Uri.parse('$_cloudUrl/auth/refresh-token'),
+      Uri.parse('$_baseUrl/auth/refresh-token'),
       headers: _headers(),
       body: jsonEncode(request.toJson()), // modelden json
     );
@@ -101,7 +101,7 @@ class ApiClient {
     return _handle<T>(
       fromJson: fromJson,
       send: (token) => _client.get(
-        Uri.parse('$_cloudUrl$path').replace(queryParameters: queryParams),
+        Uri.parse('$_baseUrl$path').replace(queryParameters: queryParams),
         headers: _headers(token: token, extra: extraHeaders),
       ),
     );
@@ -117,7 +117,7 @@ class ApiClient {
     return _handle<T>(
       fromJson: fromJson,
       send: (token) => _client.post(
-        Uri.parse('$_cloudUrl$path'),
+        Uri.parse('$_baseUrl$path'),
         headers: _headers(token: token, extra: extraHeaders),
         body: jsonEncode(body ?? {}),
       ),
@@ -134,7 +134,7 @@ class ApiClient {
     return _handle<T>(
       fromJson: fromJson,
       send: (token) => _client.put(
-        Uri.parse('$_cloudUrl$path'),
+        Uri.parse('$_baseUrl$path'),
         headers: _headers(token: token, extra: extraHeaders),
         body: jsonEncode(body ?? {}),
       ),
@@ -150,7 +150,7 @@ class ApiClient {
     return _handle<T>(
       fromJson: fromJson,
       send: (token) => _client.delete(
-        Uri.parse('$_cloudUrl$path'),
+        Uri.parse('$_baseUrl$path'),
         headers: _headers(token: token, extra: extraHeaders),
       ),
     );

@@ -239,8 +239,6 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
               ),
             if (v.legRoomSpace != null && v.legRoomSpace!.isNotEmpty)
               _info('Bacak Mesafesi', v.legRoomSpace!, Icons.swap_vert_rounded),
-            if (v.seatType != null && v.seatType!.isNotEmpty)
-              _info('Koltuk Tipi', v.seatType!, Icons.chair_alt_rounded),
 
             const SizedBox(height: 15),
 

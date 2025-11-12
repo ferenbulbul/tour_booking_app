@@ -10,8 +10,9 @@ class RegisterRequest with _$RegisterRequest {
     required String lastName,
     required String email,
     required String password,
-    required DateTime birthDate,
     required String phoneNumber,
+    String? deviceId,
+    String? deviceModel,
   }) = _RegisterRequest;
 
   factory RegisterRequest.fromJson(Map<String, dynamic> json) =>
