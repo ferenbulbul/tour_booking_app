@@ -16,7 +16,7 @@ import 'package:tour_booking/features/home/screen/nearby_tourpoiont.dart';
 
 import 'package:tour_booking/features/home/widgets/search_section.dart';
 import 'package:tour_booking/features/home/widgets/tour_type.dart';
-import 'package:tour_booking/features/profile/profile_status_viewmodel.dart';
+import 'package:tour_booking/features/profile/profile/profile_status_viewmodel.dart';
 import 'package:tour_booking/features/profile_warning_banner/profile_warning_banner.dart';
 
 import 'package:tour_booking/services/location/location_viewmodel.dart'; // Örnek dosya yolu

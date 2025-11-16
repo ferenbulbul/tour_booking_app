@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/features/profile/profile_status_viewmodel.dart';
+import 'package:tour_booking/features/profile/profile/profile_status_viewmodel.dart';
 
 class ProfileWarningBanner extends StatelessWidget {
   const ProfileWarningBanner({super.key, this.onAction});

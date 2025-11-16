@@ -3,7 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
-import 'package:tour_booking/features/login/widgets/google_view_model.dart';
+import 'package:tour_booking/features/auth/login/widgets/google_view_model.dart';
 import 'package:tour_booking/models/auth_response/auth_response.dart';
 import 'package:tour_booking/models/base/base_response.dart';
 import 'package:tour_booking/models/refresh_token_request/refresh_token_request.dart';

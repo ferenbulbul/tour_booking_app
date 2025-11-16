@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/network/handle_response.dart';
-import 'package:tour_booking/features/search/search_viewmodel.dart';
+import 'package:tour_booking/features/detailed_search/search/search_viewmodel.dart';
 import 'package:tour_booking/models/tour_search/mobile_tour_points_by_search_dto.dart';
 import 'package:tour_booking/models/tour_search_list/mobile_tour_points_response.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';

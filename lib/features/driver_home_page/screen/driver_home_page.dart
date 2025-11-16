@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
 import 'package:tour_booking/features/driver_home_page/driver_viewmodel.dart';
 import 'package:tour_booking/features/home/widgets/driver_location_status.dart';
-import 'package:tour_booking/features/login/widgets/google_view_model.dart';
+import 'package:tour_booking/features/auth/login/widgets/google_view_model.dart';
 import 'package:tour_booking/services/location/location_viewmodel.dart';
 
 class DriverHomePage extends StatefulWidget {
