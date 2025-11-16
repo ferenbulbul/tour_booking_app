@@ -44,6 +44,7 @@ dependencies:
   sign_in_with_apple: ^7.0.1
   webview_flutter: ^4.13.0
   device_info_plus: ^12.2.0
+  shimmer: ^3.0.0
 
 
 

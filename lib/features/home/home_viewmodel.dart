@@ -51,7 +51,7 @@ class HomeViewModel extends ChangeNotifier {
   Future<void> fetchFeaturedTourPoints() async {
     isLoading = true;
     notifyListeners();
-
+    await Future.delayed(const Duration(seconds: 10));
     final response = await _tourService.getFeaturedTourPoints();
     final result = handleResponse<FeaturedTourPointListDto>(response);
 

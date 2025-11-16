@@ -94,7 +94,7 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: context.localizationDelegates,
       debugShowCheckedModeBanner: false,
       routerConfig: router,
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.light,
     );
   }
 }

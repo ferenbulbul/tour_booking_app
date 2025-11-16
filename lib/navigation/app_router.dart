@@ -90,8 +90,24 @@ final GoRouter router = GoRouter(
       path: '/search-detail',
       name: 'searchDetail',
       builder: (context, state) {
-        final tourPointId = state.extra as String;
-        return TourSearchDetailScreen(tourPointId: tourPointId);
+        final data = state.extra;
+
+        String tourPointId = "";
+        String? initialImage; // null alabilir
+
+        if (data is String) {
+          // Eski kullanım: sadece ID gönderilmiş
+          tourPointId = data;
+        } else if (data is Map) {
+          // Yeni kullanım: ID + optional image
+          tourPointId = data["id"] as String;
+          initialImage = data["image"] as String?;
+        }
+
+        return TourSearchDetailScreen(
+          tourPointId: tourPointId,
+          initialImage: initialImage,
+        );
       },
     ),
     GoRoute(
@@ -192,10 +208,7 @@ final GoRouter router = GoRouter(
       path: '/payment-fail',
       builder: (context, state) => const PaymentFailPage(),
     ),
-    GoRoute(
-      path: '/deneme',
-      builder: (context, state) => const StitchHomeScreen(),
-    ),
+    GoRoute(path: '/deneme', builder: (context, state) => const HomeScreen()),
     ShellRoute(
       builder: (context, state, child) {
         return RootScaffold(child: child);

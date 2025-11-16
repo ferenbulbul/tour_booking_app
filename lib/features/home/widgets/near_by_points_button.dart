@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
 
 class NearbyPointsButton extends StatelessWidget {
   const NearbyPointsButton({super.key});
 
   Future<bool> _hasPermission() async {
-    final status = await Permission.locationWhenInUse.status;
-    return status.isGranted;
+    return (await Permission.locationWhenInUse.status).isGranted;
   }
 
   @override
@@ -15,43 +16,83 @@ class NearbyPointsButton extends StatelessWidget {
     return FutureBuilder<bool>(
       future: _hasPermission(),
       builder: (context, snapshot) {
-        // Buton her zaman gözüksün → sadece onPressed içinde kontrol yapacağız
-        return OutlinedButton.icon(
-          onPressed: () async {
+        return _MinimalNearbyCard(
+          onTap: () async {
             final status = await Permission.locationWhenInUse.status;
 
             if (status.isGranted) {
-              // izin varsa sayfaya git
-              if (context.mounted) {
-                context.pushNamed("nearbyPoints");
-              }
-            } else {
-              // izin yoksa snackbar göster
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Lütfen Ayarladan Konumunuza izin verin"),
-                  ),
-                );
-              }
+              if (context.mounted) context.pushNamed("nearbyPoints");
+              return;
+            }
 
-              // istersen burda izin popup'ı da tetikleyebilirsin:
-              // await Permission.locationWhenInUse.request();
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    "Please enable location permission from Settings",
+                  ),
+                ),
+              );
             }
           },
-          icon: const Icon(Icons.place_outlined),
-          label: const Text(
-            "Size Yakın Yerleri Görmek İster Misiniz ?",
-            style: TextStyle(fontSize: 15),
-          ),
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
         );
       },
+    );
+  }
+}
+
+class _MinimalNearbyCard extends StatelessWidget {
+  final VoidCallback onTap;
+  const _MinimalNearbyCard({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.grey.withOpacity(.18), width: 1),
+        ),
+        child: Row(
+          children: [
+            /// ICON (MINIMAL)
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: primary.withOpacity(.08),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(Icons.my_location_rounded, color: primary, size: 18),
+            ),
+
+            const SizedBox(width: 14),
+
+            /// TEXT (CLEAN)
+            Expanded(
+              child: Text(
+                "Nearby Tours",
+                style: AppTextStyles.titleMedium.copyWith(
+                  color: AppColors.textPrimary,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+
+            /// MINIMAL ARROW
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 22,
+              color: AppColors.textSecondary.withOpacity(0.6),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

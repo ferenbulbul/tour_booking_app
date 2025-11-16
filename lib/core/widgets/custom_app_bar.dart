@@ -1,21 +1,34 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class ModernBlurAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  final bool showBack;
+  const ModernBlurAppBar({super.key, required this.title});
 
-  const CustomAppBar({super.key, required this.title, this.showBack = true});
+  @override
+  Size get preferredSize => const Size.fromHeight(60);
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      automaticallyImplyLeading: showBack,
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-      centerTitle: true,
-      backgroundColor: Theme.of(context).primaryColor,
+    return ClipRRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.white.withOpacity(0.6),
+          centerTitle: true,
+          title: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+          surfaceTintColor: Colors.transparent,
+        ),
+      ),
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

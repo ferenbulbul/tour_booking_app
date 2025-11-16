@@ -45,7 +45,7 @@ class RootScaffold extends StatelessWidget {
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'home'.tr()),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.favorite),
             label: 'favorite'.tr(),
           ),
           BottomNavigationBarItem(

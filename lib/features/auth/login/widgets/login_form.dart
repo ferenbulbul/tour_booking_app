@@ -92,7 +92,7 @@ class _LoginFormState extends State<LoginForm> {
             },
             child: Text(
               'forgot_password'.tr(),
-              style: AppTextStyles.body.copyWith(
+              style: AppTextStyles.bodyMedium.copyWith(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
                 color: Theme.of(context).primaryColor,

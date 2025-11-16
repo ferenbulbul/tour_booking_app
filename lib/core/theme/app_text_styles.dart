@@ -1,21 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'app_colors.dart';
 
 class AppTextStyles {
-  static const TextStyle heading = TextStyle(
-    fontSize: 30,
+  static const displaySmall = TextStyle(
+    fontSize: 32,
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
   );
 
-  static const TextStyle body = TextStyle(
-    fontSize: 14,
+  static const headlineSmall = TextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
   );
 
-  static const TextStyle link = TextStyle(
+  static const titleMedium = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  static const bodyMedium = TextStyle(
+    fontSize: 15,
+    fontWeight: FontWeight.normal,
+    color: AppColors.textSecondary,
+  );
+
+  static const labelLarge = TextStyle(
     fontSize: 14,
-    color: AppColors.primary,
-    decoration: TextDecoration.underline,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  static const textTheme = TextTheme(
+    displaySmall: displaySmall,
+    headlineSmall: headlineSmall,
+    titleMedium: titleMedium,
+    bodyMedium: bodyMedium,
+    labelLarge: labelLarge,
   );
 }

@@ -11,9 +11,9 @@ class LoginHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center, // Ortala
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('welcome_title'.tr(), style: AppTextStyles.heading),
+        Text('welcome_title'.tr(), style: AppTextStyles.headlineSmall),
         SizedBox(height: 8),
-        Text('welcome_subtitle'.tr(), style: AppTextStyles.body),
+        Text('welcome_subtitle'.tr(), style: AppTextStyles.displaySmall),
       ],
     );
   }
