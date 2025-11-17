@@ -14,7 +14,6 @@ import 'package:tour_booking/features/home/widgets/detail_search.dart';
 import 'package:tour_booking/features/home/widgets/tour_search_by_tour_type.dart';
 import 'package:tour_booking/features/auth/login/screens/login_screen.dart';
 import 'package:tour_booking/features/auth/phone_verification/screen/verify_phone_screen.dart';
-import 'package:tour_booking/features/profile/profile/screen/deneme.dart';
 import 'package:tour_booking/features/profile/profile/screen/profile_screen.dart';
 import 'package:tour_booking/features/root/wigdet/root_scaffold.dart';
 import 'package:tour_booking/features/detailed_search/search/screen/search.dart';
@@ -104,10 +103,7 @@ final GoRouter router = GoRouter(
           initialImage = data["image"] as String?;
         }
 
-        return TourSearchDetailScreen(
-          tourPointId: tourPointId,
-          initialImage: initialImage,
-        );
+        return TourSearchDetailScreen(tourPointId: tourPointId);
       },
     ),
     GoRoute(

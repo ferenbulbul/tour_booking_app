@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -7,10 +8,12 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
-import 'package:tour_booking/features/detailed_search/search_detail_flow/screen/city_badget.dart';
-import 'package:tour_booking/features/detailed_search/search_detail_flow/screen/difficulty_badge.dart';
-import 'package:tour_booking/features/detailed_search/search_detail_flow/screen/tour_type_badge.dart';
+import 'package:tour_booking/features/detailed_search/search_detail_flow/widget/city_badget.dart';
+import 'package:tour_booking/features/detailed_search/search_detail_flow/widget/difficulty_badge.dart';
+import 'package:tour_booking/features/detailed_search/search_detail_flow/widget/tour_type_badge.dart';
 import 'package:tour_booking/features/detailed_search/search_detail_flow/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/features/detailed_search/search_detail_flow/widget/full_screen_gallery.dart';
 import 'package:tour_booking/features/detailed_search/search_detail_flow/widget/tour_detail_skeleton.dart';
@@ -18,7 +21,7 @@ import 'package:tour_booking/models/place_section/place_section.dart';
 
 class TourSearchDetailScreen extends StatefulWidget {
   final String tourPointId;
-  final String? initialImage; // 🔹 Liste ekranından hero için gelebilir
+  final String? initialImage;
 
   const TourSearchDetailScreen({
     super.key,
@@ -30,15 +33,19 @@ class TourSearchDetailScreen extends StatefulWidget {
   State<TourSearchDetailScreen> createState() => _TourSearchDetailScreenState();
 }
 
-class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
+// 👇 Performans için keepAlive
+class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
+    with AutomaticKeepAliveClientMixin {
   late List<String> times;
   String? selectedTime;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
 
-    // 🔹 API çağrısı – Hero animasyonuna karışmaması için microtask
     Future.microtask(() {
       final vm = Provider.of<TourSearchDetailViewModel>(context, listen: false);
       vm.fetchTourPointDetail(widget.tourPointId);
@@ -54,21 +61,17 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // keepAlive için
     final vm = context.watch<TourSearchDetailViewModel>();
     final detail = vm.detail;
 
-    // 🔹 Hero için kullanılacak image:
-    // 1) initialImage (listeden gelen)
-    // 2) yoksa detail.mainImage
     String heroImage = '';
-
     if (widget.initialImage != null && widget.initialImage!.isNotEmpty) {
       heroImage = widget.initialImage!;
     } else if (detail?.mainImage.isNotEmpty == true) {
       heroImage = detail!.mainImage;
     }
 
-    // 🔹 Galeri için resimler – sadece detail doluyken
     final List<String> galleryImages = detail == null
         ? (heroImage.isNotEmpty ? [heroImage] : <String>[])
         : <String>[detail.mainImage, ...detail.otherImages];
@@ -78,15 +81,12 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            // 🔵 Asıl UI (her zaman çiziliyor — skeleton yok)
             SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // -------------------------------------------------------
-                  // 🟦 1) HEADER HERO (Hero animasyonu burada)
-                  // -------------------------------------------------------
+                  // HEADER
                   _HeaderHero(
                     title: detail?.title ?? '',
                     city: detail?.cityName ?? '',
@@ -105,9 +105,6 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
                     },
                   ),
 
-                  // -------------------------------------------------------
-                  // Detail yoksa sadece header göster – alt kısım boş
-                  // -------------------------------------------------------
                   if (detail == null) ...[
                     const TourDetailSkeleton(),
                     const SizedBox(height: 24),
@@ -121,9 +118,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
                       ),
                     ),
                   ] else ...[
-                    // ---------------------------------------------------
-                    // 🟨 2) THUMBNAIL STRIP (Sadece otherImages)
-                    // ---------------------------------------------------
+                    // THUMB STRIP
                     if (detail.otherImages.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 12, bottom: 8),
@@ -134,12 +129,16 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
                           },
                         ),
                       ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
+
+                    // BADGES
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.l,
+                      ),
                       child: Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
+                        spacing: AppSpacing.s,
+                        runSpacing: AppSpacing.s,
                         children: [
                           CityDistrictBadge(
                             city: detail.cityName,
@@ -153,47 +152,76 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    // ---------------------------------------------------
-                    // 🟩 3) BADGES + DESCRIPTION
-                    // ---------------------------------------------------
+
+                    // DESCRIPTION
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.l,
+                      ),
                       child: _DescriptionSection(detail: detail),
                     ),
 
                     const SizedBox(height: 28),
 
-                    // ---------------------------------------------------
-                    // 🟦 4) FORM (CITY / DISTRICT / PLACE / DATE / TIME)
-                    // ---------------------------------------------------
+                    // FORM HEADER
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        "Your Departure Details",
-                        style: AppTextStyles.titleMedium.copyWith(
-                          color: AppColors.textPrimary,
-                        ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.l,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Your Departure Details",
+                            style: AppTextStyles.titleMedium.copyWith(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Container(
+                            width: 40,
+                            height: 3,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppColors.primary.withOpacity(.8),
+                                  AppColors.primary.withOpacity(.0),
+                                ],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 14),
 
                     // CITY
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.l,
+                      ),
                       child: _buildCityPicker(vm),
                     ),
                     const SizedBox(height: 12),
 
                     // DISTRICT
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.l,
+                      ),
                       child: _buildDistrictPicker(vm),
                     ),
                     const SizedBox(height: 12),
 
                     // PLACE
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.l,
+                      ),
                       child: ModernField(
                         label: "📍 Add Exact Location",
                         value: vm.selectedPlaceDesc,
@@ -210,7 +238,9 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
 
                     // DATE + TIME
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.l,
+                      ),
                       child: Row(
                         children: [
                           Expanded(child: _buildDatePicker(vm)),
@@ -222,16 +252,20 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
 
                     const SizedBox(height: 30),
 
-                    // ---------------------------------------------------
-                    // 🟥 BUTTON — FETCH VEHICLES
-                    // ---------------------------------------------------
+                    // BUTTON
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.l,
+                      ),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: AppSpacing.l,
+                          ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(
+                              AppRadius.medium,
+                            ),
                           ),
                         ),
                         onPressed: () async {
@@ -275,9 +309,6 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
     );
   }
 
-  // ---------------------------------------------------------------
-  // 🔵 GALLERY PUSH
-  // ---------------------------------------------------------------
   void _openGallery(BuildContext ctx, List<String> images, int index) {
     Navigator.of(ctx).push(
       MaterialPageRoute(
@@ -287,9 +318,6 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
     );
   }
 
-  // ---------------------------------------------------------------
-  // 🔵 TIME UTILS
-  // ---------------------------------------------------------------
   List<String> _generateTimes() {
     final List<String> out = [];
     for (int h = 6; h <= 12; h++) {
@@ -299,9 +327,6 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
     return out;
   }
 
-  // ---------------------------------------------------------------
-  // 🔵 DATE PICKER
-  // ---------------------------------------------------------------
   Widget _buildDatePicker(TourSearchDetailViewModel vm) {
     return ModernField(
       label: "Select Date",
@@ -318,14 +343,14 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
           builder: (context, child) {
             return Theme(
               data: Theme.of(context).copyWith(
-                colorScheme: const ColorScheme.light(
-                  primary: Color(0xFF3E7BFA),
+                colorScheme: ColorScheme.light(
+                  primary: AppColors.primary,
                   onPrimary: Colors.white,
-                  onSurface: Colors.black87,
+                  onSurface: AppColors.textPrimary,
                 ),
                 textButtonTheme: TextButtonThemeData(
                   style: TextButton.styleFrom(
-                    foregroundColor: Color(0xFF3E7BFA),
+                    foregroundColor: AppColors.primary,
                   ),
                 ),
               ),
@@ -339,9 +364,6 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
     );
   }
 
-  // ---------------------------------------------------------------
-  // 🔵 TIME PICKER
-  // ---------------------------------------------------------------
   Widget _buildTimePicker(TourSearchDetailViewModel vm) {
     return ModernField(
       label: "Select Time",
@@ -366,9 +388,6 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
     );
   }
 
-  // ---------------------------------------------------------------
-  // 🔵 CITY PICKER
-  // ---------------------------------------------------------------
   Widget _buildCityPicker(TourSearchDetailViewModel vm) {
     final cities = vm.detail?.cities ?? [];
 
@@ -389,9 +408,6 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
     );
   }
 
-  // ---------------------------------------------------------------
-  // 🔵 DISTRICT PICKER
-  // ---------------------------------------------------------------
   Widget _buildDistrictPicker(TourSearchDetailViewModel vm) {
     final districts = (vm.detail?.districts ?? [])
         .where((d) => d.cityId == vm.selectedCityId)
@@ -416,9 +432,6 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
     );
   }
 
-  // ---------------------------------------------------------------
-  // 🔵 OPTION PICKER MODAL
-  // ---------------------------------------------------------------
   Future<String?> _openOptionPicker({
     required String title,
     required List<_Option> options,
@@ -436,10 +449,6 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen> {
   }
 }
 
-//
-// ----------------------------------------------------------------------
-// 🔷 HEADER HERO (PREMIUM + HERO)
-// ----------------------------------------------------------------------
 class _HeaderHero extends StatelessWidget {
   final String title;
   final String mainImage;
@@ -466,10 +475,12 @@ class _HeaderHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasImage = mainImage.isNotEmpty;
+
     return Stack(
       children: [
         GestureDetector(
-          onTap: onOpenGallery,
+          onTap: hasImage ? onOpenGallery : null,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(22),
             child: Container(
@@ -479,57 +490,59 @@ class _HeaderHero extends StatelessWidget {
                 borderRadius: BorderRadius.circular(22),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(.15),
-                    blurRadius: 18,
-                    offset: const Offset(0, 6),
+                    color: Colors.black.withOpacity(.09),
+                    blurRadius: 28,
+                    offset: const Offset(0, 10),
                   ),
                 ],
               ),
               child: Stack(
                 children: [
-                  Hero(
-                    tag: "tourImage_$tourPointId",
-                    flightShuttleBuilder:
-                        (
-                          BuildContext flightContext,
-                          Animation<double> animation,
-                          HeroFlightDirection flightDirection,
-                          BuildContext fromHeroContext,
-                          BuildContext toHeroContext,
-                        ) {
-                          // Uçarken: tam yuvarlak köşeli
-                          return ClipRRect(
-                            borderRadius: BorderRadius.circular(22),
-                            child: Image(
-                              image: CachedNetworkImageProvider(
-                                mainImage,
-                                cacheKey: "featured_$tourPointId",
+                  if (hasImage)
+                    Hero(
+                      tag: "tourImage_$tourPointId",
+                      flightShuttleBuilder:
+                          (
+                            BuildContext flightContext,
+                            Animation<double> animation,
+                            HeroFlightDirection flightDirection,
+                            BuildContext fromHeroContext,
+                            BuildContext toHeroContext,
+                          ) {
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(22),
+                              child: Image(
+                                image: CachedNetworkImageProvider(
+                                  mainImage,
+                                  cacheKey: "featured_$tourPointId",
+                                ),
+                                fit: BoxFit.cover,
                               ),
-                              fit: BoxFit.cover,
-                            ),
-                          );
-                        },
-                    child: Image(
-                      image: CachedNetworkImageProvider(
-                        mainImage,
-                        cacheKey: "featured_$tourPointId",
-                      ),
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: double.infinity,
-                      frameBuilder:
-                          (context, child, frame, wasSynchronouslyLoaded) {
-                            if (wasSynchronouslyLoaded || frame != null)
-                              return child;
-                            return Container(color: Colors.grey.shade300);
+                            );
                           },
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(color: Colors.grey.shade300);
-                      },
-                    ),
-                  ),
+                      child: Image(
+                        image: CachedNetworkImageProvider(
+                          mainImage,
+                          cacheKey: "featured_$tourPointId",
+                        ),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                        frameBuilder:
+                            (context, child, frame, wasSynchronouslyLoaded) {
+                              if (wasSynchronouslyLoaded || frame != null) {
+                                return child;
+                              }
+                              return Container(color: Colors.grey.shade300);
+                            },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(color: Colors.grey.shade300);
+                        },
+                      ),
+                    )
+                  else
+                    Container(color: Colors.grey.shade300),
 
-                  // GRADIENT
                   Positioned.fill(
                     child: Container(
                       decoration: BoxDecoration(
@@ -545,7 +558,6 @@ class _HeaderHero extends StatelessWidget {
                     ),
                   ),
 
-                  // TITLE
                   Positioned(
                     left: 20,
                     bottom: 28,
@@ -583,18 +595,15 @@ class _HeaderHero extends StatelessWidget {
           ),
         ),
 
-        // BACK BUTTON
         Positioned(
           left: 14,
           top: MediaQuery.of(context).padding.top + 10,
-          child: _blurButton(Icons.arrow_back_ios_new_rounded, onBack),
+          child: _simpleButton(Icons.arrow_back_ios_new_rounded, onBack),
         ),
-
-        // FAVORITE BUTTON
         Positioned(
           right: 14,
           top: MediaQuery.of(context).padding.top + 10,
-          child: _blurButton(
+          child: _simpleButton(
             Icons.favorite,
             onFav,
             color: isFavorite ? Colors.red : Colors.white,
@@ -604,34 +613,26 @@ class _HeaderHero extends StatelessWidget {
     );
   }
 
-  Widget _blurButton(
+  Widget _simpleButton(
     IconData icon,
     VoidCallback onTap, {
     Color color = Colors.white,
   }) {
-    return ClipRRect(
+    return Material(
+      color: Colors.black.withOpacity(0.4),
       borderRadius: BorderRadius.circular(30),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Material(
-          color: Colors.black.withOpacity(.30),
-          child: InkWell(
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Icon(icon, size: 22, color: color),
-            ),
-          ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(30),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Icon(icon, size: 22, color: color),
         ),
       ),
     );
   }
 }
 
-//
-// ----------------------------------------------------------------------
-// 🔶 THUMB STRIP (SADECE OTHER IMAGES)
-// ----------------------------------------------------------------------
 class _ThumbStrip extends StatelessWidget {
   final List<String> images;
   final Function(int index) onTap;
@@ -641,22 +642,35 @@ class _ThumbStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 82,
+      height: 88,
       child: ListView.separated(
+        cacheExtent: 1500,
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
+        separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.m),
         itemCount: images.length,
         itemBuilder: (_, i) {
           return GestureDetector(
             onTap: () => onTap(i),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(14),
-              child: CachedNetworkImage(
-                imageUrl: images[i],
-                width: 120,
-                height: 82,
-                fit: BoxFit.cover,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(AppRadius.large),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.06),
+                    blurRadius: 14,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppRadius.large),
+                child: CachedNetworkImage(
+                  imageUrl: images[i],
+                  width: 130,
+                  height: 88,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           );
@@ -666,10 +680,6 @@ class _ThumbStrip extends StatelessWidget {
   }
 }
 
-//
-// ----------------------------------------------------------------------
-// 🔷 DESCRIPTION SECTION (BADGES + DESC)
-// ----------------------------------------------------------------------
 class _DescriptionSection extends StatelessWidget {
   final dynamic detail;
 
@@ -678,33 +688,29 @@ class _DescriptionSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(AppSpacing.l),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.large),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 24,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Text(
         detail.description,
         style: AppTextStyles.bodyMedium.copyWith(
-          color: AppColors.textSecondary,
           height: 1.45,
+          color: AppColors.textSecondary,
         ),
       ),
     );
   }
 }
 
-//
-// ----------------------------------------------------------------------
-// 🔵 TIME PICKER SHEET
-// ----------------------------------------------------------------------
 class _TimePickerSheet extends StatelessWidget {
   final List<String> times;
   final String initial;
@@ -753,10 +759,6 @@ class _TimePickerSheet extends StatelessWidget {
   }
 }
 
-//
-// ----------------------------------------------------------------------
-// 🔵 OPTION PICKER SHEET
-// ----------------------------------------------------------------------
 class _OptionPickerSheet extends StatefulWidget {
   final String title;
   final List<_Option> options;
@@ -793,7 +795,6 @@ class _OptionPickerSheetState extends State<_OptionPickerSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // DRAG BAR
             Container(
               width: 40,
               height: 4,
@@ -803,7 +804,6 @@ class _OptionPickerSheetState extends State<_OptionPickerSheet> {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-
             Row(
               children: [
                 Expanded(
@@ -821,19 +821,15 @@ class _OptionPickerSheetState extends State<_OptionPickerSheet> {
                 ),
               ],
             ),
-
             TextField(
-              autofocus: true,
+              autofocus: Platform.isIOS,
               onChanged: (v) => setState(() => query = v),
               decoration: const InputDecoration(
                 prefixIcon: Icon(Icons.search),
                 hintText: "Ara...",
-                border: OutlineInputBorder(),
               ),
             ),
-
             const SizedBox(height: 12),
-
             ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 380),
               child: ListView.separated(
@@ -860,10 +856,6 @@ class _OptionPickerSheetState extends State<_OptionPickerSheet> {
   }
 }
 
-//
-// ----------------------------------------------------------------------
-// 🔵 COMMON
-// ----------------------------------------------------------------------
 class _Option {
   final String id;
   final String name;
@@ -886,42 +878,39 @@ class ModernField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isEmpty = value == null;
+    final bool empty = value == null;
 
+    // ⚠️ BLUR YOK: Performans için sade card
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.xl,
+          vertical: AppSpacing.l,
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.black12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(AppRadius.large),
+          border: Border.all(color: Colors.black12.withOpacity(0.12)),
         ),
         child: Row(
           children: [
-            Icon(icon, size: 22, color: Colors.black54),
-            const SizedBox(width: 12),
+            Icon(icon, size: 22, color: AppColors.textPrimary.withOpacity(.8)),
+            const SizedBox(width: AppSpacing.m),
             Expanded(
               child: Text(
-                isEmpty ? label : value!,
+                empty ? label : value!,
                 style: TextStyle(
                   fontSize: 15,
-                  color: isEmpty ? Colors.black45 : Colors.black87,
-                  fontWeight: isEmpty ? FontWeight.w400 : FontWeight.w600,
+                  fontWeight: empty ? FontWeight.w400 : FontWeight.w600,
+                  color: empty ? AppColors.textLight : AppColors.textPrimary,
                 ),
               ),
             ),
-            const Icon(
-              Icons.arrow_forward_ios,
+            Icon(
+              Icons.arrow_forward_ios_rounded,
               size: 16,
-              color: Colors.black38,
+              color: AppColors.textSecondary,
             ),
           ],
         ),

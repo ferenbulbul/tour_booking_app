@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/features/home/home_viewmodel.dart';
+import 'package:tour_booking/features/home/widgets/tour_type_sceleton.dart';
 
 class TourTypeWidget extends StatelessWidget {
   const TourTypeWidget({super.key});
@@ -14,7 +15,7 @@ class TourTypeWidget extends StatelessWidget {
     final vm = context.watch<HomeViewModel>();
 
     if (vm.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const TourTypeSkeleton();
     }
 
     if (vm.message != null) {
@@ -144,6 +145,21 @@ class CategoryCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class TourTypeSkeleton extends StatelessWidget {
+  const TourTypeSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: 4, // 4 fake skeleton kart
+      itemBuilder: (_, __) => const CategoryCardSkeleton(),
     );
   }
 }

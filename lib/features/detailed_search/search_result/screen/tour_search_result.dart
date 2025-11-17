@@ -132,6 +132,7 @@ class _SearchResultCard extends StatelessWidget {
                 tag: "tourImage_${point.id}",
                 child: CachedNetworkImage(
                   imageUrl: point.mainImage,
+                  cacheKey: "featured_${point.id}",
                   height: 190,
                   width: double.infinity,
                   fit: BoxFit.cover,

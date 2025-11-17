@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/features/favorite/favorite_viewmodel.dart';
-import 'package:tour_booking/navigation/app_router.dart';
+import 'package:tour_booking/features/favorite/widget/favorite_card.dart';
+import 'package:tour_booking/features/favorite/widget/favorite_sckeleton.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({super.key});
@@ -16,57 +16,17 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
   @override
   void initState() {
     super.initState();
-    // İlk açılışta favorileri çek
+
+    // İlk yükleme
     Future.microtask(() {
-      print("FavoritePage: initState - fetchFavorites çağırılıyor");
       context.read<FavoriteViewModel>().fetchFavorites();
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // RouteObserver'a abone ol
-    final ModalRoute? modalRoute = ModalRoute.of(context);
-    if (modalRoute is PageRoute) {
-      print("FavoritePage: globalRouteObserver'a abone olunuyor");
-      globalRouteObserver.subscribe(this, modalRoute);
-    } else {
-      print("FavoritePage: ModalRoute PageRoute değil, abonelik atlandı");
-    }
-  }
-
-  @override
-  void dispose() {
-    // RouteObserver'dan çık
-    print("FavoritePage: globalRouteObserver'dan çıkılıyor");
-    globalRouteObserver.unsubscribe(this);
-    super.dispose();
-  }
-
+  // 🔥 Detay sayfasından dönülünce otomatik tekrar fetch
   @override
   void didPopNext() {
-    // Sayfaya geri dönüldüğünde çağrılır
-    print("FavoritePage: didPopNext tetiklendi, favoriler çekiliyor");
     context.read<FavoriteViewModel>().fetchFavorites();
-  }
-
-  @override
-  void didPush() {
-    print("FavoritePage: didPush tetiklendi");
-    super.didPush();
-  }
-
-  @override
-  void didPop() {
-    print("FavoritePage: didPop tetiklendi");
-    super.didPop();
-  }
-
-  @override
-  void didPushNext() {
-    print("FavoritePage: didPushNext tetiklendi");
-    super.didPushNext();
   }
 
   @override
@@ -74,121 +34,116 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
     final vm = context.watch<FavoriteViewModel>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Favorilerim")),
+      backgroundColor: const Color(0xFFF7F8FA),
+
+      // 🔥 Premium AppBar
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: true,
+        title: const Text(
+          "Favorilerim",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: Colors.black,
+          ),
+        ),
+      ),
+
+      // 🔥 Gövde
       body: vm.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? FavoriteSkeleton()
           : vm.favorites.isEmpty
-          ? const Center(
-              child: Text(
-                "Henüz favoriniz yok.",
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-            )
-          : ListView.separated(
+          ? _buildEmptyState()
+          : ListView.builder(
+              physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.all(16),
               itemCount: vm.favorites.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final fav = vm.favorites[index];
-                return InkWell(
-                  onTap: () async {
-                    print("searchDetail sayfasına gidiliyor, ID: ${fav.id}");
-                    // searchDetail sayfasına git ve geri dönüşü bekle
-                    await context.pushNamed(
-                      'searchDetail',
-                      extra: fav.id.toString(),
-                    );
-                    // Geri dönüldüğünde favorileri tekrar çek
-                    print(
-                      "FavoritePage: searchDetail'den geri dönüldü, favoriler çekiliyor",
-                    );
-                    context.read<FavoriteViewModel>().fetchFavorites();
-                  },
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 3,
-                    clipBehavior: Clip.antiAlias,
-                    child: Row(
-                      children: [
-                        CachedNetworkImage(
-                          imageUrl: fav.mainImage.isNotEmpty
-                              ? fav.mainImage
-                              : "https://via.placeholder.com/120",
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) =>
-                              Container(color: Colors.grey.shade200),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  fav.title,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  "${fav.cityName} • ${fav.tourTypeName}",
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
+              itemBuilder: (_, i) {
+                final fav = vm.favorites[i];
+
+                return RepaintBoundary(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: FavoriteCard(
+                      id: fav.id,
+                      imageUrl: fav.mainImage,
+                      title: fav.title,
+                      city: fav.cityName,
+                      isFavorite: true,
+
+                      // 🔵 Kart tıklama → Detay
+                      onTap: () => context.pushNamed(
+                        'searchDetail',
+                        extra: {"id": fav.id, "initialImage": fav.mainImage},
+                      ),
+
+                      // 🔴 Favoriyi kaldırma
+                      onFavoriteToggle: () {
+                        final removedItem = fav;
+                        vm.removeFavoriteLocal(fav.id);
+                        vm.removeFavorite(fav.id);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            behavior: SnackBarBehavior.floating,
+                            margin: const EdgeInsets.all(16),
+                            backgroundColor: Colors.black87,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            content: Text(
+                              "${fav.title} favorilerden kaldırıldı",
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            action: SnackBarAction(
+                              label: "Geri Al",
+                              textColor: Colors.white,
+                              onPressed: () {
+                                vm.favorites.insert(i, removedItem);
+                                vm.notifyListeners();
+                              },
                             ),
                           ),
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.star,
-                            color: Colors.yellow,
-                            weight: 90,
-                          ),
-                          onPressed: () {
-                            final favId = fav.id;
-                            final favTitle = fav.title;
-
-                            context
-                                .read<FavoriteViewModel>()
-                                .removeFavoriteLocal(favId);
-
-                            // 2. Backend isteği gönder
-                            context.read<FavoriteViewModel>().removeFavorite(
-                              favId,
-                            );
-
-                            // 3. Kullanıcıya bilgi ver
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  "$favTitle favorilerden kaldırıldı",
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   ),
                 );
               },
             ),
+    );
+  }
+
+  // 🔥 Premium Empty State
+  Widget _buildEmptyState() {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.favorite_border, size: 64, color: Colors.black26),
+            SizedBox(height: 12),
+            Text(
+              "Henüz favoriniz yok",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black54,
+              ),
+            ),
+            SizedBox(height: 6),
+            Text(
+              "Beğendiğiniz turları favorilere ekleyin \nkolayca erişin.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.black45),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
