@@ -47,7 +47,6 @@ class FeaturedCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             child: Stack(
               children: [
-                // --- IMAGE (HERO YOK) ---
                 // --- IMAGE (HERO EKLENDİ) ---
                 Positioned.fill(
                   child: Hero(

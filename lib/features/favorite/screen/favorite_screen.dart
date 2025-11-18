@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/features/favorite/favorite_viewmodel.dart';
 import 'package:tour_booking/features/favorite/widget/favorite_card.dart';
-import 'package:tour_booking/features/favorite/widget/favorite_sckeleton.dart';
+import 'package:tour_booking/features/favorite/widget/favorite_skeleton.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({super.key});
@@ -17,13 +17,11 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
   void initState() {
     super.initState();
 
-    // İlk yükleme
     Future.microtask(() {
       context.read<FavoriteViewModel>().fetchFavorites();
     });
   }
 
-  // 🔥 Detay sayfasından dönülünce otomatik tekrar fetch
   @override
   void didPopNext() {
     context.read<FavoriteViewModel>().fetchFavorites();
@@ -34,9 +32,8 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
     final vm = context.watch<FavoriteViewModel>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FA),
+      backgroundColor: const Color(0xFFF5F6FA),
 
-      // 🔥 Premium AppBar
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -52,72 +49,64 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
         ),
       ),
 
-      // 🔥 Gövde
       body: vm.isLoading
           ? FavoriteSkeleton()
           : vm.favorites.isEmpty
           ? _buildEmptyState()
-          : ListView.builder(
+          : ListView.separated(
               physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.all(16),
               itemCount: vm.favorites.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (_, i) {
                 final fav = vm.favorites[i];
 
-                return RepaintBoundary(
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: FavoriteCard(
-                      id: fav.id,
-                      imageUrl: fav.mainImage,
-                      title: fav.title,
-                      city: fav.cityName,
-                      isFavorite: true,
+                return FavoriteCard(
+                  id: fav.id,
+                  imageUrl: fav.mainImage,
+                  title: fav.title,
+                  city: fav.cityName,
+                  isFavorite: true,
 
-                      // 🔵 Kart tıklama → Detay
-                      onTap: () => context.pushNamed(
-                        'searchDetail',
-                        extra: {"id": fav.id, "initialImage": fav.mainImage},
+                  /// 🔥 Kalbe basınca favoriden çıkar
+                  onFavoriteToggle: () async {
+                    final removedTitle = fav.title;
+
+                    // 🔥 Local olarak hemen kaldır
+                    vm.removeFavoriteLocal(fav.id);
+
+                    // 🔥 API isteği
+                    vm.removeFavorite(fav.id);
+
+                    // 🔥 Premium mini toast
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("$removedTitle favorilerden kaldırıldı"),
+                        behavior: SnackBarBehavior.floating,
+                        backgroundColor: Colors.black87,
+                        margin: const EdgeInsets.all(16),
+                        duration: const Duration(seconds: 2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
+                    );
+                  },
 
-                      // 🔴 Favoriyi kaldırma
-                      onFavoriteToggle: () {
-                        final removedItem = fav;
-                        vm.removeFavoriteLocal(fav.id);
-                        vm.removeFavorite(fav.id);
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            behavior: SnackBarBehavior.floating,
-                            margin: const EdgeInsets.all(16),
-                            backgroundColor: Colors.black87,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            content: Text(
-                              "${fav.title} favorilerden kaldırıldı",
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            action: SnackBarAction(
-                              label: "Geri Al",
-                              textColor: Colors.white,
-                              onPressed: () {
-                                vm.favorites.insert(i, removedItem);
-                                vm.notifyListeners();
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  /// 🔥 Detaya git
+                  onTap: () {
+                    context.pushNamed(
+                      'searchDetail',
+                      extra: {"id": fav.id, "initialImage": fav.mainImage},
+                    );
+                  },
                 );
               },
             ),
     );
   }
 
-  // 🔥 Premium Empty State
+  // 🟣 Premium Empty State
   Widget _buildEmptyState() {
     return const Center(
       child: Padding(
@@ -137,7 +126,7 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
             ),
             SizedBox(height: 6),
             Text(
-              "Beğendiğiniz turları favorilere ekleyin \nkolayca erişin.",
+              "Beğendiğiniz turları favorilere ekleyin,\nkolayca erişin.",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.black45),
             ),

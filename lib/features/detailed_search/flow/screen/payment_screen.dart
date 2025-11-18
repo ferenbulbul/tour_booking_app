@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/features/detailed_search/search_detail_flow/payment_viewmodel.dart';
+import 'package:tour_booking/features/detailed_search/flow/payment_viewmodel.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class PaymentPage extends StatefulWidget {

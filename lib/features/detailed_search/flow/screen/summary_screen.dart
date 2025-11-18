@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/features/detailed_search/search_detail_flow/tour_search_detail_viewmodel.dart';
+import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/models/guide/guide.dart';
 import 'package:tour_booking/models/vehicle/vehicle.dart';
 import 'package:tour_booking/models/vehicle_detail/vehicle_detail.dart';

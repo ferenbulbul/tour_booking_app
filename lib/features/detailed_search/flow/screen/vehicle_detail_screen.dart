@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/features/detailed_search/search_detail_flow/tour_search_detail_viewmodel.dart';
+import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
 import 'package:cached_network_image/cached_network_image.dart'; // CachedNetworkImage için import
 
 class VehicleDetailScreen extends StatefulWidget {

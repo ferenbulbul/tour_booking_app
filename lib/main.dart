@@ -24,8 +24,8 @@ import 'package:tour_booking/features/detailed_search/search_result/search_resul
 import 'package:tour_booking/features/profile/profile/profile_status_viewmodel.dart';
 import 'package:tour_booking/features/profile/profile/profile_viewmodel.dart';
 import 'package:tour_booking/features/splash/widget/splash_view_model.dart';
-import 'package:tour_booking/features/detailed_search/search_detail_flow/payment_viewmodel.dart';
-import 'package:tour_booking/features/detailed_search/search_detail_flow/tour_search_detail_viewmodel.dart';
+import 'package:tour_booking/features/detailed_search/flow/payment_viewmodel.dart';
+import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/firebase_options.dart';
 import 'package:tour_booking/navigation/app_router.dart';
 import 'package:tour_booking/services/location/location_viewmodel.dart';

@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
               // ⭐ FEATURED TOURS
               const SectionTitle(title: "Featured Tours"),
-              const SizedBox(height: AppSpacing.s),
+              const SizedBox(height: AppSpacing.m),
               const FeaturedPointsWidget(),
               const SizedBox(height: AppSpacing.sectionSpacing),
 
@@ -99,13 +99,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 title: "Nearby Tours",
                 subtitle: "Find tours close to your current location",
               ),
-              const SizedBox(height: AppSpacing.m),
+              const SizedBox(height: AppSpacing.s),
               const NearbyPointsButton(),
               const SizedBox(height: AppSpacing.sectionSpacing),
 
               // 🏷 CATEGORIES
               const SectionTitle(title: "Categories"),
-              const SizedBox(height: AppSpacing.s),
               const TourTypeWidget(),
               const SizedBox(height: AppSpacing.sectionSpacing),
 
