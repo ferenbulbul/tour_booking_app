@@ -11,7 +11,6 @@ import 'package:tour_booking/core/widgets/section_title.dart';
 import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/departure_form_section.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/description_section.dart';
-import 'package:tour_booking/features/detailed_search/flow/widget/thumb_strip.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/tour_detail_header_hero.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/tour_detail_skeleton.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/option_picker_sheet.dart';
@@ -22,12 +21,12 @@ import 'package:tour_booking/models/place_section/place_section.dart';
 
 class TourSearchDetailScreen extends StatefulWidget {
   final String tourPointId;
-  final String? initialImage;
+  final String initialImage;
 
   const TourSearchDetailScreen({
     super.key,
     required this.tourPointId,
-    this.initialImage,
+    required this.initialImage,
   });
 
   @override
@@ -37,6 +36,7 @@ class TourSearchDetailScreen extends StatefulWidget {
 class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
     with AutomaticKeepAliveClientMixin {
   late List<String> times;
+  late String heroImage;
 
   @override
   bool get wantKeepAlive => true;
@@ -44,7 +44,9 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
   @override
   void initState() {
     super.initState();
-
+    heroImage = widget.initialImage;
+    print("favorite main image ${widget.initialImage}");
+    ;
     Future.microtask(() {
       context.read<TourSearchDetailViewModel>().fetchTourPointDetail(
         widget.tourPointId,
@@ -59,132 +61,132 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
     super.build(context);
 
     final vm = context.watch<TourSearchDetailViewModel>();
-    final detail = vm.detail;
+    final rawDetail = vm.detail;
 
-    final heroImage = widget.initialImage?.isNotEmpty == true
-        ? widget.initialImage!
-        : (detail?.mainImage ?? "");
+    // Eğer VM’deki detail başka tura aitse (önceki sayfadan kalmışsa) yok say
+    final detail = (rawDetail != null && rawDetail.id == widget.tourPointId)
+        ? rawDetail
+        : null;
 
-    final galleryImages = detail == null
-        ? [if (heroImage.isNotEmpty) heroImage]
-        : [detail.mainImage, ...detail.otherImages];
+    // ---------- HERO / GALLERY İÇİN GÖRSELLER ----------
+    final List<String> galleryImages = [];
+
+    // 0. index HER ZAMAN karttan gelen image
+    if (heroImage.isNotEmpty) {
+      galleryImages.add(heroImage);
+    }
+
+    if (detail != null) {
+      if (detail.mainImage.isNotEmpty &&
+          detail.mainImage != heroImage &&
+          !galleryImages.contains(detail.mainImage)) {
+        galleryImages.add(detail.mainImage);
+      }
+
+      for (final img in detail.otherImages) {
+        if (img.isNotEmpty && !galleryImages.contains(img)) {
+          galleryImages.add(img);
+        }
+      }
+    }
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       body: Container(
-        color: AppColors
-            .background, // 👈 siyahlığı çözen yer (scroll tüm ekranın arkasını boyar)
-        child: detail == null
-            ? const TourDetailSkeleton()
-            : SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    /// HEADER (TAŞMIŞ TAM EKRAN)
-                    TourDetailHeaderHero(
-                      title: detail.title,
-                      city: detail.cityName,
-                      district: detail.districtName,
-                      mainImage: heroImage,
-                      tourPointId: widget.tourPointId,
-                      isFavorite: vm.isFavorite,
-                      onBack: () => Navigator.pop(context),
-                      onFav: () => vm.toggleFavorite(detail.isFavorites),
-                      onOpenGallery: () => _openGallery(galleryImages),
-                    ),
-
-                    /// THUMB STRIP (geri getirildi)
-                    if (detail.otherImages.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 12),
-                        child: ThumbStrip(
-                          images: detail.otherImages,
-                          onTap: (i) => _openGallery(galleryImages, i + 1),
-                        ),
-                      ),
-
-                    const SizedBox(height: 12),
-
-                    /// BADGES
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.l,
-                      ),
-                      child: Wrap(
-                        spacing: AppSpacing.s,
-                        children: [
-                          AppBadge(
-                            "${detail.cityName}, ${detail.districtName}",
-                          ),
-                          AppBadge(detail.tourTypeName),
-                          DifficultyBadge(detail.tourDifficultyName),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.l,
-                      ),
-                      child: DescriptionSection(detail: detail),
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    /// FORM TITLE
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.l),
-                      child: SectionTitle(
-                        title: "Your Departure Details",
-                        subtitle: "Choose the details for your pickup",
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    /// FORM SECTION — callback bağlantıları düzgün
-                    DepartureFormSection(
-                      cityName: vm.selectedCityId != null
-                          ? detail.cities
-                                .firstWhere(
-                                  (c) => c.id == vm.selectedCityId,
-                                  orElse: () => detail.cities.first,
-                                )
-                                .name
-                          : null,
-
-                      districtName: vm.selectedDistrictId != null
-                          ? detail.districts
-                                .firstWhere(
-                                  (d) => d.id == vm.selectedDistrictId,
-                                  orElse: () => detail.districts.first,
-                                )
-                                .name
-                          : null,
-
-                      placeDescription: vm.selectedPlaceDesc,
-
-                      dateText: vm.selectedDate != null
-                          ? "${vm.selectedDate!.day}.${vm.selectedDate!.month}.${vm.selectedDate!.year}"
-                          : null,
-
-                      timeText: vm.selectedTime,
-
-                      onSelectCity: () => _selectCity(vm),
-                      onSelectDistrict: () => _selectDistrict(vm),
-                      onSelectPlace: () => _selectPlace(vm),
-                      onSelectDate: () => _selectDate(vm),
-                      onSelectTime: () => _selectTime(vm),
-                      onSubmit: () => _submit(vm),
-                    ),
-
-                    const SizedBox(height: 24),
-                  ],
-                ),
+        color: AppColors.background,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              /// 🧨 HERO HER ZAMAN VAR (detail null olsa bile)
+              TourDetailHeaderHero(
+                title: detail?.title ?? '',
+                city: detail?.cityName ?? '',
+                district: detail?.districtName ?? '',
+                tourPointId: widget.tourPointId,
+                isFavorite: vm.isFavorite,
+                images: galleryImages,
+                onBack: () => Navigator.pop(context),
+                onFav: detail == null
+                    ? () {} // detail gelmeden fav çalışmasın
+                    : () => vm.toggleFavorite(detail.isFavorites),
+                onOpenGallery: (index) => _openGallery(galleryImages, index),
               ),
+
+              const SizedBox(height: 12),
+
+              if (detail == null) ...[
+                // 🔄 Detay yüklenene kadar altta skeleton göster
+                const TourDetailSkeleton(),
+              ] else ...[
+                /// BADGES
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
+                  child: Wrap(
+                    spacing: AppSpacing.s,
+                    children: [
+                      AppBadge("${detail.cityName}, ${detail.districtName}"),
+                      AppBadge(detail.tourTypeName),
+                      DifficultyBadge(detail.tourDifficultyName),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
+                  child: DescriptionSection(detail: detail),
+                ),
+
+                const SizedBox(height: 32),
+
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.l),
+                  child: SectionTitle(
+                    title: "Your Departure Details",
+                    subtitle: "Choose the details for your pickup",
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                DepartureFormSection(
+                  cityName: vm.selectedCityId != null
+                      ? detail.cities
+                            .firstWhere(
+                              (c) => c.id == vm.selectedCityId,
+                              orElse: () => detail.cities.first,
+                            )
+                            .name
+                      : null,
+                  districtName: vm.selectedDistrictId != null
+                      ? detail.districts
+                            .firstWhere(
+                              (d) => d.id == vm.selectedDistrictId,
+                              orElse: () => detail.districts.first,
+                            )
+                            .name
+                      : null,
+                  placeDescription: vm.selectedPlaceDesc,
+                  dateText: vm.selectedDate != null
+                      ? "${vm.selectedDate!.day}.${vm.selectedDate!.month}.${vm.selectedDate!.year}"
+                      : null,
+                  timeText: vm.selectedTime,
+                  onSelectCity: () => _selectCity(vm),
+                  onSelectDistrict: () => _selectDistrict(vm),
+                  onSelectPlace: () => _selectPlace(vm),
+                  onSelectDate: () => _selectDate(vm),
+                  onSelectTime: () => _selectTime(vm),
+                  onSubmit: () => _submit(vm),
+                ),
+
+                const SizedBox(height: 24),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }

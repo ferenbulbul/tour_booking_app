@@ -88,22 +88,31 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/search-detail',
       name: 'searchDetail',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final data = state.extra;
 
-        String tourPointId = "";
-        String? initialImage; // null alabilir
+        late final String tourPointId;
+        String? initialImage;
 
         if (data is String) {
-          // Eski kullanım: sadece ID gönderilmiş
+          // Eski kullanım: sadece ID
           tourPointId = data;
-        } else if (data is Map) {
-          // Yeni kullanım: ID + optional image
+        } else if (data is Map<String, dynamic>) {
           tourPointId = data["id"] as String;
-          initialImage = data["image"] as String?;
+          // 🔥 GÖNDERDİĞİN KEY İLE AYNISI
+          initialImage = data["initialImage"] as String?;
+        } else {
+          throw Exception('Invalid extra for searchDetail');
         }
 
-        return TourSearchDetailScreen(tourPointId: tourPointId);
+        return MaterialPage(
+          // 🔥 Her id için unique key — reuse olmasın
+          key: ValueKey('searchDetail_$tourPointId'),
+          child: TourSearchDetailScreen(
+            tourPointId: tourPointId,
+            initialImage: initialImage!, // 🔥 ARTIK GERÇEKTEN GÖNDERİYORUZ
+          ),
+        );
       },
     ),
     GoRoute(

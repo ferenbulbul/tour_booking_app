@@ -57,7 +57,7 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
               physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.all(16),
               itemCount: vm.favorites.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, __) => const SizedBox(height: 14),
               itemBuilder: (_, i) {
                 final fav = vm.favorites[i];
 
@@ -95,6 +95,7 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
 
                   /// 🔥 Detaya git
                   onTap: () {
+                    print("favorite main image ${fav.mainImage}");
                     context.pushNamed(
                       'searchDetail',
                       extra: {"id": fav.id, "initialImage": fav.mainImage},

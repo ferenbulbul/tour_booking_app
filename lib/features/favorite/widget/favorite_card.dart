@@ -27,7 +27,6 @@ class FavoriteCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         height: 120,
-        margin: const EdgeInsets.only(bottom: 14),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
@@ -50,7 +49,6 @@ class FavoriteCard extends StatelessWidget {
                 tag: "tourImage_$id",
                 child: CachedNetworkImage(
                   imageUrl: imageUrl,
-                  cacheKey: "featured_$id",
                   width: 110,
                   height: 120,
                   fit: BoxFit.cover,
