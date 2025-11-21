@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/localization/localization_setup.dart';
 import 'package:tour_booking/core/theme/app_theme.dart';
-import 'package:tour_booking/features/profile/bookings/bookings_viewmodel.dart';
+import 'package:tour_booking/features/bookings/bookings_viewmodel.dart';
 import 'package:tour_booking/features/auth/change_password/change_password_viewmodel.dart';
 import 'package:tour_booking/features/driver_home_page/driver_viewmodel.dart';
 import 'package:tour_booking/features/auth/email_verification/widget/email_verification_view_model.dart';
@@ -21,9 +20,10 @@ import 'package:tour_booking/features/auth/phone_verification/verify_phone_viewm
 import 'package:tour_booking/features/auth/register/widgets/register_view_model.dart';
 import 'package:tour_booking/features/detailed_search/search/search_viewmodel.dart';
 import 'package:tour_booking/features/detailed_search/search_result/search_result_viewmodel.dart';
-import 'package:tour_booking/features/profile/profile/profile_status_viewmodel.dart';
-import 'package:tour_booking/features/profile/profile/profile_viewmodel.dart';
-import 'package:tour_booking/features/splash/widget/splash_view_model.dart';
+import 'package:tour_booking/features/profile/permission_viewmodel.dart';
+import 'package:tour_booking/features/profile/profile_status_viewmodel.dart';
+import 'package:tour_booking/features/profile/profile_viewmodel.dart';
+import 'package:tour_booking/features/splash/splash_view_model.dart';
 import 'package:tour_booking/features/detailed_search/flow/payment_viewmodel.dart';
 import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/firebase_options.dart';
@@ -77,6 +77,7 @@ class AppProviders extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => FavoriteViewModel()),
           ChangeNotifierProvider(create: (_) => PaymentViewModel()),
           ChangeNotifierProvider(create: (_) => BookingsViewModel()),
+          ChangeNotifierProvider(create: (_) => PermissionsViewModel()),
         ],
         child: const MyApp(),
       ),
@@ -93,6 +94,7 @@ class MyApp extends StatelessWidget {
       supportedLocales: context.supportedLocales,
       localizationsDelegates: context.localizationDelegates,
       debugShowCheckedModeBanner: false,
+      // showPerformanceOverlay: true,
       routerConfig: router,
       theme: AppTheme.light,
     );

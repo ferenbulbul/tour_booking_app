@@ -1,6 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ⭐ Konum izinleri -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- ⭐ Bildirim izni (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -8,7 +13,18 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
-                <!-- Apple Sign-In callback için -->
+
+        <!-- ⭐ Google Maps / Places API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDZ5a2iSVzbpA8OqYQjExZaaKLrCxV-Bbg" />
+
+        <!-- (Bazı cihazlar için gerekli) -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <!-- 🍎 Apple Sign-In callback -->
         <activity
             android:name="com.aboutyou.dart_packages.sign_in_with_apple.SignInWithAppleCallback"
             android:exported="true">
@@ -17,10 +33,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="signinwithapple" android:path="/callback" />
-
             </intent-filter>
         </activity>
 
+        <!-- ⭐ Ana Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -31,29 +47,25 @@
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
 
-            <!-- Uygulama teması -->
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
 
-            <!-- Ana giriş intent-filter -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- DEEP LINK (Şifre sıfırlama) -->
+            <!-- 🔗 Deep Link -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:scheme="tourbookingapp"
-                    android:host="reset-password" />
+                <data android:scheme="tourbookingapp" android:host="reset-password" />
             </intent-filter>
         </activity>
 
-        <!-- OneSignal ayarları -->
+        <!-- 🔥 OneSignal -->
         <meta-data
             android:name="onesignal_app_id"
             android:value="${onesignal_app_id}" />
@@ -67,11 +79,12 @@
             android:value="2" />
     </application>
 
-    <!-- Flutter'ın text paylaşım özelliği için gerekli -->
+    <!-- 📄 Text paylaşım izinleri -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT" />
             <data android:mimeType="text/plain" />
         </intent>
     </queries>
+
 </manifest>

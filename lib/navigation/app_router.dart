@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/features/detailed_search/flow/screen/tour_search_detail_screen.dart';
-import 'package:tour_booking/features/profile/bookings/screen/bookings_screen.dart';
+import 'package:tour_booking/features/bookings/screen/bookings_screen.dart';
 import 'package:tour_booking/features/auth/change_password/screen/change_password.dart';
 import 'package:tour_booking/features/driver_home_page/screen/driver_home_page.dart';
 import 'package:tour_booking/features/auth/email_verification/screen/email_verification_screen.dart';
@@ -10,12 +10,16 @@ import 'package:tour_booking/features/favorite/screen/favorite_screen.dart';
 import 'package:tour_booking/features/auth/forgot_passwords/forgot_password/screen/forgot_password_screen.dart';
 import 'package:tour_booking/features/auth/forgot_passwords/reset_password/screen/reset_password_screen.dart';
 import 'package:tour_booking/features/auth/forgot_passwords/verify_reset_code/screen/%20verify_reset_code_screen.dart';
+import 'package:tour_booking/features/google_map_test_page.dart';
 import 'package:tour_booking/features/home/screen/nearby_tourpoiont.dart';
 import 'package:tour_booking/features/home/screen/detail_search.dart';
 import 'package:tour_booking/features/home/screen/tour_search_by_tour_type.dart';
 import 'package:tour_booking/features/auth/login/screens/login_screen.dart';
 import 'package:tour_booking/features/auth/phone_verification/screen/verify_phone_screen.dart';
-import 'package:tour_booking/features/profile/profile/screen/profile_screen.dart';
+import 'package:tour_booking/features/profile/screen/language_screen.dart';
+import 'package:tour_booking/features/profile/screen/permission_screen.dart';
+import 'package:tour_booking/features/profile/screen/profile_screen.dart';
+import 'package:tour_booking/features/profile/screen/update_phone_screen.dart';
 import 'package:tour_booking/features/root/wigdet/root_scaffold.dart';
 import 'package:tour_booking/features/detailed_search/search/screen/search.dart';
 import 'package:tour_booking/features/detailed_search/search_result/screen/tour_search_result.dart';
@@ -206,6 +210,18 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
+      path: '/settings/language',
+      builder: (context, state) => const LanguageSettingsScreen(),
+    ),
+    GoRoute(
+      path: '/update-phone',
+      builder: (context, state) => const UpdatePhoneScreen(),
+    ),
+    GoRoute(
+      path: '/settings/permissions',
+      builder: (context, state) => const PermissionsScreen(),
+    ),
+    GoRoute(
       path: '/past-bookings',
       builder: (context, state) => const BookingsScreen(),
     ),
@@ -229,8 +245,13 @@ final GoRouter router = GoRouter(
           builder: (context, state) => const TourSearchScreen(),
         ),
         GoRoute(
+          path: '/reservations',
+          builder: (context, state) => const BookingsScreen(),
+        ),
+        GoRoute(
           path: '/profile',
-          builder: (context, state) => const ProfileScreen(),
+          builder: (context, state) =>
+              const GoogleMapTestPage(), //GoogleMapTestPage
         ),
       ],
     ),

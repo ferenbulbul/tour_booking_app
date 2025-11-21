@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 import 'package:tour_booking/features/auth/phone_verification/verify_phone_viewmodel.dart';
-import 'package:tour_booking/features/profile/profile/profile_status_viewmodel.dart';
-import 'package:tour_booking/features/profile/profile/profile_viewmodel.dart';
+import 'package:tour_booking/features/profile/profile_status_viewmodel.dart';
+import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 
 class VerifyPhoneScreen extends StatefulWidget {
   const VerifyPhoneScreen({super.key});

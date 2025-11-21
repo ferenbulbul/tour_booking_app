@@ -88,77 +88,72 @@ class _PremiumNavBar extends StatelessWidget {
     ];
 
     return ClipRRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.85),
-            border: const Border(
-              top: BorderSide(color: Colors.black12, width: 0.3),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 20,
-                offset: const Offset(0, -4),
-              ),
-            ],
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.93), // hafif cam efekti
+          border: const Border(
+            top: BorderSide(color: Colors.black12, width: 0.3),
           ),
-          child: SafeArea(
-            top: false,
-            child: SizedBox(
-              height: 65,
-              child: Row(
-                children: List.generate(items.length, (i) {
-                  final active = i == currentIndex;
 
-                  return Expanded(
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.translucent,
-                      onTap: () => onTap(i),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 260),
-                        curve: Curves.easeOut,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
+          // 🔥 Çok daha hafif shadow
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 12,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          top: false,
+          child: SizedBox(
+            height: 65,
+            child: Row(
+              children: List.generate(items.length, (i) {
+                final active = i == currentIndex;
 
-                        // ⭐ NO BACKGROUND — sadece icon doluyor
-                        decoration: const BoxDecoration(
-                          color: Colors.transparent,
-                        ),
+                return Expanded(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () => onTap(i),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 260),
+                      curve: Curves.easeOut,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      color: Colors.transparent,
 
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              active
-                                  ? items[i]['active'] as IconData
-                                  : items[i]['icon'] as IconData,
-                              size: 24,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            active
+                                ? items[i]['active'] as IconData
+                                : items[i]['icon'] as IconData,
+                            size: 24,
+                            color: active
+                                ? AppColors.primary
+                                : Colors.black.withOpacity(.45),
+                          ),
+                          const SizedBox(height: 3),
+                          AnimatedDefaultTextStyle(
+                            duration: const Duration(milliseconds: 200),
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: active
+                                  ? FontWeight.w600
+                                  : FontWeight.w500,
                               color: active
                                   ? AppColors.primary
                                   : Colors.black.withOpacity(.45),
                             ),
-                            const SizedBox(height: 3),
-                            AnimatedDefaultTextStyle(
-                              duration: const Duration(milliseconds: 200),
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: active
-                                    ? FontWeight.w600
-                                    : FontWeight.w500,
-                                color: active
-                                    ? AppColors.primary
-                                    : Colors.black.withOpacity(.45),
-                              ),
-                              child: Text(items[i]['label']!.toString()),
-                            ),
-                          ],
-                        ),
+                            child: Text(items[i]['label']!.toString()),
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                }),
-              ),
+                  ),
+                );
+              }),
             ),
           ),
         ),

@@ -15,7 +15,7 @@ class TourTypeWidget extends StatelessWidget {
     final vm = context.watch<HomeViewModel>();
 
     if (vm.isLoading) {
-      return const TourTypeSkeleton();
+      return const CategoryCardSkeleton();
     }
 
     if (vm.message != null) {
@@ -26,19 +26,24 @@ class TourTypeWidget extends StatelessWidget {
     }
 
     return ListView.builder(
+      key: const PageStorageKey('tour_type_list'),
+      cacheExtent: 600,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: vm.tourTypes.length,
       itemBuilder: (context, index) {
         final item = vm.tourTypes[index];
-        return CategoryCard(
-          title: item.title,
-          description: item.description,
-          imageUrl: item.thumbImageUrl,
-          onTap: () => context.pushNamed(
-            'tour-search-by-type',
-            queryParameters: {'tourTypeId': item.id},
+
+        return RepaintBoundary(
+          child: CategoryCard(
+            title: item.title,
+            description: item.description,
+            imageUrl: item.thumbImageUrl,
+            onTap: () => context.pushNamed(
+              'tour-search-by-type',
+              queryParameters: {'tourTypeId': item.id},
+            ),
           ),
         );
       },
@@ -68,15 +73,15 @@ class CategoryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         onTap: onTap,
         child: Container(
-          height: 120,
+          height: 100,
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
               ),
             ],
           ),
@@ -87,18 +92,23 @@ class CategoryCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 child: CachedNetworkImage(
                   imageUrl: imageUrl,
-                  width: 120,
-                  height: 120,
+                  width: 112,
+                  height: 112,
                   fit: BoxFit.cover,
+
+                  /// 📌 ÖNEMLİ: Küçük kart için daha düşük çözünürlük
+                  memCacheWidth: 360,
+
                   placeholder: (_, __) => Container(
-                    width: 120,
-                    height: 120,
+                    width: 112,
+                    height: 112,
                     color: Colors.grey.shade200,
                   ),
                   errorWidget: (_, __, ___) => Container(
-                    width: 120,
-                    height: 120,
+                    width: 112,
+                    height: 112,
                     color: Colors.grey.shade200,
+                    child: const Icon(Icons.image_not_supported, size: 20),
                   ),
                 ),
               ),
@@ -136,7 +146,7 @@ class CategoryCard extends StatelessWidget {
 
               Icon(
                 Icons.chevron_right_rounded,
-                size: 28,
+                size: 24,
                 color: AppColors.textSecondary.withOpacity(0.6),
               ),
 
@@ -145,21 +155,6 @@ class CategoryCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class TourTypeSkeleton extends StatelessWidget {
-  const TourTypeSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: 4, // 4 fake skeleton kart
-      itemBuilder: (_, __) => const CategoryCardSkeleton(),
     );
   }
 }

@@ -1,46 +1,41 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart'; // `defaultTargetPlatform` için gerekli
 import 'package:geolocator/geolocator.dart';
+import 'package:tour_booking/core/enum/user_role.dart';
 
 class LocationService {
   /// Belirtilen zaman ve mesafe koşullarına göre konum güncellemeleri sağlar.
   Stream<Position> getPositionStream({
+    required UserRole role,
     int timeIntervalInSeconds = 60,
-    int distanceFilter = 100, // Varsayılan değerler
+    int distanceFilter = 100,
   }) {
-    late LocationSettings locationSettings;
+    late LocationSettings settings;
 
     if (defaultTargetPlatform == TargetPlatform.android) {
-      locationSettings = AndroidSettings(
+      settings = AndroidSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: distanceFilter, // Parametreyi kullan
-        intervalDuration: Duration(
-          seconds: timeIntervalInSeconds,
-        ), // Parametreyi kullan
-        foregroundNotificationConfig: const ForegroundNotificationConfig(
-          notificationText:
-              "Konumunuz, ilgili hizmetleri sunmak için kullanılıyor.",
-          notificationTitle: "Konum Paylaşımı Aktif",
-          enableWakeLock: true,
-        ),
-      );
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      locationSettings = AppleSettings(
-        accuracy: LocationAccuracy.high,
-        activityType: ActivityType.other,
-        distanceFilter: distanceFilter, // Parametreyi kullan
-        pauseLocationUpdatesAutomatically:
-            true, // Pil tasarrufu için iOS'in duraklatmasına izin ver
-        showBackgroundLocationIndicator: true,
+        distanceFilter: distanceFilter,
+        intervalDuration: Duration(seconds: timeIntervalInSeconds),
+
+        // 🔥 Sadece DRIVER için foreground notification
+        foregroundNotificationConfig: role == UserRole.driver
+            ? const ForegroundNotificationConfig(
+                notificationText:
+                    "Konumunuz arka planda hizmet sunmak için kullanılıyor.",
+                notificationTitle: "Konum Paylaşımı Aktif",
+                enableWakeLock: true,
+              )
+            : null,
       );
     } else {
-      locationSettings = LocationSettings(
+      settings = LocationSettings(
         accuracy: LocationAccuracy.high,
         distanceFilter: distanceFilter,
       );
     }
 
-    return Geolocator.getPositionStream(locationSettings: locationSettings);
+    return Geolocator.getPositionStream(locationSettings: settings);
   }
 
   Future<bool> isLocationServiceEnabled() async {

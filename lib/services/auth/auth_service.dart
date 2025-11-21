@@ -1,6 +1,4 @@
 // lib/services/auth/auth_service.dart
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tour_booking/models/base/base_response.dart';
 import 'package:tour_booking/models/firebase_token/firebase_token_request.dart';
 import 'package:tour_booking/models/login/login_request.dart';
@@ -106,8 +104,17 @@ class AuthService {
     );
   }
 
-  /// 🔓 Logout
+  Future<void> updatePlayerId(String id) async {
+    final device = await DeviceInfoHelper.getDevice();
+    _apiClient.post<void>(
+      path: '/Auth/onesignal-id',
+      body: {'playerId': id, 'deviceId': device.deviceId},
+    );
+  }
+
   Future<void> logout() async {
-    await _tokenStorage.clearTokens();
+    final device = await DeviceInfoHelper.getDevice();
+    final deviceId = device.deviceId;
+    _apiClient.post<void>(path: '/Auth/logout', body: {'deviceId': deviceId});
   }
 }

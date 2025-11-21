@@ -1,3 +1,4 @@
+import 'package:tour_booking/core/enum/booking_status.dart';
 import 'package:tour_booking/models/base/base_response.dart';
 import 'package:tour_booking/models/booking_list/booking_list_response.dart';
 import 'package:tour_booking/models/city_list/city_list_response.dart';
@@ -172,8 +173,6 @@ class TourService {
   }
 
   Future<BaseResponse<void>> locationUpdate(LocationDto request) async {
-    var b = request.toJson();
-    print(b);
     var response = _apiClient.post<LocationDto>(
       path: "/Mobile/location-update",
       body: request.toJson(),
@@ -241,13 +240,14 @@ class TourService {
     return response;
   }
 
-  Future<BaseResponse<BookingListResponse>> getCustomerBookings() async {
-    var response = _apiClient.get<BookingListResponse>(
+  Future<BaseResponse<BookingListResponse>> getCustomerBookings({
+    required BookingStatus status,
+  }) async {
+    return _apiClient.get<BookingListResponse>(
       path: "/Mobile/customer-booking",
-      queryParams: {},
+      queryParams: {"status": status.asQuery},
       fromJson: (json) =>
           BookingListResponse.fromJson(json as Map<String, dynamic>),
     );
-    return response;
   }
 }

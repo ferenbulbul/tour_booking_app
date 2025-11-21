@@ -134,7 +134,7 @@ class ApiClient {
     return _handle<T>(
       fromJson: fromJson,
       send: (token) => _client.put(
-        Uri.parse('$_client$path'),
+        Uri.parse('$_cloudUrl$path'),
         headers: _headers(token: token, extra: extraHeaders),
         body: jsonEncode(body ?? {}),
       ),
@@ -150,7 +150,7 @@ class ApiClient {
     return _handle<T>(
       fromJson: fromJson,
       send: (token) => _client.delete(
-        Uri.parse('$_client$path'),
+        Uri.parse('$_cloudUrl$path'),
         headers: _headers(token: token, extra: extraHeaders),
       ),
     );

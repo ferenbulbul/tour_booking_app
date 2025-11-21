@@ -11,6 +11,7 @@ import 'package:tour_booking/models/login/login_response.dart';
 import 'package:tour_booking/services/auth/auth_service.dart';
 import 'package:tour_booking/services/core/secure_token_storage.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
+import 'package:tour_booking/utils/device_info_helper.dart';
 
 enum AuthProviderType { google, apple }
 
@@ -127,14 +128,13 @@ class AuthViewModel extends ChangeNotifier {
     try {
       await _googleSignIn.signOut();
       await _firebaseAuth.signOut();
+      await _authService.logout();
       _tokenStorage.clearTokens();
 
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
-
       _user = null;
       notifyListeners();
-
       print("👋 Tüm oturumlar kapatıldı.");
     } catch (e) {
       print('🚨 Çıkış yapma hatası: $e');

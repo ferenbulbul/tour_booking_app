@@ -2,11 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart' as shimmer; // ⭐ ÖNEMLİ
+import 'package:shimmer/shimmer.dart' as shimmer;
 import 'package:tour_booking/features/home/home_viewmodel.dart';
 
 /// ===============================================================
-///  PREMIUM FEATURED CARD – Hero YOK, sade image
+///  PREMIUM FEATURED CARD – Eski tasarım + net görüntü
 /// ===============================================================
 class FeaturedCard extends StatelessWidget {
   final String id;
@@ -28,6 +28,10 @@ class FeaturedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ekran dpi’sine göre cache genişliği (hem net hem nispeten hafif)
+    final dpr = MediaQuery.of(context).devicePixelRatio;
+    final targetWidth = (220 * dpr).round(); // kart ~200px
+
     return SizedBox(
       width: 200,
       child: GestureDetector(
@@ -47,29 +51,23 @@ class FeaturedCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             child: Stack(
               children: [
-                // --- IMAGE (HERO EKLENDİ) ---
+                // --- IMAGE (HERO) ---
                 Positioned.fill(
                   child: Hero(
                     tag: "tourImage_$id",
-                    child: Image(
-                      image: CachedNetworkImageProvider(
-                        imageUrl,
-                        cacheKey: "featured_$id",
-                      ),
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl,
                       fit: BoxFit.cover,
-                      frameBuilder:
-                          (context, child, frame, wasSynchronouslyLoaded) {
-                            if (wasSynchronouslyLoaded || frame != null)
-                              return child;
-                            return Container(color: Colors.grey.shade300);
-                          },
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Container(color: Colors.grey.shade300);
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(color: Colors.grey.shade300);
-                      },
+
+                      // İstersen tamamen silebilirsin → o zaman tam eski hal
+                      memCacheWidth: targetWidth,
+                      maxWidthDiskCache: targetWidth,
+
+                      fadeInDuration: const Duration(milliseconds: 150),
+                      placeholder: (_, __) =>
+                          Container(color: Colors.grey.shade300),
+                      errorWidget: (_, __, ___) =>
+                          Container(color: Colors.grey.shade300),
                     ),
                   ),
                 ),
@@ -134,7 +132,6 @@ class FeaturedCard extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-
                       if (subtitle != null) ...[
                         const SizedBox(height: 4),
                         Text(
@@ -161,8 +158,6 @@ class FeaturedCard extends StatelessWidget {
 
 /// ===============================================================
 ///  FEATURED LIST WIDGET
-///   - Loading → Shimmer Skeleton
-///   - Data → Normal list
 /// ===============================================================
 class FeaturedPointsWidget extends StatelessWidget {
   const FeaturedPointsWidget({super.key});
@@ -172,7 +167,6 @@ class FeaturedPointsWidget extends StatelessWidget {
     final vm = context.watch<HomeViewModel>();
 
     if (vm.isLoading) {
-      // 🔥 Artık Progress yerine skeleton
       return const FeaturedPointsSkeleton();
     }
 
@@ -185,6 +179,9 @@ class FeaturedPointsWidget extends StatelessWidget {
       child: ListView.separated(
         key: const PageStorageKey("featured_list"),
         scrollDirection: Axis.horizontal,
+        // biraz mantıklı bir cache; uçurmuyor
+        cacheExtent: 700,
+        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 8),
         itemCount: vm.featuredPoints.length,
         separatorBuilder: (_, __) => const SizedBox(width: 16),
@@ -211,7 +208,7 @@ class FeaturedPointsWidget extends StatelessWidget {
 }
 
 /// ===============================================================
-///  FEATURED SKELETON LIST  (Shimmer + kart iskeleti)
+///  FEATURED SKELETON LIST
 /// ===============================================================
 class FeaturedPointsSkeleton extends StatelessWidget {
   const FeaturedPointsSkeleton({super.key});
@@ -223,7 +220,7 @@ class FeaturedPointsSkeleton extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        itemCount: 4, // 4 tane fake kart
+        itemCount: 4,
         separatorBuilder: (_, __) => const SizedBox(width: 16),
         itemBuilder: (_, __) => const FeaturedCardSkeleton(),
       ),
@@ -231,9 +228,6 @@ class FeaturedPointsSkeleton extends StatelessWidget {
   }
 }
 
-/// ===============================================================
-///  TEK BİR KART SKELETON'U
-/// ===============================================================
 class FeaturedCardSkeleton extends StatelessWidget {
   const FeaturedCardSkeleton({super.key});
 
