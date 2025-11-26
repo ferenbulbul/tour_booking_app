@@ -32,7 +32,17 @@ class _TourSearchScreenState extends State<TourSearchScreen>
     required String title,
     required List list,
     required String? selected,
+
+    // ⭐ ekstra parametre: "Tüm ..." seçeneği eklensin mi?
+    bool includeAll = false,
+    String? allLabel,
   }) {
+    // ⭐ seçenekleri oluştur
+    final options = [
+      if (includeAll) PickerOption("", allLabel ?? "Tümü"),
+      ...list.map((e) => PickerOption(e.id, e.name)),
+    ];
+
     return showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
@@ -46,7 +56,7 @@ class _TourSearchScreenState extends State<TourSearchScreen>
             return PickerSheet(
               title: title,
               initialId: selected,
-              options: list.map((e) => PickerOption(e.id, e.name)).toList(),
+              options: options,
               controller: scrollController,
             );
           },
@@ -139,13 +149,15 @@ class _TourSearchScreenState extends State<TourSearchScreen>
                               title: "İl",
                               list: vm.cities,
                               selected: vm.selectedCityId,
+                              includeAll: true,
+                              allLabel: "Tüm İller",
                             );
 
                             if (id != null) {
                               if (id.isEmpty) {
                                 vm.selectedCityId = null;
                                 vm.selectedDistrictId = null;
-                                vm.districts.clear();
+                                vm.districts = [];
                                 vm.notifyListeners();
                               } else {
                                 vm.fetchDistricts(id);
@@ -191,8 +203,9 @@ class _TourSearchScreenState extends State<TourSearchScreen>
                               title: "İlçe",
                               list: vm.districts,
                               selected: vm.selectedDistrictId,
+                              includeAll: true,
+                              allLabel: "Tüm İlçeler",
                             );
-
                             if (id != null) vm.selectDistrict(id);
                           },
                         ),

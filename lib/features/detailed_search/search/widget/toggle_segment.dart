@@ -15,6 +15,7 @@ class PremiumToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 55,
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(40),
@@ -22,8 +23,8 @@ class PremiumToggle extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _item("Kalkış", Icons.my_location, 0),
-          _item("Tur", Icons.location_on_outlined, 1),
+          _item("Kalkış Noktası", Icons.my_location, 0),
+          _item("Tur Noktası", Icons.location_on_outlined, 1),
         ],
       ),
     );

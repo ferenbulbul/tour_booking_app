@@ -228,8 +228,9 @@ class _BookingCardState extends State<BookingCard> {
                         ),
                         Text(
                           "${item.totalPrice} ₺",
-                          style: const TextStyle(
-                            color: Colors.black87, // 🖤 yeşil yerine siyah
+                          style: TextStyle(
+                            color:
+                                Colors.green.shade600, // 🖤 yeşil yerine siyah
                             fontWeight: FontWeight.bold,
                             fontSize: 17,
                           ),

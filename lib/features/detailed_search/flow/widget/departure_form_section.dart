@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/picker_field.dart';
+import 'package:tour_booking/features/detailed_search/flow/screen/full_screen_map.dart';
+import 'package:tour_booking/features/detailed_search/flow/widget/mini_location_map.dart';
 
 class DepartureFormSection extends StatelessWidget {
   final String? cityName;
@@ -9,6 +11,8 @@ class DepartureFormSection extends StatelessWidget {
   final String? placeDescription;
   final String? dateText;
   final String? timeText;
+  final double? placeLat;
+  final double? placeLng;
 
   final VoidCallback onSelectCity;
   final VoidCallback onSelectDistrict;
@@ -30,6 +34,8 @@ class DepartureFormSection extends StatelessWidget {
     required this.onSelectDate,
     required this.onSelectTime,
     required this.onSubmit,
+    this.placeLat,
+    this.placeLng,
   });
 
   @override
@@ -64,6 +70,26 @@ class DepartureFormSection extends StatelessWidget {
             onTap: onSelectPlace,
           ),
         ),
+
+        if (placeLat != null && placeLng != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.l,
+            ).copyWith(bottom: 12),
+            child: MiniLocationMap(
+              lat: placeLat!,
+              lng: placeLng!,
+              key: ValueKey("${placeLat}_$placeLng"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => FullMapView(lat: placeLat!, lng: placeLng!),
+                  ),
+                );
+              },
+            ),
+          ),
 
         // DATE + TIME
         Padding(

@@ -26,6 +26,8 @@ mixin _$RegisterRequest {
   String get email => throw _privateConstructorUsedError;
   String get password => throw _privateConstructorUsedError;
   String get phoneNumber => throw _privateConstructorUsedError;
+  String? get nationalNumber => throw _privateConstructorUsedError;
+  String? get countryCode => throw _privateConstructorUsedError;
   String? get deviceId => throw _privateConstructorUsedError;
   String? get deviceModel => throw _privateConstructorUsedError;
 
@@ -52,6 +54,8 @@ abstract class $RegisterRequestCopyWith<$Res> {
     String email,
     String password,
     String phoneNumber,
+    String? nationalNumber,
+    String? countryCode,
     String? deviceId,
     String? deviceModel,
   });
@@ -77,6 +81,8 @@ class _$RegisterRequestCopyWithImpl<$Res, $Val extends RegisterRequest>
     Object? email = null,
     Object? password = null,
     Object? phoneNumber = null,
+    Object? nationalNumber = freezed,
+    Object? countryCode = freezed,
     Object? deviceId = freezed,
     Object? deviceModel = freezed,
   }) {
@@ -102,6 +108,14 @@ class _$RegisterRequestCopyWithImpl<$Res, $Val extends RegisterRequest>
                 ? _value.phoneNumber
                 : phoneNumber // ignore: cast_nullable_to_non_nullable
                       as String,
+            nationalNumber: freezed == nationalNumber
+                ? _value.nationalNumber
+                : nationalNumber // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            countryCode: freezed == countryCode
+                ? _value.countryCode
+                : countryCode // ignore: cast_nullable_to_non_nullable
+                      as String?,
             deviceId: freezed == deviceId
                 ? _value.deviceId
                 : deviceId // ignore: cast_nullable_to_non_nullable
@@ -131,6 +145,8 @@ abstract class _$$RegisterRequestImplCopyWith<$Res>
     String email,
     String password,
     String phoneNumber,
+    String? nationalNumber,
+    String? countryCode,
     String? deviceId,
     String? deviceModel,
   });
@@ -155,6 +171,8 @@ class __$$RegisterRequestImplCopyWithImpl<$Res>
     Object? email = null,
     Object? password = null,
     Object? phoneNumber = null,
+    Object? nationalNumber = freezed,
+    Object? countryCode = freezed,
     Object? deviceId = freezed,
     Object? deviceModel = freezed,
   }) {
@@ -180,6 +198,14 @@ class __$$RegisterRequestImplCopyWithImpl<$Res>
             ? _value.phoneNumber
             : phoneNumber // ignore: cast_nullable_to_non_nullable
                   as String,
+        nationalNumber: freezed == nationalNumber
+            ? _value.nationalNumber
+            : nationalNumber // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        countryCode: freezed == countryCode
+            ? _value.countryCode
+            : countryCode // ignore: cast_nullable_to_non_nullable
+                  as String?,
         deviceId: freezed == deviceId
             ? _value.deviceId
             : deviceId // ignore: cast_nullable_to_non_nullable
@@ -202,6 +228,8 @@ class _$RegisterRequestImpl implements _RegisterRequest {
     required this.email,
     required this.password,
     required this.phoneNumber,
+    this.nationalNumber,
+    this.countryCode,
     this.deviceId,
     this.deviceModel,
   });
@@ -220,13 +248,17 @@ class _$RegisterRequestImpl implements _RegisterRequest {
   @override
   final String phoneNumber;
   @override
+  final String? nationalNumber;
+  @override
+  final String? countryCode;
+  @override
   final String? deviceId;
   @override
   final String? deviceModel;
 
   @override
   String toString() {
-    return 'RegisterRequest(firstName: $firstName, lastName: $lastName, email: $email, password: $password, phoneNumber: $phoneNumber, deviceId: $deviceId, deviceModel: $deviceModel)';
+    return 'RegisterRequest(firstName: $firstName, lastName: $lastName, email: $email, password: $password, phoneNumber: $phoneNumber, nationalNumber: $nationalNumber, countryCode: $countryCode, deviceId: $deviceId, deviceModel: $deviceModel)';
   }
 
   @override
@@ -243,6 +275,10 @@ class _$RegisterRequestImpl implements _RegisterRequest {
                 other.password == password) &&
             (identical(other.phoneNumber, phoneNumber) ||
                 other.phoneNumber == phoneNumber) &&
+            (identical(other.nationalNumber, nationalNumber) ||
+                other.nationalNumber == nationalNumber) &&
+            (identical(other.countryCode, countryCode) ||
+                other.countryCode == countryCode) &&
             (identical(other.deviceId, deviceId) ||
                 other.deviceId == deviceId) &&
             (identical(other.deviceModel, deviceModel) ||
@@ -258,6 +294,8 @@ class _$RegisterRequestImpl implements _RegisterRequest {
     email,
     password,
     phoneNumber,
+    nationalNumber,
+    countryCode,
     deviceId,
     deviceModel,
   );
@@ -286,6 +324,8 @@ abstract class _RegisterRequest implements RegisterRequest {
     required final String email,
     required final String password,
     required final String phoneNumber,
+    final String? nationalNumber,
+    final String? countryCode,
     final String? deviceId,
     final String? deviceModel,
   }) = _$RegisterRequestImpl;
@@ -303,6 +343,10 @@ abstract class _RegisterRequest implements RegisterRequest {
   String get password;
   @override
   String get phoneNumber;
+  @override
+  String? get nationalNumber;
+  @override
+  String? get countryCode;
   @override
   String? get deviceId;
   @override

@@ -32,6 +32,7 @@ class LoginViewModel extends ChangeNotifier {
       loggedInUser = result.data;
       final prefs = await SharedPreferences.getInstance();
       print(result.data!.isFirstLogin);
+      await prefs.setBool('is_email_confirmed', result.data!.emailConfirmed);
       await prefs.setString('user_role', result.data!.role);
       await prefs.setBool(
         'is_profile_complete',

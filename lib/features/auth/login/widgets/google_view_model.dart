@@ -10,8 +10,6 @@ import 'package:tour_booking/models/firebase_token/firebase_token_request.dart';
 import 'package:tour_booking/models/login/login_response.dart';
 import 'package:tour_booking/services/auth/auth_service.dart';
 import 'package:tour_booking/services/core/secure_token_storage.dart';
-import 'package:tour_booking/core/enum/user_role.dart';
-import 'package:tour_booking/utils/device_info_helper.dart';
 
 enum AuthProviderType { google, apple }
 

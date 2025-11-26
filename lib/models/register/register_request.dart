@@ -11,6 +11,7 @@ class RegisterRequest with _$RegisterRequest {
     required String email,
     required String password,
     required String phoneNumber,
+    String? countryCode,
     String? deviceId,
     String? deviceModel,
   }) = _RegisterRequest;

@@ -1,6 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/widgets/skelaton/tour_card_skeleton.dart';
 import 'package:tour_booking/features/detailed_search/search_result/search_result_viewmodel.dart';
@@ -81,9 +79,7 @@ class _TourSearchResultsScreenState extends State<TourSearchResultsScreen> {
     }
 
     if (vm.tourPoints.isEmpty) {
-      return const Center(
-        child: Text("No results found", style: TextStyle(fontSize: 16)),
-      );
+      return buildEmptySearch();
     }
 
     return ListView.builder(
@@ -92,4 +88,38 @@ class _TourSearchResultsScreenState extends State<TourSearchResultsScreen> {
       itemBuilder: (_, i) => TourSearchResultCard(point: vm.tourPoints[i]),
     );
   }
+}
+
+Widget buildEmptySearch() {
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.search_off_rounded, size: 60, color: Colors.black26),
+
+          const SizedBox(height: 20),
+
+          const Text(
+            "Sonuç bulunamadı",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          const Text(
+            "Filtrelerinizi değiştirerek yeniden arama yapmayı deneyebilirsiniz.",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14, color: Colors.black54, height: 1.4),
+          ),
+        ],
+      ),
+    ),
+  );
 }

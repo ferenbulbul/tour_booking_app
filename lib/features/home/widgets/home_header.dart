@@ -17,7 +17,7 @@ class HomeHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Hello, Yasin 👋",
+                  "Hello,  👋",
                   style: AppTextStyles.labelLarge.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -34,15 +34,15 @@ class HomeHeader extends StatelessWidget {
           ),
 
           /// RIGHT SIDE: Avatar (LIGHT THEME DOĞRU HALİ)
-          CircleAvatar(
-            radius: 22,
-            backgroundColor: Colors.grey.shade200, // açık gri zemin
-            child: Icon(
-              Icons.notifications,
-              color: AppColors.textPrimary, // koyu gri ikon
-              size: 24,
-            ),
-          ),
+          // CircleAvatar(
+          //   radius: 22,
+          //   backgroundColor: Colors.grey.shade200, // açık gri zemin
+          //   child: Icon(
+          //     Icons.notifications,
+          //     color: AppColors.textPrimary, // koyu gri ikon
+          //     size: 24,
+          //   ),
+          // ),
         ],
       ),
     );

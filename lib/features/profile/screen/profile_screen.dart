@@ -6,6 +6,7 @@ import 'package:tour_booking/features/auth/login/widgets/google_view_model.dart'
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 import 'package:tour_booking/features/profile/widget/profil_header.dart';
 import 'package:tour_booking/features/profile/widget/profile_section.dart';
+import 'package:tour_booking/features/profile/widget/profile_skleton.dart';
 import 'package:tour_booking/features/profile/widget/profile_title.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -30,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final vmAuth = context.watch<AuthViewModel>();
 
     if (vm.isLoading && vm.profile == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return ProfileSkeleton();
     }
 
     final p = vm.profile;
@@ -58,13 +59,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // ------------------------------
             const ProfileSection(title: "Hesap Ayarları"),
             ProfileTile(
-              icon: Icons.person_outline,
-              title: "Profil Bilgilerim",
-              onTap: () {
-                // TODO: Profil bilgileri ekranı
-              },
-            ),
-            ProfileTile(
               icon: Icons.language_rounded,
               title: "Dil",
               trailingText: context.locale.languageCode == "tr"
@@ -75,7 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ProfileTile(
               icon: Icons.tune_rounded,
               title: "İzinler",
-              subtitle: "Bildirim, konum ve telefon doğrulamasını yönet",
+              subtitle: "Konum ve telefon doğrulamasını yönet",
               onTap: () => context.push("/settings/permissions"),
             ),
 
@@ -92,15 +86,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 // TODO: Şifre değiştir ekranı
               },
             ),
-            ProfileTile(
-              icon: Icons.shield_outlined,
-              title: "Oturum Yönetimi",
-              onTap: () {
-                // TODO: Oturumlar ekranı
-              },
-            ),
-
-            const SizedBox(height: 30),
 
             // ------------------------------
             // DİĞER

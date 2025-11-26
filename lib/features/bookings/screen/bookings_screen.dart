@@ -38,26 +38,16 @@ class _BookingsScreenState extends State<BookingsScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              // --- MINIMAL TABBAR (arkada kutu yok) ---
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,
                 ),
                 child: TabBar(
-                  // sadece alt çizgi + renk
                   indicatorColor: AppColors.primary,
                   indicatorWeight: 2.5,
                   labelColor: AppColors.primary,
                   unselectedLabelColor: Colors.black.withOpacity(0.5),
-                  labelStyle: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  unselectedLabelStyle: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
                   tabs: const [
                     Tab(text: "Yaklaşan"),
                     Tab(text: "Tamamlanan"),
@@ -66,17 +56,40 @@ class _BookingsScreenState extends State<BookingsScreen> {
                 ),
               ),
 
-              // --- TABBAR VIEW ---
               Expanded(
                 child: TabBarView(
                   children: [
-                    _list(
-                      vm.allBookings,
-                      vm.isLoadingAll,
-                      showCancelAction: true, // sadece Tümü
+                    Builder(
+                      builder: (context) {
+                        final index = DefaultTabController.of(context).index;
+                        return _list(
+                          vm.allBookings,
+                          vm.isLoadingAll,
+                          index,
+                          showCancelAction: true,
+                        );
+                      },
                     ),
-                    _list(vm.completedBookings, vm.isLoadingCompleted),
-                    _list(vm.cancelledBookings, vm.isLoadingCancelled),
+                    Builder(
+                      builder: (context) {
+                        final index = DefaultTabController.of(context).index;
+                        return _list(
+                          vm.completedBookings,
+                          vm.isLoadingCompleted,
+                          index,
+                        );
+                      },
+                    ),
+                    Builder(
+                      builder: (context) {
+                        final index = DefaultTabController.of(context).index;
+                        return _list(
+                          vm.cancelledBookings,
+                          vm.isLoadingCancelled,
+                          index,
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -87,18 +100,20 @@ class _BookingsScreenState extends State<BookingsScreen> {
     );
   }
 
-  Widget _list(List bookings, bool loading, {bool showCancelAction = false}) {
+  Widget _list(
+    List bookings,
+    bool loading,
+    int tabIndex, {
+    bool showCancelAction = false,
+  }) {
     if (loading) {
       return const BookingsSkeleton();
     }
 
     if (bookings.isEmpty) {
-      return const Center(
-        child: Text(
-          "Bu kategoride kayıt bulunmuyor.",
-          style: TextStyle(fontSize: 15),
-        ),
-      );
+      if (tabIndex == 0) return buildEmptyBookings("upcoming");
+      if (tabIndex == 1) return buildEmptyBookings("completed");
+      if (tabIndex == 2) return buildEmptyBookings("cancelled");
     }
 
     return ListView.builder(
@@ -108,4 +123,72 @@ class _BookingsScreenState extends State<BookingsScreen> {
           BookingCard(item: bookings[i], showCancelAction: showCancelAction),
     );
   }
+}
+
+Widget buildEmptyBookings(String type) {
+  IconData icon;
+  String title;
+  String subtitle;
+
+  switch (type) {
+    case "upcoming":
+      icon = Icons.event_available_outlined;
+      title = "Yaklaşan rezervasyonun yok";
+      subtitle = "Yeni bir tur seçerek planını oluşturabilirsin.";
+      break;
+
+    case "completed":
+      icon = Icons.check_circle_outline;
+      title = "Tamamlanan bir turun bulunmuyor";
+      subtitle = "Katıldığın turlar burada görünecek.";
+      break;
+
+    case "cancelled":
+      icon = Icons.cancel_outlined;
+      title = "İptal edilen rezervasyon yok";
+      subtitle = "Şu anda iptal edilmiş bir kaydın bulunmuyor.";
+      break;
+
+    default:
+      icon = Icons.inbox_outlined;
+      title = "Kayıt bulunamadı";
+      subtitle = "";
+  }
+
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 60, color: Colors.black26),
+
+          const SizedBox(height: 20),
+
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
+            ),
+          ),
+
+          if (subtitle.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.black54,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ],
+      ),
+    ),
+  );
 }

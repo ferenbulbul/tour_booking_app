@@ -10,7 +10,6 @@ import 'package:tour_booking/features/favorite/screen/favorite_screen.dart';
 import 'package:tour_booking/features/auth/forgot_passwords/forgot_password/screen/forgot_password_screen.dart';
 import 'package:tour_booking/features/auth/forgot_passwords/reset_password/screen/reset_password_screen.dart';
 import 'package:tour_booking/features/auth/forgot_passwords/verify_reset_code/screen/%20verify_reset_code_screen.dart';
-import 'package:tour_booking/features/google_map_test_page.dart';
 import 'package:tour_booking/features/home/screen/nearby_tourpoiont.dart';
 import 'package:tour_booking/features/home/screen/detail_search.dart';
 import 'package:tour_booking/features/home/screen/tour_search_by_tour_type.dart';
@@ -42,6 +41,7 @@ final RouteObserver<ModalRoute<void>> globalRouteObserver =
 final GoRouter router = GoRouter(
   navigatorKey: appNavigatorKey,
   debugLogDiagnostics: true,
+
   routes: [
     GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
@@ -251,7 +251,7 @@ final GoRouter router = GoRouter(
         GoRoute(
           path: '/profile',
           builder: (context, state) =>
-              const GoogleMapTestPage(), //GoogleMapTestPage
+              const ProfileScreen(), //GoogleMapTestPage
         ),
       ],
     ),

@@ -27,7 +27,8 @@ flutter_ios_podfile_setup
 
 target 'Runner' do
   pod 'GoogleSignIn', '~> 8.0'   # 8.0.1 varsa, yoksa 8.0.0 kalır
-
+  pod 'GoogleMaps'
+  pod 'GooglePlaces'
   # Her iki paketi de tatmin eden GTMSessionFetcher aralığı
   pod 'GTMSessionFetcher/Core', '3.5.0'
 

@@ -292,14 +292,12 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
                     ),
                     const SizedBox(height: 16),
                     DescriptionSection(detail: detail),
-                    const SizedBox(height: 32),
-
+                    const SizedBox(height: 16),
                     const SectionTitle(
                       title: "Your Departure Details",
                       subtitle: "Choose the details for your pickup",
                     ),
                     const SizedBox(height: 16),
-
                     DepartureFormSection(
                       cityName: vm.selectedCityId != null
                           ? detail.cities
@@ -328,6 +326,8 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
                       onSelectDate: () => _selectDate(vm),
                       onSelectTime: () => _selectTime(vm),
                       onSubmit: () => _submit(vm),
+                      placeLat: vm.selectedPlaceLat,
+                      placeLng: vm.selectedPlaceLng,
                     ),
                   ],
                 ),
