@@ -168,7 +168,14 @@ final GoRouter router = GoRouter(
     GoRoute(
       name: 'placePicker',
       path: '/place-picker',
-      builder: (context, state) => const PlacePickerPage(),
+      builder: (context, state) {
+        final params = Map<String, dynamic>.from(state.extra as Map);
+
+        return PlacePickerPage(
+          city: params['city'],
+          district: params['district'],
+        );
+      },
     ),
     GoRoute(
       path: '/search-location',

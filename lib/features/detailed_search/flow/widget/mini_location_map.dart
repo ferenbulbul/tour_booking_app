@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class MiniLocationMap extends StatelessWidget {
+class MiniLocationMap extends StatefulWidget {
   final double lat;
   final double lng;
   final VoidCallback onTap;
@@ -14,64 +14,72 @@ class MiniLocationMap extends StatelessWidget {
   });
 
   @override
+  State<MiniLocationMap> createState() => _MiniLocationMapState();
+}
+
+class _MiniLocationMapState extends State<MiniLocationMap> {
+  GoogleMapController? _controller;
+
+  void _forceCenterMap() {
+    if (!mounted || _controller == null) return;
+    final pos = LatLng(widget.lat, widget.lng);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 250), () {
+        _controller?.animateCamera(
+          CameraUpdate.newCameraPosition(CameraPosition(target: pos, zoom: 16)),
+        );
+
+        // Marker'ı garanti çizdir
+        if (mounted) setState(() {});
+      });
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant MiniLocationMap oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.lat != widget.lat || oldWidget.lng != widget.lng) {
+      _forceCenterMap();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final pos = LatLng(lat, lng);
+    final pos = LatLng(widget.lat, widget.lng);
+    final markerId =
+        "pin_${widget.lat}_${widget.lng}_${DateTime.now().millisecondsSinceEpoch}";
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 150,
-          child: Stack(
-            children: [
-              // GOOGLE MAP → dokunmayı kapatıyoruz
-              IgnorePointer(
-                ignoring: true,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      target: pos,
-                      zoom: 15,
-                    ),
-                    markers: {
-                      Marker(
-                        markerId: const MarkerId("selected"),
-                        position: pos,
-                      ),
-                    },
-                    zoomControlsEnabled: false,
-                    myLocationButtonEnabled: false,
-                  ),
-                ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: SizedBox(
+        height: 150,
+        child: Stack(
+          children: [
+            GoogleMap(
+              initialCameraPosition: CameraPosition(target: pos, zoom: 15),
+              markers: {Marker(markerId: MarkerId(markerId), position: pos)},
+              onMapCreated: (c) {
+                _controller = c;
+                _forceCenterMap();
+              },
+              zoomControlsEnabled: false,
+              myLocationButtonEnabled: false,
+              scrollGesturesEnabled: false,
+              zoomGesturesEnabled: false,
+              rotateGesturesEnabled: false,
+              tiltGesturesEnabled: false,
+              liteModeEnabled: false,
+            ),
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(onTap: widget.onTap),
               ),
-
-              // ŞEFFAF TIKLANABİLİR KATMAN
-              Positioned.fill(
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(12),
-                    onTap: onTap,
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-
-        const SizedBox(height: 8),
-
-        // ALT BİLGİ YAZISI
-        Text(
-          "📍 Kalkış noktanızı büyük haritada görüntüleyin",
-          style: TextStyle(
-            fontSize: 13,
-            color: Colors.grey.shade700,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

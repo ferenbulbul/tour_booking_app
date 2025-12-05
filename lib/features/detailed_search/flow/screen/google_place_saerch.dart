@@ -1,13 +1,22 @@
 // lib/features/place_picker/place_picker_page.dart
+
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:tour_booking/core/utils/location_validator.dart';
 import 'package:tour_booking/keys.dart';
 import 'package:tour_booking/models/place_section/place_section.dart';
 
 class PlacePickerPage extends StatefulWidget {
-  const PlacePickerPage({super.key});
+  final String city; // Örn: "İstanbul"
+  final String district; // Örn: "Bağcılar"
+
+  const PlacePickerPage({
+    super.key,
+    required this.city,
+    required this.district,
+  });
 
   @override
   State<PlacePickerPage> createState() => _PlacePickerPageState();
@@ -15,7 +24,8 @@ class PlacePickerPage extends StatefulWidget {
 
 class _PlacePickerPageState extends State<PlacePickerPage> {
   final _ctrl = TextEditingController();
-  final _debouncer = _Debouncer(ms: 350);
+  final _debouncer = _Debouncer(ms: 300);
+
   final _apiKey = Keys.places;
 
   bool _loading = false;
@@ -27,22 +37,22 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
     super.dispose();
   }
 
-  Future<void> _search(String q) async {
-    if (_apiKey.isEmpty) {
-      _snack("API anahtarı boş (.env yüklü mü?)");
-      return;
-    }
-    if (q.isEmpty) {
+  // ---------------------------------------------------------------------------
+  // AUTOCOMPLETE SEARCH
+  // ---------------------------------------------------------------------------
+  Future<void> _search(String query) async {
+    if (query.length < 2) {
       setState(() => _items = []);
       return;
     }
+
     setState(() => _loading = true);
 
     final uri = Uri.https(
       'maps.googleapis.com',
       '/maps/api/place/autocomplete/json',
       {
-        'input': q,
+        'input': query,
         'key': _apiKey,
         'language': 'tr',
         'components': 'country:tr',
@@ -53,13 +63,14 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
     setState(() => _loading = false);
 
     if (res.statusCode != 200) {
-      _snack('Autocomplete hata: ${res.statusCode}');
+      setState(() => _items = []);
       return;
     }
-    final body = jsonDecode(res.body) as Map<String, dynamic>;
-    final status = body['status'] as String?;
-    if (status != 'OK') {
-      _snack('Autocomplete status: $status');
+
+    final body = jsonDecode(res.body);
+    final status = body['status'];
+
+    if (status != "OK") {
       setState(() => _items = []);
       return;
     }
@@ -68,58 +79,95 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
         .map((e) => _Prediction.fromJson(e))
         .toList();
 
+    // 🔥 FİLTRESİZ — TÜM ÜLKE SONUÇLARI GELECEK
     setState(() => _items = preds);
   }
 
+  // ---------------------------------------------------------------------------
+  // PLACE DETAILS → lat/lng
+  // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  //  CLEAN PICK FUNCTION (MAP İLE AYNI MİMARI)
+  // ---------------------------------------------------------------------------
   Future<void> _pick(_Prediction p) async {
-    // Place details ile lat/lng al
-    final uri =
-        Uri.https('maps.googleapis.com', '/maps/api/place/details/json', {
-          'place_id': p.placeId,
-          'key': _apiKey,
-          'language': 'tr',
-          'fields': 'formatted_address,name,geometry/location',
-        });
-    final res = await http.get(uri);
-    if (res.statusCode != 200) {
-      _snack('Beklenmeyen bir hata oluştu');
-      return;
-    }
-    final body = jsonDecode(res.body) as Map<String, dynamic>;
-    final status = body['status'] as String?;
-    if (status != 'OK') {
-      _snack('Details status: $status');
-      return;
-    }
-    final result = body['result'] as Map<String, dynamic>;
-    final location =
-        (result['geometry']?['location'] ?? {}) as Map<String, dynamic>;
-    final lat = (location['lat'] as num?)?.toDouble();
-    final lng = (location['lng'] as num?)?.toDouble();
+    final uri = Uri.https(
+      'maps.googleapis.com',
+      '/maps/api/place/details/json',
+      {
+        'place_id': p.placeId,
+        'key': _apiKey,
+        'language': 'tr',
+        'fields': 'formatted_address,name,geometry/location,address_components',
+      },
+    );
 
+    final res = await http.get(uri);
+    if (res.statusCode != 200) return;
+
+    final body = jsonDecode(res.body);
+    if (body['status'] != 'OK') return;
+
+    final result = body['result'];
+
+    final components = result['address_components'] as List<dynamic>;
+    final formatted = result['formatted_address'] ?? '';
+
+    // -----------------------------------------------------------
+    // 🔥 MERKEZİ DOĞRULAMA — ARTIK TEK BEYİN BURADA
+    // -----------------------------------------------------------
+    final validation = LocationValidator.validate(
+      components: components,
+      formatted: formatted,
+      expectedCity: widget.city,
+      expectedDistrict: widget.district,
+    );
+
+    if (!validation.isValid) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(validation.errorMessage!)));
+      return;
+    }
+
+    // -----------------------------------------------------------
+    // 🔥 KOORDİNATLARI AL
+    // -----------------------------------------------------------
+    final loc = result['geometry']?['location'];
+    final lat = (loc?['lat'] as num?)?.toDouble();
+    final lng = (loc?['lng'] as num?)?.toDouble();
+
+    if (lat == null || lng == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Konum koordinatları alınamadı.")),
+      );
+      return;
+    }
+
+    // -----------------------------------------------------------
+    // 🔥 BAŞARILI → GERİ DÖN
+    // -----------------------------------------------------------
     Navigator.of(
       context,
     ).pop(PlaceSelection(description: p.description, lat: lat, lng: lng));
   }
 
-  void _snack(String m) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
-  }
-
+  // ---------------------------------------------------------------------------
+  // UI
+  // ---------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Konum Seç')),
+      appBar: AppBar(title: Text("${widget.city} / ${widget.district} seç")),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Arama kutusu
+            // 🔍 Arama kutusu
             TextField(
               controller: _ctrl,
               onChanged: (v) => _debouncer(() => _search(v)),
               decoration: InputDecoration(
-                hintText: 'Konum ara (ör. Kanyon AVM, Ataşehir...)',
+                hintText: "${widget.city} ${widget.district} içinde ara...",
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _ctrl.text.isEmpty
                     ? null
@@ -135,15 +183,15 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
                 ),
               ),
             ),
+
             const SizedBox(height: 12),
 
-            // Durum satırı
             if (_loading) const LinearProgressIndicator(),
 
-            // Sonuç listesi (şık kart)
+            // 🔽 Sonuç listesi
             Expanded(
               child: _items.isEmpty
-                  ? const Center(child: Text('Sonuç yok. Yazmaya başlayın.'))
+                  ? const Center(child: Text('Sonuç bulunamadı'))
                   : ListView.separated(
                       physics: const BouncingScrollPhysics(),
                       itemCount: _items.length,
@@ -151,8 +199,8 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
                       itemBuilder: (context, i) {
                         final p = _items[i];
                         return Material(
-                          color: Theme.of(context).colorScheme.surface,
                           elevation: 1,
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(12),
                           child: ListTile(
                             leading: const Icon(Icons.location_on_outlined),
@@ -179,6 +227,7 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
   }
 }
 
+// 🔹 Prediction DTO
 class _Prediction {
   final String placeId;
   final String description;
@@ -193,16 +242,17 @@ class _Prediction {
   });
 
   factory _Prediction.fromJson(Map<String, dynamic> j) {
-    final sf = (j['structured_formatting'] ?? {}) as Map<String, dynamic>;
+    final sf = (j['structured_formatting'] ?? {});
     return _Prediction(
-      placeId: j['place_id'] as String,
-      description: j['description'] as String,
-      mainText: (sf['main_text'] ?? j['description']) as String,
-      secondaryText: sf['secondary_text'] as String?,
+      placeId: j['place_id'],
+      description: j['description'],
+      mainText: sf['main_text'] ?? j['description'],
+      secondaryText: sf['secondary_text'],
     );
   }
 }
 
+// 🔹 Debouncer
 class _Debouncer {
   final int ms;
   Timer? _t;

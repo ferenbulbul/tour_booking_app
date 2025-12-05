@@ -11,6 +11,7 @@ import 'package:tour_booking/core/widgets/badgets/app_badge.dart';
 import 'package:tour_booking/core/widgets/badgets/difficulty_badge.dart';
 import 'package:tour_booking/core/widgets/buttons/simple_icon_button.dart';
 import 'package:tour_booking/core/widgets/section_title.dart';
+import 'package:tour_booking/features/detailed_search/flow/screen/full_screen_map.dart';
 import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/departure_form_section.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/description_section.dart';
@@ -326,6 +327,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
                       onSelectDate: () => _selectDate(vm),
                       onSelectTime: () => _selectTime(vm),
                       onSubmit: () => _submit(vm),
+                      onOpenMap: () => _openFullMap(vm),
                       placeLat: vm.selectedPlaceLat,
                       placeLng: vm.selectedPlaceLng,
                     ),
@@ -373,8 +375,36 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
     if (selected != null) vm.setSelectedDistrict(selected);
   }
 
+  void _openFullMap(TourSearchDetailViewModel vm) async {
+    if (vm.selectedPlaceLat == null || vm.selectedPlaceLng == null) return;
+
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FullMapView(
+          lat: vm.selectedPlaceLat!,
+          lng: vm.selectedPlaceLng!,
+          city: vm.selectedCityName!,
+          district: vm.selectedDistrictName!,
+        ),
+      ),
+    );
+
+    if (result is PlaceSelection) {
+      vm.setSelectedPlace(result);
+    }
+  }
+
   void _selectPlace(TourSearchDetailViewModel vm) async {
-    final result = await context.pushNamed<PlaceSelection>("placePicker");
+    final city = vm.selectedCityName;
+    final districts = vm.selectedDistrictName;
+    final result = await context.pushNamed<PlaceSelection>(
+      "placePicker",
+      extra: {
+        'city': city, // Örneğin "İstanbul"
+        'district': districts, // Örneğin "Bağcılar"
+      },
+    );
     if (result != null) vm.setSelectedPlace(result);
   }
 

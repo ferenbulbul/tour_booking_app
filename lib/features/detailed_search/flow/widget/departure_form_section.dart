@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/picker_field.dart';
-import 'package:tour_booking/features/detailed_search/flow/screen/full_screen_map.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/mini_location_map.dart';
 
 class DepartureFormSection extends StatelessWidget {
@@ -20,6 +19,7 @@ class DepartureFormSection extends StatelessWidget {
   final VoidCallback onSelectDate;
   final VoidCallback onSelectTime;
   final VoidCallback onSubmit;
+  final VoidCallback onOpenMap;
 
   const DepartureFormSection({
     super.key,
@@ -34,10 +34,10 @@ class DepartureFormSection extends StatelessWidget {
     required this.onSelectDate,
     required this.onSelectTime,
     required this.onSubmit,
+    required this.onOpenMap,
     this.placeLat,
     this.placeLng,
   });
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -79,15 +79,11 @@ class DepartureFormSection extends StatelessWidget {
             child: MiniLocationMap(
               lat: placeLat!,
               lng: placeLng!,
-              key: ValueKey("${placeLat}_$placeLng"),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => FullMapView(lat: placeLat!, lng: placeLng!),
-                  ),
-                );
-              },
+              // 🔥 CRITICAL FIX: Dinamik key kaldırıldı.
+              // Böylece harita konumu değiştiğinde State objesi yeniden kullanılacak
+              // ve MiniLocationMap'teki didUpdateWidget tetiklenecektir.
+              // key: ValueKey("${placeLat}_$placeLng"), // Bu satır kaldırıldı/yorumlandı
+              onTap: onOpenMap,
             ),
           ),
 
