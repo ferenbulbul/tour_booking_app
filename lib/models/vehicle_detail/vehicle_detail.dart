@@ -6,21 +6,21 @@ part 'vehicle_detail.g.dart';
 @freezed
 class VehicleDetail with _$VehicleDetail {
   const factory VehicleDetail({
-    // JSON’da yoksa nullable yap
     String? vehicleId,
     int? price,
-
-    // JSON’da var:
     required String vehicleBrand,
     required String vehicleClass,
     required String vehicleType,
     String? legRoomSpace,
     required int seatCount,
     required String image,
-
     String? modelYear,
     List<String>? otherImages,
-    List<String>? vehicleFeatures, // JSON’da var, ekledim
+    List<String>? vehicleFeatures,
+    String? nameSurname,
+    String? experienceYear,
+    String? photoUrl,
+    List<String>? languages,
   }) = _VehicleDetail;
 
   factory VehicleDetail.fromJson(Map<String, dynamic> json) =>

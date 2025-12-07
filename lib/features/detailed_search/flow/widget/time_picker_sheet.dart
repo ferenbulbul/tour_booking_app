@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class TimePickerSheet extends StatelessWidget {
@@ -15,32 +14,89 @@ class TimePickerSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = FixedExtentScrollController(
-      initialItem: times.indexOf(initial),
-    );
+    final primaryColor = Theme.of(context).primaryColor;
 
-    return SizedBox(
-      height: 320,
+    return Container(
+      height: 400,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
       child: Column(
         children: [
-          const SizedBox(height: 10),
-          const Text(
-            "Select Time",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          // Handle bar
+          Container(
+            margin: const EdgeInsets.only(top: 8),
+            width: 32,
+            height: 3,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
+            ),
           ),
+
+          const SizedBox(height: 12),
+
+          // Header
+          Text(
+            'Saat Seçin',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[700],
+            ),
+          ),
+
+          const Divider(height: 24, thickness: 0.1),
+
+          // Time List
           Expanded(
-            child: CupertinoPicker(
-              itemExtent: 44,
-              scrollController: controller,
-              backgroundColor: Colors.white,
-              onSelectedItemChanged: (i) => onSelected(times[i]),
-              children: times
-                  .map(
-                    (e) => Center(
-                      child: Text(e, style: const TextStyle(fontSize: 18)),
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: times.length,
+              itemBuilder: (context, index) {
+                final time = times[index];
+                final isSelected = time == initial;
+
+                return InkWell(
+                  onTap: () {
+                    onSelected(time);
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
                     ),
-                  )
-                  .toList(),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Colors.grey[200]!,
+                          width: 0.5,
+                        ),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (isSelected)
+                          Icon(Icons.check, color: primaryColor, size: 18),
+                        if (isSelected) const SizedBox(width: 8),
+                        Text(
+                          time,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.w400,
+                            color: isSelected ? primaryColor : Colors.grey[800],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ],

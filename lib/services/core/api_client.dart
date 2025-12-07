@@ -17,6 +17,7 @@ class ApiClient {
   final String _baseUrl = dotenv.env['baseUrl'] ?? '';
   final String _mobileUrl = dotenv.env['mobileAndroid'] ?? '';
   final String _cloudUrl = dotenv.env['cloud'] ?? '';
+  late String _url = _baseUrl;
   final AuthViewModel? _authViewModel;
 
   ApiClient({AuthViewModel? authViewModel, http.Client? client})
@@ -73,7 +74,7 @@ class ApiClient {
     final request = RefreshTokenRequest(refreshToken: refreshToken);
 
     final response = await _client.post(
-      Uri.parse('$_cloudUrl/auth/refresh-token'),
+      Uri.parse('$_url/auth/refresh-token'),
       headers: _headers(),
       body: jsonEncode(request.toJson()), // modelden json
     );
@@ -101,7 +102,7 @@ class ApiClient {
     return _handle<T>(
       fromJson: fromJson,
       send: (token) => _client.get(
-        Uri.parse('$_cloudUrl$path').replace(queryParameters: queryParams),
+        Uri.parse('$_url$path').replace(queryParameters: queryParams),
         headers: _headers(token: token, extra: extraHeaders),
       ),
     );
@@ -117,7 +118,7 @@ class ApiClient {
     return _handle<T>(
       fromJson: fromJson,
       send: (token) => _client.post(
-        Uri.parse('$_cloudUrl$path'),
+        Uri.parse('$_url$path'),
         headers: _headers(token: token, extra: extraHeaders),
         body: jsonEncode(body ?? {}),
       ),
@@ -134,7 +135,7 @@ class ApiClient {
     return _handle<T>(
       fromJson: fromJson,
       send: (token) => _client.put(
-        Uri.parse('$_cloudUrl$path'),
+        Uri.parse('$_url$path'),
         headers: _headers(token: token, extra: extraHeaders),
         body: jsonEncode(body ?? {}),
       ),
@@ -150,7 +151,7 @@ class ApiClient {
     return _handle<T>(
       fromJson: fromJson,
       send: (token) => _client.delete(
-        Uri.parse('$_cloudUrl$path'),
+        Uri.parse('$_url$path'),
         headers: _headers(token: token, extra: extraHeaders),
       ),
     );

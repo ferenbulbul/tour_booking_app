@@ -21,6 +21,7 @@ Vehicle _$VehicleFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Vehicle {
+  String get tourRouteId => throw _privateConstructorUsedError;
   String get vehicleId => throw _privateConstructorUsedError;
   int get price => throw _privateConstructorUsedError;
   String get vehicleBrand => throw _privateConstructorUsedError;
@@ -44,6 +45,7 @@ abstract class $VehicleCopyWith<$Res> {
       _$VehicleCopyWithImpl<$Res, Vehicle>;
   @useResult
   $Res call({
+    String tourRouteId,
     String vehicleId,
     int price,
     String vehicleBrand,
@@ -69,6 +71,7 @@ class _$VehicleCopyWithImpl<$Res, $Val extends Vehicle>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? tourRouteId = null,
     Object? vehicleId = null,
     Object? price = null,
     Object? vehicleBrand = null,
@@ -79,6 +82,10 @@ class _$VehicleCopyWithImpl<$Res, $Val extends Vehicle>
   }) {
     return _then(
       _value.copyWith(
+            tourRouteId: null == tourRouteId
+                ? _value.tourRouteId
+                : tourRouteId // ignore: cast_nullable_to_non_nullable
+                      as String,
             vehicleId: null == vehicleId
                 ? _value.vehicleId
                 : vehicleId // ignore: cast_nullable_to_non_nullable
@@ -122,6 +129,7 @@ abstract class _$$VehicleImplCopyWith<$Res> implements $VehicleCopyWith<$Res> {
   @override
   @useResult
   $Res call({
+    String tourRouteId,
     String vehicleId,
     int price,
     String vehicleBrand,
@@ -146,6 +154,7 @@ class __$$VehicleImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? tourRouteId = null,
     Object? vehicleId = null,
     Object? price = null,
     Object? vehicleBrand = null,
@@ -156,6 +165,10 @@ class __$$VehicleImplCopyWithImpl<$Res>
   }) {
     return _then(
       _$VehicleImpl(
+        tourRouteId: null == tourRouteId
+            ? _value.tourRouteId
+            : tourRouteId // ignore: cast_nullable_to_non_nullable
+                  as String,
         vehicleId: null == vehicleId
             ? _value.vehicleId
             : vehicleId // ignore: cast_nullable_to_non_nullable
@@ -193,6 +206,7 @@ class __$$VehicleImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$VehicleImpl implements _Vehicle {
   const _$VehicleImpl({
+    required this.tourRouteId,
     required this.vehicleId,
     required this.price,
     required this.vehicleBrand,
@@ -205,6 +219,8 @@ class _$VehicleImpl implements _Vehicle {
   factory _$VehicleImpl.fromJson(Map<String, dynamic> json) =>
       _$$VehicleImplFromJson(json);
 
+  @override
+  final String tourRouteId;
   @override
   final String vehicleId;
   @override
@@ -222,7 +238,7 @@ class _$VehicleImpl implements _Vehicle {
 
   @override
   String toString() {
-    return 'Vehicle(vehicleId: $vehicleId, price: $price, vehicleBrand: $vehicleBrand, vehicleClass: $vehicleClass, vehicleType: $vehicleType, seatCount: $seatCount, image: $image)';
+    return 'Vehicle(tourRouteId: $tourRouteId, vehicleId: $vehicleId, price: $price, vehicleBrand: $vehicleBrand, vehicleClass: $vehicleClass, vehicleType: $vehicleType, seatCount: $seatCount, image: $image)';
   }
 
   @override
@@ -230,6 +246,8 @@ class _$VehicleImpl implements _Vehicle {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$VehicleImpl &&
+            (identical(other.tourRouteId, tourRouteId) ||
+                other.tourRouteId == tourRouteId) &&
             (identical(other.vehicleId, vehicleId) ||
                 other.vehicleId == vehicleId) &&
             (identical(other.price, price) || other.price == price) &&
@@ -248,6 +266,7 @@ class _$VehicleImpl implements _Vehicle {
   @override
   int get hashCode => Object.hash(
     runtimeType,
+    tourRouteId,
     vehicleId,
     price,
     vehicleBrand,
@@ -273,6 +292,7 @@ class _$VehicleImpl implements _Vehicle {
 
 abstract class _Vehicle implements Vehicle {
   const factory _Vehicle({
+    required final String tourRouteId,
     required final String vehicleId,
     required final int price,
     required final String vehicleBrand,
@@ -284,6 +304,8 @@ abstract class _Vehicle implements Vehicle {
 
   factory _Vehicle.fromJson(Map<String, dynamic> json) = _$VehicleImpl.fromJson;
 
+  @override
+  String get tourRouteId;
   @override
   String get vehicleId;
   @override

@@ -9,10 +9,13 @@ import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/widgets/badgets/app_badge.dart';
 import 'package:tour_booking/core/widgets/badgets/difficulty_badge.dart';
+import 'package:tour_booking/core/widgets/bottom_action_bar.dart';
+import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/buttons/simple_icon_button.dart';
 import 'package:tour_booking/core/widgets/section_title.dart';
 import 'package:tour_booking/features/detailed_search/flow/screen/full_screen_map.dart';
 import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
+import 'package:tour_booking/features/detailed_search/flow/widget/date_picker_sheet.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/departure_form_section.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/description_section.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/tour_detail_header_hero.dart';
@@ -25,12 +28,12 @@ import 'package:tour_booking/models/place_section/place_section.dart';
 
 class TourSearchDetailScreen extends StatefulWidget {
   final String tourPointId;
-  final String initialImage;
+  final String? initialImage;
 
   const TourSearchDetailScreen({
     super.key,
     required this.tourPointId,
-    required this.initialImage,
+    this.initialImage,
   });
 
   @override
@@ -41,6 +44,8 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
     with AutomaticKeepAliveClientMixin {
   late List<String> times;
   late String heroImage;
+  final ScrollController _scrollController = ScrollController();
+  bool _showBottom = true;
 
   @override
   bool get wantKeepAlive => true;
@@ -48,15 +53,25 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
   @override
   void initState() {
     super.initState();
-    heroImage = widget.initialImage;
-
-    Future.microtask(() {
-      context.read<TourSearchDetailViewModel>().fetchTourPointDetail(
-        widget.tourPointId,
-      );
-    });
-
+    heroImage = widget.initialImage ?? "";
     times = _generateTimes();
+
+    // ⚡ Frame çizildikten sonra çalışır → HATA YOK
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final vm = context.read<TourSearchDetailViewModel>();
+
+      // ❗ 1) Konum seçimini sıfırla
+      vm.resetPlaceSelection();
+
+      // ❗ 2) Tur detayını getir
+      vm.fetchTourPointDetail(widget.tourPointId);
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose(); // ✔ doğru yer
+    super.dispose();
   }
 
   @override
@@ -93,8 +108,15 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
     final topPadding = media.padding.top;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      resizeToAvoidBottomInset: false,
+      bottomNavigationBar: BottomActionBar(
+        price: null, // fiyat yok
+        buttonText: "Araçları Gör",
+        onPressed: () => _submit(vm),
+      ),
       body: CustomScrollView(
+        controller: _scrollController,
         slivers: [
           SliverAppBar(
             pinned: true,
@@ -398,22 +420,37 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
   void _selectPlace(TourSearchDetailViewModel vm) async {
     final city = vm.selectedCityName;
     final districts = vm.selectedDistrictName;
+
     final result = await context.pushNamed<PlaceSelection>(
       "placePicker",
-      extra: {
-        'city': city, // Örneğin "İstanbul"
-        'district': districts, // Örneğin "Bağcılar"
-      },
+      extra: {'city': city, 'district': districts},
     );
-    if (result != null) vm.setSelectedPlace(result);
+
+    if (result != null) {
+      vm.setSelectedPlace(result);
+
+      // --- MINI HARİTAYA OTOMATİK KAYDIRMA ---
+      await Future.delayed(const Duration(milliseconds: 300));
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.offset + 300,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOut,
+        );
+      }
+    }
   }
 
   void _selectDate(TourSearchDetailViewModel vm) async {
-    final picked = await showDatePicker(
+    final picked = await showModalBottomSheet<DateTime>(
       context: context,
-      initialDate: vm.selectedDate ?? DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => DatePickerSheet(
+        initialDate: vm.selectedDate ?? DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime.now().add(const Duration(days: 365)),
+      ),
     );
     if (picked != null) vm.setSelectedDate(picked);
   }
@@ -480,4 +517,11 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
   void _showSnack(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
+}
+
+bool _showContinue(TourSearchDetailViewModel vm) {
+  return vm.selectedCityId != null &&
+      vm.selectedDistrictId != null &&
+      vm.selectedDate != null &&
+      vm.selectedPlaceDesc != null;
 }

@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 
 class PremiumFullScreenGallery extends StatefulWidget {
   final List<String> images;
@@ -17,12 +19,14 @@ class PremiumFullScreenGallery extends StatefulWidget {
 }
 
 class _PremiumFullScreenGalleryState extends State<PremiumFullScreenGallery> {
-  late PageController _controller;
+  late PageController _pageController;
+  late PhotoViewScaleStateController _scaleController;
+
   int _currentIndex = 0;
+  bool _isZoomed = false;
 
   double _dragOffset = 0;
   double _opacity = 1;
-  bool _isZoomed = false;
 
   static const double _dismissThreshold = 120;
   static const double _maxDrag = 300;
@@ -31,42 +35,53 @@ class _PremiumFullScreenGalleryState extends State<PremiumFullScreenGallery> {
   @override
   void initState() {
     super.initState();
-    _controller = PageController(initialPage: widget.initialIndex);
+    _pageController = PageController(initialPage: widget.initialIndex);
+    _scaleController = PhotoViewScaleStateController();
+
     _currentIndex = widget.initialIndex;
+
+    // Zoom state listener
+    _scaleController.addIgnorableListener(() {
+      final state = _scaleController.scaleState;
+      setState(() => _isZoomed = state != PhotoViewScaleState.initial);
+    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _pageController.dispose();
+    _scaleController.dispose();
     super.dispose();
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
-    if (_isZoomed) return;
+    if (_isZoomed) return; // zoom açıkken dismiss kapalı
 
     setState(() {
       _dragOffset += details.delta.dy;
       _dragOffset = _dragOffset.clamp(-_maxDrag, _maxDrag);
+
       final t = (_dragOffset.abs() / _maxDrag).clamp(0.0, 1.0);
-      _opacity = 1 - (0.5 * t);
+      _opacity = 1 - (0.6 * t);
     });
   }
 
   void _onVerticalDragEnd(DragEndDetails details) {
     if (_isZoomed) {
-      _resetPosition();
+      _reset();
       return;
     }
 
     final velocity = details.primaryVelocity ?? 0;
+
     if (_dragOffset.abs() > _dismissThreshold || velocity.abs() > 700) {
       Navigator.of(context).pop();
     } else {
-      _resetPosition();
+      _reset();
     }
   }
 
-  void _resetPosition() {
+  void _reset() {
     setState(() {
       _dragOffset = 0;
       _opacity = 1;
@@ -82,56 +97,51 @@ class _PremiumFullScreenGalleryState extends State<PremiumFullScreenGallery> {
         opacity: _opacity,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: _animMs),
-          transform: Matrix4.translationValues(0, _dragOffset, 0)
-            ..scale(1 - (_dragOffset.abs() / _maxDrag * 0.1).clamp(0.0, 0.1)),
+          transform: Matrix4.translationValues(0, _dragOffset, 0),
           child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onVerticalDragUpdate: _isZoomed ? null : _onVerticalDragUpdate,
-            onVerticalDragEnd: _isZoomed ? null : _onVerticalDragEnd,
+            onVerticalDragUpdate: _onVerticalDragUpdate,
+            onVerticalDragEnd: _onVerticalDragEnd,
             child: Stack(
               children: [
-                // PAGEVIEW — SADECE YATAY KAYMA
-                PageView.builder(
-                  physics: const _OnlyHorizontalScrollPhysics(),
-                  controller: _controller,
+                // ---- GALLERY ----
+                PhotoViewGallery.builder(
                   itemCount: widget.images.length,
+                  pageController: _pageController,
+                  backgroundDecoration: const BoxDecoration(
+                    color: Colors.transparent,
+                  ),
                   onPageChanged: (i) => setState(() => _currentIndex = i),
-                  itemBuilder: (_, index) {
-                    return Center(
-                      child: InteractiveViewer(
-                        minScale: 1.0,
-                        maxScale: 4.0,
-                        onInteractionStart: (_) =>
-                            setState(() => _isZoomed = false),
-                        onInteractionUpdate: (d) {
-                          if (d.scale > 1.0) setState(() => _isZoomed = true);
-                        },
-                        onInteractionEnd: (_) {
-                          if (_isZoomed) setState(() => _isZoomed = false);
-                        },
-                        child: CachedNetworkImage(
-                          imageUrl: widget.images[index],
-                          fit: BoxFit.contain,
-                          placeholder: (_, __) =>
-                              Container(color: Colors.black12),
-                          errorWidget: (_, __, ___) =>
-                              const Icon(Icons.error, color: Colors.white70),
-                        ),
+                  builder: (_, index) {
+                    return PhotoViewGalleryPageOptions(
+                      imageProvider: CachedNetworkImageProvider(
+                        widget.images[index],
                       ),
+
+                      // 🔥 TAŞMA YOK — CROP YOK → contain davranışı
+                      initialScale: PhotoViewComputedScale.contained,
+                      minScale: PhotoViewComputedScale.contained,
+                      maxScale: PhotoViewComputedScale.contained * 4,
+
+                      heroAttributes: PhotoViewHeroAttributes(
+                        tag: "img-${widget.images[index]}",
+                      ),
+
+                      // Fotoğraf daha net
+                      filterQuality: FilterQuality.high,
                     );
                   },
                 ),
 
-                // CLOSE BUTTON
+                // ---- CLOSE BUTTON ----
                 Positioned(
-                  top: MediaQuery.of(context).padding.top + 10,
+                  top: MediaQuery.of(context).padding.top + 12,
                   right: 16,
                   child: GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: Container(
                       padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(
-                        color: Colors.black54,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.6),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -143,7 +153,7 @@ class _PremiumFullScreenGalleryState extends State<PremiumFullScreenGallery> {
                   ),
                 ),
 
-                // DOT INDICATOR
+                // ---- DOT INDICATOR ----
                 Positioned(
                   bottom: 28,
                   left: 0,
@@ -153,15 +163,15 @@ class _PremiumFullScreenGalleryState extends State<PremiumFullScreenGallery> {
                     children: List.generate(widget.images.length, (i) {
                       final active = i == _currentIndex;
                       return AnimatedContainer(
-                        duration: const Duration(milliseconds: 250),
+                        duration: const Duration(milliseconds: 200),
                         margin: const EdgeInsets.symmetric(horizontal: 4),
                         height: 8,
-                        width: active ? 22 : 8,
+                        width: active ? 20 : 8,
                         decoration: BoxDecoration(
                           color: active
                               ? Colors.white
                               : Colors.white.withOpacity(0.4),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                       );
                     }),
@@ -173,31 +183,5 @@ class _PremiumFullScreenGalleryState extends State<PremiumFullScreenGallery> {
         ),
       ),
     );
-  }
-}
-
-// SADECE YATAY KAYMA FİZİĞİ
-class _OnlyHorizontalScrollPhysics extends ScrollPhysics {
-  const _OnlyHorizontalScrollPhysics({ScrollPhysics? parent})
-    : super(parent: parent);
-
-  @override
-  _OnlyHorizontalScrollPhysics applyTo(ScrollPhysics? ancestor) {
-    return _OnlyHorizontalScrollPhysics(parent: buildParent(ancestor));
-  }
-
-  @override
-  double applyPhysicsToUserOffset(ScrollMetrics position, double offset) {
-    if (position.axis == Axis.vertical) return 0.0;
-    return super.applyPhysicsToUserOffset(position, offset);
-  }
-
-  @override
-  Simulation? createBallisticSimulation(
-    ScrollMetrics position,
-    double velocity,
-  ) {
-    if (position.axis == Axis.vertical) return null;
-    return super.createBallisticSimulation(position, velocity);
   }
 }

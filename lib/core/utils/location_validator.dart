@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class LocationValidationResult {
   final bool isValid;
   final String? errorMessage;
@@ -9,7 +7,7 @@ class LocationValidationResult {
 
 class LocationValidator {
   // ------------------------------------------------------------
-  // NORMALIZE → Türkçe/İngilizce gereksiz kelimeleri temizle
+  // TEMİZLEME
   // ------------------------------------------------------------
   static String normalize(String s) {
     return s
@@ -20,36 +18,62 @@ class LocationValidator {
         .replaceAll("belediy", "")
         .replaceAll("ilçe", "")
         .replaceAll("il", "")
+        .replaceAll("city", "")
         .replaceAll("center", "")
-        .replaceAll("central district", "")
         .replaceAll("central", "")
         .replaceAll("downtown", "")
         .trim();
   }
 
   // ------------------------------------------------------------
-  // İngilizce gelen ilçe adlarını MERKEZ olarak kabul et
+  // CENTER / DOWNTOWN EŞ KELİMELERİ GLOBAL
   // ------------------------------------------------------------
-  static String fixEnglishDistrict(String d) {
-    final x = d.toLowerCase();
+  static const centerWords = [
+    "merkez",
+    "center",
+    "city center",
+    "central",
+    "central district",
+    "downtown",
+    "town center",
+    "main city",
+    "old town",
+    "historic center",
+  ];
 
-    const centerWords = [
-      "center",
-      "city center",
-      "central",
-      "central district",
-      "downtown",
-      "town center",
-      "main city",
-    ];
+  // ------------------------------------------------------------
+  // API’den gelen DISTRICT → merkez eşleştirmesi
+  // ------------------------------------------------------------
+  static bool isGlobalCenterMatch(
+    String apiDist,
+    String apiCity,
+    String wantDist,
+  ) {
+    apiDist = apiDist.toLowerCase().trim();
+    apiCity = apiCity.toLowerCase().trim();
+    wantDist = wantDist.toLowerCase().trim();
 
-    if (centerWords.contains(x)) return "merkez";
+    // 1) Sadece "merkez / center" türleri
+    for (final w in centerWords) {
+      if (apiDist == w) return true;
+      if (apiDist == "$apiCity $w") return true;
+    }
 
-    return d;
+    // 2) Eğer API “{city} merkez” diyorsa
+    if (apiDist.contains(apiCity) && apiDist.contains("merkez")) {
+      return true;
+    }
+
+    // 3) Beklenen district şehir adı ise (= merkez)
+    if (wantDist == apiCity && apiDist.contains("merkez")) {
+      return true;
+    }
+
+    return false;
   }
 
   // ------------------------------------------------------------
-  // DISTRICT EXTRACT (FullMapView ile birebir aynı)
+  // DISTRICT EXTRACT
   // ------------------------------------------------------------
   static String resolveDistrict(List<dynamic> comps) {
     String? level2;
@@ -87,7 +111,7 @@ class LocationValidator {
   }
 
   // ------------------------------------------------------------
-  // VALİDASYON ENTRANCE
+  // 🔥 FINAL VALIDATION
   // ------------------------------------------------------------
   static LocationValidationResult validate({
     required List<dynamic> components,
@@ -105,20 +129,24 @@ class LocationValidator {
       );
     }
 
-    // İngilizce düzeltme
-    apiDistRaw = fixEnglishDistrict(apiDistRaw);
-
-    // Normalize edilmiş değerler
     final apiCity = normalize(apiCityRaw);
     final apiDist = normalize(apiDistRaw);
-
     final wantCity = normalize(expectedCity);
     final wantDist = normalize(expectedDistrict);
 
-    // ------------------------------------------------------------
-    // ŞEHİR UYUŞMAZ
-    // ------------------------------------------------------------
+    print("------ VALIDATOR DEBUG START ------");
+    print("API CITY RAW      = $apiCityRaw");
+    print("API DIST RAW      = $apiDistRaw");
+    print("FORMATTED         = $formatted");
+    print("API CITY NORMAL   = $apiCity");
+    print("API DIST NORMAL   = $apiDist");
+    print("WANT CITY         = $wantCity");
+    print("WANT DIST         = $wantDist");
+
+    // 1) Şehir uyuşmazsa direkt fail
     if (apiCity != wantCity) {
+      print("CITY FAIL ❌");
+      print("------ VALIDATOR DEBUG END ------");
       return LocationValidationResult(
         isValid: false,
         errorMessage:
@@ -126,28 +154,20 @@ class LocationValidator {
       );
     }
 
-    // ------------------------------------------------------------
-    // İLÇE EŞLEŞME — ESNEK
-    // ------------------------------------------------------------
-    bool sameDistrict = apiDist == wantDist;
+    // 2) İlçe tam eşleşme
+    bool match = apiDist == wantDist;
 
-    // Merkez → Ortahisar gibi eşleştirmeler
-    if (!sameDistrict) {
-      // 1. Seçilen merkez ama beklenen şehir merkeziyse
-      if (apiDist == "merkez" && wantDist == wantCity) {
-        sameDistrict = true;
-      }
-
-      // 2. Trabzon özel → Merkez = Ortahisar
-      if (!sameDistrict) {
-        if (wantDist.contains("ortahisar") &&
-            (apiDist.contains("merkez") || apiDist == "merkez")) {
-          sameDistrict = true;
-        }
+    // 3) Global otomatik merkez eşleştirmesi
+    if (!match) {
+      if (isGlobalCenterMatch(apiDistRaw, apiCityRaw, wantDist)) {
+        print("GLOBAL CENTER MATCH ✔");
+        match = true;
       }
     }
 
-    if (!sameDistrict) {
+    if (!match) {
+      print("DISTRICT FAIL ❌");
+      print("------ VALIDATOR DEBUG END ------");
       return LocationValidationResult(
         isValid: false,
         errorMessage:
@@ -155,9 +175,8 @@ class LocationValidator {
       );
     }
 
-    // ------------------------------------------------------------
-    // TÜM KONTROLLER GEÇTİ
-    // ------------------------------------------------------------
+    print("SUCCESS ✔");
+    print("------ VALIDATOR DEBUG END ------");
     return const LocationValidationResult(isValid: true);
   }
 }

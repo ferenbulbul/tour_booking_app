@@ -44,12 +44,20 @@ class PickerField extends StatelessWidget {
         child: Row(
           children: [
             Icon(icon, color: AppColors.textPrimary, size: 22),
-            const SizedBox(width: 12),
+            const SizedBox(width: 10),
+
+            // ---------------------------
+            // 🔥 PREMIUM TEXT (Fade + No Wrap)
+            // ---------------------------
             Expanded(
               child: Text(
                 value ?? label,
+                maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.fade, // en temiz overflow
                 style: TextStyle(
                   fontSize: 15,
+                  height: 1.1,
                   fontWeight: isEmpty ? FontWeight.w400 : FontWeight.w600,
                   color: isEmpty
                       ? AppColors.textSecondary
@@ -57,6 +65,9 @@ class PickerField extends StatelessWidget {
                 ),
               ),
             ),
+
+            const SizedBox(width: 6),
+
             const Icon(
               Icons.arrow_forward_ios_rounded,
               size: 16,

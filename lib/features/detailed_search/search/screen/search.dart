@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/picker_field.dart';
 import 'package:tour_booking/core/widgets/picker_sheet.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
@@ -220,7 +221,7 @@ class _TourSearchScreenState extends State<TourSearchScreen>
             // 🔍 Ara
             SizedBox(
               height: 52,
-              child: ElevatedButton(
+              child: PrimaryButton(
                 onPressed: () {
                   if (vm.selectedRegionId == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -246,10 +247,7 @@ class _TourSearchScreenState extends State<TourSearchScreen>
 
                   context.pushNamed("searchResults", queryParameters: params);
                 },
-                child: const Text(
-                  "Ara",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+                text: "Ara",
               ),
             ),
           ],

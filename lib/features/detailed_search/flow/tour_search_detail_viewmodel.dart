@@ -12,6 +12,7 @@ import 'package:tour_booking/models/tour_point_detail/tour_point_detail.dart';
 import 'package:tour_booking/models/tour_vehicle_request/tour_vehicle_request.dart';
 import 'package:tour_booking/models/vehicle/vehicle.dart';
 import 'package:tour_booking/models/vehicle_detail/vehicle_detail.dart';
+import 'package:tour_booking/models/vehicle_detail_request/vehicle_detail_request.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
 
 class TourSearchDetailViewModel extends ChangeNotifier {
@@ -30,6 +31,7 @@ class TourSearchDetailViewModel extends ChangeNotifier {
   String? selectedDistrictId;
   String? selectedVehicleId;
   String? selectedGuideId;
+  String? tourRouteId;
   int? selectedGuidePrice;
   String? selectedTourPointId;
   DateTime? selectedDate;
@@ -122,13 +124,15 @@ class TourSearchDetailViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchVehicle(String vehicleId) async {
+  Future<void> fetchVehicle(VehicleDetailRequest request) async {
     isVehicleLoading = true;
     notifyListeners();
     try {
-      final result = await _tourService.getVehicle(vehicleId);
-      selectedVehicleId = vehicleId;
-      print(selectedVehicleId);
+      final result = await _tourService.getVehicle(request);
+      selectedVehicleId = request.vehicleId;
+      print(selectedTourPointId);
+      print("tourRoute beklenen--->");
+      print(request.tourRouteId);
       if (result.isSuccess ?? false) {
         vehicle = result.data!.vehicleDtos;
         errorMessage = result.message;
@@ -155,11 +159,13 @@ class TourSearchDetailViewModel extends ChangeNotifier {
     selectedDistrictId = filtered?.isNotEmpty == true
         ? filtered!.first.id
         : null;
+    resetPlaceSelection();
     notifyListeners();
   }
 
   void setSelectedDistrict(String? districtId) {
     selectedDistrictId = districtId;
+    resetPlaceSelection();
     notifyListeners();
   }
 
@@ -293,6 +299,13 @@ class TourSearchDetailViewModel extends ChangeNotifier {
     selectedPlaceDesc = s.description;
     selectedPlaceLat = s.lat;
     selectedPlaceLng = s.lng;
+    notifyListeners();
+  }
+
+  void resetPlaceSelection() {
+    selectedPlaceDesc = null;
+    selectedPlaceLat = null;
+    selectedPlaceLng = null;
     notifyListeners();
   }
 

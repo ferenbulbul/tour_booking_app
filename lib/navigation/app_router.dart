@@ -31,6 +31,7 @@ import 'package:tour_booking/features/detailed_search/flow/screen/summary_screen
 import 'package:tour_booking/features/detailed_search/flow/screen/vehicle_list_screen.dart';
 import 'package:tour_booking/features/detailed_search/flow/screen/vehicle_detail_screen.dart';
 import 'package:tour_booking/features/detailed_search/flow/screen/google_place_saerch.dart';
+import 'package:tour_booking/models/vehicle_detail_request/vehicle_detail_request.dart';
 import 'package:tour_booking/navigation/app_navigator.dart';
 import '../features/splash/screen/splash_screen.dart';
 import '../features/auth/register/screen/register_screen.dart';
@@ -114,7 +115,7 @@ final GoRouter router = GoRouter(
           key: ValueKey('searchDetail_$tourPointId'),
           child: TourSearchDetailScreen(
             tourPointId: tourPointId,
-            initialImage: initialImage!, // 🔥 ARTIK GERÇEKTEN GÖNDERİYORUZ
+            initialImage: initialImage, // 🔥 ARTIK GERÇEKTEN GÖNDERİYORUZ
           ),
         );
       },
@@ -130,8 +131,9 @@ final GoRouter router = GoRouter(
       path: '/vehicle-detail',
       name: 'vehicleDetail',
       builder: (context, state) {
-        final vehicleId = state.extra as String;
-        return VehicleDetailScreen(vehicleId: vehicleId);
+        final args = state.extra as VehicleDetailRequest;
+
+        return VehicleDetailScreen(args: args);
       },
     ),
     GoRoute(

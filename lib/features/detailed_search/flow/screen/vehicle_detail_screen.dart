@@ -1,76 +1,71 @@
+import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
+import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/widgets/bottom_action_bar.dart';
+import 'package:tour_booking/core/widgets/buttons/simple_icon_button.dart';
+import 'package:tour_booking/features/detailed_search/flow/screen/full_screen_gallery_screen.dart';
 import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
-import 'package:cached_network_image/cached_network_image.dart'; // CachedNetworkImage için import
+import 'package:tour_booking/models/vehicle_detail_request/vehicle_detail_request.dart';
 
 class VehicleDetailScreen extends StatefulWidget {
-  final String vehicleId;
-  const VehicleDetailScreen({super.key, required this.vehicleId});
+  final VehicleDetailRequest args;
+  const VehicleDetailScreen({super.key, required this.args});
 
   @override
   State<VehicleDetailScreen> createState() => _VehicleDetailScreenState();
 }
 
 class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
+  late PageController _pageController;
+  int _current = 0;
+  late ScrollController _scrollController;
+  bool _showBottom = true;
+
+  // Animasyon süresi ve eğrisi (Yumuşak ayarlar)
+  static const Duration _animationDuration = Duration(milliseconds: 500);
+  static const Curve _animationCurve = Curves.easeOutQuint;
+
   @override
   void initState() {
     super.initState();
+    _pageController = PageController();
+    _scrollController = ScrollController();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        // aşağı kaydı — bar gizlensin
+        if (_showBottom) setState(() => _showBottom = false);
+      } else {
+        // yukarı kaydı — bar geri gelsin
+        if (!_showBottom) setState(() => _showBottom = true);
+      }
+    });
     Future.microtask(() {
-      context.read<TourSearchDetailViewModel>().fetchVehicle(widget.vehicleId);
+      context.read<TourSearchDetailViewModel>().fetchVehicle(widget.args);
     });
   }
 
-  // --- YENİLİK: Galeri açma mantığını TourSearchDetailScreen'dan taşıdık ---
-  void _openGallery(
-    BuildContext context, {
-    required List<String> images,
-    required int initialIndex,
-  }) {
-    showDialog(
-      context: context,
-      builder: (_) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: SizedBox(
-              // Ekran boyutuna göre dinamik yükseklik ve genişlik
-              height:
-                  MediaQuery.of(context).size.height *
-                  0.3, // Yüksekliği artırıldı
-              width: MediaQuery.of(context).size.width * 0.9,
-              child: PageView.builder(
-                controller: PageController(initialPage: initialIndex),
-                itemCount: images.length,
-                itemBuilder: (context, pageIndex) {
-                  return CachedNetworkImage(
-                    // CachedNetworkImage kullanıldı
-                    imageUrl: images[pageIndex],
-                    fit: BoxFit
-                        .contain, // Resmin kesilmeden sığması için contain
-                    placeholder: (context, url) => Center(
-                      // Yüklenirken gösterilecek widget
-                      child: CircularProgressIndicator(
-                        color: Theme.of(
-                          context,
-                        ).primaryColor, // Temanızın ana rengini kullan
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => const Icon(
-                      Icons.error_outline, // Hata durumunda ikon
-                      size: 48,
-                      color: Colors.red,
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-        );
-      },
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _openGallery(List<String> images, int index) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            PremiumFullScreenGallery(images: images, initialIndex: index),
+      ),
     );
   }
 
@@ -79,214 +74,348 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     final vm = context.watch<TourSearchDetailViewModel>();
 
     if (vm.isVehicleLoading) {
-      return Scaffold(
-        appBar: AppBar(title: Text('Araç Detayı')),
-        body: Center(child: CircularProgressIndicator()),
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator(color: Colors.black)),
       );
     }
 
-    if (vm.vehicle == null) {
+    final v = vm.vehicle;
+    if (v == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Araç Detayı')),
-        body: Center(child: Text(vm.errorMessage ?? 'Veri bulunamadı')),
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(),
+        body: Center(child: Text(vm.errorMessage ?? "Araç bulunamadı")),
       );
     }
 
-    final v = vm.vehicle!;
-    final price = vm.setVehiclePrice; // senin VM’deki fiyat getter
+    final images = [v.image, ...(v.otherImages ?? []).cast<String>()];
 
-    // --- YENİLİK: Tüm resimleri tek bir listede topluyoruz ---
-    final allVehicleImages = [v.image, ...(v.otherImages ?? []).cast<String>()];
+    final price = vm.setVehiclePrice;
+    final media = MediaQuery.of(context);
+    final expandedH = media.size.height * 0.43;
+    final topPad = media.padding.top;
+
+    // YENİ: Alt çubuğun görünen yüksekliğini ve safe area boşluğunu hesaplıyoruz.
+    final bottomPadding = media.padding.bottom;
+    // BottomActionBar'ın tahmini yüksekliği (iç paddingler dahil)
+    const double barContentHeight = 60.0;
+    final double fullBarHeight = barContentHeight + bottomPadding;
 
     return Scaffold(
-      appBar: AppBar(title: Text(v.vehicleBrand)),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Ana resim + fiyat rozet
-            Stack(
-              children: [
-                GestureDetector(
-                  // Ana resme tıklama özelliği eklendi
-                  onTap: () => _openGallery(
-                    context,
-                    images: allVehicleImages,
-                    initialIndex: 0,
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      imageUrl: v.image,
-                      height: 200,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        height: 200,
-                        color: Colors.grey.shade300,
-                        alignment: Alignment.center,
-                        child: CircularProgressIndicator(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                      errorWidget: (_, __, ___) => Container(
-                        // Hata durumunda
-                        height: 200,
-                        color: Colors.grey.shade300,
-                        alignment: Alignment.center,
-                        child: const Icon(
-                          Icons.image_not_supported_outlined,
-                          size: 48,
-                          color: Colors.grey,
-                        ),
+      backgroundColor: AppColors.background,
+      body: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          // -----------------------------------------------------------------
+          // HEADER – Minimal Sliver Hero
+          // -----------------------------------------------------------------
+          SliverAppBar(
+            pinned: true,
+            automaticallyImplyLeading: false,
+            elevation: 0,
+            stretch: true,
+            expandedHeight: expandedH,
+            backgroundColor: Colors.transparent,
+            flexibleSpace: LayoutBuilder(
+              builder: (context, c) {
+                final h = c.biggest.height;
+                final minH = kToolbarHeight + topPad;
+                final t = ((h - minH) / (expandedH - minH)).clamp(0.0, 1.0);
+                final collapseT = 1 - t;
+
+                return Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // SWIPE HERO
+                    GestureDetector(
+                      onTap: () => _openGallery(images, _current),
+                      child: PageView.builder(
+                        controller: _pageController,
+                        itemCount: images.length,
+                        onPageChanged: (i) => setState(() => _current = i),
+                        itemBuilder: (_, i) {
+                          final img = CachedNetworkImage(
+                            imageUrl: images[i],
+                            fit: BoxFit.cover,
+                          );
+                          return img;
+                        },
                       ),
                     ),
-                  ),
-                ),
-                if (price != null && price != 0)
-                  Positioned(
-                    right: 12,
-                    top: 12,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.7),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        '$price ₺',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
 
-            const SizedBox(height: 12),
-
-            // Küçük resimler (yatay scroll)
-            if (v.otherImages != null && v.otherImages!.isNotEmpty)
-              SizedBox(
-                height: 80,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: v.otherImages!.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
-                  itemBuilder: (_, i) {
-                    final thumb = v.otherImages![i];
-                    return GestureDetector(
-                      // Küçük resimlere tıklama özelliği eklendi
-                      onTap: () => _openGallery(
-                        context,
-                        images: allVehicleImages,
-                        initialIndex: i + 1,
-                      ), // Doğru index ile aç
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: CachedNetworkImage(
-                          // CachedNetworkImage kullanıldı
-                          imageUrl: thumb,
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            // Yüklenirken placeholder
-                            width: 80,
-                            height: 80,
-                            color: Colors.grey.shade300,
-                            alignment: Alignment.center,
-                            child: CircularProgressIndicator(
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                          errorWidget: (_, __, ___) => Container(
-                            // Hata durumunda
-                            width: 80,
-                            height: 80,
-                            color: Colors.grey.shade300,
-                            alignment: Alignment.center,
-                            child: const Icon(
-                              Icons.image_not_supported_outlined,
-                            ),
+                    // GRADIENT overlay (gesture engellemesin)
+                    IgnorePointer(
+                      ignoring: true,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.45),
+                            ],
                           ),
                         ),
                       ),
-                    );
-                  },
-                ),
-              ),
+                    ),
+                    // 🔥 FOTO SAYACI (1/6)
+                    Positioned(
+                      right: 20,
+                      bottom: 20,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.55),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          "${_current + 1}/${images.length}",
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
 
-            const SizedBox(height: 16),
+                    // APPBAR BACKGROUND BLUR
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: topPad + kToolbarHeight,
+                      child: Container(
+                        color: Colors.white.withOpacity(
+                          lerpDouble(0.0, 1.0, collapseT) ?? 0,
+                        ),
+                      ),
+                    ),
 
-            // Araç bilgileri
-            _info('Marka', v.vehicleBrand, Icons.directions_car_filled),
-            _info('Tip', v.vehicleType, Icons.local_offer_rounded),
-            _info('Sınıf', v.vehicleClass, Icons.category_rounded),
-            _info('Koltuk', '${v.seatCount}', Icons.event_seat_rounded),
-            if (v.modelYear != null)
-              _info(
-                'Model Yılı',
-                '${v.modelYear}',
-                Icons.calendar_today_rounded,
-              ),
-            if (v.legRoomSpace != null && v.legRoomSpace!.isNotEmpty)
-              _info('Bacak Mesafesi', v.legRoomSpace!, Icons.swap_vert_rounded),
+                    // BACK BUTTON
+                    Positioned(
+                      left: 10,
+                      top: topPad + 4,
+                      child: SimpleIconButton(
+                        icon: Icons.arrow_back_ios_new_rounded,
+                        onTap: () => Navigator.pop(context),
+                        fillColor: Colors.white,
+                        iconColor: Colors.black,
+                        borderColor: Colors.white,
+                        borderWidth: 1.2,
+                      ),
+                    ),
 
-            const SizedBox(height: 15),
+                    // TITLE – Sabit (scroll animasyonu yok)
+                    Positioned(
+                      top: topPad + 10,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: Text(
+                          "Araç Seçimi",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: collapseT > 0.5
+                                ? Colors.black
+                                : Colors.transparent,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
 
-            // Ek Özellikler
-            if (v.vehicleFeatures != null && v.vehicleFeatures!.isNotEmpty) ...[
-              const Text(
-                'Ek Özellikler',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: v.vehicleFeatures!.map((feature) {
-                  return Chip(
-                    label: Text(feature),
-                    backgroundColor: Colors.blue.shade50,
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 24),
-            ],
-            // Devam butonu
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  context.push('/search-guide');
-                },
-                child: const Text('Devam Et'),
+          // -----------------------------------------------------------------
+          // BODY
+          // -----------------------------------------------------------------
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+              ).copyWith(top: 26),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _SectionTitle("Araç Özellikleri"),
+
+                  const SizedBox(height: 14),
+
+                  // --- 3x2 GRID (araç özellikleri) ---
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: [
+                      _specTile(
+                        Icons.directions_bus_outlined,
+                        "Marka",
+                        v.vehicleBrand,
+                      ),
+                      _specTile(
+                        Icons.category_outlined,
+                        "Sınıf",
+                        v.vehicleClass,
+                      ),
+                      _specTile(
+                        Icons.confirmation_number_outlined,
+                        "Tip",
+                        v.vehicleType,
+                      ),
+                      _specTile(
+                        Icons.event_seat_outlined,
+                        "Koltuk",
+                        "${v.seatCount}",
+                      ),
+                      _specTile(
+                        Icons.calendar_today_outlined,
+                        "Model Yılı",
+                        "${v.modelYear}",
+                      ),
+                      _specTile(
+                        Icons.airline_seat_legroom_extra_outlined,
+                        "Bacak Mesafesi",
+                        v.legRoomSpace ?? "-",
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 26),
+
+                  // --- EK ÖZELLİKLER ---
+                  if ((v.vehicleFeatures?.isNotEmpty ?? false)) ...[
+                    _SectionTitle("Ek Özellikler"),
+                    const SizedBox(height: 14),
+
+                    LayoutBuilder(
+                      builder: (_, constraints) {
+                        double maxW = constraints.maxWidth;
+                        double itemW = (maxW - 12) / 2;
+
+                        return Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
+                          children: v.vehicleFeatures!.map((f) {
+                            return _featureItem(f, itemW);
+                          }).toList(),
+                        );
+                      },
+                    ),
+                  ],
+
+                  // Boşluk ayarı
+                  const SizedBox(height: 150),
+                ],
               ),
             ),
-          ],
+          ),
+        ],
+      ),
+
+      // ---------------------------------------------------------------------
+      // KESKİNLİĞİ GİDEREN VE ALANI YÖNETEN BOTTOM NAVIGATION BAR
+      // ---------------------------------------------------------------------
+      bottomNavigationBar: AnimatedContainer(
+        duration: _animationDuration,
+        height: _showBottom ? fullBarHeight : 0.0,
+        curve: _animationCurve,
+        child: AnimatedSlide(
+          duration: _animationDuration,
+          curve: _animationCurve,
+          offset: _showBottom ? Offset.zero : const Offset(0, 0.4),
+          child: AnimatedOpacity(
+            duration: _animationDuration,
+            opacity: _showBottom ? 1 : 0,
+            curve: _animationCurve,
+            child: BottomActionBar(
+              price: price,
+              buttonText: "Devam Et",
+              onPressed: () {
+                context.push('/search-guide');
+              },
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _info(String title, String value, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+  // -------------------------------------------------------------------------
+  // SPEC TILE (6'lık grid)
+  // -------------------------------------------------------------------------
+  Widget _specTile(IconData icon, String label, String value) {
+    return Container(
+      width: 160,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 10,
+            color: Colors.black.withOpacity(0.06),
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 22, color: Colors.black87),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // FEATURE ITEM (2 sütun)
+  // -------------------------------------------------------------------------
+  Widget _featureItem(String text, double width) {
+    return Container(
+      width: width,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: Colors.blueGrey),
+          const Icon(Icons.check_circle, color: Colors.green, size: 16),
           const SizedBox(width: 8),
-          Text('$title: ', style: const TextStyle(fontWeight: FontWeight.w600)),
-          Expanded(child: Text(value, overflow: TextOverflow.ellipsis)),
+          Expanded(child: Text(text, style: const TextStyle(fontSize: 13))),
         ],
+      ),
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // SECTION TITLE
+  // -------------------------------------------------------------------------
+  Widget _SectionTitle(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 17,
+        fontWeight: FontWeight.w700,
+        color: Colors.black,
       ),
     );
   }

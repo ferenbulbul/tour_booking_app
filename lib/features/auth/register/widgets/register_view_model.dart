@@ -25,7 +25,6 @@ class RegisterViewModel extends ChangeNotifier {
     // DEBUG: Gelen isteğin içeriğini kontrol etme
     print('Register Request Gönderiliyor:');
     print('Email: ${request.email}');
-    print('Ulusal Numara: ${request.nationalNumber}');
     print('Ülke Kodu: ${request.countryCode}');
 
     final response = await _authService.register(request);

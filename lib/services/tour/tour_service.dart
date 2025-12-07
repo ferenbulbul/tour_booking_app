@@ -19,6 +19,7 @@ import 'package:tour_booking/models/tour_search_response/tour_search_response.da
 import 'package:tour_booking/models/tour_types/tour_types_dto.dart';
 import 'package:tour_booking/models/tour_vehicle_request/tour_vehicle_request.dart';
 import 'package:tour_booking/models/update_phone_number/update_phone_request.dart';
+import 'package:tour_booking/models/vehicle_detail_request/vehicle_detail_request.dart';
 import 'package:tour_booking/models/vehicle_detail_response/vehicle_detail_response.dart';
 import 'package:tour_booking/models/vehicle_response/tour_vehicle_response.dart';
 import 'package:tour_booking/services/core/api_client.dart';
@@ -125,10 +126,12 @@ class TourService {
     return response;
   }
 
-  Future<BaseResponse<VehicleResponse>> getVehicle(String vehicleId) async {
+  Future<BaseResponse<VehicleResponse>> getVehicle(
+    VehicleDetailRequest req,
+  ) async {
     var response = _apiClient.get<VehicleResponse>(
       path: "/Mobile/vehicle-detail",
-      queryParams: {'vehicleId': vehicleId},
+      queryParams: {"vehicleId": req.vehicleId, "tourRouteId": req.tourRouteId},
       fromJson: (json) =>
           VehicleResponse.fromJson(json as Map<String, dynamic>),
     );

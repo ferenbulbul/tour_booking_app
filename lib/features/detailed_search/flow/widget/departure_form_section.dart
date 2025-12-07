@@ -3,6 +3,7 @@ import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/picker_field.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/mini_location_map.dart';
+import 'package:tour_booking/features/detailed_search/flow/widget/selected_location_card.dart';
 
 class DepartureFormSection extends StatelessWidget {
   final String? cityName;
@@ -38,12 +39,14 @@ class DepartureFormSection extends StatelessWidget {
     this.placeLat,
     this.placeLng,
   });
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         const SizedBox(height: 14),
 
+        // CITY
         _buildItem(
           child: PickerField(
             label: "Departure City",
@@ -53,41 +56,107 @@ class DepartureFormSection extends StatelessWidget {
           ),
         ),
 
+        // DISTRICT
         _buildItem(
           child: PickerField(
             label: "Departure District",
             value: districtName,
+
             icon: Icons.location_on_outlined,
             onTap: onSelectDistrict,
           ),
         ),
 
+        // EXACT LOCATION (button)
         _buildItem(
           child: PickerField(
-            label: "📍 Add Exact Location",
-            value: placeDescription,
-            icon: Icons.map_outlined,
+            label: "Add Exact Location",
+            value: null, // sabit buton
+            icon: Icons.my_location_rounded,
             onTap: onSelectPlace,
           ),
         ),
 
+        // SELECTED LOCATION CARD (only if desc exists)
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          switchInCurve: Curves.easeOut,
+          switchOutCurve: Curves.easeIn,
+          transitionBuilder: (child, animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 0.05),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              ),
+            );
+          },
+          child: (placeDescription != null)
+              ? Padding(
+                  key: const ValueKey("selected_location"),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.l,
+                  ).copyWith(bottom: 12),
+                  child: SelectedLocationCard(description: placeDescription!),
+                )
+              : const SizedBox(key: ValueKey("location_none")),
+        ),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          switchInCurve: Curves.easeOut,
+          switchOutCurve: Curves.easeIn,
+          transitionBuilder: (child, animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 0.05),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              ),
+            );
+          },
+          child: (placeLat != null && placeLng != null)
+              ? Padding(
+                  key: const ValueKey("mini_map"),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.l,
+                  ).copyWith(bottom: 12),
+                  child: MiniLocationMap(
+                    lat: placeLat!,
+                    lng: placeLng!,
+                    onTap: onOpenMap,
+                  ),
+                )
+              : const SizedBox(key: ValueKey("mini_map_none")),
+        ),
         if (placeLat != null && placeLng != null)
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.l,
             ).copyWith(bottom: 12),
-            child: MiniLocationMap(
-              lat: placeLat!,
-              lng: placeLng!,
-              // 🔥 CRITICAL FIX: Dinamik key kaldırıldı.
-              // Böylece harita konumu değiştiğinde State objesi yeniden kullanılacak
-              // ve MiniLocationMap'teki didUpdateWidget tetiklenecektir.
-              // key: ValueKey("${placeLat}_$placeLng"), // Bu satır kaldırıldı/yorumlandı
-              onTap: onOpenMap,
+            child: Row(
+              children: const [
+                Icon(Icons.info_outline, size: 18, color: Colors.grey),
+                SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    "Haritadan konumu görüntüleyebilir ve değiştirebilirsiniz.",
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-
-        // DATE + TIME
+        // DATE & TIME
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
           child: Row(
@@ -100,7 +169,7 @@ class DepartureFormSection extends StatelessWidget {
                   onTap: onSelectDate,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               Expanded(
                 child: PickerField(
                   label: "Select Time",
@@ -112,20 +181,10 @@ class DepartureFormSection extends StatelessWidget {
             ],
           ),
         ),
-
-        const SizedBox(height: 30),
-
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
-          child: PrimaryButton(text: "Araçları Gör", onPressed: onSubmit),
-        ),
-
-        const SizedBox(height: 24),
       ],
     );
   }
 
-  /// Her item için ortak padding
   Widget _buildItem({required Widget child}) {
     return Padding(
       padding: const EdgeInsets.symmetric(

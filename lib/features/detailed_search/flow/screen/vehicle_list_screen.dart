@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
+import 'package:tour_booking/features/detailed_search/flow/widget/vehicle_skelaton.dart';
 import 'package:tour_booking/models/vehicle/vehicle.dart';
-import 'package:cached_network_image/cached_network_image.dart'; // Yeni paketi import ediyoruz
+import 'package:tour_booking/models/vehicle_detail_request/vehicle_detail_request.dart';
 
 class TourVehicleListScreen extends StatelessWidget {
   const TourVehicleListScreen({super.key});
@@ -13,107 +15,133 @@ class TourVehicleListScreen extends StatelessWidget {
     final vm = context.watch<TourSearchDetailViewModel>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Müsait Araçlar"), elevation: 0),
+      appBar: AppBar(title: const Text("Müsait Araçlar", style: TextStyle())),
       body: vm.isVehiclesLoading
-          ? const Center(child: CircularProgressIndicator())
-          : vm.vehicles == null
-          ? const Center(child: Text("Veri bulunamadı."))
-          : vm.vehicles!.isEmpty
-          ? const Center(child: Text("Bu tarihte araç yok."))
-          : Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFF3F3F7), Color(0xFFE9EAF2)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: GridView.builder(
-                  itemCount: vm.vehicles!.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 18,
-                    mainAxisSpacing: 18,
-                    childAspectRatio: 0.57,
-                  ),
-                  itemBuilder: (context, index) {
-                    final vehicle = vm.vehicles![index];
-                    return _buildVehicleCard(context, vehicle);
-                  },
-                ),
-              ),
+          ? const Center(child: VehicleCardSkeleton())
+          : vm.vehicles == null || vm.vehicles!.isEmpty
+          ? _buildEmptyState()
+          : ListView.separated(
+              padding: const EdgeInsets.all(20),
+              itemCount: vm.vehicles!.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 20),
+              itemBuilder: (context, index) {
+                return VehicleCard(vehicle: vm.vehicles![index]);
+              },
             ),
     );
   }
 
-  Widget _buildVehicleCard(BuildContext context, Vehicle vehicle) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x13000000),
-            blurRadius: 12,
-            spreadRadius: 2,
-            offset: Offset(0, 6),
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Icon(
+              Icons.no_crash_outlined,
+              size: 48,
+              color: Colors.grey.shade400,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            "Bu kriterlere uygun araç bulunamadı",
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () {
-          context.read<TourSearchDetailViewModel>().setSelectedPrice(
-            vehicle.price,
-          );
+    );
+  }
+}
 
-          context.pushNamed('vehicleDetail', extra: vehicle.vehicleId);
-        },
+class VehicleCard extends StatelessWidget {
+  final Vehicle vehicle;
+
+  const VehicleCard({super.key, required this.vehicle});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        final vm = context.read<TourSearchDetailViewModel>();
+
+        vm.setSelectedPrice(vehicle.price);
+
+        final request = VehicleDetailRequest(
+          vehicleId: vehicle.vehicleId,
+          tourRouteId: vehicle.tourRouteId, // vehicle içinde varsa direkt böyle
+          // gerekiyorsa diğer parametreleri de modele ekleyebilirsin
+        );
+
+        context.pushNamed('vehicleDetail', extra: request);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(.06),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ----- Görsel ve fiyat badge'i -----
+            // ---------------- IMAGE + PRICE BADGE ----------------
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(22),
                   ),
-                  // FadeInImage yerine CachedNetworkImage kullanıldı
-                  child: AspectRatio(
-                    aspectRatio: 1.3,
-                    child: CachedNetworkImage(
-                      imageUrl: vehicle.image,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: 130,
-                      // Yüklenirken gösterilecek placeholder
-                      placeholder: (context, url) => Container(
-                        color: Colors.grey.shade300,
-                        child: const Center(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.blue,
-                          ),
-                        ),
-                      ),
-                      // Hata durumunda gösterilecek widget
-                      errorWidget: (context, url, error) => Container(
-                        color: Colors.grey.shade300,
-                        child: const Icon(
-                          Icons.image_not_supported_outlined,
-                          size: 48,
-                          color: Colors.grey,
-                        ),
+                  child: CachedNetworkImage(
+                    imageUrl: vehicle.image,
+                    height: 170,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (_, __) =>
+                        Container(color: Colors.grey.shade200),
+                  ),
+                ),
+
+                // Soft gradient (çok hafif, premium)
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(.15),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
                       ),
                     ),
                   ),
                 ),
+
+                // Fiyat — sade, primary color
                 Positioned(
-                  top: 9,
+                  top: 14,
                   right: 14,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
@@ -121,17 +149,13 @@ class TourVehicleListScreen extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFD4145A), Color(0xFFFBB03B)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
+                      color: const Color(0xFF4A6CF7), // primary color
+                      borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.11),
+                          color: const Color(0xFF4A6CF7).withOpacity(.3),
                           blurRadius: 8,
-                          offset: const Offset(1, 2),
+                          offset: const Offset(0, 3),
                         ),
                       ],
                     ),
@@ -139,146 +163,85 @@ class TourVehicleListScreen extends StatelessWidget {
                       "${vehicle.price} ₺",
                       style: const TextStyle(
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black26,
-                            offset: Offset(1, 1),
-                            blurRadius: 2,
-                          ),
-                        ],
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
                       ),
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
 
-            // ----- Araç Bilgileri -----
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14.0,
-                vertical: 2,
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.directions_car,
-                    size: 16,
-                    color: Colors.blue,
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      vehicle.vehicleBrand,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14.0,
-                vertical: 2,
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.category, size: 16, color: Colors.blue),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      vehicle.vehicleClass,
-                      style: const TextStyle(fontSize: 13),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14.0,
-                vertical: 2,
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.local_offer, size: 16, color: Colors.blue),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      vehicle.vehicleType,
-                      style: const TextStyle(fontSize: 13),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14.0,
-                vertical: 2,
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.event_seat, size: 16, color: Colors.blue),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      "${vehicle.seatCount} Koltuk",
-                      style: const TextStyle(fontSize: 13),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            const SizedBox(height: 14),
 
-            // ----- Devam Et Butonu -----
+            // ---------------- BRAND NAME ----------------
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12.0,
-                vertical: 8.0,
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    context.read<TourSearchDetailViewModel>().setSelectedPrice(
-                      vehicle.price,
-                    );
-
-                    context.pushNamed(
-                      'vehicleDetail',
-                      extra: vehicle.vehicleId,
-                    );
-                  },
-                  icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-                  label: const Text("Devam Et"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    textStyle: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                    ),
-                  ),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                vehicle.vehicleBrand,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600, // daha ince
+                  color: Color(0xFF1A1D29),
+                  height: 1.1,
                 ),
               ),
             ),
+
+            const SizedBox(height: 10),
+
+            // ---------------- FEATURES ----------------
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  _featureChip(
+                    icon: Icons.event_seat,
+                    label: "${vehicle.seatCount} Koltuk",
+                  ),
+                  const SizedBox(width: 10),
+                  _featureChip(
+                    icon: Icons.directions_car_filled_rounded,
+                    label: vehicle.vehicleType,
+                  ),
+                  const SizedBox(width: 10),
+                  _featureChip(
+                    icon: Icons.directions_car_filled_rounded,
+                    label: vehicle.vehicleClass,
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
           ],
         ),
+      ),
+    );
+  }
+
+  // ---------------- REUSABLE CHIP ----------------
+  Widget _featureChip({required IconData icon, required String label}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5F6FA),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 15, color: const Color(0xFF4A6CF7)),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey.shade700,
+            ),
+          ),
+        ],
       ),
     );
   }
