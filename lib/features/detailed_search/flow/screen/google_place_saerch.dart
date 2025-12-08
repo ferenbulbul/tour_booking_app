@@ -37,26 +37,26 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    // Sayfa açılır açılmaz şehir ile arama yap
+    Future.microtask(() => _search(""));
+  }
+
   // ---------------------------------------------------------------------------
   // AUTOCOMPLETE SEARCH
   // ---------------------------------------------------------------------------
   Future<void> _search(String query) async {
-    if (query.length < 2) {
-      setState(() => _items = []);
-      return;
-    }
+    // Her koşulda şehir + ilçe başta olacak
+    final q = "${widget.city} ${widget.district} $query".trim();
 
     setState(() => _loading = true);
 
     final uri = Uri.https(
       'maps.googleapis.com',
       '/maps/api/place/autocomplete/json',
-      {
-        'input': query,
-        'key': _apiKey,
-        'language': 'tr',
-        'components': 'country:tr',
-      },
+      {'input': q, 'key': _apiKey, 'language': 'tr'},
     );
 
     final res = await http.get(uri);
@@ -68,9 +68,7 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
     }
 
     final body = jsonDecode(res.body);
-    final status = body['status'];
-
-    if (status != "OK") {
+    if (body['status'] != "OK") {
       setState(() => _items = []);
       return;
     }
@@ -79,7 +77,6 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
         .map((e) => _Prediction.fromJson(e))
         .toList();
 
-    // 🔥 FİLTRESİZ — TÜM ÜLKE SONUÇLARI GELECEK
     setState(() => _items = preds);
   }
 

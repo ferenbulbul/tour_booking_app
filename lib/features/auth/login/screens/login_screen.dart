@@ -154,7 +154,7 @@ class _CleanLoginFormState extends State<_CleanLoginForm> {
 
       if (role == UserRole.driver) {
         if (isFirstLogin) {
-          context.go('/change-password');
+          context.go('/change-password-driver');
         } else {
           context.go('/driver');
         }

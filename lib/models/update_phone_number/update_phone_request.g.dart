@@ -8,8 +8,14 @@ part of 'update_phone_request.dart';
 
 _$UpdatePhoneRequestDtoImpl _$$UpdatePhoneRequestDtoImplFromJson(
   Map<String, dynamic> json,
-) => _$UpdatePhoneRequestDtoImpl(phoneNumber: json['phoneNumber'] as String);
+) => _$UpdatePhoneRequestDtoImpl(
+  phoneNumber: json['phoneNumber'] as String,
+  countryCode: json['countryCode'] as String,
+);
 
 Map<String, dynamic> _$$UpdatePhoneRequestDtoImplToJson(
   _$UpdatePhoneRequestDtoImpl instance,
-) => <String, dynamic>{'phoneNumber': instance.phoneNumber};
+) => <String, dynamic>{
+  'phoneNumber': instance.phoneNumber,
+  'countryCode': instance.countryCode,
+};

@@ -14,10 +14,7 @@ class ChangePasswordViewModel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    // Servisin sadece string Password aldığı senaryoya göre:
     final response = await _authService.changePassword(password);
-
-    // Backend'inin ApiResponse<T> => Result<T> dönüşümü
     final result = handleResponse<void>(response);
 
     if (result.isSuccess) {

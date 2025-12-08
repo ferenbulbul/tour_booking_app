@@ -34,15 +34,13 @@ class ProfileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updatePhoneNumber(String newNumber) async {
+  Future<void> updatePhoneNumber(UpdatePhoneRequestDto request) async {
     if (_profile == null) return;
 
     isLoading = true;
     notifyListeners();
 
-    final result = await _tourService.updatePhoneNumber(
-      UpdatePhoneRequestDto(phoneNumber: newNumber),
-    );
+    final result = await _tourService.updatePhoneNumber(request);
 
     if (result.isSuccess ?? false) {
       await fetchProfile(); // güncel veriyi tekrar çek

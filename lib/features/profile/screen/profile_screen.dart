@@ -83,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: Icons.lock_outline,
               title: "Şifre Değiştir",
               onTap: () {
-                // TODO: Şifre değiştir ekranı
+                context.push('/change-password');
               },
             ),
 

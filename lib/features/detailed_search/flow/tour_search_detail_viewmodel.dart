@@ -35,11 +35,11 @@ class TourSearchDetailViewModel extends ChangeNotifier {
   int? selectedGuidePrice;
   String? selectedTourPointId;
   DateTime? selectedDate;
+  String? tourpointImage;
 
   VehicleDetail? vehicle;
   int? setVehiclePrice;
   List<Guide> guides = [];
-
   String? tourPointDetailId;
   Future<void> fetchTourPointDetail(String id) async {
     tourPointDetailId = id;
@@ -55,7 +55,7 @@ class TourSearchDetailViewModel extends ChangeNotifier {
         detail = result.data!.tourPointDetails;
         errorMessage = null;
         _isFavorite = detail!.isFavorites;
-
+        tourpointImage = detail!.mainImage;
         // Varsayılan seçimleri yapalım:
         selectedCityId = detail?.cities.firstOrNull?.id;
         selectedDistrictId = detail?.districts
@@ -327,4 +327,13 @@ class TourSearchDetailViewModel extends ChangeNotifier {
 
 extension FirstOrNull<T> on List<T> {
   T? get firstOrNull => isNotEmpty ? first : null;
+}
+
+extension ListExtensions<T> on List<T> {
+  T? firstWhereOrNull(bool Function(T) test) {
+    for (var item in this) {
+      if (test(item)) return item;
+    }
+    return null;
+  }
 }

@@ -83,9 +83,20 @@ class _PhoneCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasPhone = profile.phoneNumber.isNotEmpty;
     final verified = profile.phoneNumberConfirmed;
-    final badgeColor = verified ? Colors.green : Colors.orange;
-    final badgeText = verified ? "Doğrulandı" : "Doğrulanmadı";
+
+    final badgeColor = !hasPhone
+        ? Colors.orange
+        : verified
+        ? Colors.green
+        : Colors.orange;
+
+    final badgeText = !hasPhone
+        ? "Girilmedi"
+        : verified
+        ? "Doğrulandı"
+        : "Doğrulanmadı";
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -114,14 +125,19 @@ class _PhoneCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Telefon Numarası",
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                Text(
+                  hasPhone
+                      ? "Telefon Numarası"
+                      : "Telefon Numarası (Girilmedi)",
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const SizedBox(height: 6),
 
                 Text(
-                  profile.phoneNumber,
+                  hasPhone ? profile.phoneNumber : "—",
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -131,9 +147,11 @@ class _PhoneCard extends StatelessWidget {
                 const SizedBox(height: 6),
 
                 Text(
-                  verified
-                      ? "Bu numara rezervasyon hatırlatmaları için kullanılacaktır."
-                      : "Numaran yanlış olabilir. Doğrulamadan önce güncelleyebilirsin.",
+                  hasPhone
+                      ? (verified
+                            ? "Bu numara rezervasyon hatırlatmaları için kullanılacaktır."
+                            : "Numaran yanlış olabilir. Doğrulamadan önce güncelleyebilirsin.")
+                      : "Lütfen telefon numarası ekleyin.",
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.grey.shade600,
@@ -166,13 +184,12 @@ class _PhoneCard extends StatelessWidget {
           ),
 
           Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextButton(
                 onPressed: () => context.push("/update-phone"),
-                child: const Text("Güncelle"),
+                child: Text(hasPhone ? "Güncelle" : "Ekle"),
               ),
-              if (!verified)
+              if (hasPhone && !verified)
                 TextButton(
                   onPressed: () => context.push("/verify-phone"),
                   child: const Text("Doğrula"),

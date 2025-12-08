@@ -421,6 +421,10 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
     final city = vm.selectedCityName;
     final districts = vm.selectedDistrictName;
 
+    // 1. ÖNEMLİ: Yeni seçim yapmadan önce harita zaten açık mıydı kontrol et.
+    // Eğer lat/lng null değilse, harita zaten ekranda demektir.
+    bool isMapAlreadyVisible = vm.selectedPlaceLat != null;
+
     final result = await context.pushNamed<PlaceSelection>(
       "placePicker",
       extra: {'city': city, 'district': districts},
@@ -429,14 +433,17 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
     if (result != null) {
       vm.setSelectedPlace(result);
 
-      // --- MINI HARİTAYA OTOMATİK KAYDIRMA ---
-      await Future.delayed(const Duration(milliseconds: 300));
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.offset + 300,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeOut,
-        );
+      // 2. Eğer harita ZATEN AÇIKSA scroll yapma.
+      // Sadece harita ilk defa görünür hale geliyorsa scroll yap.
+      if (!isMapAlreadyVisible) {
+        await Future.delayed(const Duration(milliseconds: 300));
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.offset + 300, // Harita alanı kadar kaydır
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeOut,
+          );
+        }
       }
     }
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 
 class BottomActionBar extends StatelessWidget {
@@ -17,6 +18,9 @@ class BottomActionBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasPrice = price != null && price! > 0;
 
+    final formatter = NumberFormat.decimalPattern('tr_TR');
+    final formattedPrice = hasPrice ? formatter.format(price) : "";
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -29,18 +33,16 @@ class BottomActionBar extends StatelessWidget {
           ),
         ],
       ),
-
       child: SafeArea(
         top: false,
         minimum: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-
         child: Row(
           children: [
             if (hasPrice)
               Padding(
                 padding: const EdgeInsets.only(right: 12),
                 child: Text(
-                  "${price!} ₺",
+                  "$formattedPrice ₺",
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
@@ -49,7 +51,6 @@ class BottomActionBar extends StatelessWidget {
                 ),
               ),
 
-            // 🔥 Overflow'u çözen sihir burada
             Expanded(
               child: SizedBox(
                 height: 50,

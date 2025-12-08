@@ -3,24 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
+import 'package:tour_booking/core/widgets/bottom_action_bar.dart';
+import 'package:tour_booking/core/widgets/section_title.dart';
 import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/models/guide/guide.dart';
 import 'package:tour_booking/models/vehicle/vehicle.dart';
 import 'package:tour_booking/models/vehicle_detail/vehicle_detail.dart';
 
-/// A compact summary screen that reads all selections from
-/// [TourSearchDetailViewModel] and presents a confirmation view.
-///
-/// It shows: date, city, district, tour point, vehicle, guide, prices and total.
-///
-/// NOTE:
-/// - City/District/Tour Point names are not part of the provided models here.
-///   The screen currently displays their *IDs*. Replace the `TODO` parts with
-///   your display names if your models expose them (e.g., `name`, `title`).
-/// - Vehicle price is taken in this order: `setViheclePrice` (if set) →
-///   `selectedVehicle.price` → `vehicleDetail.price`.
-/// - Guide price is taken from the selected guide (if any).
-/// - The Confirm button is disabled unless date & vehicle are chosen.
 class SummaryScreen extends StatelessWidget {
   const SummaryScreen({super.key});
 
@@ -29,317 +19,378 @@ class SummaryScreen extends StatelessWidget {
     return Consumer<TourSearchDetailViewModel>(
       builder: (context, vm, _) {
         final selectedVehicle = _getSelectedVehicle(vm);
-        final vehicleDetail = vm.vehicle; // Could be null if not fetched
+        final vehicleDetail = vm.vehicle;
         final selectedGuide = _getSelectedGuide(vm);
 
-        final DateTime? date = vm.selectedDate;
+        final date = vm.selectedDate;
 
-        final int? vehiclePrice = _pickVehiclePrice(
-          vm,
-          selectedVehicle,
-          vehicleDetail,
-        );
-        final num? guidePrice = selectedGuide?.price;
-        final num totalPrice = (vehiclePrice ?? 0) + (guidePrice ?? 0);
+        final vehiclePrice =
+            vm.setVehiclePrice ??
+            selectedVehicle?.price ??
+            vehicleDetail?.price;
+
+        final guidePrice = selectedGuide?.price;
+        final totalPrice = (vehiclePrice ?? 0) + (guidePrice ?? 0);
 
         final canConfirm = date != null && selectedVehicle != null;
-        final String cityDisplay = vm.selectedCityName ?? 'Seçilmedi';
-        final String districtDisplay = vm.selectedDistrictName ?? 'Seçilmedi';
-        final String tourPointDisplay = vm.selectedTourPointName ?? 'Seçilmedi';
-        final String placeDisplay = vm.selectedPlaceDesc ?? 'Seçilmedi';
-        final String departureTime = vm.selectedTime ?? 'Seçilmedi';
-        final cityDistrict = [
-          cityDisplay ?? '',
-          districtDisplay ?? '',
-        ].where((s) => s.isNotEmpty).join(', ');
-        // Fallback textuals — replace with your actual display names if available
 
         return Scaffold(
-          appBar: AppBar(title: const Text('Özet')),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _SectionCard(
-                    title: 'Seyahat Bilgileri',
-                    children: [
-                      _infoRow('Tarih', _formatDate(date, departureTime)),
-                      _infoRow('Kalkış Bölgesi', cityDistrict),
-                      _infoRow('Tam konum', placeDisplay),
-                      _infoRow('Tur Noktası', tourPointDisplay),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  _SectionCard(
-                    title: 'Araç',
-                    trailing: selectedVehicle?.image != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: CachedNetworkImage(
-                              placeholder: (context, url) =>
-                                  const CircularProgressIndicator(),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
-                              imageUrl: selectedVehicle!.image,
-                              height: 64,
-                              width: 64,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : null,
-                    children: [
-                      _infoRow(
-                        'Araç',
-                        _vehicleTitle(selectedVehicle, vehicleDetail),
-                      ),
-                      _infoRow(
-                        'Sınıf',
-                        vehicleDetail?.vehicleClass ??
-                            selectedVehicle?.vehicleClass ??
-                            '—',
-                      ),
-                      _infoRow(
-                        'Tip',
-                        vehicleDetail?.vehicleType ??
-                            selectedVehicle?.vehicleType ??
-                            '—',
-                      ),
-                      _infoRow(
-                        'Koltuk',
-                        _toStr(
-                          vehicleDetail?.seatCount ??
-                              selectedVehicle?.seatCount,
-                        ),
-                      ),
-                      _infoRow('Araç Ücreti', _formatCurrency(vehiclePrice)),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  if (selectedGuide != null)
-                    _SectionCard(
-                      title: 'Rehber',
-                      trailing: selectedGuide?.image != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: CachedNetworkImage(
-                                placeholder: (context, url) =>
-                                    const CircularProgressIndicator(),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                                imageUrl: selectedGuide!.image!,
-                                height: 64,
-                                width: 64,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : null,
-                      children: [
-                        _infoRow('Rehber', _guideTitle(selectedGuide)),
-                        _infoRow(
-                          'Diller',
-                          (selectedGuide?.languages.isNotEmpty == true)
-                              ? selectedGuide!.languages.join(', ')
-                              : '—',
-                        ),
-                        _infoRow('Rehber Ücreti', _formatCurrency(guidePrice)),
-                      ],
-                    ),
+          backgroundColor: Colors.grey.shade100,
+          appBar: AppBar(
+            title: const Text("Seyahat Özeti"),
+            centerTitle: true,
+            elevation: 0,
+            backgroundColor: Colors.white,
+          ),
 
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // -----------------------------
+                // SEYAHAT BİLGİLERİ
+                // -----------------------------
+                SectionTitle(title: "Seyahat Bilgileri"),
+                const SizedBox(height: 12),
+
+                _summaryCard(
+                  headerImage:
+                      vm.tourpointImage, // 🔥 Kartın üstünde tur fotoğrafı
+                  children: [
+                    _infoRow("Tarih", _formatDate(date, vm.selectedTime)),
+                    _infoRow("Kalkış Bölgesi", vm.selectedCityName ?? '—'),
+                    _infoRow("İlçe", vm.selectedDistrictName ?? '—'),
+                    _infoRowMultiline("Tam Konum", vm.selectedPlaceDesc ?? '—'),
+                    _infoRow("Tur Noktası", vm.selectedTourPointName ?? '—'),
+                  ],
+                ),
+
+                const SizedBox(height: 26),
+
+                // -----------------------------
+                // ARAÇ
+                // -----------------------------
+                SectionTitle(title: "Araç Bilgisi"),
+                const SizedBox(height: 12),
+
+                _summaryCard(
+                  headerImage:
+                      selectedVehicle?.image, // 🔥 Araç fotoğrafı kart üstünde
+                  children: [
+                    _infoRow(
+                      "Araç",
+                      _vehicleTitle(selectedVehicle, vehicleDetail),
+                    ),
+                    _infoRow("Sınıf", vehicleDetail?.vehicleClass ?? '—'),
+                    _infoRow("Tip", vehicleDetail?.vehicleType ?? '—'),
+                    _infoRow("Koltuk", "${vehicleDetail?.seatCount ?? '-'}"),
+                    _infoRow("Ücret", _formatCurrency(vehiclePrice)),
+                  ],
+                ),
+
+                const SizedBox(height: 26),
+
+                // -----------------------------
+                // REHBER
+                // -----------------------------
+                if (selectedGuide != null) ...[
+                  SectionTitle(title: "Rehber Bilgisi"),
                   const SizedBox(height: 12),
-                  _SectionCard(
-                    title: 'Ödeme Özeti',
+
+                  _summaryCard(
+                    headerImage: null, // Rehberde fotoğraf kart üstünde değil
                     children: [
-                      _infoRow('Araç', _formatCurrency(vehiclePrice)),
-                      _infoRow('Rehber', _formatCurrency(guidePrice)),
-                      const Divider(height: 20),
-                      _infoRow(
-                        'Toplam',
-                        _formatCurrency(totalPrice),
-                        isEmph: true,
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 32,
+                            backgroundImage: selectedGuide.image != null
+                                ? NetworkImage(selectedGuide.image!)
+                                : null,
+                            child: selectedGuide.image == null
+                                ? const Icon(Icons.person, size: 32)
+                                : null,
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              "${selectedGuide.firstName} ${selectedGuide.lastName}",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
+
+                      const SizedBox(height: 12),
+
+                      _infoRow("Diller", selectedGuide.languages.join(", ")),
+                      _infoRow("Rehber Ücreti", _formatCurrency(guidePrice)),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  FilledButton.icon(
-                    onPressed: canConfirm
-                        ? () async {
-                            await vm.ControlBooking(); // API cevabını bekle
-                            if (vm.isValid && vm.bookingId != null) {
-                              context.push('/payment', extra: vm.bookingId);
-                            } else {
-                              // Hata mesajını göstermek istersen:
-                              if (vm.errorMessage != null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(vm.errorMessage!)),
-                                );
-                              }
-                            }
-                          }
-                        : null,
-                    icon: const Icon(Icons.check_circle),
-                    label: const Text('Onayla'),
-                  ),
-                  if (!canConfirm) ...[
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Onaylamak için tarih ve araç seçin.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12, color: Colors.redAccent),
-                    ),
-                  ],
                 ],
-              ),
+
+                const SizedBox(height: 26),
+
+                // -----------------------------
+                // ÖDEME ÖZETİ
+                // -----------------------------
+                SectionTitle(title: "Ödeme Özeti"),
+                const SizedBox(height: 12),
+
+                _paymentCard(
+                  totalPrice: totalPrice.toInt(),
+                  vehiclePrice: vehiclePrice,
+                  guidePrice: guidePrice,
+                ),
+              ],
             ),
+          ),
+
+          bottomNavigationBar: BottomActionBar(
+            price: totalPrice.toInt(),
+            buttonText: "Onayla",
+            onPressed: canConfirm
+                ? () async {
+                    await vm.ControlBooking();
+                    if (vm.isValid && vm.bookingId != null) {
+                      context.push('/payment', extra: vm.bookingId);
+                    } else if (vm.errorMessage != null) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(vm.errorMessage!)));
+                    }
+                  }
+                : () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          "Bir hata oluştu lütfen daha sonra tekrar deneyiniz.",
+                        ),
+                      ),
+                    );
+                  },
           ),
         );
       },
     );
   }
 
-  // ————————————————————————————————————————————————————————————————
-  // Helpers
-  // ————————————————————————————————————————————————————————————————
-
-  Vehicle? _getSelectedVehicle(TourSearchDetailViewModel vm) {
-    final String? id = vm.selectedVehicleId;
-    if (id == null) return null;
-    return vm.vehicles.firstWhereOrNull((v) => v.vehicleId == id);
-  }
-
-  Guide? _getSelectedGuide(TourSearchDetailViewModel vm) {
-    final String? id = vm.selectedGuideId;
-    if (id == null) return null;
-    return vm.guides.firstWhereOrNull((g) => g.guideId == id);
-  }
-
-  int? _pickVehiclePrice(
-    TourSearchDetailViewModel vm,
-    Vehicle? selectedVehicle,
-    VehicleDetail? vehicleDetail,
-  ) {
-    final fromVm = vm.setVehiclePrice;
-    if (fromVm != null) return fromVm;
-    if (selectedVehicle?.price != null) return selectedVehicle!.price;
-    return vehicleDetail?.price;
-  }
-
-  static String _vehicleTitle(Vehicle? v, VehicleDetail? d) {
-    final brand = d?.vehicleBrand ?? v?.vehicleBrand;
-    final klass = d?.vehicleClass ?? v?.vehicleClass;
-    return [brand, klass]
-            .where((e) => (e != null && e.trim().isNotEmpty))
-            .join(' • ')
-            .isNotEmpty
-        ? [brand, klass].whereType<String>().join(' • ')
-        : (v != null ? 'Seçildi' : 'Seçilmedi');
-  }
-
-  static String _guideTitle(Guide? g) {
-    if (g == null) return 'Seçilmedi';
-    final full = '${g.firstName} ${g.lastName}'.trim();
-    return full.isEmpty ? 'Rehber' : full;
-  }
-
-  static String _toStr(Object? v) => v?.toString() ?? '—';
-
-  static Widget _infoRow(String label, String value, {bool isEmph = false}) {
-    final style = isEmph
-        ? const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)
-        : const TextStyle(fontSize: 14);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 140,
-            child: Text(label, style: const TextStyle(color: Colors.black54)),
+  // ---------------------------------------------------------------------------
+  // PREMIUM SUMMARY CARD (Kart üstünde fotoğraf)
+  // ---------------------------------------------------------------------------
+  Widget _summaryCard({String? headerImage, required List<Widget> children}) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 6),
           ),
-          const SizedBox(width: 8),
-          Expanded(child: Text(value, style: style)),
+        ],
+      ),
+      child: Column(
+        children: [
+          // 🔥 FOTOĞRAF BURADA OLACAK — sadece bu kartta
+          if (headerImage != null && headerImage.isNotEmpty)
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(22),
+              ),
+              child: SizedBox(
+                height: 160,
+                width: double.infinity,
+                child: CachedNetworkImage(
+                  imageUrl: headerImage,
+                  fit: BoxFit.cover,
+                  fadeInDuration: const Duration(milliseconds: 250),
+                  placeholder: (context, url) =>
+                      Container(color: Colors.grey.shade300),
+                  errorWidget: (context, url, error) => Container(
+                    color: Colors.grey.shade200,
+                    child: const Icon(
+                      Icons.broken_image,
+                      size: 40,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(children: children),
+          ),
         ],
       ),
     );
   }
 
-  static String _formatDate(DateTime? date, String departureTime) {
-    if (date == null) return 'Seçilmedi';
-
-    // Örn: 13 Ağustos 2025, Çar
-    final df = DateFormat('d MMMM yyyy, EEE', 'tr_TR');
-    final formattedDate = df.format(date);
-
-    // Saati string olarak ekle
-    return "$formattedDate $departureTime";
-  }
-
-  static String _formatCurrency(num? value) {
-    if (value == null) return '—';
-    final f = NumberFormat.currency(
-      locale: 'tr_TR',
-      symbol: '₺',
-      decimalDigits: 0,
-    );
-    return f.format(value);
-  }
-}
-
-// ————————————————————————————————————————————————————————————————
-// Small section card
-// ————————————————————————————————————————————————————————————————
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({
-    required this.title,
-    required this.children,
-    this.trailing,
-  });
-
-  final String title;
-  final List<Widget> children;
-  final Widget? trailing;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                if (trailing != null) trailing!,
-              ],
+  // Bilgi satırı
+  Widget _infoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 140,
+            child: Text(
+              label,
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-            const SizedBox(height: 12),
-            ...children,
-          ],
-        ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
       ),
     );
   }
-}
 
-// ————————————————————————————————————————————————————————————————
-// Iterable extension: firstWhereOrNull (no external deps)
-// ————————————————————————————————————————————————————————————————
-extension FirstWhereOrNullExtension<T> on Iterable<T> {
-  T? firstWhereOrNull(bool Function(T element) test) {
-    for (final e in this) {
-      if (test(e)) return e;
-    }
-    return null;
+  // Çok satır için (tam konum)
+  Widget _infoRowMultiline(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 140,
+            child: Text(
+              label,
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              maxLines: 3,
+              overflow: TextOverflow.fade,
+              textAlign: TextAlign.right,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Ödeme kartı
+  Widget _paymentCard({
+    required int totalPrice,
+    num? vehiclePrice,
+    num? guidePrice,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        gradient: const LinearGradient(
+          colors: [Color(0xff0062FF), Color(0xff2A86FF)],
+        ),
+      ),
+      padding: const EdgeInsets.all(22),
+      child: Column(
+        children: [
+          _paymentRow("Araç", _formatCurrency(vehiclePrice)),
+          _paymentRow("Rehber", _formatCurrency(guidePrice)),
+          const Divider(color: Colors.white54),
+          _paymentRow(
+            "Toplam",
+            _formatCurrency(totalPrice),
+            big: true,
+            bold: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _paymentRow(
+    String label,
+    String value, {
+    bool bold = false,
+    bool big = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: big ? 18 : 14,
+              fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: big ? 20 : 15,
+              fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Helpers
+  Vehicle? _getSelectedVehicle(TourSearchDetailViewModel vm) {
+    final id = vm.selectedVehicleId;
+    return id == null
+        ? null
+        : vm.vehicles.firstWhereOrNull((v) => v.vehicleId == id);
+  }
+
+  Guide? _getSelectedGuide(TourSearchDetailViewModel vm) {
+    final id = vm.selectedGuideId;
+    return id == null
+        ? null
+        : vm.guides.firstWhereOrNull((g) => g.guideId == id);
+  }
+
+  String _vehicleTitle(Vehicle? v, VehicleDetail? d) {
+    return [
+      d?.vehicleBrand ?? v?.vehicleBrand,
+      d?.vehicleClass ?? v?.vehicleClass,
+    ].whereType<String>().join(" • ");
+  }
+
+  String _formatDate(DateTime? date, String? time) {
+    if (date == null) return "—";
+    final df = DateFormat("d MMMM yyyy, EEEE", "tr_TR");
+    return "${df.format(date)} ${time ?? ""}";
+  }
+
+  String _formatCurrency(num? v) {
+    if (v == null) return "—";
+    final f = NumberFormat.currency(
+      locale: 'tr_TR',
+      symbol: "₺",
+      decimalDigits: 0,
+    );
+    return f.format(v);
   }
 }

@@ -24,6 +24,7 @@ UpdatePhoneRequestDto _$UpdatePhoneRequestDtoFromJson(
 /// @nodoc
 mixin _$UpdatePhoneRequestDto {
   String get phoneNumber => throw _privateConstructorUsedError;
+  String get countryCode => throw _privateConstructorUsedError;
 
   /// Serializes this UpdatePhoneRequestDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -42,7 +43,7 @@ abstract class $UpdatePhoneRequestDtoCopyWith<$Res> {
     $Res Function(UpdatePhoneRequestDto) then,
   ) = _$UpdatePhoneRequestDtoCopyWithImpl<$Res, UpdatePhoneRequestDto>;
   @useResult
-  $Res call({String phoneNumber});
+  $Res call({String phoneNumber, String countryCode});
 }
 
 /// @nodoc
@@ -62,12 +63,16 @@ class _$UpdatePhoneRequestDtoCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? phoneNumber = null}) {
+  $Res call({Object? phoneNumber = null, Object? countryCode = null}) {
     return _then(
       _value.copyWith(
             phoneNumber: null == phoneNumber
                 ? _value.phoneNumber
                 : phoneNumber // ignore: cast_nullable_to_non_nullable
+                      as String,
+            countryCode: null == countryCode
+                ? _value.countryCode
+                : countryCode // ignore: cast_nullable_to_non_nullable
                       as String,
           )
           as $Val,
@@ -84,7 +89,7 @@ abstract class _$$UpdatePhoneRequestDtoImplCopyWith<$Res>
   ) = __$$UpdatePhoneRequestDtoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String phoneNumber});
+  $Res call({String phoneNumber, String countryCode});
 }
 
 /// @nodoc
@@ -101,12 +106,16 @@ class __$$UpdatePhoneRequestDtoImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? phoneNumber = null}) {
+  $Res call({Object? phoneNumber = null, Object? countryCode = null}) {
     return _then(
       _$UpdatePhoneRequestDtoImpl(
         phoneNumber: null == phoneNumber
             ? _value.phoneNumber
             : phoneNumber // ignore: cast_nullable_to_non_nullable
+                  as String,
+        countryCode: null == countryCode
+            ? _value.countryCode
+            : countryCode // ignore: cast_nullable_to_non_nullable
                   as String,
       ),
     );
@@ -116,17 +125,22 @@ class __$$UpdatePhoneRequestDtoImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$UpdatePhoneRequestDtoImpl implements _UpdatePhoneRequestDto {
-  const _$UpdatePhoneRequestDtoImpl({required this.phoneNumber});
+  const _$UpdatePhoneRequestDtoImpl({
+    required this.phoneNumber,
+    required this.countryCode,
+  });
 
   factory _$UpdatePhoneRequestDtoImpl.fromJson(Map<String, dynamic> json) =>
       _$$UpdatePhoneRequestDtoImplFromJson(json);
 
   @override
   final String phoneNumber;
+  @override
+  final String countryCode;
 
   @override
   String toString() {
-    return 'UpdatePhoneRequestDto(phoneNumber: $phoneNumber)';
+    return 'UpdatePhoneRequestDto(phoneNumber: $phoneNumber, countryCode: $countryCode)';
   }
 
   @override
@@ -135,12 +149,14 @@ class _$UpdatePhoneRequestDtoImpl implements _UpdatePhoneRequestDto {
         (other.runtimeType == runtimeType &&
             other is _$UpdatePhoneRequestDtoImpl &&
             (identical(other.phoneNumber, phoneNumber) ||
-                other.phoneNumber == phoneNumber));
+                other.phoneNumber == phoneNumber) &&
+            (identical(other.countryCode, countryCode) ||
+                other.countryCode == countryCode));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, phoneNumber);
+  int get hashCode => Object.hash(runtimeType, phoneNumber, countryCode);
 
   /// Create a copy of UpdatePhoneRequestDto
   /// with the given fields replaced by the non-null parameter values.
@@ -161,14 +177,18 @@ class _$UpdatePhoneRequestDtoImpl implements _UpdatePhoneRequestDto {
 }
 
 abstract class _UpdatePhoneRequestDto implements UpdatePhoneRequestDto {
-  const factory _UpdatePhoneRequestDto({required final String phoneNumber}) =
-      _$UpdatePhoneRequestDtoImpl;
+  const factory _UpdatePhoneRequestDto({
+    required final String phoneNumber,
+    required final String countryCode,
+  }) = _$UpdatePhoneRequestDtoImpl;
 
   factory _UpdatePhoneRequestDto.fromJson(Map<String, dynamic> json) =
       _$UpdatePhoneRequestDtoImpl.fromJson;
 
   @override
   String get phoneNumber;
+  @override
+  String get countryCode;
 
   /// Create a copy of UpdatePhoneRequestDto
   /// with the given fields replaced by the non-null parameter values.

@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/widgets/bottom_action_bar.dart';
 import 'package:tour_booking/core/widgets/buttons/simple_icon_button.dart';
+import 'package:tour_booking/core/widgets/section_title.dart';
 import 'package:tour_booking/features/detailed_search/flow/screen/full_screen_gallery_screen.dart';
 import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
+import 'package:tour_booking/features/detailed_search/flow/widget/vehicle_detail_skelaton.dart';
 import 'package:tour_booking/models/vehicle_detail_request/vehicle_detail_request.dart';
 
 class VehicleDetailScreen extends StatefulWidget {
@@ -28,7 +29,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
   bool _showBottom = true;
 
   // Animasyon süresi ve eğrisi (Yumuşak ayarlar)
-  static const Duration _animationDuration = Duration(milliseconds: 500);
+  static const Duration _animationDuration = Duration(milliseconds: 700);
   static const Curve _animationCurve = Curves.easeOutQuint;
 
   @override
@@ -74,9 +75,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     final vm = context.watch<TourSearchDetailViewModel>();
 
     if (vm.isVehicleLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator(color: Colors.black)),
-      );
+      return const Scaffold(body: Center(child: VehicleDetailSkeleton()));
     }
 
     final v = vm.vehicle;
@@ -245,9 +244,9 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _SectionTitle("Araç Özellikleri"),
+                  SectionTitle(title: "Araç Özellikleri"),
 
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 16),
 
                   // --- 3x2 GRID (araç özellikleri) ---
                   Wrap(
@@ -291,8 +290,8 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
 
                   // --- EK ÖZELLİKLER ---
                   if ((v.vehicleFeatures?.isNotEmpty ?? false)) ...[
-                    _SectionTitle("Ek Özellikler"),
-                    const SizedBox(height: 14),
+                    SectionTitle(title: "Ek Özellikler"),
+                    const SizedBox(height: 16),
 
                     LayoutBuilder(
                       builder: (_, constraints) {
@@ -311,7 +310,22 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                   ],
 
                   // Boşluk ayarı
-                  const SizedBox(height: 150),
+                  const SizedBox(height: 26),
+
+                  SectionTitle(
+                    title: "Sürücü Bilgisi",
+                    subtitle: "Tur sırasında sizinle olacak profesyonel sürücü",
+                  ),
+                  const SizedBox(height: 16),
+
+                  _driverSection(
+                    name: v.nameSurname,
+                    experience: v.experienceYear,
+                    photoUrl: v.photoUrl,
+                    languages: v.languages,
+                  ),
+
+                  const SizedBox(height: 100),
                 ],
               ),
             ),
@@ -405,18 +419,128 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
       ),
     );
   }
+}
 
-  // -------------------------------------------------------------------------
-  // SECTION TITLE
-  // -------------------------------------------------------------------------
-  Widget _SectionTitle(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w700,
-        color: Colors.black,
-      ),
-    );
-  }
+Widget _driverSection({
+  required String? name,
+  required String? experience,
+  required String? photoUrl,
+  required List<String>? languages,
+}) {
+  return Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(18),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.05),
+          blurRadius: 12,
+          offset: const Offset(0, 6),
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ---------------- FOTO + İSİM + DENEYİM ----------------
+        Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: CachedNetworkImage(
+                imageUrl: photoUrl ?? "",
+                width: 60,
+                height: 60,
+                fit: BoxFit.cover,
+
+                // Yüklenene kadar placeholder
+                placeholder: (context, url) => Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+
+                // Hata durumunda fallback avatar
+                errorWidget: (context, url, error) => Container(
+                  width: 60,
+                  height: 60,
+                  decoration: const BoxDecoration(
+                    color: Colors.grey,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.person,
+                    size: 32,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 16),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name ?? "Bilinmiyor",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Deneyim: ${experience ?? '—'} yıl",
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 20),
+
+        // ---------------- DİLLER ----------------
+        if (languages != null && languages.isNotEmpty) ...[
+          Text(
+            "Kullandığı Diller",
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade800,
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: languages.map((lang) {
+              return Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5F6FA),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  lang,
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ],
+    ),
+  );
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/features/auth/change_password/screen/change_password.dart';
 import 'package:tour_booking/features/detailed_search/flow/screen/tour_search_detail_screen.dart';
 import 'package:tour_booking/features/bookings/screen/bookings_screen.dart';
-import 'package:tour_booking/features/auth/change_password/screen/change_password.dart';
+import 'package:tour_booking/features/auth/change_password/screen/change_password_driver.dart';
 import 'package:tour_booking/features/driver_home_page/screen/driver_home_page.dart';
 import 'package:tour_booking/features/auth/email_verification/screen/email_verification_screen.dart';
 import 'package:tour_booking/features/favorite/screen/favorite_screen.dart';
@@ -197,6 +198,13 @@ final GoRouter router = GoRouter(
       builder: (context, state) => const DriverHomePage(),
     ),
     GoRoute(
+      path: '/change-password-driver',
+      name: 'changePasswordDriver',
+      builder: (context, state) {
+        return ChangePasswordDriverScreen();
+      },
+    ),
+    GoRoute(
       path: '/change-password',
       name: 'changePassword',
       builder: (context, state) {
@@ -228,6 +236,7 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: '/settings/permissions',
+      name: 'permissionsSettings',
       builder: (context, state) => const PermissionsScreen(),
     ),
     GoRoute(

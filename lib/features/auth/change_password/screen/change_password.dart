@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/auth/change_password/change_password_viewmodel.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -12,160 +12,163 @@ class ChangePasswordScreen extends StatefulWidget {
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _pwdCtrl = TextEditingController();
-  final _pwd2Ctrl = TextEditingController();
 
-  bool _ob1 = true;
-  bool _ob2 = true;
+  final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
 
-  final _passwordRegex = RegExp(
-    r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{9,}$',
-  );
+  bool _isPasswordObscure = true;
+  bool _isConfirmObscure = true;
 
-  String? _pwdValidator(String? v) {
-    final value = (v ?? '').trim();
-    if (value.isEmpty) return 'Şifre zorunlu.';
-    if (!_passwordRegex.hasMatch(value)) {
-      return 'En az 9 karakter, 1 büyük, 1 küçük, 1 sayı ve 1 özel karakter içermeli.';
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmController.dispose();
+    super.dispose();
+  }
+
+  // REGISTER ekranındaki password kuralları
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) return "Şifre zorunludur.";
+    final pwd = value.trim();
+
+    if (pwd.length < 9) return "Şifre en az 9 karakter olmalıdır.";
+
+    final upper = RegExp(r'[A-Z]');
+    final lower = RegExp(r'[a-z]');
+    final digit = RegExp(r'\d');
+    final special = RegExp(r'[^A-Za-z0-9]');
+
+    final errors = <String>[
+      if (!upper.hasMatch(pwd)) "• En az 1 büyük harf (A–Z)",
+      if (!lower.hasMatch(pwd)) "• En az 1 küçük harf (a–z)",
+      if (!digit.hasMatch(pwd)) "• En az 1 rakam (0–9)",
+      if (!special.hasMatch(pwd)) "• En az 1 özel karakter (!@#...)",
+    ];
+
+    return errors.isEmpty ? null : errors.join("\n");
+  }
+
+  String? _validateConfirm(String? v) {
+    if (v == null || v.trim().isEmpty) return "Şifre tekrarı zorunludur.";
+    if (v.trim() != _passwordController.text.trim()) {
+      return "Şifreler eşleşmiyor.";
     }
     return null;
   }
 
-  String? _confirmValidator(String? v) {
-    if ((v ?? '').trim().isEmpty) return 'Şifre tekrarı zorunlu.';
-    if (v!.trim() != _pwdCtrl.text.trim()) return 'Şifreler eşleşmiyor.';
-    return null;
-  }
-
-  @override
-  void dispose() {
-    _pwdCtrl.dispose();
-    _pwd2Ctrl.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ChangePasswordViewModel(),
-      child: Consumer<ChangePasswordViewModel>(
-        builder: (context, vm, _) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Şifre Değiştir')),
-            body: Form(
-              key: _formKey,
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  TextFormField(
-                    controller: _pwdCtrl,
-                    obscureText: _ob1,
-                    decoration: InputDecoration(
-                      labelText: 'Yeni Şifre',
-                      hintText: 'Min 9, A/a, 0-9, özel (!@#...)',
-                      suffixIcon: IconButton(
-                        onPressed: () => setState(() => _ob1 = !_ob1),
-                        icon: Icon(
-                          _ob1 ? Icons.visibility : Icons.visibility_off,
-                        ),
-                      ),
-                    ),
-                    validator: _pwdValidator,
-                    textInputAction: TextInputAction.next,
-                    autofillHints: const [AutofillHints.newPassword],
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _pwd2Ctrl,
-                    obscureText: _ob2,
-                    decoration: InputDecoration(
-                      labelText: 'Şifre Tekrar',
-                      suffixIcon: IconButton(
-                        onPressed: () => setState(() => _ob2 = !_ob2),
-                        icon: Icon(
-                          _ob2 ? Icons.visibility : Icons.visibility_off,
-                        ),
-                      ),
-                    ),
-                    validator: _confirmValidator,
-                    textInputAction: TextInputAction.done,
-                    onFieldSubmitted: (_) => _submit(context, vm),
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: vm.isLoading
-                          ? null
-                          : () => _submit(context, vm),
-                      child: vm.isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text('Şifreyi Güncelle'),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const _RulesNote(),
-                  if (vm.message != null || vm.validationErrors.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Text(
-                      _buildError(vm),
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  ],
-                ],
+    final vm = context.watch<ChangePasswordViewModel>();
+    final primaryColor = Theme.of(context).primaryColor;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text("Şifre Değiştir")),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              _buildPasswordField(
+                label: "Yeni Şifre",
+                controller: _passwordController,
+                obscure: _isPasswordObscure,
+                toggle: () =>
+                    setState(() => _isPasswordObscure = !_isPasswordObscure),
+                validator: _validatePassword,
+                primaryColor: primaryColor,
               ),
-            ),
-          );
-        },
+
+              const SizedBox(height: 16),
+
+              _buildPasswordField(
+                label: "Şifre Tekrar",
+                controller: _confirmController,
+                obscure: _isConfirmObscure,
+                toggle: () =>
+                    setState(() => _isConfirmObscure = !_isConfirmObscure),
+                validator: _validateConfirm,
+                primaryColor: primaryColor,
+              ),
+
+              const SizedBox(height: 24),
+
+              PrimaryButton(
+                text: "Şifreyi Güncelle",
+                isLoading: vm.isLoading,
+                onPressed: () async {
+                  if (!_formKey.currentState!.validate()) return;
+
+                  final result = await vm.changePassword(
+                    _passwordController.text.trim(),
+                  );
+
+                  if (!mounted) return;
+
+                  if (result.isSuccess) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Şifre başarıyla güncellendi."),
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(vm.message ?? "İşlem başarısız.")),
+                    );
+                  }
+                },
+              ),
+
+              const SizedBox(height: 12),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  void _submit(BuildContext context, ChangePasswordViewModel vm) async {
-    if (!(_formKey.currentState?.validate() ?? false)) return;
-    final result = await vm.changePassword(_pwdCtrl.text.trim());
-
-    // Snackbar/UI sadece ekranda (VM içinde değil)
-    if (!mounted) return;
-    if (result.isSuccess) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Şifre güncellendi.')));
-      Navigator.of(context).maybePop();
-      context.go('/login');
-    } else {
-      final msg = vm.message ?? 'İşlem başarısız.';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-    }
-  }
-
-  String _buildError(ChangePasswordViewModel vm) {
-    if (vm.validationErrors.isNotEmpty) {
-      return vm.validationErrors.join('\n');
-    }
-    return vm.message ?? '';
-  }
-}
-
-class _RulesNote extends StatelessWidget {
-  const _RulesNote();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Card(
-      child: Padding(
-        padding: EdgeInsets.all(12),
-        child: Text(
-          'Şifre kuralları:\n'
-          '• En az 9 karakter\n'
-          '• En az 1 büyük (A–Z)\n'
-          '• En az 1 küçük (a–z)\n'
-          '• En az 1 rakam (0–9)\n'
-          '• En az 1 özel karakter (!@#\$%^&* vb.)',
+  Widget _buildPasswordField({
+    required String label,
+    required TextEditingController controller,
+    required bool obscure,
+    required VoidCallback toggle,
+    required FormFieldValidator<String>? validator,
+    required Color primaryColor,
+  }) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscure,
+      validator: validator,
+      style: const TextStyle(
+        color: Colors.black87,
+        fontWeight: FontWeight.w500,
+      ),
+      cursorColor: primaryColor,
+      decoration: InputDecoration(
+        labelText: label,
+        filled: true,
+        fillColor: const Color(0xFFF3F4F6),
+        labelStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
+        prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[400], size: 22),
+        suffixIcon: IconButton(
+          icon: Icon(
+            obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+            color: Colors.grey[400],
+          ),
+          onPressed: toggle,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 18,
+          horizontal: 20,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: primaryColor, width: 1.5),
         ),
       ),
     );

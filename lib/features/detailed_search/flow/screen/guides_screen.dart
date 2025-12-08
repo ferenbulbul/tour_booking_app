@@ -1,7 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
+import 'package:tour_booking/features/detailed_search/flow/widget/guide_skelaton.dart';
 import 'package:tour_booking/models/guide/guide.dart';
 
 class GuidesScreen extends StatefulWidget {
@@ -30,7 +33,12 @@ class _GuidesScreenState extends State<GuidesScreen> {
       body: Consumer<TourSearchDetailViewModel>(
         builder: (context, vm, _) {
           if (vm.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: 4,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) => const GuideCardSkeleton(),
+            );
           }
 
           final hasGuides = vm.guides.isNotEmpty;
@@ -78,110 +86,186 @@ class _GuidesScreenState extends State<GuidesScreen> {
   }
 }
 
-/// Tek bir rehberi gösteren, minimalist tasarıma sahip kart.
 class GuideCard extends StatelessWidget {
   final Guide guide;
   final VoidCallback? onTap;
+
   const GuideCard({super.key, required this.guide, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
 
-    return Card(
-      // Minimalist bir görünüm için çok hafif bir gölge veya hiç gölge
-      elevation: 0.5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      clipBehavior: Clip.antiAlias, // InkWell'in köşelerden taşmasını engeller
+    // 🔥 TR formatında fiyat (13.500 gibi)
+    final formatter = NumberFormat.decimalPattern('tr_TR');
+    final formattedPrice = formatter.format(guide.price);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(.06),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
       child: InkWell(
+        borderRadius: BorderRadius.circular(20),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(18),
           child: Row(
             children: [
-              // Profil fotoğrafı
-              CircleAvatar(
-                radius: 32,
-                backgroundColor: Colors.grey[200],
-                backgroundImage:
-                    (guide.image != null && guide.image!.isNotEmpty)
-                    ? NetworkImage(guide.image!)
-                    : null,
-                child: (guide.image == null || guide.image!.isEmpty)
-                    ? const Icon(Icons.person, size: 32, color: Colors.grey)
-                    : null,
+              // FOTO – yüksek kalite (memCache yok)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: CachedNetworkImage(
+                  imageUrl: guide.image ?? "",
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  errorWidget: (_, __, ___) => Container(
+                    width: 60,
+                    height: 60,
+                    decoration: const BoxDecoration(
+                      color: Colors.grey,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.person,
+                      size: 32,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ),
+
               const SizedBox(width: 16),
-              // Rehber bilgileri
+
+              // INFO
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${guide.firstName} ${guide.lastName}',
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                      "${guide.firstName} ${guide.lastName}",
+                      style: theme.textTheme.titleMedium!.copyWith(
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -.3,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+
+                    // 🔥 GÜN kaldırıldı + fiyat düzenlendi
+                    Text(
+                      "$formattedPrice ₺",
+                      style: TextStyle(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
 
-                    const SizedBox(height: 4),
-                    Text(
-                      '${guide.price} ₺ / Gün',
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.primary,
-                      ),
+                    const SizedBox(height: 10),
+
+                    // LANGUAGES
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: guide.languages
+                          .map((lang) => _langChip(lang))
+                          .toList(),
                     ),
-                    const SizedBox(height: 8),
-                    if (guide.languages.isNotEmpty)
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 4,
-                        children: guide.languages
-                            .map((lang) => LanguageChip(label: lang))
-                            .toList(),
-                      ),
                   ],
                 ),
               ),
-              // Seçim göstergesi
-              const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+
+              Icon(
+                Icons.chevron_right_rounded,
+                color: Colors.grey.shade500,
+                size: 26,
+              ),
             ],
           ),
         ),
       ),
     );
   }
+
+  Widget _langChip(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: Colors.black87,
+        ),
+      ),
+    );
+  }
 }
 
-/// "Rehbersiz devam et" seçeneğini sunan kart.
 class WithoutGuideCard extends StatelessWidget {
   final VoidCallback? onTap;
+
   const WithoutGuideCard({super.key, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0.5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      clipBehavior: Clip.antiAlias,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(.05),
+            blurRadius: 12,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
       child: InkWell(
+        borderRadius: BorderRadius.circular(20),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          padding: const EdgeInsets.all(18),
           child: Row(
             children: [
-              Icon(Icons.person_off_outlined, color: Colors.grey[700]),
-              const SizedBox(width: 16),
+              Icon(
+                Icons.person_off_outlined,
+                size: 28,
+                color: Colors.grey.shade600,
+              ),
+              const SizedBox(width: 18),
               Expanded(
                 child: Text(
-                  'Rehbersiz devam etmek istiyorum',
+                  "Rehbersiz devam etmek istiyorum",
                   style: Theme.of(
                     context,
-                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                  ).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+              Icon(
+                Icons.chevron_right_rounded,
+                size: 26,
+                color: Colors.grey.shade500,
+              ),
             ],
           ),
         ),
@@ -190,7 +274,6 @@ class WithoutGuideCard extends StatelessWidget {
   }
 }
 
-/// Dilleri göstermek için kullanılan daha küçük ve stil sahibi Chip.
 class LanguageChip extends StatelessWidget {
   final String label;
   const LanguageChip({super.key, required this.label});
