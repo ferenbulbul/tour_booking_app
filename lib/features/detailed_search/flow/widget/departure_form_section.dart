@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
-import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/picker_field.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/mini_location_map.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/selected_location_card.dart';
@@ -127,6 +126,7 @@ class DepartureFormSection extends StatelessWidget {
                     horizontal: AppSpacing.l,
                   ).copyWith(bottom: 12),
                   child: MiniLocationMap(
+                    key: const ValueKey("mini_map_fixed"),
                     lat: placeLat!,
                     lng: placeLng!,
                     onTap: onOpenMap,

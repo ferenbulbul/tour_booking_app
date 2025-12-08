@@ -9,8 +9,8 @@ import 'package:tour_booking/keys.dart';
 import 'package:tour_booking/models/place_section/place_section.dart';
 
 class PlacePickerPage extends StatefulWidget {
-  final String city; // Örn: "İstanbul"
-  final String district; // Örn: "Bağcılar"
+  final String city;
+  final String district;
 
   const PlacePickerPage({
     super.key,

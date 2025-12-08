@@ -57,14 +57,15 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
     times = _generateTimes();
 
     // ⚡ Frame çizildikten sonra çalışır → HATA YOK
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final vm = context.read<TourSearchDetailViewModel>();
 
-      // ❗ 1) Konum seçimini sıfırla
       vm.resetPlaceSelection();
 
-      // ❗ 2) Tur detayını getir
-      vm.fetchTourPointDetail(widget.tourPointId);
+      // Tur detayını bekleyerek al
+      await vm.fetchTourPointDetail(widget.tourPointId);
+
+      vm.autoSelectPlace(vm.selectedCityName!, vm.selectedDistrictName!);
     });
   }
 

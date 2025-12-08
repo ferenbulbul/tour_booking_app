@@ -325,7 +325,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                     languages: v.languages,
                   ),
 
-                  const SizedBox(height: 100),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -336,27 +336,12 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
       // ---------------------------------------------------------------------
       // KESKİNLİĞİ GİDEREN VE ALANI YÖNETEN BOTTOM NAVIGATION BAR
       // ---------------------------------------------------------------------
-      bottomNavigationBar: AnimatedContainer(
-        duration: _animationDuration,
-        height: _showBottom ? fullBarHeight : 0.0,
-        curve: _animationCurve,
-        child: AnimatedSlide(
-          duration: _animationDuration,
-          curve: _animationCurve,
-          offset: _showBottom ? Offset.zero : const Offset(0, 0.4),
-          child: AnimatedOpacity(
-            duration: _animationDuration,
-            opacity: _showBottom ? 1 : 0,
-            curve: _animationCurve,
-            child: BottomActionBar(
-              price: price,
-              buttonText: "Devam Et",
-              onPressed: () {
-                context.push('/search-guide');
-              },
-            ),
-          ),
-        ),
+      bottomNavigationBar: BottomActionBar(
+        price: price,
+        buttonText: "Devam Et",
+        onPressed: () {
+          context.push('/search-guide');
+        },
       ),
     );
   }

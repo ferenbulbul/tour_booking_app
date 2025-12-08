@@ -13,6 +13,7 @@ import 'package:tour_booking/models/tour_vehicle_request/tour_vehicle_request.da
 import 'package:tour_booking/models/vehicle/vehicle.dart';
 import 'package:tour_booking/models/vehicle_detail/vehicle_detail.dart';
 import 'package:tour_booking/models/vehicle_detail_request/vehicle_detail_request.dart';
+import 'package:tour_booking/services/google_places/google_place_service.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
 
 class TourSearchDetailViewModel extends ChangeNotifier {
@@ -25,7 +26,8 @@ class TourSearchDetailViewModel extends ChangeNotifier {
   TourPointDetail? detail;
   bool isValid = false;
   String? bookingId;
-
+  bool autoSelected = false;
+  bool autoSelectedByUserChange = false;
   List<Vehicle> vehicles = [];
   String? selectedCityId;
   String? selectedDistrictId;
@@ -151,7 +153,7 @@ class TourSearchDetailViewModel extends ChangeNotifier {
 
   void setSelectedCity(String? cityId) {
     selectedCityId = cityId;
-    // şehir değiştiğinde ilçeyi sıfırla veya ilk eşleşeni seç
+
     final filtered = detail?.districts
         .where((d) => d.cityId == selectedCityId)
         .toList();
@@ -159,14 +161,30 @@ class TourSearchDetailViewModel extends ChangeNotifier {
     selectedDistrictId = filtered?.isNotEmpty == true
         ? filtered!.first.id
         : null;
+
     resetPlaceSelection();
+
     notifyListeners();
+
+    // 🔥 Otomatik place bul → user değiştirdiği için scroll gerekebilir
+    autoSelectPlace(
+      selectedCityName!,
+      selectedDistrictName!,
+      triggeredByUser: true,
+    );
   }
 
   void setSelectedDistrict(String? districtId) {
     selectedDistrictId = districtId;
+
     resetPlaceSelection();
     notifyListeners();
+
+    autoSelectPlace(
+      selectedCityName!,
+      selectedDistrictName!,
+      triggeredByUser: true,
+    );
   }
 
   String? get selectedCityName =>
@@ -232,6 +250,24 @@ class TourSearchDetailViewModel extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> autoSelectPlace(
+    String city,
+    String district, {
+    bool triggeredByUser = false,
+  }) async {
+    final result = await GooglePlaceService().findDefaultPlace(city, district);
+    if (result == null) return;
+
+    // ilk açılış = autoSelected = true
+    if (!triggeredByUser) {
+      autoSelected = true;
+    } else {
+      autoSelectedByUserChange = true;
+    }
+
+    setSelectedPlace(result);
   }
 
   Future<void> ControlBooking() async {
@@ -322,6 +358,28 @@ class TourSearchDetailViewModel extends ChangeNotifier {
   void setInitialFavorite(bool value) {
     _isFavorite = value;
     notifyListeners();
+  }
+
+  Future<void> _autoSelectPlaceIfPossible() async {
+    if (detail == null) return;
+    if (selectedCityId == null || selectedDistrictId == null) return;
+
+    final cityName = detail!.cities
+        .firstWhere((c) => c.id == selectedCityId)
+        .name;
+
+    final districtName = detail!.districts
+        .firstWhere((d) => d.id == selectedDistrictId)
+        .name;
+
+    final place = await GooglePlaceService().findDefaultPlace(
+      cityName,
+      districtName,
+    );
+
+    if (place != null) {
+      setSelectedPlace(place);
+    }
   }
 }
 

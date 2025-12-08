@@ -15,6 +15,7 @@ import 'package:tour_booking/features/home/widgets/search_section.dart';
 import 'package:tour_booking/features/home/widgets/tour_type.dart';
 import 'package:tour_booking/features/profile/permission_viewmodel.dart';
 import 'package:tour_booking/features/profile/profile_status_viewmodel.dart';
+import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 import 'package:tour_booking/features/profile_warning_banner/profile_warning_banner.dart';
 import 'package:tour_booking/services/location/location_viewmodel.dart';
 
@@ -37,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     Future.microtask(() {
       context.read<ProfileStatusViewModel>().init();
+      context.read<ProfileViewModel>().fetchProfile(); // 🔥 EKLE
       context.read<PermissionsViewModel>().syncPlayerId();
     });
     _loadUserRole();
@@ -126,17 +128,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
             // ⚠️ PROFILE WARNING
             SliverPadding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.screenPadding,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s),
               sliver: SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    ProfileWarningBanner(
-                      onAction: () => context.go('/profile'),
-                    ),
-                    const SizedBox(height: AppSpacing.sectionSpacing),
-                  ],
+                child: Consumer<ProfileStatusViewModel>(
+                  builder: (_, vm, __) {
+                    final showBanner =
+                        vm.isComplete == false && !vm.dismissedThisSession;
+
+                    return Column(
+                      children: [
+                        if (showBanner)
+                          ProfileWarningBanner(
+                            onAction: () => GoRouter.of(
+                              context,
+                            ).push('/settings/permissions'),
+                          ),
+
+                        if (showBanner)
+                          const SizedBox(height: AppSpacing.sectionSpacing),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
