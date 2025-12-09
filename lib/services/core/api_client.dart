@@ -17,7 +17,7 @@ class ApiClient {
   final String _baseUrl = dotenv.env['baseUrl'] ?? '';
   final String _mobileUrl = dotenv.env['mobileAndroid'] ?? '';
   final String _cloudUrl = dotenv.env['cloud'] ?? '';
-  late String _url = _cloudUrl;
+  late String _url = _baseUrl;
   final AuthViewModel? _authViewModel;
 
   ApiClient({AuthViewModel? authViewModel, http.Client? client})

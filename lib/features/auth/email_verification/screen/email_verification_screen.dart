@@ -109,6 +109,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 '${'resend_in_prefix'.tr()} ${vm.resendCooldown ~/ 60}:${(vm.resendCooldown % 60).toString().padLeft(2, '0')}',
                 style: const TextStyle(color: Colors.grey),
               ),
+            TextButton(
+              onPressed: () {
+                context.go('/login');
+              },
+              child: Text("Logine Dön", style: const TextStyle(fontSize: 14)),
+            ),
           ],
         ),
       ),

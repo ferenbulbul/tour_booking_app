@@ -20,7 +20,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // UI çizildikten sonra işlemleri başlatıyoruz ki donma hissi azalsın.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeAppAndNavigate();
     });
@@ -28,7 +27,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _initializeAppAndNavigate() async {
     try {
-      // OneSignal init (permission yok!)
       await _initializeOneSignal();
 
       if (!mounted) return;
@@ -37,11 +35,18 @@ class _SplashScreenState extends State<SplashScreen> {
 
       String targetRoute;
       if (isLoggedIn) {
+        final user = await splashVM.getUserMeSafe();
         final prefs = await SharedPreferences.getInstance();
         final roleStr = prefs.getString('user_role');
         final role = roleStr != null
             ? UserRoleExtension.fromString(roleStr)
             : null;
+
+        if (user != null && !user.emailConfirmed) {
+          FlutterNativeSplash.remove();
+          context.go('/email-confirmed');
+          return;
+        }
 
         if (role == UserRole.driver) {
           targetRoute = '/driver';

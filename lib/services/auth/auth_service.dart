@@ -1,9 +1,9 @@
-// lib/services/auth/auth_service.dart
 import 'package:tour_booking/models/base/base_response.dart';
 import 'package:tour_booking/models/firebase_token/firebase_token_request.dart';
 import 'package:tour_booking/models/login/login_request.dart';
 import 'package:tour_booking/models/login/login_response.dart';
 import 'package:tour_booking/models/register/register_request.dart';
+import 'package:tour_booking/models/user_me/user_me.dart';
 import 'package:tour_booking/services/core/api_client.dart';
 import 'package:tour_booking/services/core/secure_token_storage.dart';
 import 'package:tour_booking/utils/device_info_helper.dart';
@@ -116,5 +116,14 @@ class AuthService {
     final device = await DeviceInfoHelper.getDevice();
     final deviceId = device.deviceId;
     _apiClient.post<void>(path: '/Auth/logout', body: {'deviceId': deviceId});
+  }
+
+  Future<BaseResponse<UserMe>> getUserMe() async {
+    var response = _apiClient.get<UserMe>(
+      path: "/Mobile/user-me",
+      queryParams: {},
+      fromJson: (json) => UserMe.fromJson(json as Map<String, dynamic>),
+    );
+    return response;
   }
 }
