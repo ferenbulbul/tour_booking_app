@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/favorite/favorite_viewmodel.dart';
 import 'package:tour_booking/features/favorite/widget/favorite_card.dart';
 import 'package:tour_booking/features/favorite/widget/favorite_skeleton.dart';
@@ -34,20 +35,7 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
 
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        centerTitle: true,
-        title: const Text(
-          "Favorilerim",
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
-          ),
-        ),
-      ),
+      appBar: const CommonAppBar(title: "Favorilerim"),
 
       body: vm.isLoading
           ? FavoriteSkeleton()

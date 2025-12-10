@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'package:tour_booking/core/widgets/bottom_action_bar.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/core/widgets/section_title.dart';
 import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/models/guide/guide.dart';
@@ -36,12 +37,7 @@ class SummaryScreen extends StatelessWidget {
 
         return Scaffold(
           backgroundColor: Colors.grey.shade100,
-          appBar: AppBar(
-            title: const Text("Seyahat Özeti"),
-            centerTitle: true,
-            elevation: 0,
-            backgroundColor: Colors.white,
-          ),
+          appBar: const CommonAppBar(title: "Seyahat Özeti"),
 
           body: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),

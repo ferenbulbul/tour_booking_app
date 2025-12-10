@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/auth/email_verification/widget/email_verification_view_model.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
@@ -29,6 +30,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<EmailVerificationViewModel>();
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (vm.message != null) {
@@ -41,79 +44,105 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       }
     });
 
-    final pinTheme = PinTheme(
-      width: 56,
-      height: 60,
-      textStyle: const TextStyle(fontSize: 20),
+    // ⭐ PIN THEMES — Aynı VerifyPhoneScreen
+    final defaultPin = PinTheme(
+      width: 52,
+      height: 56,
+      textStyle: text.titleLarge?.copyWith(
+        fontWeight: FontWeight.w400, // İNCE yazı
+        fontSize: 20,
+        color: scheme.onSurface,
+      ),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(12),
+        color: scheme.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: scheme.outline.withOpacity(1)),
+      ),
+    );
+
+    final focusedPin = defaultPin.copyWith(
+      textStyle: text.titleLarge?.copyWith(
+        fontWeight: FontWeight.w400,
+        fontSize: 20,
+        color: scheme.primary,
+      ),
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: scheme.primary, width: 2),
       ),
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text('email_verification_title'.tr())),
+      backgroundColor: scheme.surface,
+      appBar: const CommonAppBar(title: "Email Doğrulama", showBack: false),
+
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
             Text(
-              'enter_code_instruction'.tr(),
-              style: TextStyle(fontSize: 16),
+              tr("enter_code_instruction"),
+              style: text.bodyLarge?.copyWith(
+                color: scheme.onSurface.withOpacity(0.75),
+              ),
               textAlign: TextAlign.center,
             ),
+
             const SizedBox(height: 32),
 
-            /// ✅ Kutucuklu kod giriş
+            // ⭐ PREMIUM PIN INPUT
             Pinput(
               length: 6,
               controller: _codeController,
-              defaultPinTheme: pinTheme,
+              defaultPinTheme: defaultPin,
+              focusedPinTheme: focusedPin,
+              showCursor: true,
+              cursor: Container(width: 2, height: 20, color: scheme.primary),
               keyboardType: TextInputType.number,
               onCompleted: (code) async {
-                final result = await vm.verifyCode(code);
-                if (result && mounted) {
-                  context.go('/home');
-                }
+                final ok = await vm.verifyCode(code);
+                if (ok && mounted) context.go('/home');
               },
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
 
-            /// ✅ Alternatif doğrula butonu (isteğe bağlı)
-            ElevatedButton(
-              onPressed: () async {
-                final code = _codeController.text.trim();
-                if (code.length != 6) {
-                  UIHelper.showError(context, 'code_must_be_6_digits'.tr());
-                  return;
-                }
-                final result = await vm.verifyCode(code);
-                if (result && mounted) {
-                  context.go('/home');
-                }
-              },
-              child: Text('verify'.tr()),
-            ),
+            // ⭐ VERIFY BUTTON
+            const SizedBox(height: 20),
 
-            const SizedBox(height: 24),
+            // ⭐ RESEND SECTION
+            vm.resendCooldown == 0
+                ? TextButton(
+                    onPressed: vm.resendCode,
+                    child: Text(
+                      tr("resend_code"),
+                      style: text.labelLarge?.copyWith(
+                        color: scheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  )
+                : Text(
+                    "${tr("resend_in_prefix")} "
+                    "${vm.resendCooldown ~/ 60}:"
+                    "${(vm.resendCooldown % 60).toString().padLeft(2, '0')}",
+                    style: text.bodyMedium?.copyWith(
+                      color: scheme.onSurface.withOpacity(0.6),
+                    ),
+                  ),
 
-            /// ⏱ Geri sayım veya tekrar gönder
-            if (vm.resendCooldown == 0)
-              TextButton(
-                onPressed: vm.resendCode,
-                child: Text('resend_code'.tr()),
-              )
-            else
-              Text(
-                '${'resend_in_prefix'.tr()} ${vm.resendCooldown ~/ 60}:${(vm.resendCooldown % 60).toString().padLeft(2, '0')}',
-                style: const TextStyle(color: Colors.grey),
-              ),
+            const SizedBox(height: 8),
+
             TextButton(
-              onPressed: () {
-                context.go('/login');
-              },
-              child: Text("Logine Dön", style: const TextStyle(fontSize: 14)),
+              onPressed: () => context.go('/login'),
+              child: Text(
+                "Logine Dön",
+                style: text.labelLarge?.copyWith(
+                  color: scheme.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ],
         ),

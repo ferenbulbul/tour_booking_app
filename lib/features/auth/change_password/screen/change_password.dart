@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/auth/change_password/change_password_viewmodel.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -62,7 +63,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final primaryColor = Theme.of(context).primaryColor;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Şifre Değiştir")),
+      appBar: const CommonAppBar(title: "Şifre Değiştir"),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Form(

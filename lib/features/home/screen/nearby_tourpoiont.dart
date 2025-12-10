@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/home/home_viewmodel.dart';
 import 'package:tour_booking/features/home/widgets/nearby_card.dart';
 import 'package:tour_booking/features/home/widgets/nearby_skeleton.dart';
@@ -33,24 +34,14 @@ class _NearbyPointsPageState extends State<NearbyPointsPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6F8),
 
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        title: const Text(
-          "Sana Yakın Yerler",
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.gps_fixed, color: Colors.black87),
-            splashRadius: 22,
-            tooltip: "Konumu Yenile",
-            onPressed: () {
-              context.read<HomeViewModel>().fetchNearbyTourPoints();
-            },
-          ),
-          const SizedBox(width: 6),
-        ],
+      appBar: CommonAppBar(
+        title: "Sana Yakın Yerler",
+        showBack: true, // geri butonu istiyorsan, değilse false yap
+
+        actionIcon: Icons.gps_fixed,
+        onActionPressed: () {
+          context.read<HomeViewModel>().fetchNearbyTourPoints();
+        },
       ),
 
       body: _buildBody(vm),

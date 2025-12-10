@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/core/widgets/skelaton/tour_card_skeleton.dart';
 import 'package:tour_booking/features/detailed_search/search_result/search_result_viewmodel.dart';
 import 'package:tour_booking/features/detailed_search/search_result/widget/tour_search_result_card.dart';
@@ -49,16 +50,10 @@ class _TourSearchResultsScreenState extends State<TourSearchResultsScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(
-          vm.isLoading ? "Searching..." : "Tours",
-          style: AppTextStyles.titleMedium.copyWith(
-            color: AppColors.textPrimary,
-          ),
-        ),
+      appBar: CommonAppBar(
+        title: vm.isLoading ? "Searching..." : "Turlar",
         centerTitle: true,
-        elevation: 0,
-        backgroundColor: AppColors.surface,
+        showBack: true, // veya false, duruma göre
       ),
       body: _buildBody(vm),
     );

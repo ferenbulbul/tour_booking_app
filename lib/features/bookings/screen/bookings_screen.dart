@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/booking_status.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/bookings/bookings_viewmodel.dart';
 import 'package:tour_booking/features/bookings/widget/booking_card.dart';
 import 'package:tour_booking/features/bookings/widget/booking_skelaton.dart';
@@ -33,7 +34,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        appBar: AppBar(title: const Text("Rezervasyonlarım")),
+        appBar: const CommonAppBar(title: "Rezervasyonlarım", showBack: false),
         backgroundColor: Colors.grey.shade100,
         body: SafeArea(
           child: Column(

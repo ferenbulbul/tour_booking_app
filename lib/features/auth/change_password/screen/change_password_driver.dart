@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/auth/change_password/change_password_viewmodel.dart';
 
 class ChangePasswordDriverScreen extends StatefulWidget {
@@ -52,7 +53,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
       child: Consumer<ChangePasswordViewModel>(
         builder: (context, vm, _) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Şifre Değiştir')),
+            appBar: const CommonAppBar(title: "Şifre Değiştir"),
             body: Form(
               key: _formKey,
               child: ListView(

@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
-import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
+import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/auth/login/widgets/login_view_model.dart';
 import 'package:tour_booking/features/auth/login/widgets/social_login_button.dart';
 
@@ -13,32 +14,31 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+
     return Scaffold(
-      // Ferah, açık gri bir arka plan rengi
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: scheme.background,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo veya Başlık Alanı (Koyu renk metinlerle)
                 const _CleanHeader(),
                 const SizedBox(height: 40),
 
-                // Beyaz, gölgeli modern kart tasarımı
+                // --- PREMIUM CARD ---
                 Container(
-                  padding: const EdgeInsets.all(32),
+                  padding: const EdgeInsets.all(AppSpacing.xl),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: scheme.surface,
                     borderRadius: BorderRadius.circular(24),
-                    // Premium hissettiren yumuşak gölge (Soft Shadow)
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 24,
+                        color: scheme.shadow.withOpacity(0.06),
+                        blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),
                     ],
@@ -46,24 +46,19 @@ class LoginScreen extends StatelessWidget {
                   child: const _CleanLoginForm(),
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 24),
 
-                // Sosyal Medya Girişi
                 Text(
                   "Or continue with",
-                  style: TextStyle(
-                    color: Colors.grey[500],
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
+                  style: text.bodyMedium?.copyWith(
+                    color: scheme.onSurface.withOpacity(0.6),
                   ),
                 ),
-                const SizedBox(height: 20),
 
+                const SizedBox(height: 20),
                 const SocialLoginButtons(),
 
-                const SizedBox(height: 30),
-
-                // Kayıt Ol Alanı
+                const SizedBox(height: 20),
                 const _RegisterPrompt(),
               ],
             ),
@@ -74,45 +69,44 @@ class LoginScreen extends StatelessWidget {
   }
 }
 
-// --- HEADER WIDGET ---
+// --------------------------------------
+// HEADER
+// --------------------------------------
 class _CleanHeader extends StatelessWidget {
   const _CleanHeader();
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+
     return Column(
       children: [
-        // İkon için tema rengini veya koyu bir renk kullanıyoruz
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(0.1),
+            color: scheme.primary.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            Icons.travel_explore,
-            size: 48,
-            color: Theme.of(context).primaryColor,
-          ),
+          child: Icon(Icons.travel_explore, size: 48, color: scheme.primary),
         ),
         const SizedBox(height: 24),
+
         Text(
           'welcome_title'.tr(),
-          style: AppTextStyles.headlineSmall.copyWith(
-            color: Colors.black87, // Koyu metin
+          style: text.headlineSmall?.copyWith(
             fontWeight: FontWeight.w800,
-            fontSize: 28,
             letterSpacing: -0.5,
           ),
           textAlign: TextAlign.center,
         ),
+
         const SizedBox(height: 8),
+
         Text(
           'welcome_subtitle'.tr(),
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: Colors.grey[600], // Gri alt metin
-            fontSize: 16,
-            height: 1.5,
+          style: text.bodyMedium?.copyWith(
+            color: scheme.onSurface.withOpacity(0.7),
           ),
           textAlign: TextAlign.center,
         ),
@@ -121,7 +115,9 @@ class _CleanHeader extends StatelessWidget {
   }
 }
 
-// --- LOGIN FORM & LOGIC ---
+// --------------------------------------
+// LOGIN FORM
+// --------------------------------------
 class _CleanLoginForm extends StatefulWidget {
   const _CleanLoginForm();
 
@@ -146,29 +142,18 @@ class _CleanLoginFormState extends State<_CleanLoginForm> {
     if (!mounted) return;
 
     if (result.isSuccess) {
-      final roleString = result.data?.role;
-      final role = UserRoleExtension.fromString(roleString);
+      final role = UserRoleExtension.fromString(result.data?.role);
       final data = result.data!;
-      final bool emailConfirmed = data.emailConfirmed == true;
-      final bool isFirstLogin = data.isFirstLogin == true;
+      final emailConfirmed = data.emailConfirmed == true;
+      final isFirstLogin = data.isFirstLogin == true;
 
       if (role == UserRole.driver) {
-        if (isFirstLogin) {
-          context.go('/change-password-driver');
-        } else {
-          context.go('/driver');
-        }
+        context.go(isFirstLogin ? '/change-password-driver' : '/driver');
       } else {
-        if (!emailConfirmed) {
-          context.go('/email-confirmed');
-        } else {
-          context.go('/home');
-        }
+        context.go(emailConfirmed ? '/home' : '/email-confirmed');
       }
     } else {
-      if (vm.message != null) {
-        UIHelper.showError(context, vm.message!);
-      }
+      if (vm.message != null) UIHelper.showError(context, vm.message!);
       if (vm.validationErrors.isNotEmpty) {
         UIHelper.showValidationErrors(context, vm.validationErrors);
       }
@@ -177,81 +162,50 @@ class _CleanLoginFormState extends State<_CleanLoginForm> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
     final isLoading = context.watch<LoginViewModel>().isLoading;
-    final primaryColor = Theme.of(context).primaryColor;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // EMAIL INPUT
+        // EMAIL
         _buildTextField(
           controller: _emailController,
           label: 'email'.tr(),
           icon: Icons.email_outlined,
           keyboardType: TextInputType.emailAddress,
         ),
+
         const SizedBox(height: 20),
 
-        // PASSWORD INPUT
+        // PASSWORD
         _buildTextField(
           controller: _passwordController,
           label: 'password'.tr(),
           icon: Icons.lock_outline,
           isPassword: true,
           isObscure: _isObscure,
-          onVisibilityToggle: () {
-            setState(() {
-              _isObscure = !_isObscure;
-            });
-          },
+          onVisibilityToggle: () => setState(() => _isObscure = !_isObscure),
         ),
 
-        // FORGOT PASSWORD
         Align(
           alignment: Alignment.centerRight,
           child: TextButton(
             onPressed: () => context.push('/forgot-password'),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.grey[600],
-              padding: const EdgeInsets.only(right: 0, top: 8, bottom: 8),
-            ),
             child: Text(
               'forgot_password'.tr(),
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              style: text.labelLarge?.copyWith(color: scheme.primary),
             ),
           ),
         ),
 
         const SizedBox(height: 24),
 
-        // LOGIN BUTTON
-        ElevatedButton(
-          onPressed: isLoading ? null : _login,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 18),
-            elevation: 0, // Düz buton (Flat design)
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          child: isLoading
-              ? const SizedBox(
-                  height: 24,
-                  width: 24,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2.5,
-                  ),
-                )
-              : Text(
-                  'login'.tr(),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+        PrimaryButton(
+          text: 'login'.tr(),
+          onPressed: _login,
+          isLoading: isLoading,
         ),
       ],
     );
@@ -266,79 +220,58 @@ class _CleanLoginFormState extends State<_CleanLoginForm> {
     VoidCallback? onVisibilityToggle,
     TextInputType? keyboardType,
   }) {
+    final scheme = Theme.of(context).colorScheme;
+
     return TextFormField(
       controller: controller,
       obscureText: isPassword ? isObscure : false,
       keyboardType: keyboardType,
-      style: const TextStyle(
-        color: Colors.black87,
-        fontWeight: FontWeight.w500,
-      ),
-      cursorColor: Theme.of(context).primaryColor,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
-        prefixIcon: Icon(icon, color: Colors.grey[400], size: 22),
+        prefixIcon: Icon(icon, color: scheme.onSurfaceVariant),
         suffixIcon: isPassword
             ? IconButton(
                 icon: Icon(
                   isObscure
                       ? Icons.visibility_off_outlined
                       : Icons.visibility_outlined,
-                  color: Colors.grey[400],
-                  size: 22,
+                  color: scheme.onSurfaceVariant,
                 ),
                 onPressed: onVisibilityToggle,
               )
             : null,
-        filled: true,
-        fillColor: const Color(0xFFF3F4F6), // Çok açık gri input zemini
-        // Kenarlıklar kaldırıldı, sadece zemin rengi ve radius
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(
-            color: Theme.of(context).primaryColor,
-            width: 1.5,
-          ),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 18,
-          horizontal: 20,
-        ),
       ),
     );
   }
 }
 
-// --- REGISTER PROMPT ---
+// --------------------------------------
+// REGISTER REDIRECT
+// --------------------------------------
 class _RegisterPrompt extends StatelessWidget {
   const _RegisterPrompt();
 
   @override
   Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           'dont_have_account'.tr(),
-          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+          style: text.bodyMedium?.copyWith(
+            color: scheme.onSurface.withOpacity(0.7),
+          ),
         ),
         const SizedBox(width: 6),
         GestureDetector(
           onTap: () => context.push('/register'),
           child: Text(
             'create_account'.tr(),
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-              fontSize: 14,
+            style: text.labelLarge?.copyWith(
+              color: scheme.primary,
               fontWeight: FontWeight.bold,
             ),
           ),

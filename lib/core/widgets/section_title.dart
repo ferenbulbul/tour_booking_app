@@ -14,41 +14,40 @@ class SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        /// TOP ROW — Title + See All
+        /// Title + See All
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            /// Title + gradient bar
+            /// Title + accent bar
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Title
                 Text(
                   title,
-                  style: theme.textTheme.titleLarge!.copyWith(
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
-                    height: 1.15,
+                  style: text.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.2,
                   ),
                 ),
 
                 const SizedBox(height: 6),
 
-                // Gradient Accent Bar
+                /// Soft gradient accent line
                 Container(
-                  width: 42,
-                  height: 4,
+                  width: 38,
+                  height: 3,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(4),
                     gradient: LinearGradient(
                       colors: [
-                        theme.colorScheme.primary.withOpacity(.9),
-                        theme.colorScheme.primary.withOpacity(.0),
+                        scheme.primary.withOpacity(0.9),
+                        scheme.primary.withOpacity(0.1),
                       ],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
@@ -58,34 +57,28 @@ class SectionTitle extends StatelessWidget {
               ],
             ),
 
-            /// SEE ALL BUTTON
+            /// SEE ALL (optional)
             if (onMore != null)
               GestureDetector(
                 onTap: onMore,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  child: Text(
-                    "See All",
-                    style: theme.textTheme.bodyMedium!.copyWith(
-                      color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
+                child: Text(
+                  "See All",
+                  style: text.labelLarge?.copyWith(
+                    color: scheme.primary,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
           ],
         ),
 
-        /// SUBTITLE (optional)
+        /// Subtitle (optional)
         if (subtitle != null) ...[
           const SizedBox(height: 8),
           Text(
             subtitle!,
-            style: theme.textTheme.bodyMedium!.copyWith(
-              color: theme.colorScheme.outline,
+            style: text.bodyMedium?.copyWith(
+              color: scheme.onSurfaceVariant.withOpacity(0.9),
               height: 1.3,
             ),
           ),

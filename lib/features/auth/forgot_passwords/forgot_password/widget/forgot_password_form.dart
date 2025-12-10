@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
+import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/auth/forgot_passwords/forgot_password/widget/forgot_password_view_model.dart';
 
 class ForgotPasswordForm extends StatefulWidget {
@@ -25,11 +26,13 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
 
     final result = await vm.forgotPassword(email);
 
+    if (!mounted) return;
+
     if (result.isSuccess) {
-      UIHelper.showSuccess(context, vm.message!);
+      UIHelper.showSuccess(context, vm.message ?? tr("success"));
       context.push('/verify-reset-code', extra: email);
     } else {
-      UIHelper.showError(context, vm.errorMessage!);
+      UIHelper.showError(context, vm.errorMessage ?? tr("error_occurred"));
     }
   }
 
@@ -44,26 +47,27 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
         children: [
           TextFormField(
             controller: _emailController,
-            decoration: InputDecoration(labelText: 'email'.tr()),
+            decoration: InputDecoration(labelText: tr("email")),
             keyboardType: TextInputType.emailAddress,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'email_required'.tr();
+                return tr("email_required");
               }
               final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
               if (!emailRegex.hasMatch(value.trim())) {
-                return 'email_invalid'.tr();
+                return tr("email_invalid");
               }
               return null;
             },
           ),
-          const SizedBox(height: AppSpacing.sectionSpacing),
-          vm.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : ElevatedButton(
-                  onPressed: _submit,
-                  child: Text('send_code'.tr()),
-                ),
+
+          const SizedBox(height: 24),
+
+          PrimaryButton(
+            text: tr("send_code"),
+            isLoading: vm.isLoading,
+            onPressed: _submit,
+          ),
         ],
       ),
     );

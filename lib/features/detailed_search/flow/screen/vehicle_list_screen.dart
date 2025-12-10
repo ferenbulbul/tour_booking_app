@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/vehicle_skelaton.dart';
 import 'package:tour_booking/models/vehicle/vehicle.dart';
@@ -15,7 +16,7 @@ class TourVehicleListScreen extends StatelessWidget {
     final vm = context.watch<TourSearchDetailViewModel>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Müsait Araçlar", style: TextStyle())),
+      appBar: const CommonAppBar(title: "Müsait Araçlar"),
       body: vm.isVehiclesLoading
           ? const Center(child: VehicleCardSkeleton())
           : vm.vehicles == null || vm.vehicles!.isEmpty

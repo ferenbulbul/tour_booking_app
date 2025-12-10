@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/features/auth/login/widgets/google_view_model.dart';
 
 class SocialLoginButtons extends StatelessWidget {
@@ -11,110 +11,129 @@ class SocialLoginButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authVM = Provider.of<AuthViewModel>(context, listen: false);
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
 
     return Column(
       children: [
-        // Facebook
-        ElevatedButton(
-          onPressed: () {
-            context.go('/home');
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: AppColors.primary,
-            side: const BorderSide(color: AppColors.primary),
-            minimumSize: const Size.fromHeight(48),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(width: 12),
-              Icon(Icons.facebook, color: AppColors.primary, size: 30),
-              const SizedBox(width: 12),
-              Text('login_with_facebook'.tr()),
-            ],
-          ),
-        ),
+        // FACEBOOK (outline tarzı)
+        // SizedBox(
+        //   width: double.infinity,
+        //   child: OutlinedButton(
+        //     onPressed: () {
+        //       context.go('/home');
+        //     },
+        //     style: OutlinedButton.styleFrom(
+        //       minimumSize: const Size.fromHeight(48),
+        //       side: BorderSide(color: scheme.primary),
+        //       backgroundColor: scheme.surface,
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(12),
+        //       ),
+        //     ),
+        //     child: Row(
+        //       mainAxisSize: MainAxisSize.min,
+        //       children: [
+        //         const SizedBox(width: 8),
+        //         Icon(Icons.facebook, color: scheme.primary, size: 26),
+        //         const SizedBox(width: 12),
+        //         Text(
+        //           'login_with_facebook'.tr(),
+        //           style: text.labelLarge?.copyWith(color: scheme.primary),
+        //         ),
+        //         const SizedBox(width: 8),
+        //       ],
+        //     ),
+        //   ),
+        // ),
+        const SizedBox(height: AppSpacing.m),
 
-        const SizedBox(height: 12),
+        // GOOGLE
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton(
+            onPressed: () async {
+              _showLoading(context);
 
-        // Google
-        ElevatedButton(
-          onPressed: () async {
-            _showLoading(context);
+              final result = await authVM.signIn(AuthProviderType.google);
 
-            final result = await authVM.signIn(AuthProviderType.google);
+              if (context.mounted) Navigator.of(context).pop();
 
-            if (context.mounted) Navigator.of(context).pop();
-
-            if (context.mounted) {
-              if (result.isSuccess) {
-                context.go('/home');
-              } else {
-                _showError(context, result.error?.message);
+              if (context.mounted) {
+                if (result.isSuccess) {
+                  context.go('/home');
+                } else {
+                  _showError(context, result.error?.message);
+                }
               }
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: AppColors.primary,
-            side: const BorderSide(color: AppColors.primary),
-            minimumSize: const Size.fromHeight(48),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset(
-                'assets/images/google_logo.png',
-                width: 25,
-                height: 25,
+            },
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(48),
+              side: BorderSide(color: scheme.primary),
+              backgroundColor: scheme.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-              const SizedBox(width: 12),
-              Text('login_with_google'.tr()),
-            ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  'assets/images/google_logo.png',
+                  width: 22,
+                  height: 22,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'login_with_google'.tr(),
+                  style: text.labelLarge?.copyWith(color: scheme.primary),
+                ),
+              ],
+            ),
           ),
         ),
 
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.m),
 
-        // Apple
-        ElevatedButton(
-          onPressed: () async {
-            _showLoading(context);
+        // APPLE (marka gereği siyah-beyaz bırakıyoruz)
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () async {
+              _showLoading(context);
 
-            final result = await authVM.signIn(AuthProviderType.apple);
+              final result = await authVM.signIn(AuthProviderType.apple);
 
-            if (context.mounted) Navigator.of(context).pop();
+              if (context.mounted) Navigator.of(context).pop();
 
-            if (context.mounted) {
-              if (result.isSuccess) {
-                context.go('/home');
-              } else {
-                _showError(context, result.error?.message);
+              if (context.mounted) {
+                if (result.isSuccess) {
+                  context.go('/home');
+                } else {
+                  _showError(context, result.error?.message);
+                }
               }
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black, // Apple butonu siyah
-            foregroundColor: Colors.white, // Yazı beyaz
-            minimumSize: const Size.fromHeight(48),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+            },
+            style: ElevatedButton.styleFrom(
+              side: BorderSide(color: scheme.onSecondary),
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
+              minimumSize: const Size.fromHeight(48),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.apple, color: Colors.white, size: 28),
-              const SizedBox(width: 12),
-              Text('Apple ile giriş yap'),
-            ],
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.apple, color: Colors.white, size: 26),
+                const SizedBox(width: 12),
+                Text(
+                  'Apple ile giriş yap',
+                  style: text.labelLarge?.copyWith(color: Colors.white),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -122,20 +141,23 @@ class SocialLoginButtons extends StatelessWidget {
   }
 
   void _showLoading(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(color: AppColors.primary),
-      ),
+      builder: (context) =>
+          Center(child: CircularProgressIndicator(color: scheme.primary)),
     );
   }
 
   void _showError(BuildContext context, String? message) {
+    final scheme = Theme.of(context).colorScheme;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message ?? "Bilinmeyen bir hata oluştu."),
-        backgroundColor: Colors.red,
+        backgroundColor: scheme.error,
       ),
     );
   }

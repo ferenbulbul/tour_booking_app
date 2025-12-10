@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/guide_skelaton.dart';
 import 'package:tour_booking/models/guide/guide.dart';
@@ -29,7 +30,7 @@ class _GuidesScreenState extends State<GuidesScreen> {
     // Daha ferah bir görünüm için arka plan rengini değiştiriyoruz.
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: AppBar(title: const Text('Rehber Seçimi')),
+      appBar: const CommonAppBar(title: "Rehber Seçimi"),
       body: Consumer<TourSearchDetailViewModel>(
         builder: (context, vm, _) {
           if (vm.isLoading) {
