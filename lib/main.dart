@@ -98,7 +98,7 @@ class MyApp extends StatelessWidget {
       supportedLocales: context.supportedLocales,
       localizationsDelegates: context.localizationDelegates,
       debugShowCheckedModeBanner: false,
-      // showPerformanceOverlay: true,
+      //showPerformanceOverlay: true,
       routerConfig: router,
       theme: AppTheme.light,
     );

@@ -1,9 +1,8 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
+
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/home/home_viewmodel.dart';
 import 'package:tour_booking/features/home/widgets/nearby_card.dart';
@@ -20,8 +19,6 @@ class _NearbyPointsPageState extends State<NearbyPointsPage> {
   @override
   void initState() {
     super.initState();
-
-    /// Sayfa açılır açılmaz API'yi çağır
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<HomeViewModel>().fetchNearbyTourPoints();
     });
@@ -32,43 +29,44 @@ class _NearbyPointsPageState extends State<NearbyPointsPage> {
     final vm = context.watch<HomeViewModel>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6F8),
-
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: CommonAppBar(
         title: "Sana Yakın Yerler",
-        showBack: true, // geri butonu istiyorsan, değilse false yap
-
+        showBack: true,
         actionIcon: Icons.gps_fixed,
-        onActionPressed: () {
-          context.read<HomeViewModel>().fetchNearbyTourPoints();
-        },
+        onActionPressed: () => vm.fetchNearbyTourPoints(),
       ),
-
-      body: _buildBody(vm),
+      body: _buildBody(context, vm),
     );
   }
 
-  // ----------------------------------------------------------------------------
-  // BODY BUILDER
-  // ----------------------------------------------------------------------------
-  Widget _buildBody(HomeViewModel vm) {
+  Widget _buildBody(BuildContext context, HomeViewModel vm) {
     if (vm.isLoadingNearby) {
-      return const NearbySkeleton();
+      return const Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.screenPadding,
+          vertical: AppSpacing.sectionSpacing,
+        ),
+        child: NearbySkeleton(),
+      );
     }
 
     if (vm.nearbyPoints.isEmpty) {
-      return const Center(child: Text("Yakın yer bulunamadı."));
+      return _buildEmptyState(context);
     }
 
     return RefreshIndicator(
       onRefresh: () => vm.fetchNearbyTourPoints(),
       child: GridView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.screenPadding,
+          vertical: AppSpacing.sectionSpacing,
+        ),
         itemCount: vm.nearbyPoints.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          crossAxisSpacing: 14,
-          mainAxisSpacing: 14,
+          crossAxisSpacing: AppSpacing.m,
+          mainAxisSpacing: AppSpacing.m,
           childAspectRatio: 0.78,
         ),
         itemBuilder: (context, i) {
@@ -88,6 +86,36 @@ class _NearbyPointsPageState extends State<NearbyPointsPage> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.l),
+        decoration: BoxDecoration(
+          color: scheme.surfaceVariant.withOpacity(.45),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: scheme.outlineVariant.withOpacity(.25)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.location_off_rounded, size: 46, color: scheme.primary),
+            const SizedBox(height: AppSpacing.s),
+            Text(
+              "Yakın bir tur noktası bulunamadı.",
+              style: TextStyle(
+                color: scheme.onSurface.withOpacity(.85),
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

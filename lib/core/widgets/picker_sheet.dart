@@ -1,100 +1,226 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 
 class PickerSheet extends StatefulWidget {
   final String title;
-  final String? initialId;
   final List<PickerOption> options;
-  final ScrollController controller;
+  final String? initialId;
 
   const PickerSheet({
     super.key,
     required this.title,
     required this.options,
     required this.initialId,
-    required this.controller,
   });
 
   @override
-  State<PickerSheet> createState() => _PickerSheetState();
+  State<PickerSheet> createState() => _PickerSheet();
 }
 
-class _PickerSheetState extends State<PickerSheet> {
+class _PickerSheet extends State<PickerSheet> {
   String query = "";
+  Timer? _debounce;
+
+  List<PickerOption> get filtered {
+    if (query.isEmpty) return widget.options;
+    final q = query.toLowerCase();
+    return widget.options
+        .where((o) => o.name.toLowerCase().contains(q))
+        .toList();
+  }
+
+  void _onSearchChanged(String v) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 130), () {
+      if (query != v) {
+        setState(() => query = v);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final filtered = widget.options
-        .where((o) => o.name.toLowerCase().contains(query.toLowerCase()))
-        .toList();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
-      ),
-      padding: const EdgeInsets.all(18),
-      child: Column(
-        children: [
-          // handle
-          Container(
-            width: 48,
-            height: 5,
-            margin: const EdgeInsets.only(bottom: 14),
+    return SafeArea(
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.55,
+        minChildSize: 0.45,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (_, controller) {
+          return Container(
             decoration: BoxDecoration(
-              color: Colors.black26,
-              borderRadius: BorderRadius.circular(6),
+              color: isDark ? Colors.black : Colors.white,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(26),
+              ),
             ),
-          ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 10),
 
-          // title + close
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                widget.title,
-                style: const TextStyle(
-                  fontSize: 19,
-                  fontWeight: FontWeight.w600,
+                /// HANDLE
+                Center(
+                  child: Container(
+                    width: 42,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? Colors.white.withOpacity(.22)
+                          : Colors.black.withOpacity(.18),
+                      borderRadius: BorderRadius.circular(40),
+                    ),
+                  ),
                 ),
-              ),
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close),
-              ),
-            ],
-          ),
 
-          const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
-          // search field
-          TextField(
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.search),
-              hintText: "Ara...",
+                /// HEADER
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          widget.title,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.close,
+                          color: isDark ? Colors.white70 : Colors.black54,
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                /// SEARCH BAR
+                _SearchBar(isDark: isDark, onChanged: _onSearchChanged),
+
+                const SizedBox(height: 14),
+
+                /// LIST
+                Expanded(
+                  child: ListView.separated(
+                    controller: controller,
+                    itemCount: filtered.length,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.l,
+                      vertical: 8,
+                    ),
+                    separatorBuilder: (_, __) =>
+                        const SizedBox(height: AppSpacing.s),
+                    itemBuilder: (_, i) {
+                      final item = filtered[i];
+                      final selected = item.id == widget.initialId;
+
+                      return GestureDetector(
+                        onTap: () => Navigator.pop(context, item.id),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                              AppRadius.medium,
+                            ),
+                            color: selected
+                                ? AppColors.primary.withOpacity(.10)
+                                : (isDark
+                                      ? Colors.white.withOpacity(.05)
+                                      : Colors.grey.shade100),
+                            border: Border.all(
+                              color: selected
+                                  ? AppColors.primary
+                                  : Colors.transparent,
+                              width: 1.2,
+                            ),
+                          ),
+                          child: Text(
+                            item.name,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: selected
+                                  ? FontWeight.w700
+                                  : FontWeight.w400,
+                              color: selected
+                                  ? AppColors.primary
+                                  : AppColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-            onChanged: (v) => setState(() => query = v),
-          ),
+          );
+        },
+      ),
+    );
+  }
+}
 
-          const SizedBox(height: 16),
+class _SearchBar extends StatelessWidget {
+  final bool isDark;
+  final ValueChanged<String> onChanged;
 
-          // list
-          Expanded(
-            child: ListView.builder(
-              controller: widget.controller,
-              itemCount: filtered.length,
-              itemBuilder: (_, i) {
-                final o = filtered[i];
-                return ListTile(
-                  title: Text(o.name),
-                  trailing: o.id == widget.initialId
-                      ? const Icon(Icons.check, color: Colors.blue)
-                      : null,
-                  onTap: () => Navigator.pop(context, o.id),
-                );
-              },
-            ),
+  const _SearchBar({required this.isDark, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
+      decoration: BoxDecoration(
+        color: isDark
+            ? Colors.white.withOpacity(.07)
+            : Colors.black.withOpacity(.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withOpacity(.12)
+              : Colors.black.withOpacity(.08),
+        ),
+      ),
+      child: TextField(
+        onChanged: onChanged,
+        style: const TextStyle(fontSize: 15, color: AppColors.textPrimary),
+        decoration: InputDecoration(
+          prefixIcon: Icon(
+            Icons.search,
+            color: AppColors.textSecondary.withOpacity(.8),
+            size: 20,
           ),
-        ],
+          hintText: "Ara...",
+          hintStyle: TextStyle(color: AppColors.textLight.withOpacity(.85)),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 12,
+            horizontal: 12,
+          ),
+        ),
       ),
     );
   }
@@ -103,6 +229,5 @@ class _PickerSheetState extends State<PickerSheet> {
 class PickerOption {
   final String id;
   final String name;
-
   const PickerOption(this.id, this.name);
 }

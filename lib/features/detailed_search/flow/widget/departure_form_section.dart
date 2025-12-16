@@ -43,56 +43,52 @@ class DepartureFormSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 14),
+        const SizedBox(height: 12),
 
+        // ------------------------------------------
         // CITY
+        // ------------------------------------------
         _buildItem(
           child: PickerField(
             label: "Departure City",
             value: cityName,
-            icon: Icons.location_city,
+            icon: Icons.location_city_rounded,
             onTap: onSelectCity,
           ),
         ),
 
+        // ------------------------------------------
         // DISTRICT
+        // ------------------------------------------
         _buildItem(
           child: PickerField(
             label: "Departure District",
             value: districtName,
-
             icon: Icons.location_on_outlined,
             onTap: onSelectDistrict,
           ),
         ),
 
-        // EXACT LOCATION (button)
+        // ------------------------------------------
+        // SELECT EXACT LOCATION
+        // ------------------------------------------
         _buildItem(
           child: PickerField(
             label: "Add Exact Location",
-            value: null, // sabit buton
+            value: null,
             icon: Icons.my_location_rounded,
             onTap: onSelectPlace,
           ),
         ),
 
-        // SELECTED LOCATION CARD (only if desc exists)
+        // ------------------------------------------
+        // SELECTED LOCATION CARD (ANIMATED)
+        // ------------------------------------------
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
           switchInCurve: Curves.easeOut,
           switchOutCurve: Curves.easeIn,
-          transitionBuilder: (child, animation) {
-            return FadeTransition(
-              opacity: animation,
-              child: SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(0, 0.05),
-                  end: Offset.zero,
-                ).animate(animation),
-                child: child,
-              ),
-            );
-          },
+          transitionBuilder: _fadeSlide,
           child: (placeDescription != null)
               ? Padding(
                   key: const ValueKey("selected_location"),
@@ -103,30 +99,22 @@ class DepartureFormSection extends StatelessWidget {
                 )
               : const SizedBox(key: ValueKey("location_none")),
         ),
+
+        // ------------------------------------------
+        // MINI MAP (ANIMATED)
+        // ------------------------------------------
         AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 280),
           switchInCurve: Curves.easeOut,
           switchOutCurve: Curves.easeIn,
-          transitionBuilder: (child, animation) {
-            return FadeTransition(
-              opacity: animation,
-              child: SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(0, 0.05),
-                  end: Offset.zero,
-                ).animate(animation),
-                child: child,
-              ),
-            );
-          },
+          transitionBuilder: _fadeSlide,
           child: (placeLat != null && placeLng != null)
               ? Padding(
                   key: const ValueKey("mini_map"),
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.l,
-                  ).copyWith(bottom: 12),
+                  ).copyWith(bottom: 10),
                   child: MiniLocationMap(
-                    key: const ValueKey("mini_map_fixed"),
                     lat: placeLat!,
                     lng: placeLng!,
                     onTap: onOpenMap,
@@ -134,6 +122,10 @@ class DepartureFormSection extends StatelessWidget {
                 )
               : const SizedBox(key: ValueKey("mini_map_none")),
         ),
+
+        // ------------------------------------------
+        // INFO TEXT
+        // ------------------------------------------
         if (placeLat != null && placeLng != null)
           Padding(
             padding: const EdgeInsets.symmetric(
@@ -141,49 +133,64 @@ class DepartureFormSection extends StatelessWidget {
             ).copyWith(bottom: 12),
             child: Row(
               children: const [
-                Icon(Icons.info_outline, size: 18, color: Colors.grey),
+                Icon(Icons.info_outline, size: 16, color: Colors.grey),
                 SizedBox(width: 6),
                 Expanded(
                   child: Text(
-                    "Haritadan konumu görüntüleyebilir ve değiştirebilirsiniz.",
+                    "You can preview or change the pickup point on the map.",
                     style: TextStyle(
-                      fontSize: 13.5,
+                      fontSize: 13,
                       color: Colors.grey,
                       fontWeight: FontWeight.w500,
+                      height: 1.25,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-        // DATE & TIME
+
+        // ------------------------------------------
+        // DATE & TIME ROW
+        // ------------------------------------------
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
-          child: Row(
-            children: [
-              Expanded(
-                child: PickerField(
-                  label: "Select Date",
-                  value: dateText,
-                  icon: Icons.calendar_month,
-                  onTap: onSelectDate,
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.l,
+          ).copyWith(top: 8),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: PickerField(
+                    label: "Select Date",
+                    value: dateText,
+                    icon: Icons.calendar_month_rounded,
+                    onTap: onSelectDate,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: PickerField(
-                  label: "Select Time",
-                  value: timeText,
-                  icon: Icons.access_time,
-                  onTap: onSelectTime,
+                const SizedBox(width: 10),
+                Expanded(
+                  child: PickerField(
+                    label: "Select Time",
+                    value: timeText,
+                    icon: Icons.access_time_rounded,
+                    onTap: onSelectTime,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
+
+        const SizedBox(height: 10),
       ],
     );
   }
+
+  // -------------------------------------------------------------
+  // HELPERS
+  // -------------------------------------------------------------
 
   Widget _buildItem({required Widget child}) {
     return Padding(
@@ -191,6 +198,19 @@ class DepartureFormSection extends StatelessWidget {
         horizontal: AppSpacing.l,
       ).copyWith(bottom: 12),
       child: child,
+    );
+  }
+
+  Widget _fadeSlide(Widget child, Animation<double> animation) {
+    return FadeTransition(
+      opacity: animation,
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, 0.08),
+          end: Offset.zero,
+        ).animate(animation),
+        child: child,
+      ),
     );
   }
 }

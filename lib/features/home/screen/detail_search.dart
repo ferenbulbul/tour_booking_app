@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/core/network/handle_response.dart';
+
 import 'package:tour_booking/features/detailed_search/search/search_viewmodel.dart';
 import 'package:tour_booking/models/tour_search/mobile_tour_points_by_search_dto.dart';
 import 'package:tour_booking/models/tour_search_list/mobile_tour_points_response.dart';
@@ -31,7 +36,6 @@ class _DetailSearchLocationPageState extends State<DetailSearchLocationPage> {
   @override
   void initState() {
     super.initState();
-    // Tam ekran: sistem çubuklarını gizle (çıktığında geri al).
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
 
@@ -48,6 +52,7 @@ class _DetailSearchLocationPageState extends State<DetailSearchLocationPage> {
       _points.clear();
       _lastQuery = query;
     });
+
     if (query.length < 2) return;
 
     _debouncer.run(() async {
@@ -68,51 +73,52 @@ class _DetailSearchLocationPageState extends State<DetailSearchLocationPage> {
 
   void _submitSearch(SearchViewmodel vm) {
     if (_cityId == null || _cityId!.isEmpty) return;
-    final params = <String, String>{'type': '0', 'cityId': _cityId!};
+
+    final params = {'type': '0', 'cityId': _cityId!};
     context.pushNamed('searchResults', queryParameters: params);
   }
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final vm = context.read<SearchViewmodel>();
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(), // geri gitmek için
-        ),
-        title: const Text("Yer Ara"),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.black,
-      ),
-      // AppBar yok: tam ekran
+      backgroundColor: scheme.surface,
+
+      appBar: CommonAppBar(title: "Yer Ara", showBack: true),
+
       body: SafeArea(
-        // İstersen SafeArea'yı kaldırıp ekranı köşelere kadar yayabilirsin.
-        top: true, // üstte status bar gizli; içerik yukarı kadar uzasın
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.screenPadding,
+            AppSpacing.l,
+            AppSpacing.screenPadding,
+            AppSpacing.m,
+          ),
           child: Column(
             children: [
-              // Arama kutusu
+              // SEARCH FIELD – InputTheme ile birebir uyumlu
               TextField(
                 controller: _controller,
                 autofocus: true,
                 textInputAction: TextInputAction.search,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: "Yer adı yaz (örn: Ayder)",
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: scheme.onSurfaceVariant,
+                  ),
                 ),
                 onChanged: _search,
                 onSubmitted: _search,
               ),
-              const SizedBox(height: 8),
-              if (_isSearching) const LinearProgressIndicator(),
-              const SizedBox(height: 8),
 
-              // Sonuçlar
+              const SizedBox(height: AppSpacing.m),
+              if (_isSearching) const LinearProgressIndicator(),
+
+              const SizedBox(height: AppSpacing.m),
+
               Expanded(
                 child: _points.isEmpty
                     ? _EmptyState(
@@ -122,24 +128,26 @@ class _DetailSearchLocationPageState extends State<DetailSearchLocationPage> {
                     : ListView.separated(
                         physics: const BouncingScrollPhysics(),
                         itemCount: _points.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 8),
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: AppSpacing.s),
                         itemBuilder: (context, index) {
                           final p = _points[index];
-                          final selected = _selectedIndex == index;
+                          final isSelected = _selectedIndex == index;
                           final isTour = (p.type == 'Tour');
 
                           return Material(
-                            color: selected
-                                ? Theme.of(
-                                    context,
-                                  ).colorScheme.primary.withOpacity(0.08)
-                                : Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(12),
+                            color: isSelected
+                                ? scheme.primary.withOpacity(.10)
+                                : scheme.surface,
+                            borderRadius: BorderRadius.circular(
+                              AppRadius.medium,
+                            ),
                             child: InkWell(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(
+                                AppRadius.medium,
+                              ),
                               onTap: () {
                                 setState(() => _selectedIndex = index);
-
                                 if (isTour) {
                                   context.pushNamed(
                                     'searchDetail',
@@ -155,18 +163,27 @@ class _DetailSearchLocationPageState extends State<DetailSearchLocationPage> {
                                   isTour
                                       ? Icons.terrain_outlined
                                       : Icons.location_city_outlined,
+                                  color: scheme.primary,
                                 ),
-                                title: Text(p.name),
-                                subtitle: Text(p.type),
-                                trailing: const Icon(
+                                title: Text(
+                                  p.name,
+                                  style: TextStyle(
+                                    color: scheme.onSurface,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  p.type,
+                                  style: TextStyle(
+                                    color: scheme.onSurfaceVariant.withOpacity(
+                                      .8,
+                                    ),
+                                  ),
+                                ),
+                                trailing: Icon(
                                   Icons.arrow_forward_ios,
                                   size: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  side: BorderSide(
-                                    color: Colors.grey.withOpacity(0.2),
-                                  ),
+                                  color: scheme.onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -189,11 +206,25 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     if (isSearching) return const SizedBox.shrink();
+
     return Center(
-      child: Text(
-        showTip ? "En az 2 karakter yazın" : "Sonuç bulunamadı",
-        style: Theme.of(context).textTheme.bodyMedium,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.l,
+          vertical: AppSpacing.m,
+        ),
+        decoration: BoxDecoration(
+          color: scheme.surfaceVariant.withOpacity(.5),
+          borderRadius: BorderRadius.circular(AppRadius.medium),
+          border: Border.all(color: scheme.outline.withOpacity(.25)),
+        ),
+        child: Text(
+          showTip ? "En az 2 karakter yazın" : "Sonuç bulunamadı",
+          style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 15),
+        ),
       ),
     );
   }
@@ -201,8 +232,8 @@ class _EmptyState extends StatelessWidget {
 
 class Debouncer {
   final int milliseconds;
-  VoidCallback? action;
   Timer? _timer;
+
   Debouncer({required this.milliseconds});
 
   run(VoidCallback action) {

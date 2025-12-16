@@ -342,6 +342,8 @@ class TourSearchDetailViewModel extends ChangeNotifier {
     selectedPlaceDesc = null;
     selectedPlaceLat = null;
     selectedPlaceLng = null;
+    selectedDate = null;
+    selectedTime = null;
     notifyListeners();
   }
 
@@ -358,28 +360,6 @@ class TourSearchDetailViewModel extends ChangeNotifier {
   void setInitialFavorite(bool value) {
     _isFavorite = value;
     notifyListeners();
-  }
-
-  Future<void> _autoSelectPlaceIfPossible() async {
-    if (detail == null) return;
-    if (selectedCityId == null || selectedDistrictId == null) return;
-
-    final cityName = detail!.cities
-        .firstWhere((c) => c.id == selectedCityId)
-        .name;
-
-    final districtName = detail!.districts
-        .firstWhere((d) => d.id == selectedDistrictId)
-        .name;
-
-    final place = await GooglePlaceService().findDefaultPlace(
-      cityName,
-      districtName,
-    );
-
-    if (place != null) {
-      setSelectedPlace(place);
-    }
   }
 }
 

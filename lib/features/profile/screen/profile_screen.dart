@@ -2,6 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/features/auth/login/widgets/google_view_model.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 import 'package:tour_booking/features/profile/widget/profil_header.dart';
@@ -28,10 +30,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ProfileViewModel>();
-    final vmAuth = context.watch<AuthViewModel>();
+    final authVm = context.watch<AuthViewModel>();
+    final scheme = Theme.of(context).colorScheme;
 
     if (vm.isLoading && vm.profile == null) {
-      return ProfileSkeleton();
+      return const ProfileSkeleton();
     }
 
     final p = vm.profile;
@@ -40,10 +43,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: scheme.surface,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(AppSpacing.screenPadding),
           children: [
             // HEADER
             ProfileHeader(
@@ -52,12 +55,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               phoneVerified: p.phoneNumberConfirmed,
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: AppSpacing.xl),
 
-            // ------------------------------
             // HESAP AYARLARI
-            // ------------------------------
             const ProfileSection(title: "Hesap Ayarları"),
+
             ProfileTile(
               icon: Icons.language_rounded,
               title: "Dil",
@@ -66,6 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   : "English",
               onTap: () => context.push("/settings/language"),
             ),
+
             ProfileTile(
               icon: Icons.tune_rounded,
               title: "İzinler",
@@ -73,41 +76,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: () => context.push("/settings/permissions"),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: AppSpacing.xl),
 
-            // ------------------------------
             // GÜVENLİK
-            // ------------------------------
             const ProfileSection(title: "Güvenlik"),
+
             ProfileTile(
               icon: Icons.lock_outline,
               title: "Şifre Değiştir",
-              onTap: () {
-                context.push('/change-password');
-              },
+              onTap: () => context.push('/change-password'),
             ),
 
-            // ------------------------------
+            const SizedBox(height: AppSpacing.xl),
+
             // DİĞER
-            // ------------------------------
             const ProfileSection(title: "Diğer"),
+
             ProfileTile(
               icon: Icons.delete_forever_rounded,
               title: "Hesabı Sil",
-              titleColor: Colors.red.shade700,
-              iconColor: Colors.red.shade700,
+              titleColor: AppColors.error,
+              iconColor: AppColors.error,
               onTap: () {
-                // TODO: Hesap silme flow
+                // TODO hesap silme flow
               },
             ),
+
             ProfileTile(
-              icon: Icons.logout,
+              icon: Icons.logout_rounded,
               title: "Çıkış Yap",
-              titleColor: Colors.red.shade700,
-              iconColor: Colors.red.shade700,
+              titleColor: AppColors.error,
+              iconColor: AppColors.error,
               onTap: () {
-                vmAuth.signOut();
-                context.push("/login");
+                authVm.signOut();
+                context.go("/login");
               },
             ),
           ],

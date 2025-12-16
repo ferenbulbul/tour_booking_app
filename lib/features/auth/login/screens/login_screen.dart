@@ -195,7 +195,12 @@ class _CleanLoginFormState extends State<_CleanLoginForm> {
             onPressed: () => context.push('/forgot-password'),
             child: Text(
               'forgot_password'.tr(),
-              style: text.labelLarge?.copyWith(color: scheme.primary),
+
+              style: text.labelLarge?.copyWith(
+                color: scheme.primary,
+                fontWeight: FontWeight.bold,
+                letterSpacing: -0.2,
+              ),
             ),
           ),
         ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:tour_booking/core/utils/location_validator.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/keys.dart';
 import 'package:tour_booking/models/place_section/place_section.dart';
 
@@ -58,7 +59,7 @@ class _FullMapViewState extends State<FullMapView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Konum Seç")),
+      appBar: CommonAppBar(title: "Konum Seç", showBack: true),
       body: Stack(
         children: [
           // ---------------- GOOGLE MAP ----------------

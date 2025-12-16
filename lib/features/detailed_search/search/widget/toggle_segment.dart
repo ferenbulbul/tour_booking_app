@@ -13,31 +13,41 @@ class PremiumToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
-      height: 55,
+      height: 56,
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark
+            ? Colors.white.withOpacity(.06)
+            : Colors.black.withOpacity(.04),
         borderRadius: BorderRadius.circular(40),
-        border: Border.all(color: Colors.black12),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withOpacity(.12)
+              : Colors.black.withOpacity(.1),
+          width: 1,
+        ),
       ),
       child: Row(
         children: [
-          _item("Kalkış Noktası", Icons.my_location, 0),
-          _item("Tur Noktası", Icons.location_on_outlined, 1),
+          _item("Kalkış Noktası", Icons.my_location, 0, isDark),
+          _item("Tur Noktası", Icons.location_on_outlined, 1, isDark),
         ],
       ),
     );
   }
 
-  Widget _item(String text, IconData icon, int value) {
+  Widget _item(String text, IconData icon, int value, bool isDark) {
     final selected = index == value;
 
     return Expanded(
       child: GestureDetector(
         onTap: () => onChanged(value),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
           decoration: BoxDecoration(
             color: selected ? AppColors.primary : Colors.transparent,
             borderRadius: BorderRadius.circular(40),
@@ -49,14 +59,19 @@ class PremiumToggle extends StatelessWidget {
               Icon(
                 icon,
                 size: 20,
-                color: selected ? Colors.white : Colors.black54,
+                color: selected
+                    ? Colors.white
+                    : (isDark ? Colors.white70 : Colors.black54),
               ),
               const SizedBox(width: 8),
               Text(
                 text,
                 style: TextStyle(
-                  color: selected ? Colors.white : Colors.black54,
+                  color: selected
+                      ? Colors.white
+                      : (isDark ? Colors.white70 : Colors.black54),
                   fontWeight: FontWeight.w600,
+                  fontSize: 14.5,
                 ),
               ),
             ],

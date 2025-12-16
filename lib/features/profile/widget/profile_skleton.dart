@@ -58,12 +58,14 @@ class _ProfileHeaderSkeleton extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Avatar
-          Container(
-            width: 72,
-            height: 72,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.grey,
+          Center(
+            child: Container(
+              width: 72,
+              height: 72,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey,
+              ),
             ),
           ),
 

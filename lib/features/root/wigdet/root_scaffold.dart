@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -90,12 +88,11 @@ class _PremiumNavBar extends StatelessWidget {
     return ClipRRect(
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.93), // hafif cam efekti
+          color: Colors.white, // hafif cam efekti
           border: const Border(
             top: BorderSide(color: Colors.black12, width: 0.3),
           ),
 
-          // 🔥 Çok daha hafif shadow
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),

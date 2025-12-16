@@ -1,94 +1,169 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:confetti/confetti.dart';
+import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 
-class PaymentSuccessPage extends StatelessWidget {
+class PaymentSuccessPage extends StatefulWidget {
   final String conversitationId;
+
   const PaymentSuccessPage({super.key, required this.conversitationId});
+
+  @override
+  State<PaymentSuccessPage> createState() => _PaymentSuccessPageState();
+}
+
+class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
+  late final ConfettiController _confettiController;
+
+  @override
+  void initState() {
+    super.initState();
+    _confettiController = ConfettiController(
+      duration: const Duration(seconds: 3),
+    );
+
+    // 🎉 Sayfa açılır açılmaz patlasın
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _confettiController.play();
+    });
+  }
+
+  @override
+  void dispose() {
+    _confettiController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green.shade50,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.check_circle, size: 100, color: Colors.green),
-              const SizedBox(height: 20),
-              const Text(
-                "Ödeme Başarılı!",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                "Rezervasyonunuz başarıyla tamamlandı.",
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 30),
-
-              // 🎟️ ConversationId (Sipariş No)
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 20,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.green.shade300, width: 1.5),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.green.shade100,
-                      blurRadius: 6,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    const Text(
-                      "Rezervasyon Numaranız",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      conversitationId,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: () => context.go('/home'), // ana sayfa route
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 14,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  "Ana Sayfaya Dön",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
+      body: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          // 🎉 CONFETTI (üstten yağar, premium)
+          ConfettiWidget(
+            confettiController: _confettiController,
+            blastDirection: pi / 2, // aşağı
+            emissionFrequency: 0.05,
+            numberOfParticles: 25,
+            gravity: 0.25,
+            shouldLoop: false,
+            colors: const [
+              Color(0xff4CAF50),
+              Color(0xff81C784),
+              Color(0xffA5D6A7),
+              Color(0xffFFD54F),
             ],
           ),
-        ),
+
+          // 🔥 ASIL UI (hiç bozulmadı)
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
+              child: Column(
+                children: [
+                  const Spacer(),
+
+                  // ✅ ICON + HALO
+                  Container(
+                    width: 110,
+                    height: 110,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.success.withOpacity(.15),
+                          AppColors.success.withOpacity(.05),
+                        ],
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.check_circle_rounded,
+                      size: 64,
+                      color: AppColors.success,
+                    ),
+                  ),
+
+                  const SizedBox(height: 28),
+
+                  // ✅ TITLE
+                  Text(
+                    "Ödeme Başarılı",
+                    style: AppTextStyles.headlineSmall.copyWith(
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -.4,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  Text(
+                    "Rezervasyonunuz başarıyla tamamlandı.\nKeyifli bir tur dileriz ✨",
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+
+                  const SizedBox(height: 36),
+
+                  // 🎟️ REZERVASYON KODU
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 18,
+                      horizontal: 20,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(.06),
+                          blurRadius: 14,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Rezervasyon Numaranız",
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          widget.conversitationId,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            letterSpacing: .6,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const Spacer(),
+
+                  // 🔘 HOME BUTTON (isteğe bağlı ama yakışır)
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: PrimaryButton(
+                      text: "Ana Sayfaya Dön",
+                      onPressed: () => context.go('/home'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

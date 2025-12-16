@@ -19,8 +19,10 @@ class AppColors {
   static const textLight = Color(0xFF9CA3AF);
 
   // State Colors (Premium modern palette)
-  static const error = Color(0xFFFF4D4F);
+  static const error = Color.fromARGB(255, 213, 46, 48);
   static const errorBg = Color(0xFFFFECEC);
   static const success = Color(0xFF22C55E);
   static const info = Color(0xFF3B82F6);
+
+  static const warning = Color(0xFFFBBF24); // Amber 400
 }

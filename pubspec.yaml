@@ -51,6 +51,7 @@ dependencies:
   geocoding: ^4.0.0
   table_calendar: ^3.2.0
   photo_view: ^0.15.0
+  confetti: ^0.8.0
 
 
 

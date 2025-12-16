@@ -130,8 +130,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     if (_currentRole == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
+      backgroundColor: scheme.surface,
       body: SafeArea(
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),

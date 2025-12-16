@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:provider/provider.dart';
+
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
+
 import 'package:tour_booking/features/profile/permission_viewmodel.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 import 'package:tour_booking/models/profile/profile_response.dart';
@@ -32,11 +37,9 @@ class _PermissionsScreenState extends State<PermissionsScreen>
     super.dispose();
   }
 
-  // 🔥 Uygulama ayarlardan dönünce burada tetiklenir
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      // sayfa tekrar ekrana geldi → izinleri tazele
       context.read<PermissionsViewModel>().loadPermissions();
     }
   }
@@ -45,6 +48,7 @@ class _PermissionsScreenState extends State<PermissionsScreen>
   Widget build(BuildContext context) {
     final profileVm = context.watch<ProfileViewModel>();
     final permVm = context.watch<PermissionsViewModel>();
+    final scheme = Theme.of(context).colorScheme;
 
     final profile = profileVm.profile;
     if (profile == null) {
@@ -52,22 +56,14 @@ class _PermissionsScreenState extends State<PermissionsScreen>
     }
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
-      appBar: AppBar(
-        title: const Text(
-          "İzinler",
-          style: TextStyle(fontWeight: FontWeight.w700),
-        ),
-        backgroundColor: Colors.grey.shade100,
-        elevation: 0,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          const SizedBox(height: 14),
+      backgroundColor: scheme.surface,
+      appBar: const CommonAppBar(title: "İzinler"),
 
+      body: ListView(
+        padding: const EdgeInsets.all(AppSpacing.l),
+        children: [
           _PhoneCard(profile: profile),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xl),
 
           _LocationPermissionRow(vm: permVm),
         ],
@@ -76,6 +72,10 @@ class _PermissionsScreenState extends State<PermissionsScreen>
   }
 }
 
+// ------------------------------------------------------
+// PREMIUM PHONE CARD
+// ------------------------------------------------------
+
 class _PhoneCard extends StatelessWidget {
   final ProfileResponse profile;
 
@@ -83,6 +83,8 @@ class _PhoneCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     final hasPhone = profile.phoneNumber.isNotEmpty;
     final verified = profile.phoneNumberConfirmed;
 
@@ -99,48 +101,43 @@ class _PhoneCard extends StatelessWidget {
         : "Doğrulanmadı";
 
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(AppSpacing.l),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: scheme.surfaceVariant.withOpacity(.4),
+        borderRadius: BorderRadius.circular(AppRadius.large),
+        border: Border.all(color: scheme.outlineVariant.withOpacity(.25)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: scheme.shadow.withOpacity(.05),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
-            Icons.phone_iphone_rounded,
-            size: 28,
-            color: AppColors.primary,
-          ),
-          const SizedBox(width: 12),
+          Icon(Icons.phone_iphone_rounded, size: 30, color: scheme.primary),
+          const SizedBox(width: AppSpacing.m),
 
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  hasPhone
-                      ? "Telefon Numarası"
-                      : "Telefon Numarası (Girilmedi)",
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
+                  "Telefon Numarası",
+                  style: AppTextStyles.titleSmall.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: scheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 6),
 
                 Text(
                   hasPhone ? profile.phoneNumber : "—",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                  style: AppTextStyles.bodyLarge.copyWith(
+                    fontWeight: FontWeight.w400,
+                    color: scheme.onSurface,
                   ),
                 ),
 
@@ -150,11 +147,10 @@ class _PhoneCard extends StatelessWidget {
                   hasPhone
                       ? (verified
                             ? "Bu numara rezervasyon hatırlatmaları için kullanılacaktır."
-                            : "Numaran yanlış olabilir. Doğrulamadan önce güncelleyebilirsin.")
+                            : "Numaran doğrulanmadı. Güncelleyebilirsin.")
                       : "Lütfen telefon numarası ekleyin.",
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey.shade600,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: scheme.onSurfaceVariant,
                     height: 1.3,
                   ),
                 ),
@@ -164,17 +160,17 @@ class _PhoneCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
-                    vertical: 4,
+                    vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: badgeColor.withOpacity(0.15),
+                    color: badgeColor.withOpacity(.15),
                     borderRadius: BorderRadius.circular(50),
                   ),
                   child: Text(
                     badgeText,
                     style: TextStyle(
                       color: badgeColor,
-                      fontSize: 11,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -203,11 +199,7 @@ class _PhoneCard extends StatelessWidget {
 }
 
 // ------------------------------------------------------
-//  🔥 Bildirim izni satırı
-// ------------------------------------------------------
-
-// ------------------------------------------------------
-//  🔥 Konum izni satırı
+//  🔥 LOCATION PERMISSION ROW
 // ------------------------------------------------------
 
 class _LocationPermissionRow extends StatelessWidget {
@@ -217,13 +209,15 @@ class _LocationPermissionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     final allowed = vm.locationAllowed;
     final permanentlyDenied = vm.locationPermanentlyDenied;
 
     return _PermissionRow(
       icon: Icons.location_on_outlined,
       title: "Konum",
-      subtitle: "Konuma göre öneriler sunabilmek için gerekli",
+      subtitle: "Konuma göre öneriler için gerekli",
       allowed: allowed,
       permanentlyDenied: permanentlyDenied,
       onRequest: () async {
@@ -238,7 +232,7 @@ class _LocationPermissionRow extends StatelessWidget {
 }
 
 // ------------------------------------------------------
-//  🔥 Tekli satır component
+//  🔥 GENERIC PERMISSION ROW — THE PREMIUM ONE
 // ------------------------------------------------------
 
 class _PermissionRow extends StatelessWidget {
@@ -260,47 +254,54 @@ class _PermissionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // buton metni ve rengi
-    String buttonText = permanentlyDenied ? "Ayarlar" : "Aç";
-    Color buttonColor = permanentlyDenied ? Colors.orange : AppColors.primary;
+    final scheme = Theme.of(context).colorScheme;
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 26, color: AppColors.primary),
-        const SizedBox(width: 14),
+    String buttonText = permanentlyDenied ? "Ayarlar" : "İzin Ver";
+    Color buttonColor = permanentlyDenied ? Colors.orange : scheme.primary;
 
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.l),
+      padding: const EdgeInsets.all(AppSpacing.m),
+      decoration: BoxDecoration(
+        color: scheme.surfaceVariant.withOpacity(.35),
+        borderRadius: BorderRadius.circular(AppRadius.large),
+        border: Border.all(color: scheme.outlineVariant.withOpacity(.25)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 28, color: scheme.primary),
+          const SizedBox(width: AppSpacing.m),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTextStyles.titleSmall.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: scheme.onSurface,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                subtitle,
-                style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600),
-              ),
-            ],
-          ),
-        ),
-
-        // 🔥 Açık ise buton YOK
-        if (!allowed)
-          TextButton(
-            onPressed: onRequest,
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              foregroundColor: buttonColor,
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
-            child: Text(buttonText),
           ),
-      ],
+
+          if (!allowed)
+            TextButton(
+              onPressed: onRequest,
+              style: TextButton.styleFrom(foregroundColor: buttonColor),
+              child: Text(buttonText),
+            ),
+        ],
+      ),
     );
   }
 }

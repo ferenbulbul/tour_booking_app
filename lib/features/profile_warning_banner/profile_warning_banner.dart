@@ -4,78 +4,85 @@ import 'package:tour_booking/features/profile/profile_status_viewmodel.dart';
 
 class ProfileWarningBanner extends StatelessWidget {
   const ProfileWarningBanner({super.key, this.onAction});
-  final VoidCallback? onAction; // Örn: Telefon doğrulama sayfasına git
+  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+
     return Consumer<ProfileStatusViewModel>(
       builder: (_, vm, __) {
-        // Yükleniyor, profil tamamlanmış veya bu oturumda kapatılmışsa gösterme
         if (vm.isComplete == null ||
             vm.isComplete == true ||
             vm.dismissedThisSession) {
           return const SizedBox.shrink();
         }
 
-        // Ana banner'ı ekran kenarlarından boşluk bırakacak şekilde yerleştiriyoruz.
         return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
           child: Container(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              // Arka plan rengini daha yumuşak bir tona çeviriyoruz
-              color: Colors.amber.shade50,
-              borderRadius: BorderRadius.circular(12),
-              // Kenarlık ekleyerek kartı daha belirgin hale getiriyoruz
-              border: Border.all(color: Colors.amber.shade200, width: 1.5),
+              color: scheme.primaryContainer.withOpacity(.25),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: scheme.primary.withOpacity(.35),
+                width: 1.2,
+              ),
             ),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Sol taraftaki ikon
-                Icon(
-                  Icons.info_outline_rounded,
-                  color: Colors.amber.shade800,
-                  size: 28,
+                // 🔵 ICON (premium soft)
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: scheme.primary.withOpacity(.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.info_outline_rounded,
+                    color: scheme.primary,
+                    size: 22,
+                  ),
                 ),
-                const SizedBox(width: 12),
-                // Mesaj ve Buton
+
+                const SizedBox(width: 14),
+
+                // 📄 TEXTS
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      // Title
                       Text(
-                        'Profilini Tamamla',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: Colors.amber.shade900,
-                          fontWeight: FontWeight.bold,
+                        "Profilini Tamamla",
+                        style: text.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: scheme.onSurface,
                         ),
                       ),
-                      const SizedBox(height: 2),
+
+                      const SizedBox(height: 4),
+
+                      // Subtitle
                       Text(
-                        'Telefon numaranı doğrulayarak sipariş oluşturabilirsin.',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodySmall?.copyWith(color: Colors.black87),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                        "Telefon numaranı doğrulayarak rezervasyon oluşturabilirsin.",
+                        style: text.bodySmall?.copyWith(
+                          color: scheme.onSurface.withOpacity(.7),
+                          height: 1.3,
+                        ),
                       ),
-                      // Eğer bir aksiyon varsa butonu göster
+
                       if (onAction != null) ...[
-                        const SizedBox(height: 4),
-                        // Butonu daha az yer kaplayan bir TextButton ile değiştiriyoruz
-                        TextButton(
-                          onPressed: onAction,
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            alignment: Alignment.centerLeft,
-                          ),
+                        const SizedBox(height: 10),
+                        GestureDetector(
+                          onTap: onAction,
                           child: Text(
-                            'Şimdi Doğrula',
-                            style: TextStyle(
-                              color: Theme.of(context).primaryColor,
+                            "Şimdi doğrula",
+                            style: text.labelLarge?.copyWith(
+                              color: scheme.primary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -84,18 +91,19 @@ class ProfileWarningBanner extends StatelessWidget {
                     ],
                   ),
                 ),
+
                 const SizedBox(width: 8),
-                // Sağ üst köşedeki kapatma butonu
-                IconButton(
-                  onPressed: () => context
+
+                // ❌ CLOSE BUTTON
+                GestureDetector(
+                  onTap: () => context
                       .read<ProfileStatusViewModel>()
                       .dismissForThisSession(),
-                  icon: Icon(
+                  child: Icon(
                     Icons.close,
-                    color: Colors.grey.shade600,
                     size: 20,
+                    color: scheme.onSurface.withOpacity(.5),
                   ),
-                  tooltip: 'Kapat',
                 ),
               ],
             ),

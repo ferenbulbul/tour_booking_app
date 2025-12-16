@@ -4,6 +4,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/core/utils/location_validator.dart';
 import 'package:tour_booking/keys.dart';
 import 'package:tour_booking/models/place_section/place_section.dart';
@@ -40,15 +43,13 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
   @override
   void initState() {
     super.initState();
-    // Sayfa açılır açılmaz şehir ile arama yap
     Future.microtask(() => _search(""));
   }
 
   // ---------------------------------------------------------------------------
-  // AUTOCOMPLETE SEARCH
+  // SEARCH
   // ---------------------------------------------------------------------------
   Future<void> _search(String query) async {
-    // Her koşulda şehir + ilçe başta olacak
     final q = "${widget.city} ${widget.district} $query".trim();
 
     setState(() => _loading = true);
@@ -60,6 +61,7 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
     );
 
     final res = await http.get(uri);
+
     setState(() => _loading = false);
 
     if (res.statusCode != 200) {
@@ -73,18 +75,15 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
       return;
     }
 
-    final preds = (body['predictions'] as List)
-        .map((e) => _Prediction.fromJson(e))
-        .toList();
-
-    setState(() => _items = preds);
+    setState(() {
+      _items = (body['predictions'] as List)
+          .map((e) => _Prediction.fromJson(e))
+          .toList();
+    });
   }
 
   // ---------------------------------------------------------------------------
-  // PLACE DETAILS → lat/lng
-  // ---------------------------------------------------------------------------
-  // ---------------------------------------------------------------------------
-  //  CLEAN PICK FUNCTION (MAP İLE AYNI MİMARI)
+  // PICK PLACE
   // ---------------------------------------------------------------------------
   Future<void> _pick(_Prediction p) async {
     final uri = Uri.https(
@@ -109,9 +108,6 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
     final components = result['address_components'] as List<dynamic>;
     final formatted = result['formatted_address'] ?? '';
 
-    // -----------------------------------------------------------
-    // 🔥 MERKEZİ DOĞRULAMA — ARTIK TEK BEYİN BURADA
-    // -----------------------------------------------------------
     final validation = LocationValidator.validate(
       components: components,
       formatted: formatted,
@@ -126,9 +122,6 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
       return;
     }
 
-    // -----------------------------------------------------------
-    // 🔥 KOORDİNATLARI AL
-    // -----------------------------------------------------------
     final loc = result['geometry']?['location'];
     final lat = (loc?['lat'] as num?)?.toDouble();
     final lng = (loc?['lng'] as num?)?.toDouble();
@@ -140,12 +133,10 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
       return;
     }
 
-    // -----------------------------------------------------------
-    // 🔥 BAŞARILI → GERİ DÖN
-    // -----------------------------------------------------------
-    Navigator.of(
+    Navigator.pop(
       context,
-    ).pop(PlaceSelection(description: p.description, lat: lat, lng: lng));
+      PlaceSelection(description: p.description, lat: lat, lng: lng),
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -153,64 +144,139 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
   // ---------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      appBar: AppBar(title: Text("${widget.city} / ${widget.district} seç")),
+      backgroundColor: AppColors.background,
+
+      // ✔ PREMIUM COMMON APP BAR
+      appBar: CommonAppBar(
+        title: "${widget.city} / ${widget.district}",
+        showBack: true,
+        centerTitle: true,
+      ),
+
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // 🔍 Arama kutusu
-            TextField(
-              controller: _ctrl,
-              onChanged: (v) => _debouncer(() => _search(v)),
-              decoration: InputDecoration(
-                hintText: "${widget.city} ${widget.district} içinde ara...",
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _ctrl.text.isEmpty
-                    ? null
-                    : IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _ctrl.clear();
-                          setState(() => _items = []);
-                        },
-                      ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+            // -------------------------------------------------------------------
+            // PREMIUM SEARCH FIELD (blur yok, soft border, radius)
+            // -------------------------------------------------------------------
+            Container(
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withOpacity(0.06)
+                    : Colors.black.withOpacity(0.04),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.border.withOpacity(.4)),
+              ),
+              child: TextField(
+                controller: _ctrl,
+                onChanged: (v) => _debouncer(() => _search(v)),
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.textPrimary,
+                ),
+                decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: AppColors.textSecondary,
+                    size: 22,
+                  ),
+                  suffixIcon: _ctrl.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, size: 20),
+                          onPressed: () {
+                            _ctrl.clear();
+                            setState(() => _items = []);
+                          },
+                        )
+                      : null,
+                  hintText: "${widget.city} ${widget.district} içinde ara...",
+                  hintStyle: TextStyle(color: AppColors.textLight),
+                  border: InputBorder.none,
                 ),
               ),
             ),
 
             const SizedBox(height: 12),
 
-            if (_loading) const LinearProgressIndicator(),
+            if (_loading)
+              LinearProgressIndicator(
+                color: AppColors.primary,
+                backgroundColor: AppColors.primary.withOpacity(.2),
+              ),
 
-            // 🔽 Sonuç listesi
+            // -------------------------------------------------------------------
+            // RESULTS LIST (premium card style)
+            // -------------------------------------------------------------------
             Expanded(
               child: _items.isEmpty
-                  ? const Center(child: Text('Sonuç bulunamadı'))
+                  ? Center(
+                      child: Text(
+                        "Sonuç bulunamadı",
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    )
                   : ListView.separated(
                       physics: const BouncingScrollPhysics(),
                       itemCount: _items.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 8),
-                      itemBuilder: (context, i) {
+                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+                      itemBuilder: (_, i) {
                         final p = _items[i];
-                        return Material(
-                          elevation: 1,
-                          color: Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(12),
-                          child: ListTile(
-                            leading: const Icon(Icons.location_on_outlined),
-                            title: Text(
-                              p.mainText,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
+                        return InkWell(
+                          onTap: () => _pick(p),
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: AppColors.surface,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(.06),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
                             ),
-                            subtitle: Text(p.secondaryText ?? ''),
-                            onTap: () => _pick(p),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on_outlined,
+                                  color: AppColors.primary,
+                                  size: 24,
+                                ),
+
+                                const SizedBox(width: 12),
+
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        p.mainText,
+                                        style: AppTextStyles.titleSmall
+                                            .copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color: AppColors.textPrimary,
+                                            ),
+                                      ),
+                                      if (p.secondaryText != null)
+                                        Text(
+                                          p.secondaryText!,
+                                          style: AppTextStyles.bodyMedium
+                                              .copyWith(
+                                                color: AppColors.textSecondary,
+                                              ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         );
@@ -224,7 +290,9 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
   }
 }
 
-// 🔹 Prediction DTO
+// ---------------------------------------------------------------------------
+// Prediction DTO
+// ---------------------------------------------------------------------------
 class _Prediction {
   final String placeId;
   final String description;
@@ -239,7 +307,7 @@ class _Prediction {
   });
 
   factory _Prediction.fromJson(Map<String, dynamic> j) {
-    final sf = (j['structured_formatting'] ?? {});
+    final sf = j['structured_formatting'] ?? {};
     return _Prediction(
       placeId: j['place_id'],
       description: j['description'],
@@ -249,11 +317,14 @@ class _Prediction {
   }
 }
 
-// 🔹 Debouncer
+// ---------------------------------------------------------------------------
+// Debouncer
+// ---------------------------------------------------------------------------
 class _Debouncer {
   final int ms;
   Timer? _t;
   _Debouncer({this.ms = 300});
+
   void call(void Function() action) {
     _t?.cancel();
     _t = Timer(Duration(milliseconds: ms), action);

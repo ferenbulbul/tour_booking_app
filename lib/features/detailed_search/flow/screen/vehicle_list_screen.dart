@@ -2,6 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/vehicle_skelaton.dart';
@@ -14,63 +18,71 @@ class TourVehicleListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<TourSearchDetailViewModel>();
+    final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
+      backgroundColor: scheme.surface,
       appBar: const CommonAppBar(title: "Müsait Araçlar"),
       body: vm.isVehiclesLoading
           ? const Center(child: VehicleCardSkeleton())
           : vm.vehicles == null || vm.vehicles!.isEmpty
-          ? _buildEmptyState()
+          ? _buildEmptyState(context)
           : ListView.separated(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppSpacing.screenPadding),
+              physics: const BouncingScrollPhysics(),
               itemCount: vm.vehicles!.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 20),
-              itemBuilder: (context, index) {
-                return VehicleCard(vehicle: vm.vehicles![index]);
-              },
+              separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.l),
+              itemBuilder: (_, i) => VehicleCard(vehicle: vm.vehicles![i]),
             ),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              decoration: BoxDecoration(
+                color: scheme.surface,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(.06),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.no_crash_outlined,
+                size: 48,
+                color: AppColors.textLight,
+              ),
             ),
-            child: Icon(
-              Icons.no_crash_outlined,
-              size: 48,
-              color: Colors.grey.shade400,
+            const SizedBox(height: AppSpacing.l),
+            Text(
+              "Bu kriterlere uygun araç bulunamadı",
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
             ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            "Bu kriterlere uygun araç bulunamadı",
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey.shade600,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
+// ============================================================================
+// VEHICLE CARD
+// ============================================================================
 class VehicleCard extends StatelessWidget {
   final Vehicle vehicle;
 
@@ -78,24 +90,25 @@ class VehicleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return GestureDetector(
       onTap: () {
         final vm = context.read<TourSearchDetailViewModel>();
-
         vm.setSelectedPrice(vehicle.price);
 
-        final request = VehicleDetailRequest(
-          vehicleId: vehicle.vehicleId,
-          tourRouteId: vehicle.tourRouteId, // vehicle içinde varsa direkt böyle
-          // gerekiyorsa diğer parametreleri de modele ekleyebilirsin
+        context.pushNamed(
+          'vehicleDetail',
+          extra: VehicleDetailRequest(
+            vehicleId: vehicle.vehicleId,
+            tourRouteId: vehicle.tourRouteId,
+          ),
         );
-
-        context.pushNamed('vehicleDetail', extra: request);
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(22),
+          color: scheme.surface,
+          borderRadius: BorderRadius.circular(AppRadius.large),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(.06),
@@ -107,12 +120,12 @@ class VehicleCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ---------------- IMAGE + PRICE BADGE ----------------
+            // IMAGE + PRICE ---------------------------------------------------
             Stack(
               children: [
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(22),
+                    top: Radius.circular(AppRadius.large),
                   ),
                   child: CachedNetworkImage(
                     imageUrl: vehicle.image,
@@ -120,93 +133,48 @@ class VehicleCard extends StatelessWidget {
                     width: double.infinity,
                     fit: BoxFit.cover,
                     placeholder: (_, __) =>
-                        Container(color: Colors.grey.shade200),
+                        Container(color: AppColors.border.withOpacity(.4)),
                   ),
                 ),
-
-                // Soft gradient (çok hafif, premium)
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withOpacity(.15),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Fiyat — sade, primary color
                 Positioned(
-                  top: 14,
-                  right: 14,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF4A6CF7), // primary color
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF4A6CF7).withOpacity(.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      "${vehicle.price} ₺",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
+                  top: AppSpacing.m,
+                  right: AppSpacing.m,
+                  child: _PriceBadge(price: vehicle.price),
                 ),
               ],
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: AppSpacing.m),
 
-            // ---------------- BRAND NAME ----------------
+            // BRAND ----------------------------------------------------------
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
               child: Text(
                 vehicle.vehicleBrand,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600, // daha ince
-                  color: Color(0xFF1A1D29),
-                  height: 1.1,
+                style: AppTextStyles.titleMedium.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.s),
 
-            // ---------------- FEATURES ----------------
+            // FEATURES -------------------------------------------------------
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
+              child: Wrap(
+                spacing: AppSpacing.s,
+                runSpacing: AppSpacing.s,
                 children: [
-                  _featureChip(
+                  _FeatureChip(
                     icon: Icons.event_seat,
                     label: "${vehicle.seatCount} Koltuk",
                   ),
-                  const SizedBox(width: 10),
-                  _featureChip(
+                  _FeatureChip(
                     icon: Icons.directions_car_filled_rounded,
                     label: vehicle.vehicleType,
                   ),
-                  const SizedBox(width: 10),
-                  _featureChip(
+                  _FeatureChip(
                     icon: Icons.directions_car_filled_rounded,
                     label: vehicle.vehicleClass,
                   ),
@@ -214,32 +182,78 @@ class VehicleCard extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.l),
           ],
         ),
       ),
     );
   }
+}
 
-  // ---------------- REUSABLE CHIP ----------------
-  Widget _featureChip({required IconData icon, required String label}) {
+// ============================================================================
+// PRICE BADGE
+// ============================================================================
+class _PriceBadge extends StatelessWidget {
+  final num price;
+  const _PriceBadge({required this.price});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.m,
+        vertical: 6,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(AppRadius.medium),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(.3),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Text(
+        "$price ₺",
+        style: AppTextStyles.labelLarge.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// FEATURE CHIP
+// ============================================================================
+class _FeatureChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _FeatureChip({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F6FA),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade200),
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(AppRadius.small),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 15, color: const Color(0xFF4A6CF7)),
+          Icon(icon, size: 14, color: AppColors.primary),
           const SizedBox(width: 6),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 13,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
-              color: Colors.grey.shade700,
             ),
           ),
         ],

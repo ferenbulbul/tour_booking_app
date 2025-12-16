@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/widgets/badgets/app_badge.dart';
 import 'package:tour_booking/core/widgets/badgets/difficulty_badge.dart';
 
@@ -18,57 +20,76 @@ class TourSearchResultCard extends StatelessWidget {
         'searchDetail',
         extra: {"id": point.id, "initialImage": point.mainImage},
       ),
+
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: const EdgeInsets.only(bottom: 18),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(AppRadius.large),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(.08),
-              blurRadius: 18,
-              offset: const Offset(0, 6),
+              color: Colors.black.withOpacity(.05),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
             ),
           ],
         ),
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// --- HERO IMAGE ---
+            /// ------------------------------------------------------
+            /// IMAGE (Same 190 height as the other card)
+            /// ------------------------------------------------------
             ClipRRect(
               borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(22),
+                top: Radius.circular(AppRadius.large),
               ),
               child: Hero(
                 tag: "tourImage_${point.id}",
+
                 child: CachedNetworkImage(
-                  imageUrl: point.mainImage,
                   cacheKey: "featured_${point.id}",
-                  height: 190,
+                  imageUrl: point.mainImage,
+                  height: 220,
                   width: double.infinity,
                   fit: BoxFit.cover,
+
+                  memCacheHeight: 900,
+
+                  fadeInDuration: const Duration(milliseconds: 120),
+                  placeholder: (_, __) => Container(
+                    height: 190,
+                    color: Colors.black.withOpacity(.08),
+                  ),
                 ),
               ),
             ),
 
+            /// ------------------------------------------------------
+            /// CONTENT — SAME SPACING AS OTHER CARD
+            /// ------------------------------------------------------
             Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(AppSpacing.m), // ~12px
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// -------- TITLE --------
+                  /// TITLE
                   Text(
                     point.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.titleMedium.copyWith(
-                      fontSize: 20,
+                      fontSize: 18, // diğer kart ile aynı
                       fontWeight: FontWeight.w700,
                       color: AppColors.textPrimary,
+                      height: 1.1,
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: AppSpacing.s),
 
-                  /// -------- BADGES --------
+                  /// BADGES
                   Wrap(
                     spacing: 8,
                     runSpacing: 6,
@@ -78,6 +99,8 @@ class TourSearchResultCard extends StatelessWidget {
                       DifficultyBadge(point.tourDifficultyName),
                     ],
                   ),
+
+                  const SizedBox(height: AppSpacing.s),
                 ],
               ),
             ),

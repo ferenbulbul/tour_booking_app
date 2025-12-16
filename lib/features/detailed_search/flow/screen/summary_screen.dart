@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/widgets/bottom_action_bar.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/core/widgets/section_title.dart';
@@ -36,104 +38,88 @@ class SummaryScreen extends StatelessWidget {
         final canConfirm = date != null && selectedVehicle != null;
 
         return Scaffold(
-          backgroundColor: Colors.grey.shade100,
           appBar: const CommonAppBar(title: "Seyahat Özeti"),
-
           body: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // -----------------------------
-                // SEYAHAT BİLGİLERİ
-                // -----------------------------
                 SectionTitle(title: "Seyahat Bilgileri"),
                 const SizedBox(height: 12),
 
                 _summaryCard(
-                  headerImage:
-                      vm.tourpointImage, // 🔥 Kartın üstünde tur fotoğrafı
+                  headerImage: vm.tourpointImage,
                   children: [
                     _infoRow("Tarih", _formatDate(date, vm.selectedTime)),
-                    _infoRow("Kalkış Bölgesi", vm.selectedCityName ?? '—'),
-                    _infoRow("İlçe", vm.selectedDistrictName ?? '—'),
-                    _infoRowMultiline("Tam Konum", vm.selectedPlaceDesc ?? '—'),
-                    _infoRow("Tur Noktası", vm.selectedTourPointName ?? '—'),
+                    _infoRow("Kalkış Bölgesi", vm.selectedCityName ?? "—"),
+                    _infoRow("İlçe", vm.selectedDistrictName ?? "—"),
+                    _infoRowMultiline("Tam Konum", vm.selectedPlaceDesc ?? "—"),
+                    _infoRow("Tur Noktası", vm.selectedTourPointName ?? "—"),
                   ],
                 ),
 
-                const SizedBox(height: 26),
+                const SizedBox(height: 28),
 
-                // -----------------------------
-                // ARAÇ
-                // -----------------------------
                 SectionTitle(title: "Araç Bilgisi"),
                 const SizedBox(height: 12),
 
                 _summaryCard(
-                  headerImage:
-                      selectedVehicle?.image, // 🔥 Araç fotoğrafı kart üstünde
+                  headerImage: selectedVehicle?.image,
                   children: [
                     _infoRow(
                       "Araç",
                       _vehicleTitle(selectedVehicle, vehicleDetail),
                     ),
-                    _infoRow("Sınıf", vehicleDetail?.vehicleClass ?? '—'),
-                    _infoRow("Tip", vehicleDetail?.vehicleType ?? '—'),
-                    _infoRow("Koltuk", "${vehicleDetail?.seatCount ?? '-'}"),
+                    _infoRow("Sınıf", vehicleDetail?.vehicleClass ?? "—"),
+                    _infoRow("Tip", vehicleDetail?.vehicleType ?? "—"),
+                    _infoRow("Koltuk", "${vehicleDetail?.seatCount ?? "-"}"),
                     _infoRow("Ücret", _formatCurrency(vehiclePrice)),
                   ],
                 ),
 
-                const SizedBox(height: 26),
-
-                // -----------------------------
-                // REHBER
-                // -----------------------------
                 if (selectedGuide != null) ...[
+                  const SizedBox(height: 28),
                   SectionTitle(title: "Rehber Bilgisi"),
                   const SizedBox(height: 12),
 
                   _summaryCard(
-                    headerImage: null, // Rehberde fotoğraf kart üstünde değil
                     children: [
                       Row(
                         children: [
                           CircleAvatar(
                             radius: 32,
+                            backgroundColor: AppColors.border,
                             backgroundImage: selectedGuide.image != null
                                 ? NetworkImage(selectedGuide.image!)
                                 : null,
                             child: selectedGuide.image == null
-                                ? const Icon(Icons.person, size: 32)
+                                ? const Icon(
+                                    Icons.person,
+                                    color: AppColors.textLight,
+                                    size: 28,
+                                  )
                                 : null,
                           ),
                           const SizedBox(width: 16),
                           Expanded(
                             child: Text(
                               "${selectedGuide.firstName} ${selectedGuide.lastName}",
-                              style: const TextStyle(
-                                fontSize: 16,
+                              style: AppTextStyles.titleSmall.copyWith(
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 12),
-
                       _infoRow("Diller", selectedGuide.languages.join(", ")),
                       _infoRow("Rehber Ücreti", _formatCurrency(guidePrice)),
                     ],
                   ),
                 ],
 
-                const SizedBox(height: 26),
+                const SizedBox(height: 28),
 
-                // -----------------------------
-                // ÖDEME ÖZETİ
-                // -----------------------------
                 SectionTitle(title: "Ödeme Özeti"),
                 const SizedBox(height: 12),
 
@@ -145,7 +131,6 @@ class SummaryScreen extends StatelessWidget {
               ],
             ),
           ),
-
           bottomNavigationBar: BottomActionBar(
             price: totalPrice.toInt(),
             buttonText: "Onayla",
@@ -153,7 +138,7 @@ class SummaryScreen extends StatelessWidget {
                 ? () async {
                     await vm.ControlBooking();
                     if (vm.isValid && vm.bookingId != null) {
-                      context.push('/payment', extra: vm.bookingId);
+                      context.push("/payment", extra: vm.bookingId);
                     } else if (vm.errorMessage != null) {
                       ScaffoldMessenger.of(
                         context,
@@ -164,7 +149,7 @@ class SummaryScreen extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
-                          "Bir hata oluştu lütfen daha sonra tekrar deneyiniz.",
+                          "Bir hata oluştu, lütfen tekrar deneyin.",
                         ),
                       ),
                     );
@@ -175,17 +160,17 @@ class SummaryScreen extends StatelessWidget {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // PREMIUM SUMMARY CARD (Kart üstünde fotoğraf)
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
+  // SUMMARY CARD
+  // ===========================================================================
   Widget _summaryCard({String? headerImage, required List<Widget> children}) {
     return Container(
       decoration: BoxDecoration(
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(22),
-        color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withOpacity(.06),
             blurRadius: 20,
             offset: const Offset(0, 6),
           ),
@@ -193,7 +178,6 @@ class SummaryScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // 🔥 FOTOĞRAF BURADA OLACAK — sadece bu kartta
           if (headerImage != null && headerImage.isNotEmpty)
             ClipRRect(
               borderRadius: const BorderRadius.vertical(
@@ -205,21 +189,18 @@ class SummaryScreen extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: headerImage,
                   fit: BoxFit.cover,
-                  fadeInDuration: const Duration(milliseconds: 250),
-                  placeholder: (context, url) =>
-                      Container(color: Colors.grey.shade300),
-                  errorWidget: (context, url, error) => Container(
-                    color: Colors.grey.shade200,
+                  placeholder: (_, __) => Container(color: AppColors.border),
+                  errorWidget: (_, __, ___) => Container(
+                    color: AppColors.border,
                     child: const Icon(
                       Icons.broken_image,
-                      size: 40,
-                      color: Colors.grey,
+                      color: AppColors.textLight,
+                      size: 36,
                     ),
                   ),
                 ),
               ),
             ),
-
           Padding(
             padding: const EdgeInsets.all(20),
             child: Column(children: children),
@@ -229,7 +210,6 @@ class SummaryScreen extends StatelessWidget {
     );
   }
 
-  // Bilgi satırı
   Widget _infoRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -239,10 +219,9 @@ class SummaryScreen extends StatelessWidget {
             width: 140,
             child: Text(
               label,
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -250,7 +229,7 @@ class SummaryScreen extends StatelessWidget {
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              style: AppTextStyles.bodyMedium.copyWith(),
             ),
           ),
         ],
@@ -258,7 +237,6 @@ class SummaryScreen extends StatelessWidget {
     );
   }
 
-  // Çok satır için (tam konum)
   Widget _infoRowMultiline(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -269,10 +247,9 @@ class SummaryScreen extends StatelessWidget {
             width: 140,
             child: Text(
               label,
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -280,9 +257,9 @@ class SummaryScreen extends StatelessWidget {
             child: Text(
               value,
               maxLines: 3,
-              overflow: TextOverflow.fade,
+              overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.right,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              style: AppTextStyles.bodyMedium.copyWith(),
             ),
           ),
         ],
@@ -290,7 +267,6 @@ class SummaryScreen extends StatelessWidget {
     );
   }
 
-  // Ödeme kartı
   Widget _paymentCard({
     required int totalPrice,
     num? vehiclePrice,
@@ -300,7 +276,7 @@ class SummaryScreen extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
         gradient: const LinearGradient(
-          colors: [Color(0xff0062FF), Color(0xff2A86FF)],
+          colors: [AppColors.primary, AppColors.primaryDark],
         ),
       ),
       padding: const EdgeInsets.all(22),
@@ -352,7 +328,9 @@ class SummaryScreen extends StatelessWidget {
     );
   }
 
-  // Helpers
+  // ===========================================================================
+  // HELPERS
+  // ===========================================================================
   Vehicle? _getSelectedVehicle(TourSearchDetailViewModel vm) {
     final id = vm.selectedVehicleId;
     return id == null
@@ -383,7 +361,7 @@ class SummaryScreen extends StatelessWidget {
   String _formatCurrency(num? v) {
     if (v == null) return "—";
     final f = NumberFormat.currency(
-      locale: 'tr_TR',
+      locale: "tr_TR",
       symbol: "₺",
       decimalDigits: 0,
     );

@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_bar_styles.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/widgets/bottom_action_bar.dart';
 import 'package:tour_booking/core/widgets/buttons/simple_icon_button.dart';
@@ -27,10 +29,6 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
   int _current = 0;
   late ScrollController _scrollController;
   bool _showBottom = true;
-
-  // Animasyon süresi ve eğrisi (Yumuşak ayarlar)
-  static const Duration _animationDuration = Duration(milliseconds: 700);
-  static const Curve _animationCurve = Curves.easeOutQuint;
 
   @override
   void initState() {
@@ -82,7 +80,6 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     if (v == null) {
       return Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: AppBar(),
         body: Center(child: Text(vm.errorMessage ?? "Araç bulunamadı")),
       );
     }
@@ -95,13 +92,9 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     final topPad = media.padding.top;
 
     // YENİ: Alt çubuğun görünen yüksekliğini ve safe area boşluğunu hesaplıyoruz.
-    final bottomPadding = media.padding.bottom;
-    // BottomActionBar'ın tahmini yüksekliği (iç paddingler dahil)
-    const double barContentHeight = 60.0;
-    final double fullBarHeight = barContentHeight + bottomPadding;
-
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: scheme.surface,
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
@@ -189,7 +182,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                       right: 0,
                       height: topPad + kToolbarHeight,
                       child: Container(
-                        color: Colors.white.withOpacity(
+                        color: AppColors.background.withOpacity(
                           lerpDouble(0.0, 1.0, collapseT) ?? 0,
                         ),
                       ),
@@ -217,12 +210,12 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                       child: Center(
                         child: Text(
                           "Araç Seçimi",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
+                          style: AppBarStyles.title(context).copyWith(
                             color: collapseT > 0.5
                                 ? Colors.black
                                 : Colors.transparent,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
                           ),
                         ),
                       ),
@@ -242,7 +235,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                 horizontal: 20,
               ).copyWith(top: 26),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SectionTitle(title: "Araç Özellikleri"),
 
@@ -354,8 +347,9 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
       width: 160,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
             blurRadius: 10,
@@ -367,16 +361,20 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 22, color: Colors.black87),
+          Icon(icon, size: 22, color: AppColors.textPrimary),
           const SizedBox(height: 8),
           Text(
             label,
-            style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+            style: AppTextStyles.labelSmall.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
           const SizedBox(height: 3),
           Text(
             value,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+            style: AppTextStyles.bodyMedium.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),
@@ -391,15 +389,15 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
       width: width,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         children: [
-          const Icon(Icons.check_circle, color: Colors.green, size: 16),
+          const Icon(Icons.check_circle, color: AppColors.success, size: 16),
           const SizedBox(width: 8),
-          Expanded(child: Text(text, style: const TextStyle(fontSize: 13))),
+          Expanded(child: Text(text, style: AppTextStyles.bodySmall)),
         ],
       ),
     );
@@ -413,10 +411,12 @@ Widget _driverSection({
   required List<String>? languages,
 }) {
   return Container(
-    padding: const EdgeInsets.all(16),
+    margin: EdgeInsets.all(AppSpacing.xs),
+    padding: const EdgeInsets.all(AppSpacing.l),
     decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(18),
+      color: AppColors.background,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: AppColors.border),
       boxShadow: [
         BoxShadow(
           color: Colors.black.withOpacity(0.05),
@@ -428,7 +428,6 @@ Widget _driverSection({
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ---------------- FOTO + İSİM + DENEYİM ----------------
         Row(
           children: [
             ClipRRect(
@@ -438,51 +437,37 @@ Widget _driverSection({
                 width: 60,
                 height: 60,
                 fit: BoxFit.cover,
-
-                // Yüklenene kadar placeholder
-                placeholder: (context, url) => Container(
+                placeholder: (_, __) => Container(
                   width: 60,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
+                    color: AppColors.border,
                     shape: BoxShape.circle,
                   ),
                 ),
-
-                // Hata durumunda fallback avatar
-                errorWidget: (context, url, error) => Container(
+                errorWidget: (_, __, ___) => Container(
                   width: 60,
                   height: 60,
-                  decoration: const BoxDecoration(
-                    color: Colors.grey,
+                  decoration: BoxDecoration(
+                    color: AppColors.border,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.person,
-                    size: 32,
-                    color: Colors.white,
-                  ),
+                  child: const Icon(Icons.person, color: AppColors.textLight),
                 ),
               ),
             ),
-
             const SizedBox(width: 16),
-
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    name ?? "Bilinmiyor",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  Text(name ?? "Bilinmiyor", style: AppTextStyles.titleSmall),
                   const SizedBox(height: 4),
                   Text(
                     "Deneyim: ${experience ?? '—'} yıl",
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ),
@@ -490,20 +475,10 @@ Widget _driverSection({
           ],
         ),
 
-        const SizedBox(height: 20),
-
-        // ---------------- DİLLER ----------------
         if (languages != null && languages.isNotEmpty) ...[
-          Text(
-            "Kullandığı Diller",
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey.shade800,
-            ),
-          ),
+          const SizedBox(height: 20),
+          Text("Kullandığı Diller", style: AppTextStyles.labelLarge),
           const SizedBox(height: 10),
-
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -514,13 +489,10 @@ Widget _driverSection({
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5F6FA),
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Text(
-                  lang,
-                  style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
-                ),
+                child: Text(lang, style: AppTextStyles.bodySmall),
               );
             }).toList(),
           ),

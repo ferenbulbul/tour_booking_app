@@ -3,15 +3,14 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/core/models/option_item.dart';
+import 'package:tour_booking/core/theme/app_bar_styles.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
-import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/widgets/badgets/app_badge.dart';
 import 'package:tour_booking/core/widgets/badgets/difficulty_badge.dart';
 import 'package:tour_booking/core/widgets/bottom_action_bar.dart';
-import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/buttons/simple_icon_button.dart';
+import 'package:tour_booking/core/widgets/picker_sheet.dart';
 import 'package:tour_booking/core/widgets/section_title.dart';
 import 'package:tour_booking/features/detailed_search/flow/screen/full_screen_map.dart';
 import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
@@ -20,8 +19,7 @@ import 'package:tour_booking/features/detailed_search/flow/widget/departure_form
 import 'package:tour_booking/features/detailed_search/flow/widget/description_section.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/tour_detail_header_hero.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/tour_detail_skeleton.dart';
-import 'package:tour_booking/features/detailed_search/flow/widget/option_picker_sheet.dart';
-import 'package:tour_booking/features/detailed_search/flow/widget/time_picker_sheet.dart';
+import 'package:tour_booking/core/widgets/time_picker_sheet.dart';
 
 import 'package:tour_booking/features/detailed_search/flow/screen/full_screen_gallery_screen.dart';
 import 'package:tour_booking/models/place_section/place_section.dart';
@@ -109,7 +107,6 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
     final topPadding = media.padding.top;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: BottomActionBar(
         price: null, // fiyat yok
@@ -150,7 +147,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
                   1.0,
                 );
 
-                const Alignment startAlign = Alignment(-0.9, 0.85);
+                const Alignment startAlign = Alignment(-0.6, 0.85);
                 const Alignment endAlign = Alignment(0.0, 0.55);
 
                 final Alignment titleAlignment = Alignment.lerp(
@@ -263,7 +260,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
                               textAlign: moveT < 0.5
                                   ? TextAlign.left
                                   : TextAlign.center,
-                              style: AppTextStyles.displaySmall.copyWith(
+                              style: AppBarStyles.title(context).copyWith(
                                 color: onHero
                                     ? Colors.white
                                     : AppColors.textPrimary,
@@ -368,14 +365,18 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
   void _selectCity(TourSearchDetailViewModel vm) async {
     final selected = await showModalBottomSheet<String>(
       context: context,
-      builder: (_) => OptionPickerSheet(
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.transparent,
+      builder: (_) => PickerSheet(
         title: "Select City",
         options: vm.detail!.cities
-            .map((e) => OptionItem(id: e.id, name: e.name))
+            .map((e) => PickerOption(e.id, e.name))
             .toList(),
         initialId: vm.selectedCityId,
       ),
     );
+
     if (selected != null) vm.setSelectedCity(selected);
   }
 
@@ -386,11 +387,12 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
 
     final selected = await showModalBottomSheet<String>(
       context: context,
-      builder: (_) => OptionPickerSheet(
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.transparent,
+      builder: (_) => PickerSheet(
         title: "Select District",
-        options: districts
-            .map((e) => OptionItem(id: e.id, name: e.name))
-            .toList(),
+        options: districts.map((e) => PickerOption(e.id, e.name)).toList(),
         initialId: vm.selectedDistrictId,
       ),
     );

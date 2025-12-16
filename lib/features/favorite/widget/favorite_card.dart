@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
+
 class FavoriteCard extends StatelessWidget {
   final String id;
   final String imageUrl;
@@ -23,42 +27,63 @@ class FavoriteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 120,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
+          color: scheme.surface,
+          borderRadius: BorderRadius.circular(AppRadius.large),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
+              color: scheme.shadow.withOpacity(0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Row(
           children: [
-            // ---- IMAGE ----
+            // ------------------------------------------------------
+            // IMAGE
+            // ------------------------------------------------------
             ClipRRect(
               borderRadius: const BorderRadius.horizontal(
-                left: Radius.circular(18),
+                left: Radius.circular(AppRadius.large),
               ),
               child: Hero(
                 tag: "tourImage_$id",
                 child: CachedNetworkImage(
                   imageUrl: imageUrl,
-                  width: 110,
+                  width: 115,
                   height: 120,
                   fit: BoxFit.cover,
+                  memCacheWidth: 400,
+                  placeholder: (_, __) => Container(
+                    width: 115,
+                    height: 120,
+                    color: scheme.surfaceVariant.withOpacity(.3),
+                  ),
+                  errorWidget: (_, __, ___) => Container(
+                    width: 115,
+                    height: 120,
+                    color: scheme.surfaceVariant,
+                    child: Icon(
+                      Icons.broken_image_outlined,
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
                 ),
               ),
             ),
 
-            const SizedBox(width: 14),
+            const SizedBox(width: AppSpacing.m),
 
-            // ---- TEXT ----
+            // ------------------------------------------------------
+            // TEXTS
+            // ------------------------------------------------------
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -68,20 +93,18 @@ class FavoriteCard extends StatelessWidget {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: scheme.onSurface,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     city,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.black54,
+                    style: AppTextStyles.labelLarge.copyWith(
+                      color: scheme.onSurfaceVariant,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -89,26 +112,14 @@ class FavoriteCard extends StatelessWidget {
               ),
             ),
 
-            // ---- HEART BUTTON ----
+            const SizedBox(width: AppSpacing.s),
+
+            // ------------------------------------------------------
+            // FAVORITE ICON BUTTON
+            // ------------------------------------------------------
             GestureDetector(
               onTap: () {
                 onFavoriteToggle();
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text(
-                      "Favorilerden kaldırıldı",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    backgroundColor: Colors.black87,
-                    behavior: SnackBarBehavior.floating,
-                    margin: const EdgeInsets.all(16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    duration: const Duration(milliseconds: 1300),
-                  ),
-                );
               },
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 220),
@@ -117,13 +128,15 @@ class FavoriteCard extends StatelessWidget {
                 child: Icon(
                   isFavorite ? Icons.favorite : Icons.favorite_border,
                   key: ValueKey(isFavorite),
-                  color: isFavorite ? Colors.redAccent : Colors.black26,
+                  color: isFavorite
+                      ? scheme.error
+                      : scheme.onSurfaceVariant.withOpacity(.6),
                   size: 26,
                 ),
               ),
             ),
 
-            const SizedBox(width: 14),
+            const SizedBox(width: AppSpacing.m),
           ],
         ),
       ),

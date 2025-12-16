@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
 
 class ProfileTile extends StatelessWidget {
   final IconData icon;
@@ -6,6 +9,7 @@ class ProfileTile extends StatelessWidget {
   final String? subtitle;
   final String? trailingText;
   final VoidCallback onTap;
+
   final Color? titleColor;
   final Color? iconColor;
   final Color? subtitleColor;
@@ -24,51 +28,82 @@ class ProfileTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.m,
+          horizontal: AppSpacing.xs,
+        ),
+        decoration: const BoxDecoration(
+          // Arkaplan yok → Home settings sheet tarzı
+        ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(icon, size: 22, color: iconColor ?? Colors.black87),
-            const SizedBox(width: 16),
+            // ---------------------------------
+            // ICON
+            // ---------------------------------
+            Icon(icon, size: 22, color: iconColor ?? scheme.primary),
 
+            const SizedBox(width: AppSpacing.l),
+
+            // ---------------------------------
+            // TITLE + SUBTITLE
+            // ---------------------------------
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
+                    style: AppTextStyles.titleMedium.copyWith(
                       fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: titleColor ?? Colors.black,
+                      color: titleColor ?? scheme.onSurface,
                     ),
                   ),
                   if (subtitle != null)
-                    Text(
-                      subtitle!,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: subtitleColor ?? Colors.grey.shade600,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        subtitle!,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          fontSize: 13,
+                          color:
+                              subtitleColor ??
+                              scheme.onSurfaceVariant.withOpacity(.8),
+                        ),
                       ),
                     ),
                 ],
               ),
             ),
 
+            // ---------------------------------
+            // OPTIONAL TRAILING TEXT
+            // ---------------------------------
             if (trailingText != null)
-              Text(
-                trailingText!,
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Text(
+                  trailingText!,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontSize: 13,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
               ),
 
-            const SizedBox(width: 8),
-            const Icon(
+            // ---------------------------------
+            // ARROW ICON
+            // ---------------------------------
+            Icon(
               Icons.chevron_right_rounded,
-              color: Colors.grey,
               size: 20,
+              color: scheme.onSurfaceVariant.withOpacity(.7),
             ),
           ],
         ),

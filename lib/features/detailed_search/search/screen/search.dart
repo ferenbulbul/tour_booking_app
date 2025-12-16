@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/core/widgets/picker_field.dart';
 import 'package:tour_booking/core/widgets/picker_sheet.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/features/detailed_search/search/search_viewmodel.dart';
+import 'package:tour_booking/features/detailed_search/search/widget/picker_field_skleleton.dart';
 import 'package:tour_booking/features/detailed_search/search/widget/toggle_segment.dart';
 
 class TourSearchScreen extends StatefulWidget {
@@ -15,8 +17,7 @@ class TourSearchScreen extends StatefulWidget {
   State<TourSearchScreen> createState() => _TourSearchScreenState();
 }
 
-class _TourSearchScreenState extends State<TourSearchScreen>
-    with SingleTickerProviderStateMixin {
+class _TourSearchScreenState extends State<TourSearchScreen> {
   int toggleIndex = 0;
 
   @override
@@ -33,12 +34,9 @@ class _TourSearchScreenState extends State<TourSearchScreen>
     required String title,
     required List list,
     required String? selected,
-
-    // ⭐ ekstra parametre: "Tüm ..." seçeneği eklensin mi?
     bool includeAll = false,
     String? allLabel,
   }) {
-    // ⭐ seçenekleri oluştur
     final options = [
       if (includeAll) PickerOption("", allLabel ?? "Tümü"),
       ...list.map((e) => PickerOption(e.id, e.name)),
@@ -48,20 +46,9 @@ class _TourSearchScreenState extends State<TourSearchScreen>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      barrierColor: Colors.transparent,
       builder: (_) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.85,
-          minChildSize: 0.5,
-          maxChildSize: 0.95,
-          builder: (context, scrollController) {
-            return PickerSheet(
-              title: title,
-              initialId: selected,
-              options: options,
-              controller: scrollController,
-            );
-          },
-        );
+        return PickerSheet(title: title, options: options, initialId: selected);
       },
     );
   }
@@ -81,176 +68,179 @@ class _TourSearchScreenState extends State<TourSearchScreen>
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<SearchViewmodel>();
-
-    final bool showCities = vm.selectedRegionId != null;
-    final bool showDistricts =
+    final scheme = Theme.of(context).colorScheme;
+    final showCities = vm.selectedRegionId != null;
+    final showDistricts =
         vm.selectedRegionId != null && vm.selectedCityId != null;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text("Detaylı Arama"), centerTitle: true),
+      backgroundColor: scheme.surface,
+
+      // APP BAR ---------------------------------------------------------
+      appBar: CommonAppBar(title: "Detaylı Arama", showBack: false),
+
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
         physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            PremiumToggle(
-              index: toggleIndex,
-              onChanged: (i) => setState(() => toggleIndex = i),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: 520, // 🔥 kritik: sayfayı “ortalanmış” hissettirir
             ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 28, 20, 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // TOGGLE -----------------------------------------------------
+                  PremiumToggle(
+                    index: toggleIndex,
+                    onChanged: (i) => setState(() => toggleIndex = i),
+                  ),
 
-            const SizedBox(height: 26),
+                  const SizedBox(height: 32),
 
-            // ⭐ BÖLGE
-            PickerField(
-              label: "Bölge Seçin",
-              glass: true,
-              value: _getName(vm.regions, vm.selectedRegionId),
-              icon: Icons.map_outlined,
-              onTap: () async {
-                final id = await _openPicker(
-                  title: "Bölge",
-                  list: vm.regions,
-                  selected: vm.selectedRegionId,
-                );
-                if (id != null) vm.fetchCities(id);
-              },
-            ),
-
-            const SizedBox(height: 20),
-
-            // ⭐ İL (ANİMASYONLU)
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              switchInCurve: Curves.easeOut,
-              switchOutCurve: Curves.easeIn,
-              transitionBuilder: (child, anim) {
-                return SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, -0.1),
-                    end: Offset.zero,
-                  ).animate(anim),
-                  child: FadeTransition(opacity: anim, child: child),
-                );
-              },
-              child: showCities
-                  ? Column(
-                      key: const ValueKey("cities"),
-                      children: [
-                        PickerField(
-                          label: "İl Seçin",
-                          glass: true,
-                          value: vm.selectedCityId == null
-                              ? "Tüm İller"
-                              : _getName(vm.cities, vm.selectedCityId),
-                          icon: Icons.location_city,
+                  // REGION (BÖLGE) --------------------------------------------
+                  vm.isRegionLoading
+                      ? const PickerFieldSkeleton()
+                      : PickerField(
+                          label: "Bölge Seçin",
+                          value: _getName(vm.regions, vm.selectedRegionId),
+                          icon: Icons.map_outlined,
                           onTap: () async {
                             final id = await _openPicker(
-                              title: "İl",
-                              list: vm.cities,
-                              selected: vm.selectedCityId,
-                              includeAll: true,
-                              allLabel: "Tüm İller",
+                              title: "Bölge Seçimi",
+                              list: vm.regions,
+                              selected: vm.selectedRegionId,
                             );
 
-                            if (id != null) {
-                              if (id.isEmpty) {
-                                vm.selectedCityId = null;
-                                vm.selectedDistrictId = null;
-                                vm.districts = [];
-                                vm.notifyListeners();
-                              } else {
-                                vm.fetchDistricts(id);
-                              }
-                            }
+                            if (id != null) vm.fetchCities(id);
                           },
                         ),
-                        const SizedBox(height: 20),
-                      ],
-                    )
-                  : const SizedBox.shrink(),
-            ),
 
-            // ⭐ İLÇE (ANİMASYONLU)
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              switchInCurve: Curves.easeOut,
-              switchOutCurve: Curves.easeIn,
-              transitionBuilder: (child, anim) {
-                return SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, -0.1),
-                    end: Offset.zero,
-                  ).animate(anim),
-                  child: FadeTransition(opacity: anim, child: child),
-                );
-              },
-              child: showDistricts
-                  ? Column(
-                      key: const ValueKey("districts"),
-                      children: [
-                        PickerField(
-                          label: "İlçe Seçin",
-                          glass: true,
-                          value:
-                              vm.selectedDistrictId == null ||
-                                  vm.selectedDistrictId!.isEmpty
-                              ? "Tüm İlçeler"
-                              : _getName(vm.districts, vm.selectedDistrictId),
-                          icon: Icons.location_on,
-                          onTap: () async {
-                            final id = await _openPicker(
-                              title: "İlçe",
-                              list: vm.districts,
-                              selected: vm.selectedDistrictId,
-                              includeAll: true,
-                              allLabel: "Tüm İlçeler",
-                            );
-                            if (id != null) vm.selectDistrict(id);
-                          },
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                    )
-                  : const SizedBox.shrink(),
-            ),
+                  const SizedBox(height: 20),
 
-            const SizedBox(height: 10),
+                  // CITY (İL) --------------------------------------------------
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: showCities
+                        ? Column(
+                            key: const ValueKey("city_field"),
+                            children: [
+                              vm.isCityLoading
+                                  ? const PickerFieldSkeleton()
+                                  : PickerField(
+                                      label: "İl Seçin",
+                                      value: vm.selectedCityId == null
+                                          ? "Tüm İller"
+                                          : _getName(
+                                              vm.cities,
+                                              vm.selectedCityId,
+                                            ),
+                                      icon: Icons.location_city_outlined,
+                                      onTap: () async {
+                                        final id = await _openPicker(
+                                          title: "İl Seçimi",
+                                          list: vm.cities,
+                                          selected: vm.selectedCityId,
+                                          includeAll: true,
+                                          allLabel: "Tüm İller",
+                                        );
 
-            // 🔍 Ara
-            SizedBox(
-              height: 52,
-              child: PrimaryButton(
-                onPressed: () {
-                  if (vm.selectedRegionId == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Lütfen bir bölge seçin."),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                    return;
-                  }
+                                        if (id != null) {
+                                          if (id.isEmpty) {
+                                            vm.selectedCityId = null;
+                                            vm.selectedDistrictId = null;
+                                            vm.districts = [];
+                                            vm.notifyListeners();
+                                          } else {
+                                            vm.fetchDistricts(id);
+                                          }
+                                        }
+                                      },
+                                    ),
+                              const SizedBox(height: 20),
+                            ],
+                          )
+                        : const SizedBox.shrink(),
+                  ),
 
-                  final params = {"type": toggleIndex.toString()};
-                  params["regionId"] = vm.selectedRegionId!;
+                  // DISTRICT (İLÇE) --------------------------------------------
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: showDistricts
+                        ? Column(
+                            key: const ValueKey("district_field"),
+                            children: [
+                              vm.isDistrictLoading
+                                  ? const PickerFieldSkeleton()
+                                  : PickerField(
+                                      label: "İlçe Seçin",
+                                      value:
+                                          vm.selectedDistrictId == null ||
+                                              vm.selectedDistrictId!.isEmpty
+                                          ? "Tüm İlçeler"
+                                          : _getName(
+                                              vm.districts,
+                                              vm.selectedDistrictId,
+                                            ),
+                                      icon: Icons.location_on_outlined,
+                                      onTap: () async {
+                                        final id = await _openPicker(
+                                          title: "İlçe Seçimi",
+                                          list: vm.districts,
+                                          selected: vm.selectedDistrictId,
+                                          includeAll: true,
+                                          allLabel: "Tüm İlçeler",
+                                        );
+                                        if (id != null) vm.selectDistrict(id);
+                                      },
+                                    ),
+                              const SizedBox(height: 20),
+                            ],
+                          )
+                        : const SizedBox.shrink(),
+                  ),
 
-                  if (vm.selectedCityId != null) {
-                    params["cityId"] = vm.selectedCityId!;
-                  }
+                  const SizedBox(height: 16),
 
-                  if (vm.selectedDistrictId != null &&
-                      vm.selectedDistrictId!.isNotEmpty) {
-                    params["districtId"] = vm.selectedDistrictId!;
-                  }
+                  // SEARCH BUTTON ---------------------------------------------
+                  SizedBox(
+                    height: 54,
+                    child: PrimaryButton(
+                      text: "Ara",
+                      onPressed: () {
+                        if (vm.selectedRegionId == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Lütfen bir bölge seçin."),
+                            ),
+                          );
+                          return;
+                        }
 
-                  context.pushNamed("searchResults", queryParameters: params);
-                },
-                text: "Ara",
+                        final params = {"type": toggleIndex.toString()};
+                        params["regionId"] = vm.selectedRegionId!;
+
+                        if (vm.selectedCityId != null) {
+                          params["cityId"] = vm.selectedCityId!;
+                        }
+
+                        if (vm.selectedDistrictId != null &&
+                            vm.selectedDistrictId!.isNotEmpty) {
+                          params["districtId"] = vm.selectedDistrictId!;
+                        }
+
+                        context.pushNamed(
+                          "searchResults",
+                          queryParameters: params,
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tour_booking/core/theme/app_bar_styles.dart';
 
 class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -35,7 +36,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       automaticallyImplyLeading: false,
       elevation: 0,
-      backgroundColor: scheme.background,
+      backgroundColor: AppBarStyles.background(context),
       centerTitle: centerTitle,
 
       // 🔙 Back Button
