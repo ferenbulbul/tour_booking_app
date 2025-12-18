@@ -9,7 +9,7 @@ class LocalizationSetup {
 
   static EasyLocalization wrapWithLocalization(Widget child) {
     return EasyLocalization(
-      supportedLocales: const [Locale('en'), Locale('tr')],
+      supportedLocales: const [Locale('en'), Locale('tr'), Locale('ar')],
       path: 'assets/translations',
       fallbackLocale: const Locale('en'),
       child: child,

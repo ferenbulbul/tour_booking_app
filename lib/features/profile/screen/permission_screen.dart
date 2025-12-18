@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -57,7 +58,7 @@ class _PermissionsScreenState extends State<PermissionsScreen>
 
     return Scaffold(
       backgroundColor: scheme.surface,
-      appBar: const CommonAppBar(title: "İzinler"),
+      appBar: CommonAppBar(title: tr("permissions")),
 
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.l),
@@ -95,10 +96,10 @@ class _PhoneCard extends StatelessWidget {
         : Colors.orange;
 
     final badgeText = !hasPhone
-        ? "Girilmedi"
+        ? tr("not_entered")
         : verified
-        ? "Doğrulandı"
-        : "Doğrulanmadı";
+        ? tr("verified")
+        : tr("not_verified");
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.l),
@@ -125,7 +126,7 @@ class _PhoneCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Telefon Numarası",
+                  tr("phone_number"),
                   style: AppTextStyles.titleSmall.copyWith(
                     fontWeight: FontWeight.w600,
                     color: scheme.onSurface,
@@ -146,9 +147,9 @@ class _PhoneCard extends StatelessWidget {
                 Text(
                   hasPhone
                       ? (verified
-                            ? "Bu numara rezervasyon hatırlatmaları için kullanılacaktır."
-                            : "Numaran doğrulanmadı. Güncelleyebilirsin.")
-                      : "Lütfen telefon numarası ekleyin.",
+                            ? tr("phone_usage_info")
+                            : tr("phone_not_verified"))
+                      : tr("phone_required"),
                   style: AppTextStyles.bodySmall.copyWith(
                     color: scheme.onSurfaceVariant,
                     height: 1.3,
@@ -183,12 +184,12 @@ class _PhoneCard extends StatelessWidget {
             children: [
               TextButton(
                 onPressed: () => context.push("/update-phone"),
-                child: Text(hasPhone ? "Güncelle" : "Ekle"),
+                child: Text(hasPhone ? tr("update") : tr("add")),
               ),
               if (hasPhone && !verified)
                 TextButton(
                   onPressed: () => context.push("/verify-phone"),
-                  child: const Text("Doğrula"),
+                  child: Text(tr("verify")),
                 ),
             ],
           ),
@@ -216,8 +217,8 @@ class _LocationPermissionRow extends StatelessWidget {
 
     return _PermissionRow(
       icon: Icons.location_on_outlined,
-      title: "Konum",
-      subtitle: "Konuma göre öneriler için gerekli",
+      title: tr("location"),
+      subtitle: tr("location_required_for_suggestions"),
       allowed: allowed,
       permanentlyDenied: permanentlyDenied,
       onRequest: () async {
@@ -256,7 +257,7 @@ class _PermissionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    String buttonText = permanentlyDenied ? "Ayarlar" : "İzin Ver";
+    String buttonText = permanentlyDenied ? tr("settings") : tr("allow");
     Color buttonColor = permanentlyDenied ? Colors.orange : scheme.primary;
 
     return Container(

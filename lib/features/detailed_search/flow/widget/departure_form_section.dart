@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/widgets/picker_field.dart';
@@ -50,7 +51,7 @@ class DepartureFormSection extends StatelessWidget {
         // ------------------------------------------
         _buildItem(
           child: PickerField(
-            label: "Departure City",
+            label: tr("departure_city"),
             value: cityName,
             icon: Icons.location_city_rounded,
             onTap: onSelectCity,
@@ -62,7 +63,7 @@ class DepartureFormSection extends StatelessWidget {
         // ------------------------------------------
         _buildItem(
           child: PickerField(
-            label: "Departure District",
+            label: tr("departure_district"),
             value: districtName,
             icon: Icons.location_on_outlined,
             onTap: onSelectDistrict,
@@ -74,7 +75,7 @@ class DepartureFormSection extends StatelessWidget {
         // ------------------------------------------
         _buildItem(
           child: PickerField(
-            label: "Add Exact Location",
+            label: tr("add_exact_location"),
             value: null,
             icon: Icons.my_location_rounded,
             onTap: onSelectPlace,
@@ -132,12 +133,12 @@ class DepartureFormSection extends StatelessWidget {
               horizontal: AppSpacing.l,
             ).copyWith(bottom: 12),
             child: Row(
-              children: const [
+              children: [
                 Icon(Icons.info_outline, size: 16, color: Colors.grey),
                 SizedBox(width: 6),
                 Expanded(
                   child: Text(
-                    "You can preview or change the pickup point on the map.",
+                    tr("pickup_point_info"),
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.grey,
@@ -163,7 +164,7 @@ class DepartureFormSection extends StatelessWidget {
               children: [
                 Expanded(
                   child: PickerField(
-                    label: "Select Date",
+                    label: tr("select_date"),
                     value: dateText,
                     icon: Icons.calendar_month_rounded,
                     onTap: onSelectDate,
@@ -172,7 +173,7 @@ class DepartureFormSection extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: PickerField(
-                    label: "Select Time",
+                    label: tr("select_time"),
                     value: timeText,
                     icon: Icons.access_time_rounded,
                     onTap: onSelectTime,

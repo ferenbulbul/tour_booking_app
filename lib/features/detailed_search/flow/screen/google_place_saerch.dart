@@ -2,10 +2,12 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/core/utils/location_validator.dart';
 import 'package:tour_booking/keys.dart';
@@ -36,6 +38,7 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
 
   @override
   void dispose() {
+    _debouncer.dispose();
     _ctrl.dispose();
     super.dispose();
   }
@@ -51,7 +54,9 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
   // ---------------------------------------------------------------------------
   Future<void> _search(String query) async {
     final q = "${widget.city} ${widget.district} $query".trim();
-
+    //final q = "غوموشهانه";
+    final lang = context.locale.languageCode;
+    if (!mounted) return;
     setState(() => _loading = true);
 
     final uri = Uri.https(
@@ -61,20 +66,22 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
     );
 
     final res = await http.get(uri);
-
+    if (!mounted) return;
     setState(() => _loading = false);
 
     if (res.statusCode != 200) {
+      if (!mounted) return;
       setState(() => _items = []);
       return;
     }
 
     final body = jsonDecode(res.body);
     if (body['status'] != "OK") {
+      if (!mounted) return;
       setState(() => _items = []);
       return;
     }
-
+    if (!mounted) return;
     setState(() {
       _items = (body['predictions'] as List)
           .map((e) => _Prediction.fromJson(e))
@@ -86,6 +93,7 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
   // PICK PLACE
   // ---------------------------------------------------------------------------
   Future<void> _pick(_Prediction p) async {
+    final lang = context.locale.languageCode;
     final uri = Uri.https(
       'maps.googleapis.com',
       '/maps/api/place/details/json',
@@ -116,9 +124,8 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
     );
 
     if (!validation.isValid) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(validation.errorMessage!)));
+      UIHelper.showError(context, validation.errorMessage!);
+
       return;
     }
 
@@ -127,9 +134,7 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
     final lng = (loc?['lng'] as num?)?.toDouble();
 
     if (lat == null || lng == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Konum koordinatları alınamadı.")),
-      );
+      UIHelper.showWarning(context, tr("location_coordinates_not_found"));
       return;
     }
 
@@ -147,7 +152,7 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.surface,
 
       // ✔ PREMIUM COMMON APP BAR
       appBar: CommonAppBar(
@@ -192,7 +197,13 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
                           },
                         )
                       : null,
-                  hintText: "${widget.city} ${widget.district} içinde ara...",
+                  hintText: tr(
+                    "search_in_location",
+                    namedArgs: {
+                      "city": widget.city,
+                      "district": widget.district,
+                    },
+                  ),
                   hintStyle: TextStyle(color: AppColors.textLight),
                   border: InputBorder.none,
                 ),
@@ -214,7 +225,7 @@ class _PlacePickerPageState extends State<PlacePickerPage> {
               child: _items.isEmpty
                   ? Center(
                       child: Text(
-                        "Sonuç bulunamadı",
+                        tr("no_results_found"),
                         style: AppTextStyles.bodyMedium.copyWith(
                           color: AppColors.textSecondary,
                         ),
@@ -328,5 +339,9 @@ class _Debouncer {
   void call(void Function() action) {
     _t?.cancel();
     _t = Timer(Duration(milliseconds: ms), action);
+  }
+
+  void dispose() {
+    _t?.cancel();
   }
 }

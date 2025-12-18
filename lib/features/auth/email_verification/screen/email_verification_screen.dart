@@ -75,7 +75,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
     return Scaffold(
       backgroundColor: scheme.surface,
-      appBar: const CommonAppBar(title: "Email Doğrulama", showBack: false),
+      appBar: CommonAppBar(
+        title: 'email_verification_title'.tr(),
+        showBack: false,
+      ),
 
       body: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -137,7 +140,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             TextButton(
               onPressed: () => context.go('/login'),
               child: Text(
-                "Logine Dön",
+                'back_to_login'.tr(),
                 style: text.labelLarge?.copyWith(
                   color: scheme.primary,
                   fontWeight: FontWeight.w600,

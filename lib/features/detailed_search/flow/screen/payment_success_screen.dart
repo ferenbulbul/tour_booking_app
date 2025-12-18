@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:confetti/confetti.dart';
@@ -91,7 +92,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
 
                   // ✅ TITLE
                   Text(
-                    "Ödeme Başarılı",
+                    tr("payment_success_title"),
                     style: AppTextStyles.headlineSmall.copyWith(
                       fontWeight: FontWeight.w800,
                       letterSpacing: -.4,
@@ -101,7 +102,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                   const SizedBox(height: 10),
 
                   Text(
-                    "Rezervasyonunuz başarıyla tamamlandı.\nKeyifli bir tur dileriz ✨",
+                    tr("payment_success_description"),
                     textAlign: TextAlign.center,
                     style: AppTextStyles.bodyMedium.copyWith(
                       color: AppColors.textSecondary,
@@ -131,7 +132,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                     child: Column(
                       children: [
                         Text(
-                          "Rezervasyon Numaranız",
+                          tr("reservation_number_title"),
                           style: AppTextStyles.bodyMedium.copyWith(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w800,
@@ -155,7 +156,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                     width: double.infinity,
                     height: 52,
                     child: PrimaryButton(
-                      text: "Ana Sayfaya Dön",
+                      text: tr("back_to_home"),
                       onPressed: () => context.go('/home'),
                     ),
                   ),

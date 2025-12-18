@@ -1,11 +1,12 @@
 import 'dart:ui';
-
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/theme/app_bar_styles.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/badgets/app_badge.dart';
 import 'package:tour_booking/core/widgets/badgets/difficulty_badge.dart';
 import 'package:tour_booking/core/widgets/bottom_action_bar.dart';
@@ -20,7 +21,6 @@ import 'package:tour_booking/features/detailed_search/flow/widget/description_se
 import 'package:tour_booking/features/detailed_search/flow/widget/tour_detail_header_hero.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/tour_detail_skeleton.dart';
 import 'package:tour_booking/core/widgets/time_picker_sheet.dart';
-
 import 'package:tour_booking/features/detailed_search/flow/screen/full_screen_gallery_screen.dart';
 import 'package:tour_booking/models/place_section/place_section.dart';
 
@@ -43,7 +43,6 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
   late List<String> times;
   late String heroImage;
   final ScrollController _scrollController = ScrollController();
-  bool _showBottom = true;
 
   @override
   bool get wantKeepAlive => true;
@@ -110,7 +109,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: BottomActionBar(
         price: null, // fiyat yok
-        buttonText: "Araçları Gör",
+        buttonText: tr("view_vehicles"),
         onPressed: () => _submit(vm),
       ),
       body: CustomScrollView(
@@ -249,9 +248,9 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
                         child: Transform.scale(
                           scale: scale,
                           child: Padding(
-                            padding: EdgeInsets.only(
-                              left: lerpDouble(20, 72, moveT) ?? 20,
-                              right: lerpDouble(40, 72, moveT) ?? 40,
+                            padding: EdgeInsetsDirectional.only(
+                              start: lerpDouble(20, 72, moveT) ?? 20,
+                              end: lerpDouble(40, 72, moveT) ?? 40,
                             ),
                             child: Text(
                               detail.title,
@@ -314,9 +313,9 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
                     const SizedBox(height: 16),
                     DescriptionSection(detail: detail),
                     const SizedBox(height: 16),
-                    const SectionTitle(
-                      title: "Your Departure Details",
-                      subtitle: "Choose the details for your pickup",
+                    SectionTitle(
+                      title: tr("departure_details_title"),
+                      subtitle: tr("Choose the details for your pickup"),
                     ),
                     const SizedBox(height: 16),
                     DepartureFormSection(
@@ -369,7 +368,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
       backgroundColor: Colors.transparent,
       barrierColor: Colors.transparent,
       builder: (_) => PickerSheet(
-        title: "Select City",
+        title: tr("select_city"),
         options: vm.detail!.cities
             .map((e) => PickerOption(e.id, e.name))
             .toList(),
@@ -391,7 +390,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
       backgroundColor: Colors.transparent,
       barrierColor: Colors.transparent,
       builder: (_) => PickerSheet(
-        title: "Select District",
+        title: tr("select_district"),
         options: districts.map((e) => PickerOption(e.id, e.name)).toList(),
         initialId: vm.selectedDistrictId,
       ),
@@ -456,6 +455,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
+
       builder: (context) => DatePickerSheet(
         initialDate: vm.selectedDate ?? DateTime.now(),
         firstDate: DateTime.now(),
@@ -481,14 +481,14 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
         vm.selectedDistrictId == null ||
         vm.selectedDate == null ||
         vm.selectedPlaceDesc == null) {
-      _showSnack("Lütfen tüm alanları doldurun");
+      UIHelper.showWarning(context, tr("fill_all_fields_warning"));
       return;
     }
 
     await vm.fetchVehicles();
 
     if (vm.vehicles.isEmpty) {
-      _showSnack("Bu tarihte müsait araç bulunamadı");
+      UIHelper.showWarning(context, tr("no_available_vehicle_date"));
       return;
     }
 
@@ -523,15 +523,4 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
     }
     return out;
   }
-
-  void _showSnack(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-  }
-}
-
-bool _showContinue(TourSearchDetailViewModel vm) {
-  return vm.selectedCityId != null &&
-      vm.selectedDistrictId != null &&
-      vm.selectedDate != null &&
-      vm.selectedPlaceDesc != null;
 }

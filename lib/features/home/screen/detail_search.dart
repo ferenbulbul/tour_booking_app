@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -104,7 +105,7 @@ class _DetailSearchLocationPageState extends State<DetailSearchLocationPage> {
                 autofocus: true,
                 textInputAction: TextInputAction.search,
                 decoration: InputDecoration(
-                  hintText: "Yer adı yaz (örn: Ayder)",
+                  hintText: tr("enter_place_name_example"),
                   prefixIcon: Icon(
                     Icons.search,
                     color: scheme.onSurfaceVariant,
@@ -222,7 +223,9 @@ class _EmptyState extends StatelessWidget {
           border: Border.all(color: scheme.outline.withOpacity(.25)),
         ),
         child: Text(
-          showTip ? "En az 2 karakter yazın" : "Sonuç bulunamadı",
+          showTip
+              ? tr("min_2_characters_required")
+              : tr("search_no_results_title"),
           style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 15),
         ),
       ),

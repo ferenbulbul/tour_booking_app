@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -42,16 +43,13 @@ class _TourSearchResultsByTourTypeScreenState
     final items = context.select((HomeViewModel vm) => vm.searchItemsByType);
     final msg = context.select((HomeViewModel vm) => vm.messageSearchByType);
 
-    final title = isLoading
-        ? "Yükleniyor..."
-        : (items.isNotEmpty
-              ? items.first.tourTypeName ?? "Sonuçlar"
-              : "Sonuçlar");
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
-      appBar: CommonAppBar(title: title, showBack: true),
+      appBar: CommonAppBar(
+        title: tr("tour_search_results_title"),
+        showBack: true,
+      ),
 
       body: _buildBody(isLoading, msg, items),
     );

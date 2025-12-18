@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
@@ -34,6 +35,8 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = AppColors.primary;
+    final locale = context.locale;
+    final isRtl = locale.languageCode == 'ar';
 
     return SafeArea(
       bottom: false,
@@ -42,7 +45,7 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
           color: isDark ? Colors.black : Colors.white,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
         ),
-        padding: const EdgeInsets.only(top: 10, bottom: 20),
+        padding: const EdgeInsetsDirectional.only(top: 10, bottom: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -50,7 +53,7 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
             Container(
               width: 42,
               height: 5,
-              margin: const EdgeInsets.only(bottom: 14),
+              margin: const EdgeInsetsDirectional.only(bottom: 14),
               decoration: BoxDecoration(
                 color: isDark
                     ? Colors.white.withOpacity(.22)

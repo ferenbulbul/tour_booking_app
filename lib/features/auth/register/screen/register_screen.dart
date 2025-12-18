@@ -24,8 +24,12 @@ class RegisterScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   tr("register_subtitle"),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: text.bodyMedium?.copyWith(
                     color: scheme.onSurface.withOpacity(0.7),
+                    height: 1.4,
                   ),
                 ),
                 const SizedBox(height: 32),

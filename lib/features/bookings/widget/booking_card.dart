@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tour_booking/models/booking/booking_dto.dart';
@@ -22,10 +23,10 @@ class _BookingCardState extends State<BookingCard> {
 
   Color _statusColor(String status) {
     final s = status.toLowerCase();
-    if (s == "tamamlandı" || s == "completed") {
+    if (s == "completed") {
       return Colors.green.shade600;
     }
-    if (s == "iptal" || s == "cancelled") {
+    if (s == "cancelled") {
       return Colors.red.shade600;
     }
     return AppColors.primary;
@@ -34,19 +35,18 @@ class _BookingCardState extends State<BookingCard> {
   String _statusLabel(String status, DateTime departureDate) {
     final s = status.toLowerCase();
 
-    if (s == "tamamlandı" || s == "completed") return "Tamamlandı";
-    if (s == "iptal" || s == "cancelled") return "İptal Edildi";
-    if (departureDate.isAfter(DateTime.now())) return "Yaklaşan";
+    if (s == "completed") return 'booking_tab_completed'.tr();
+    if (s == "cancelled") return 'booking_tab_cancelled'.tr();
+    if (departureDate.isAfter(DateTime.now())) {
+      return 'booking_tab_upcoming'.tr();
+    }
 
     return status;
   }
 
   bool _isCancelable(String status) {
     final s = status.toLowerCase();
-    return !(s == "tamamlandı" ||
-        s == "completed" ||
-        s == "iptal" ||
-        s == "cancelled");
+    return !(s == "completed" || s == "cancelled");
   }
 
   @override
@@ -62,7 +62,7 @@ class _BookingCardState extends State<BookingCard> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeInOut,
-      margin: const EdgeInsets.only(bottom: 14),
+      margin: const EdgeInsetsDirectional.only(bottom: 14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -188,23 +188,31 @@ class _BookingCardState extends State<BookingCard> {
 
                     _info(
                       Icons.place_outlined,
-                      "Kalkış Yeri",
+                      'booking_label_departure_location'.tr(),
                       item.departureLocationDescription,
                     ),
                     _info(
                       Icons.access_time_rounded,
-                      "Saat",
+                      'booking_label_time'.tr(),
                       item.departureTime,
                     ),
                     _info(
                       Icons.directions_bus_rounded,
-                      "Araç",
-                      "${item.vehicleBrand} • ${item.seatCount} koltuk",
+                      'booking_label_vehicle'.tr(),
+                      "${item.vehicleBrand} • ${item.seatCount} ${'booking_seat_count'.tr()}",
                     ),
-                    _info(Icons.person_rounded, "Şoför", item.driverName),
+                    _info(
+                      Icons.person_rounded,
+                      'booking_label_driver'.tr(),
+                      item.driverName,
+                    ),
 
                     if (item.guideName.trim().isNotEmpty)
-                      _info(Icons.map_rounded, "Rehber", item.guideName),
+                      _info(
+                        Icons.map_rounded,
+                        'booking_label_guide'.tr(),
+                        item.guideName,
+                      ),
 
                     const SizedBox(height: 14),
 
@@ -212,8 +220,8 @@ class _BookingCardState extends State<BookingCard> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          "Toplam Ücret",
+                        Text(
+                          'booking_total_price'.tr(),
                           style: TextStyle(
                             fontSize: 14.5,
                             fontWeight: FontWeight.w600,
@@ -248,8 +256,8 @@ class _BookingCardState extends State<BookingCard> {
                           onPressed: () {
                             // TODO: cancel request
                           },
-                          child: const Text(
-                            "İptal talebi oluştur",
+                          child: Text(
+                            'booking_cancel_request'.tr(),
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13.5,
@@ -269,7 +277,7 @@ class _BookingCardState extends State<BookingCard> {
 
   Widget _info(IconData icon, String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsetsDirectional.only(bottom: 10),
       child: Row(
         children: [
           Icon(icon, size: 18, color: Colors.grey.shade600),

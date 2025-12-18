@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -32,7 +33,7 @@ class AuthViewModel extends ChangeNotifier {
         final googleUser = await _googleSignIn.signIn();
         if (googleUser == null) {
           return Result.failure(
-            FailureModel(message: "Google girişi iptal edildi."),
+            FailureModel(message: 'google_sign_in_cancelled'),
           );
         }
 
@@ -117,7 +118,7 @@ class AuthViewModel extends ChangeNotifier {
       notifyListeners();
 
       return Result.failure(
-        FailureModel(message: "Beklenmedik bir hata oluştu: ${e.toString()}"),
+        FailureModel(message: "${'unexpected_error_occurred'.tr()}"),
       );
     }
   }
@@ -133,9 +134,6 @@ class AuthViewModel extends ChangeNotifier {
       await prefs.clear();
       _user = null;
       notifyListeners();
-      print("👋 Tüm oturumlar kapatıldı.");
-    } catch (e) {
-      print('🚨 Çıkış yapma hatası: $e');
-    }
+    } catch (e) {}
   }
 }

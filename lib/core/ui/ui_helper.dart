@@ -8,7 +8,7 @@ class UIHelper {
   }
 
   static void showError(BuildContext context, String message) {
-    _showSnack(context, message, AppColors.error);
+    _showSnack(context, message, const Color.fromARGB(255, 223, 71, 73));
   }
 
   static void showWarning(BuildContext context, String message) {
@@ -21,7 +21,7 @@ class UIHelper {
 
   static void showValidationErrors(BuildContext context, List<String> errors) {
     final fullText = errors.join("\n");
-    _showSnack(context, fullText, AppColors.error);
+    _showSnack(context, fullText, const Color.fromARGB(255, 235, 86, 89));
   }
 
   static void _showSnack(BuildContext context, String text, Color background) {
@@ -40,7 +40,7 @@ class UIHelper {
           text,
           style: AppTextStyles.labelLarge.copyWith(
             color: Colors.white,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),

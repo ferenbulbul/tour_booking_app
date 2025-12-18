@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
@@ -13,10 +14,16 @@ class AboutSection extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     final items = [
-      {'icon': Icons.verified_outlined, 'text': 'Fully Insured & Licensed'},
-      {'icon': Icons.person_outline, 'text': 'Professional Local Guides'},
-      {'icon': Icons.support_agent_outlined, 'text': '24/7 Customer Support'},
-      {'icon': Icons.price_check_outlined, 'text': 'Best Price Guarantee'},
+      {'icon': Icons.verified_outlined, 'text': tr("about_fully_insured")},
+      {'icon': Icons.person_outline, 'text': tr("about_professional_guides")},
+      {
+        'icon': Icons.support_agent_outlined,
+        'text': tr("about_customer_support"),
+      },
+      {
+        'icon': Icons.price_check_outlined,
+        'text': tr("about_best_price_guarantee"),
+      },
     ];
 
     return Column(
@@ -28,7 +35,7 @@ class AboutSection extends StatelessWidget {
         Column(
           children: items.map((item) {
             return Container(
-              margin: const EdgeInsets.only(bottom: AppSpacing.m),
+              margin: const EdgeInsetsDirectional.only(bottom: AppSpacing.m),
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.s),
               child: Row(
                 children: [
@@ -83,7 +90,7 @@ class AboutSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadius.medium),
           ),
           child: Text(
-            '© 2025 TourBooking. All rights reserved.',
+            tr("about_footer_rights"),
             textAlign: TextAlign.center,
             style: textTheme.bodySmall?.copyWith(
               color: scheme.onSurface.withOpacity(.6),

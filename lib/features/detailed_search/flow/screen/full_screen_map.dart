@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:tour_booking/core/utils/location_validator.dart';
+import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/keys.dart';
 import 'package:tour_booking/models/place_section/place_section.dart';
@@ -59,7 +61,7 @@ class _FullMapViewState extends State<FullMapView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CommonAppBar(title: "Konum Seç", showBack: true),
+      appBar: CommonAppBar(title: tr("select_location_title"), showBack: true),
       body: Stack(
         children: [
           // ---------------- GOOGLE MAP ----------------
@@ -167,8 +169,8 @@ class _FullMapViewState extends State<FullMapView> {
           ),
         ],
       ),
-      child: const Text(
-        "Haritaya dokunarak bir konum seçebilirsiniz.",
+      child: Text(
+        tr("map_tap_to_select"),
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
       ),
@@ -177,11 +179,10 @@ class _FullMapViewState extends State<FullMapView> {
 
   // ----------------------------------------------------------
   // 📌 KONUMU KULLAN BUTONU
+
   // ----------------------------------------------------------
   Widget _confirmButton() {
-    return ElevatedButton(
-      key: const ValueKey("button"),
-
+    return PrimaryButton(
       onPressed: () {
         Navigator.pop(
           context,
@@ -192,10 +193,7 @@ class _FullMapViewState extends State<FullMapView> {
           ),
         );
       },
-      child: const Text(
-        "Bu Konumu Kullan",
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-      ),
+      text: tr("use_this_location"),
     );
   }
 

@@ -49,7 +49,7 @@ class LoginScreen extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 Text(
-                  "Or continue with",
+                  tr('or_continue_with'),
                   style: text.bodyMedium?.copyWith(
                     color: scheme.onSurface.withOpacity(0.6),
                   ),

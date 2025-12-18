@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
@@ -60,7 +61,7 @@ class ProfileHeader extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            phoneVerified ? "Telefon Doğrulandı" : "Telefon Doğrulanmadı",
+            phoneVerified ? tr("phone_verified") : tr("phone_not_verified"),
             style: AppTextStyles.labelSmall.copyWith(
               color: phoneVerified ? AppColors.success : AppColors.warning,
               fontWeight: FontWeight.w600,

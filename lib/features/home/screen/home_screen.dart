@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -193,23 +194,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
             // FEATURED
             _sliverSection(
-              title: "Featured Tours",
+              title: tr("featured_tours"),
               body: const FeaturedPointsWidget(),
             ),
 
             // NEARBY
             _sliverSection(
-              title: "Nearby Tours",
-              subtitle: "Find tours close to your location",
+              title: tr("nearby_tours"),
+              subtitle: tr("find_tours_nearby"),
               body: const NearbyPointsButton(),
             ),
 
             // CATEGORIES
-            _sliverSection(title: "Categories", body: const TourTypeWidget()),
+            _sliverSection(
+              title: tr("categories"),
+              body: const TourTypeWidget(),
+            ),
 
             // ABOUT US
             _sliverSection(
-              title: "About Us",
+              title: tr("about_us"),
               body: const AboutSection(),
               bottomSpace: AppSpacing.sectionSpacing * 2,
             ),
@@ -234,6 +238,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Text(
+            //   'Hello مرحبا',
+            //   style: const TextStyle(fontFamily: 'Inter', fontSize: 22),
+            // ),
+            // Text(
+            //   'مرحبا ',
+            //   style: const TextStyle(fontFamily: 'Cairo', fontSize: 24),
+            // ),
+            // Text('مرحبا ', style: const TextStyle(fontSize: 24)),
             SectionTitle(title: title, subtitle: subtitle),
             const SizedBox(height: AppSpacing.m),
             RepaintBoundary(child: body),

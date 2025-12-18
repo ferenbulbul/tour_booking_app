@@ -67,7 +67,7 @@ class ProfileTile extends StatelessWidget {
                   ),
                   if (subtitle != null)
                     Padding(
-                      padding: const EdgeInsets.only(top: 2),
+                      padding: const EdgeInsetsDirectional.only(top: 2),
                       child: Text(
                         subtitle!,
                         style: AppTextStyles.bodyMedium.copyWith(
@@ -87,7 +87,7 @@ class ProfileTile extends StatelessWidget {
             // ---------------------------------
             if (trailingText != null)
               Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsetsDirectional.only(end: 8),
                 child: Text(
                   trailingText!,
                   style: AppTextStyles.bodyMedium.copyWith(

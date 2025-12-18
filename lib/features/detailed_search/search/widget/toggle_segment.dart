@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 
@@ -32,8 +33,8 @@ class PremiumToggle extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _item("Kalkış Noktası", Icons.my_location, 0, isDark),
-          _item("Tur Noktası", Icons.location_on_outlined, 1, isDark),
+          _item(tr("departure_point"), Icons.my_location, 0, isDark),
+          _item(tr("tour_point"), Icons.location_on_outlined, 1, isDark),
         ],
       ),
     );

@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/auth/forgot_passwords/forgot_password/widget/forgot_password_form.dart';
 
@@ -10,11 +9,10 @@ class ForgotPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
 
     return Scaffold(
       backgroundColor: scheme.surface,
-      appBar: const CommonAppBar(title: "Şifre Sıfırlama"),
+      appBar: CommonAppBar(title: 'reset_password'.tr()),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),

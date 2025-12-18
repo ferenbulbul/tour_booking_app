@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/bottom_action_bar.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/core/widgets/section_title.dart';
@@ -38,48 +38,75 @@ class SummaryScreen extends StatelessWidget {
         final canConfirm = date != null && selectedVehicle != null;
 
         return Scaffold(
-          appBar: const CommonAppBar(title: "Seyahat Özeti"),
+          appBar: CommonAppBar(title: tr('summary_title')),
           body: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SectionTitle(title: "Seyahat Bilgileri"),
+                SectionTitle(title: tr('summary_trip_info')),
                 const SizedBox(height: 12),
 
                 _summaryCard(
                   headerImage: vm.tourpointImage,
                   children: [
-                    _infoRow("Tarih", _formatDate(date, vm.selectedTime)),
-                    _infoRow("Kalkış Bölgesi", vm.selectedCityName ?? "—"),
-                    _infoRow("İlçe", vm.selectedDistrictName ?? "—"),
-                    _infoRowMultiline("Tam Konum", vm.selectedPlaceDesc ?? "—"),
-                    _infoRow("Tur Noktası", vm.selectedTourPointName ?? "—"),
+                    _infoRow(
+                      tr('summary_date'),
+                      _formatDate(date, vm.selectedTime),
+                    ),
+                    _infoRow(
+                      tr('summary_departure_city'),
+                      vm.selectedCityName ?? "—",
+                    ),
+                    _infoRow(
+                      tr('summary_district'),
+                      vm.selectedDistrictName ?? "—",
+                    ),
+                    _infoRowMultiline(
+                      tr('summary_exact_location'),
+                      vm.selectedPlaceDesc ?? "—",
+                    ),
+                    _infoRow(
+                      tr("summary_tour_point"),
+                      vm.selectedTourPointName ?? "—",
+                    ),
                   ],
                 ),
 
                 const SizedBox(height: 28),
 
-                SectionTitle(title: "Araç Bilgisi"),
+                SectionTitle(title: tr("summary_vehicle_info")),
                 const SizedBox(height: 12),
 
                 _summaryCard(
                   headerImage: selectedVehicle?.image,
                   children: [
                     _infoRow(
-                      "Araç",
+                      tr("summary_vehicle"),
                       _vehicleTitle(selectedVehicle, vehicleDetail),
                     ),
-                    _infoRow("Sınıf", vehicleDetail?.vehicleClass ?? "—"),
-                    _infoRow("Tip", vehicleDetail?.vehicleType ?? "—"),
-                    _infoRow("Koltuk", "${vehicleDetail?.seatCount ?? "-"}"),
-                    _infoRow("Ücret", _formatCurrency(vehiclePrice)),
+                    _infoRow(
+                      tr("summary_vehicle_class"),
+                      vehicleDetail?.vehicleClass ?? "—",
+                    ),
+                    _infoRow(
+                      tr("summary_vehicle_type"),
+                      vehicleDetail?.vehicleType ?? "—",
+                    ),
+                    _infoRow(
+                      tr("summary_seat"),
+                      "${vehicleDetail?.seatCount ?? "-"}",
+                    ),
+                    _infoRow(
+                      tr("summary_price"),
+                      _formatCurrency(vehiclePrice),
+                    ),
                   ],
                 ),
 
                 if (selectedGuide != null) ...[
                   const SizedBox(height: 28),
-                  SectionTitle(title: "Rehber Bilgisi"),
+                  SectionTitle(title: tr("summary_guide_info")),
                   const SizedBox(height: 12),
 
                   _summaryCard(
@@ -112,15 +139,21 @@ class SummaryScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      _infoRow("Diller", selectedGuide.languages.join(", ")),
-                      _infoRow("Rehber Ücreti", _formatCurrency(guidePrice)),
+                      _infoRow(
+                        tr("summary_languages"),
+                        selectedGuide.languages.join(", "),
+                      ),
+                      _infoRow(
+                        tr("summary_guide_price"),
+                        _formatCurrency(guidePrice),
+                      ),
                     ],
                   ),
                 ],
 
                 const SizedBox(height: 28),
 
-                SectionTitle(title: "Ödeme Özeti"),
+                SectionTitle(title: tr("summary_payment_info")),
                 const SizedBox(height: 12),
 
                 _paymentCard(
@@ -133,26 +166,21 @@ class SummaryScreen extends StatelessWidget {
           ),
           bottomNavigationBar: BottomActionBar(
             price: totalPrice.toInt(),
-            buttonText: "Onayla",
+            buttonText: tr("summary_confirm"),
             onPressed: canConfirm
                 ? () async {
                     await vm.ControlBooking();
                     if (vm.isValid && vm.bookingId != null) {
                       context.push("/payment", extra: vm.bookingId);
                     } else if (vm.errorMessage != null) {
-                      ScaffoldMessenger.of(
+                      UIHelper.showError(
                         context,
-                      ).showSnackBar(SnackBar(content: Text(vm.errorMessage!)));
+                        vm.errorMessage ?? tr("error_generic"),
+                      );
                     }
                   }
                 : () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          "Bir hata oluştu, lütfen tekrar deneyin.",
-                        ),
-                      ),
-                    );
+                    UIHelper.showError(context, tr("error_generic"));
                   },
           ),
         );
@@ -282,11 +310,11 @@ class SummaryScreen extends StatelessWidget {
       padding: const EdgeInsets.all(22),
       child: Column(
         children: [
-          _paymentRow("Araç", _formatCurrency(vehiclePrice)),
-          _paymentRow("Rehber", _formatCurrency(guidePrice)),
+          _paymentRow(tr("summary_vehicle"), _formatCurrency(vehiclePrice)),
+          _paymentRow(tr("summary_guide_info"), _formatCurrency(guidePrice)),
           const Divider(color: Colors.white54),
           _paymentRow(
-            "Toplam",
+            tr("summary_total"),
             _formatCurrency(totalPrice),
             big: true,
             bold: true,

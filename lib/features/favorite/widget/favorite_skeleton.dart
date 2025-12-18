@@ -21,7 +21,7 @@ class FavoriteCardSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 135,
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsetsDirectional.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
@@ -98,7 +98,7 @@ class FavoriteCardSkeleton extends StatelessWidget {
 
           // --- HEART PLACEHOLDER ---
           Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsetsDirectional.only(end: 16),
             child: Shimmer.fromColors(
               baseColor: Colors.grey.shade300,
               highlightColor: Colors.grey.shade100,

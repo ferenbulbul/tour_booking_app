@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/features/auth/login/widgets/google_view_model.dart';
 
 class SocialLoginButtons extends StatelessWidget {
@@ -63,7 +64,11 @@ class SocialLoginButtons extends StatelessWidget {
                 if (result.isSuccess) {
                   context.go('/home');
                 } else {
-                  _showError(context, result.error?.message);
+                  UIHelper.showError(
+                    context,
+                    result.error?.message?.tr() ??
+                        'unexpected_error_occurred'.tr(),
+                  );
                 }
               }
             },
@@ -110,7 +115,11 @@ class SocialLoginButtons extends StatelessWidget {
                 if (result.isSuccess) {
                   context.go('/home');
                 } else {
-                  _showError(context, result.error?.message);
+                  UIHelper.showError(
+                    context,
+                    result.error?.message?.tr() ??
+                        'unexpected_error_occurred'.tr(),
+                  );
                 }
               }
             },
@@ -129,7 +138,7 @@ class SocialLoginButtons extends StatelessWidget {
                 const Icon(Icons.apple, color: Colors.white, size: 26),
                 const SizedBox(width: 12),
                 Text(
-                  'Apple ile giriş yap',
+                  tr('sign_in_with_apple'),
                   style: text.labelLarge?.copyWith(color: Colors.white),
                 ),
               ],
@@ -148,17 +157,6 @@ class SocialLoginButtons extends StatelessWidget {
       barrierDismissible: false,
       builder: (context) =>
           Center(child: CircularProgressIndicator(color: scheme.primary)),
-    );
-  }
-
-  void _showError(BuildContext context, String? message) {
-    final scheme = Theme.of(context).colorScheme;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message ?? "Bilinmeyen bir hata oluştu."),
-        backgroundColor: scheme.error,
-      ),
     );
   }
 }

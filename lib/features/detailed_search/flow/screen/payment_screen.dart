@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/detailed_search/flow/payment_viewmodel.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -39,7 +41,9 @@ class _PaymentPageState extends State<PaymentPage> {
 
         if (vm.errorMessage != null) {
           return Scaffold(
-            body: Center(child: Text("Hata: ${vm.errorMessage}")),
+            body: Center(
+              child: Text("${tr("payment_error_prefix")} ${vm.errorMessage}"),
+            ),
           );
         }
 
@@ -96,14 +100,14 @@ class _PaymentPageState extends State<PaymentPage> {
 
         if (_isCheckingPayment) {
           return Scaffold(
-            appBar: AppBar(title: const Text("Ödeme")),
-            body: const Center(
+            appBar: AppBar(title: Text(tr('payment_title'))),
+            body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircularProgressIndicator(),
                   SizedBox(height: 16),
-                  Text("Ödeme sonucu kontrol ediliyor..."),
+                  Text(tr('payment_checking_result')),
                 ],
               ),
             ),
@@ -112,9 +116,9 @@ class _PaymentPageState extends State<PaymentPage> {
 
         // DEĞİŞİKLİK: WebView'i bir Stack içine alarak üzerine yükleme ekranı ekliyoruz.
         return Scaffold(
-          appBar: AppBar(title: const Text("Ödeme")),
+          appBar: CommonAppBar(title: (tr("payment_title"))),
           body: _controller == null
-              ? const Center(child: Text("Ödeme sayfası hazırlanıyor..."))
+              ? Center(child: Text(tr("payment_page_preparing")))
               : Stack(
                   children: [
                     // WebView her zaman altta, görünmez bile olsa var olacak.
@@ -122,7 +126,7 @@ class _PaymentPageState extends State<PaymentPage> {
 
                     // Sayfa yüklenmediyse (_isPageFinished false ise) bu katman WebView'in üzerinde görünecek.
                     if (!_isPageFinished)
-                      const Scaffold(
+                      Scaffold(
                         // Arka planın temiz görünmesi için Scaffold kullandık
                         body: Center(
                           child: Column(
@@ -130,7 +134,7 @@ class _PaymentPageState extends State<PaymentPage> {
                             children: [
                               CircularProgressIndicator(),
                               SizedBox(height: 16),
-                              Text("Ödeme sayfası yükleniyor..."),
+                              Text(tr('payment_page_loading')),
                             ],
                           ),
                         ),

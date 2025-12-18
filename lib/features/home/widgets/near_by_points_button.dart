@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -27,10 +28,8 @@ class NearbyPointsButton extends StatelessWidget {
 
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    "Please enable location permission from Settings",
-                  ),
+                SnackBar(
+                  content: Text(tr("enable_location_permission_from_settings")),
                 ),
               );
             }
@@ -76,7 +75,7 @@ class _MinimalNearbyCard extends StatelessWidget {
             /// TEXT (CLEAN)
             Expanded(
               child: Text(
-                "Nearby Tours",
+                tr("nearby_tours"),
                 style: AppTextStyles.titleMedium.copyWith(
                   color: AppColors.textPrimary,
                   fontSize: 16,

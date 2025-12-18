@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
@@ -25,14 +26,14 @@ class TimePickerSheet extends StatelessWidget {
           color: isDark ? Colors.black : Colors.white,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
         ),
-        padding: const EdgeInsets.only(top: 10),
+        padding: const EdgeInsetsDirectional.only(top: 10),
         child: Column(
           children: [
             /// Handle Bar
             Container(
               width: 42,
               height: 5,
-              margin: const EdgeInsets.only(bottom: 14),
+              margin: const EdgeInsetsDirectional.only(bottom: 14),
               decoration: BoxDecoration(
                 color: isDark
                     ? Colors.white.withOpacity(.22)
@@ -48,7 +49,7 @@ class TimePickerSheet extends StatelessWidget {
                 vertical: 6,
               ),
               child: Text(
-                "Saat Seçin",
+                'time_select'.tr(),
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w700,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -62,15 +63,15 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
     );
 
     return Scaffold(
-      backgroundColor: scheme.background,
-      appBar: const CommonAppBar(title: "Telefon Doğrulama"),
+      backgroundColor: scheme.surface,
+      appBar: CommonAppBar(title: 'phone_verification_title'.tr()),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              "Telefonunuza gönderilen 6 haneli doğrulama kodunu giriniz.",
+              'phone_verification_instruction'.tr(),
               style: text.bodyLarge?.copyWith(
                 color: scheme.onSurface.withOpacity(0.75),
               ),
@@ -118,13 +119,13 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
 
                   UIHelper.showSuccess(
                     context,
-                    vm.message ?? "Doğrulama başarılı",
+                    vm.message ?? 'phone_verification_success'.tr(),
                   );
                   context.pop();
                 } else {
                   UIHelper.showError(
                     context,
-                    vm.message ?? "Hatalı kod girdiniz",
+                    vm.message ?? 'phone_verification_success'.tr(),
                   );
                 }
               },
@@ -138,8 +139,8 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
               child: Center(
                 child: Text(
                   vm.canResend
-                      ? "Tekrar göndermek için buraya tıklayın"
-                      : "Tekrar göndermek için: "
+                      ? 'resend_code'.tr()
+                      : "${'resend_in_prefix'.tr()} "
                             "${vm.remainingSeconds ~/ 60}:${(vm.remainingSeconds % 60).toString().padLeft(2, '0')}",
                   style: text.bodyMedium?.copyWith(
                     color: vm.canResend

@@ -13,7 +13,10 @@ class ProfileSection extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.s, left: AppSpacing.xs),
+      padding: const EdgeInsetsDirectional.only(
+        bottom: AppSpacing.s,
+        start: AppSpacing.xs,
+      ),
       child: Text(
         title,
         style: AppTextStyles.labelLarge.copyWith(

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +32,7 @@ class _NearbyPointsPageState extends State<NearbyPointsPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: CommonAppBar(
-        title: "Sana Yakın Yerler",
+        title: tr("nearby_tours"),
         showBack: true,
         actionIcon: Icons.gps_fixed,
         onActionPressed: () => vm.fetchNearbyTourPoints(),
@@ -107,7 +108,7 @@ class _NearbyPointsPageState extends State<NearbyPointsPage> {
             Icon(Icons.location_off_rounded, size: 46, color: scheme.primary),
             const SizedBox(height: AppSpacing.s),
             Text(
-              "Yakın bir tur noktası bulunamadı.",
+              tr("no_nearby_tour_found"),
               style: TextStyle(
                 color: scheme.onSurface.withOpacity(.85),
                 fontWeight: FontWeight.w500,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
@@ -48,7 +49,7 @@ class FakeSearchBar extends StatelessWidget {
 
               Expanded(
                 child: Text(
-                  "Yer adı yaz (örn: Ayder)",
+                  tr("enter_place_name_example"),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.bodyMedium.copyWith(

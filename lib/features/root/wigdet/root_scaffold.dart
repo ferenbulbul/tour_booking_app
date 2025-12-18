@@ -76,7 +76,7 @@ class _PremiumNavBar extends StatelessWidget {
       {
         'icon': Icons.search_outlined,
         'active': Icons.search,
-        'label': 'Keşfet',
+        'label': 'discover',
       },
       {
         'icon': Icons.person_outline,
@@ -143,7 +143,7 @@ class _PremiumNavBar extends StatelessWidget {
                                   ? AppColors.primary
                                   : Colors.black.withOpacity(.45),
                             ),
-                            child: Text(items[i]['label']!.toString()),
+                            child: Text(items[i]['label']!.toString().tr()),
                           ),
                         ],
                       ),

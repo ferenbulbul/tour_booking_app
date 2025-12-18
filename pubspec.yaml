@@ -70,6 +70,15 @@ flutter:
    - assets/translations/
    - .env.ios
    - .env.android
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo-Regular.ttf
+   
 
 flutter_launcher_icons:
   android: true
@@ -78,8 +87,8 @@ flutter_launcher_icons:
   remove_alpha_ios: true
 
 flutter_native_splash:
-  color: "#FFFFFF"                # Arka plan rengi
-  image: assets/splash.png        # Splash görseli
+  color: "#FFFFFF"               
+  image: assets/splash.png        
   android: true
   ios: true
   android_gravity: center

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -22,10 +23,10 @@ class TourVehicleListScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: scheme.surface,
-      appBar: const CommonAppBar(title: "Müsait Araçlar"),
+      appBar: CommonAppBar(title: tr("available_vehicles")),
       body: vm.isVehiclesLoading
           ? const Center(child: VehicleCardSkeleton())
-          : vm.vehicles == null || vm.vehicles!.isEmpty
+          : vm.vehicles.isEmpty
           ? _buildEmptyState(context)
           : ListView.separated(
               padding: const EdgeInsets.all(AppSpacing.screenPadding),
@@ -67,7 +68,7 @@ class TourVehicleListScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.l),
             Text(
-              "Bu kriterlere uygun araç bulunamadı",
+              tr("no_vehicle_matching_criteria"),
               style: AppTextStyles.bodyMedium.copyWith(
                 color: scheme.onSurfaceVariant,
               ),
@@ -168,7 +169,7 @@ class VehicleCard extends StatelessWidget {
                 children: [
                   _FeatureChip(
                     icon: Icons.event_seat,
-                    label: "${vehicle.seatCount} Koltuk",
+                    label: "${vehicle.seatCount} seat_count",
                   ),
                   _FeatureChip(
                     icon: Icons.directions_car_filled_rounded,

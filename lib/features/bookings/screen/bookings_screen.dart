@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/booking_status.dart';
@@ -37,7 +38,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
       length: 3,
       child: Scaffold(
         backgroundColor: scheme.surface,
-        appBar: const CommonAppBar(title: "Rezervasyonlarım", showBack: false),
+        appBar: CommonAppBar(title: 'my_bookings_title'.tr(), showBack: false),
         body: Column(
           children: [
             // -----------------------------------------------------------------
@@ -54,10 +55,10 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   fontWeight: FontWeight.w700,
                 ),
                 unselectedLabelStyle: AppTextStyles.labelLarge,
-                tabs: const [
-                  Tab(text: "Yaklaşan"),
-                  Tab(text: "Tamamlanan"),
-                  Tab(text: "İptal"),
+                tabs: [
+                  Tab(text: 'booking_tab_upcoming'.tr()),
+                  Tab(text: 'booking_tab_completed'.tr()),
+                  Tab(text: 'booking_tab_cancelled'.tr()),
                 ],
               ),
             ),
@@ -109,24 +110,24 @@ class _BookingsScreenState extends State<BookingsScreen> {
     if (bookings.isEmpty) {
       switch (type) {
         case BookingStatus.upcoming:
-          return const EmptyState(
+          return EmptyState(
             icon: Icons.event_available_outlined,
-            title: "Yaklaşan rezervasyonun yok",
-            subtitle: "Yeni bir tur seçerek planını oluşturabilirsin.",
+            title: 'empty_upcoming_title'.tr(),
+            subtitle: 'empty_upcoming_subtitle'.tr(),
           );
 
         case BookingStatus.completed:
-          return const EmptyState(
+          return EmptyState(
             icon: Icons.check_circle_outline,
-            title: "Tamamlanan turun yok",
-            subtitle: "Katıldığın turlar burada listelenecek.",
+            title: 'empty_completed_title'.tr(),
+            subtitle: 'empty_completed_subtitle'.tr(),
           );
 
         case BookingStatus.cancelled:
-          return const EmptyState(
+          return EmptyState(
             icon: Icons.cancel_outlined,
-            title: "İptal edilen rezervasyon yok",
-            subtitle: "Şu anda iptal edilmiş bir kaydın bulunmuyor.",
+            title: 'empty_cancelled_title'.tr(),
+            subtitle: 'empty_cancelled_subtitle'.tr(),
           );
       }
     }

@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
@@ -80,7 +81,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     if (v == null) {
       return Scaffold(
         resizeToAvoidBottomInset: false,
-        body: Center(child: Text(vm.errorMessage ?? "Araç bulunamadı")),
+        body: Center(child: Text(vm.errorMessage ?? tr("vehicle_not_found"))),
       );
     }
 
@@ -209,7 +210,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                       right: 0,
                       child: Center(
                         child: Text(
-                          "Araç Seçimi",
+                          tr("vehicle_selection_title"),
                           style: AppBarStyles.title(context).copyWith(
                             color: collapseT > 0.5
                                 ? Colors.black
@@ -237,7 +238,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SectionTitle(title: "Araç Özellikleri"),
+                  SectionTitle(title: tr("vehicle_features_title")),
 
                   const SizedBox(height: 16),
 
@@ -248,32 +249,32 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                     children: [
                       _specTile(
                         Icons.directions_bus_outlined,
-                        "Marka",
+                        tr("vehicle_brand"),
                         v.vehicleBrand,
                       ),
                       _specTile(
                         Icons.category_outlined,
-                        "Sınıf",
+                        tr("vehicle_class"),
                         v.vehicleClass,
                       ),
                       _specTile(
                         Icons.confirmation_number_outlined,
-                        "Tip",
+                        tr("vehicle_type"),
                         v.vehicleType,
                       ),
                       _specTile(
                         Icons.event_seat_outlined,
-                        "Koltuk",
+                        tr("seat_count"),
                         "${v.seatCount}",
                       ),
                       _specTile(
                         Icons.calendar_today_outlined,
-                        "Model Yılı",
+                        tr("model_year"),
                         "${v.modelYear}",
                       ),
                       _specTile(
                         Icons.airline_seat_legroom_extra_outlined,
-                        "Bacak Mesafesi",
+                        tr("legroom"),
                         v.legRoomSpace ?? "-",
                       ),
                     ],
@@ -283,7 +284,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
 
                   // --- EK ÖZELLİKLER ---
                   if ((v.vehicleFeatures?.isNotEmpty ?? false)) ...[
-                    SectionTitle(title: "Ek Özellikler"),
+                    SectionTitle(title: tr("extra_features")),
                     const SizedBox(height: 16),
 
                     LayoutBuilder(
@@ -306,8 +307,8 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                   const SizedBox(height: 26),
 
                   SectionTitle(
-                    title: "Sürücü Bilgisi",
-                    subtitle: "Tur sırasında sizinle olacak profesyonel sürücü",
+                    title: tr("driver_info_title"),
+                    subtitle: tr("driver_info_subtitle"),
                   ),
                   const SizedBox(height: 16),
 
@@ -331,7 +332,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
       // ---------------------------------------------------------------------
       bottomNavigationBar: BottomActionBar(
         price: price,
-        buttonText: "Devam Et",
+        buttonText: tr("continue"),
         onPressed: () {
           context.push('/search-guide');
         },
@@ -461,10 +462,10 @@ Widget _driverSection({
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name ?? "Bilinmiyor", style: AppTextStyles.titleSmall),
+                  Text(name ?? "", style: AppTextStyles.titleSmall),
                   const SizedBox(height: 4),
                   Text(
-                    "Deneyim: ${experience ?? '—'} yıl",
+                    tr("driver_experience", args: ["${experience ?? '—'}"]),
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -477,7 +478,7 @@ Widget _driverSection({
 
         if (languages != null && languages.isNotEmpty) ...[
           const SizedBox(height: 20),
-          Text("Kullandığı Diller", style: AppTextStyles.labelLarge),
+          Text(tr("driver_languages"), style: AppTextStyles.labelLarge),
           const SizedBox(height: 10),
           Wrap(
             spacing: 8,

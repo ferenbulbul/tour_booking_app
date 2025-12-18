@@ -14,7 +14,7 @@ class BookingsSkeleton extends StatelessWidget {
         itemCount: 4, // 3–4 tane kart hissi versin
         itemBuilder: (_, __) {
           return Container(
-            margin: const EdgeInsets.only(bottom: 18),
+            margin: const EdgeInsetsDirectional.only(bottom: 18),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(22),

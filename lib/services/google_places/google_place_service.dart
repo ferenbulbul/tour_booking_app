@@ -10,7 +10,7 @@ class GooglePlaceService {
   Future<PlaceSelection?> findDefaultPlace(String city, String district) async {
     try {
       final query = "$city $district";
-
+      //"غوموشانه";
       // AUTOCOMPLETE
       final autoUri = Uri.https(
         'maps.googleapis.com',
@@ -36,7 +36,7 @@ class GooglePlaceService {
             'place_id': placeId,
             'key': _apiKey,
             'language': 'tr',
-            'fields': 'formatted_address,geometry/location',
+            'fields': 'geometry/location',
           });
 
       final detailRes = await http.get(detailUri);

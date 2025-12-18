@@ -10,12 +10,11 @@ class ResetPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
 
     return Scaffold(
       backgroundColor: scheme.surface,
 
-      appBar: const CommonAppBar(title: "Yeni şifre"),
+      appBar: CommonAppBar(title: 'new_password'.tr(), showBack: true),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),

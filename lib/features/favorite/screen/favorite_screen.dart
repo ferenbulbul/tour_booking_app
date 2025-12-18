@@ -1,7 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
 
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
@@ -48,11 +48,10 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
       body: vm.isLoading
           ? const FavoriteSkeleton()
           : vm.favorites.isEmpty
-          ? const EmptyState(
+          ? EmptyState(
               icon: Icons.favorite_border,
-              title: "Henüz favoriniz yok",
-              subtitle:
-                  "Beğendiğiniz turları favorilere ekleyin,\nkolayca erişin.",
+              title: tr("no_favorites_title"),
+              subtitle: tr("no_favorites_subtitle"),
             )
           : ListView.separated(
               physics: const BouncingScrollPhysics(),
@@ -80,7 +79,7 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          "$removedTitle favorilerden kaldırıldı",
+                          tr("removed_from_favorites", args: [removedTitle]),
                           style: AppTextStyles.labelLarge.copyWith(
                             color: scheme.onPrimary,
                           ),

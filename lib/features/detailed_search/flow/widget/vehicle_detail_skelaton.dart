@@ -11,7 +11,7 @@ class VehicleDetailSkeleton extends StatelessWidget {
       highlightColor: Colors.grey.shade100,
       child: SingleChildScrollView(
         // 🔥 Overflow'u tamamen çözen scroll
-        padding: const EdgeInsets.only(bottom: 40),
+        padding: const EdgeInsetsDirectional.only(bottom: 40),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

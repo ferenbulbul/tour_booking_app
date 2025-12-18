@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
@@ -55,8 +56,8 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
       appBar: AppBar(
         title: Text(
           oldCompleteNumber.isEmpty
-              ? "Telefon Numarası Ekle"
-              : "Telefon Numarasını Güncelle",
+              ? tr("add_phone_number")
+              : tr("update_phone_number"),
         ),
       ),
       body: Padding(
@@ -69,7 +70,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                   ? oldCompleteNumber
                   : null,
               decoration: InputDecoration(
-                labelText: "Telefon Numarası",
+                labelText: tr("phone_number"),
                 filled: true,
                 fillColor: const Color(0xFFF3F4F6),
                 contentPadding: const EdgeInsets.symmetric(
@@ -92,10 +93,10 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
               },
               validator: (value) {
                 if (value == null || value.number.isEmpty) {
-                  return "Telefon gerekli";
+                  return tr("phone_required");
                 }
                 if (value.number.length < 7) {
-                  return "Telefon çok kısa";
+                  return tr("phone_too_short");
                 }
                 return null;
               },
@@ -122,7 +123,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                         Navigator.pop(context);
                       }
                     : null,
-                child: const Text("Kaydet"),
+                child: Text(tr("save")),
               ),
             ),
           ],

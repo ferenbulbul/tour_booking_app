@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -31,7 +32,7 @@ class _GuidesScreenState extends State<GuidesScreen> {
     final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: scheme.surface,
-      appBar: const CommonAppBar(title: "Rehber Seçimi"),
+      appBar: CommonAppBar(title: tr("guide_selection_title")),
       body: Consumer<TourSearchDetailViewModel>(
         builder: (context, vm, _) {
           if (vm.isLoading) {
@@ -245,7 +246,7 @@ class WithoutGuideCard extends StatelessWidget {
               const SizedBox(width: 18),
               Expanded(
                 child: Text(
-                  "Rehbersiz devam etmek istiyorum",
+                  tr("continue_without_guide"),
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
@@ -285,7 +286,7 @@ class _NoGuideFoundCard extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Bu tarihte uygun rehber bulunamadı. İstersen rehbersiz devam edebilirsin.',
+              "no_guide_available_message",
               style: AppTextStyles.bodyMedium,
             ),
           ),

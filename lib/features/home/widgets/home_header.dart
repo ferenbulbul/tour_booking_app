@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
@@ -8,7 +9,7 @@ class HomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 4, bottom: 8),
+      padding: const EdgeInsetsDirectional.only(top: 4, bottom: 8),
       child: Row(
         children: [
           /// LEFT SIDE
@@ -17,7 +18,7 @@ class HomeHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Hello,  👋",
+                  tr("hello_greeting"),
                   style: AppTextStyles.labelLarge.copyWith(
                     color: AppColors.textSecondary,
                   ),

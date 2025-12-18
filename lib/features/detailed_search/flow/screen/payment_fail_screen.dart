@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
@@ -41,7 +42,7 @@ class PaymentFailPage extends StatelessWidget {
 
               // ❌ TITLE
               Text(
-                "Ödeme Başarısız",
+                tr("payment_failed_title"),
                 style: AppTextStyles.headlineSmall.copyWith(
                   fontWeight: FontWeight.w800,
                   letterSpacing: -.4,
@@ -51,7 +52,7 @@ class PaymentFailPage extends StatelessWidget {
               const SizedBox(height: 10),
 
               Text(
-                "Ödemeniz alınamadı.\nLütfen tekrar deneyin veya farklı bir yöntem kullanın.",
+                tr("payment_failed_description"),
                 textAlign: TextAlign.center,
                 style: AppTextStyles.bodyMedium.copyWith(
                   color: AppColors.textSecondary,
@@ -81,15 +82,15 @@ class PaymentFailPage extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      "Ne yapabilirsin?",
+                      tr("payment_failed_help_title"),
                       style: AppTextStyles.titleMedium.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 10),
-                    _hint("• Kart bilgilerini kontrol et"),
-                    _hint("• İnternet bağlantını kontrol et"),
-                    _hint("• Daha sonra tekrar dene"),
+                    _hint(tr("payment_failed_hint_card")),
+                    _hint(tr("payment_failed_hint_connection")),
+                    _hint(tr("payment_failed_hint_retry")),
                   ],
                 ),
               ),
@@ -101,7 +102,7 @@ class PaymentFailPage extends StatelessWidget {
                 width: double.infinity,
                 height: 52,
                 child: PrimaryButton(
-                  text: "Ana Sayfaya Dön",
+                  text: tr("back_to_home"),
                   onPressed: () => context.go('/home'),
                 ),
               ),

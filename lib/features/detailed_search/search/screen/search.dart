@@ -1,7 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/core/widgets/picker_field.dart';
@@ -38,7 +39,7 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
     String? allLabel,
   }) {
     final options = [
-      if (includeAll) PickerOption("", allLabel ?? "Tümü"),
+      if (includeAll) PickerOption("", allLabel ?? ""),
       ...list.map((e) => PickerOption(e.id, e.name)),
     ];
 
@@ -77,7 +78,7 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
       backgroundColor: scheme.surface,
 
       // APP BAR ---------------------------------------------------------
-      appBar: CommonAppBar(title: "Detaylı Arama", showBack: false),
+      appBar: CommonAppBar(title: tr("advanced_search_title"), showBack: false),
 
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -103,12 +104,12 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
                   vm.isRegionLoading
                       ? const PickerFieldSkeleton()
                       : PickerField(
-                          label: "Bölge Seçin",
+                          label: tr("select_region"),
                           value: _getName(vm.regions, vm.selectedRegionId),
                           icon: Icons.map_outlined,
                           onTap: () async {
                             final id = await _openPicker(
-                              title: "Bölge Seçimi",
+                              title: tr("region_selection"),
                               list: vm.regions,
                               selected: vm.selectedRegionId,
                             );
@@ -129,9 +130,9 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
                               vm.isCityLoading
                                   ? const PickerFieldSkeleton()
                                   : PickerField(
-                                      label: "İl Seçin",
+                                      label: tr("select_city"),
                                       value: vm.selectedCityId == null
-                                          ? "Tüm İller"
+                                          ? tr("all_cities")
                                           : _getName(
                                               vm.cities,
                                               vm.selectedCityId,
@@ -139,11 +140,11 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
                                       icon: Icons.location_city_outlined,
                                       onTap: () async {
                                         final id = await _openPicker(
-                                          title: "İl Seçimi",
+                                          title: tr("city_selection"),
                                           list: vm.cities,
                                           selected: vm.selectedCityId,
                                           includeAll: true,
-                                          allLabel: "Tüm İller",
+                                          allLabel: tr("all_cities"),
                                         );
 
                                         if (id != null) {
@@ -174,11 +175,11 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
                               vm.isDistrictLoading
                                   ? const PickerFieldSkeleton()
                                   : PickerField(
-                                      label: "İlçe Seçin",
+                                      label: tr("select_district"),
                                       value:
                                           vm.selectedDistrictId == null ||
                                               vm.selectedDistrictId!.isEmpty
-                                          ? "Tüm İlçeler"
+                                          ? tr("all_districts")
                                           : _getName(
                                               vm.districts,
                                               vm.selectedDistrictId,
@@ -186,11 +187,11 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
                                       icon: Icons.location_on_outlined,
                                       onTap: () async {
                                         final id = await _openPicker(
-                                          title: "İlçe Seçimi",
+                                          title: tr("district_selection"),
                                           list: vm.districts,
                                           selected: vm.selectedDistrictId,
                                           includeAll: true,
-                                          allLabel: "Tüm İlçeler",
+                                          allLabel: tr("all_districts"),
                                         );
                                         if (id != null) vm.selectDistrict(id);
                                       },
@@ -207,14 +208,10 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
                   SizedBox(
                     height: 54,
                     child: PrimaryButton(
-                      text: "Ara",
+                      text: tr("search"),
                       onPressed: () {
                         if (vm.selectedRegionId == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Lütfen bir bölge seçin."),
-                            ),
-                          );
+                          UIHelper.showWarning(context, tr("region_required"));
                           return;
                         }
 

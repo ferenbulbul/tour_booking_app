@@ -39,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     final p = vm.profile;
     if (p == null) {
-      return const Scaffold(body: Center(child: Text("Profil bulunamadı")));
+      return Scaffold(body: Center(child: Text(tr("profile_not_found"))));
     }
 
     return Scaffold(
@@ -58,11 +58,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: AppSpacing.xl),
 
             // HESAP AYARLARI
-            const ProfileSection(title: "Hesap Ayarları"),
+            ProfileSection(title: tr("account_settings")),
 
             ProfileTile(
               icon: Icons.language_rounded,
-              title: "Dil",
+              title: tr("language"),
               trailingText: context.locale.languageCode == "tr"
                   ? "Türkçe"
                   : "English",
@@ -71,30 +71,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             ProfileTile(
               icon: Icons.tune_rounded,
-              title: "İzinler",
-              subtitle: "Konum ve telefon doğrulamasını yönet",
+              title: tr("permissions"),
+              subtitle: tr("manage_location_and_phone_verification"),
               onTap: () => context.push("/settings/permissions"),
             ),
 
             const SizedBox(height: AppSpacing.xl),
 
             // GÜVENLİK
-            const ProfileSection(title: "Güvenlik"),
+            ProfileSection(title: tr("security")),
 
             ProfileTile(
               icon: Icons.lock_outline,
-              title: "Şifre Değiştir",
+              title: tr("change_password"),
               onTap: () => context.push('/change-password'),
             ),
 
             const SizedBox(height: AppSpacing.xl),
 
             // DİĞER
-            const ProfileSection(title: "Diğer"),
+            ProfileSection(title: tr("other")),
 
             ProfileTile(
               icon: Icons.delete_forever_rounded,
-              title: "Hesabı Sil",
+              title: tr("delete_account"),
               titleColor: AppColors.error,
               iconColor: AppColors.error,
               onTap: () {
@@ -104,7 +104,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             ProfileTile(
               icon: Icons.logout_rounded,
-              title: "Çıkış Yap",
+              title: tr("logout"),
               titleColor: AppColors.error,
               iconColor: AppColors.error,
               onTap: () {

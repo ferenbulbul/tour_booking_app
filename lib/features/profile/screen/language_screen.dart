@@ -17,7 +17,7 @@ class LanguageSettingsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: scheme.surface,
-      appBar: const CommonAppBar(title: "Dil Ayarları"),
+      appBar: CommonAppBar(title: tr("language_settings")),
 
       body: Padding(
         padding: const EdgeInsets.only(top: AppSpacing.m),
@@ -25,15 +25,21 @@ class LanguageSettingsScreen extends StatelessWidget {
           children: [
             _languageTile(
               context,
-              title: "Türkçe",
+              title: tr("language_turkish"),
               locale: const Locale("tr"),
               selected: current == "tr",
             ),
             _languageTile(
               context,
-              title: "English",
+              title: tr("language_english"),
               locale: const Locale("en"),
               selected: current == "en",
+            ),
+            _languageTile(
+              context,
+              title: tr("language_arabic"),
+              locale: const Locale("ar"),
+              selected: current == "ar",
             ),
           ],
         ),
@@ -58,7 +64,7 @@ class LanguageSettingsScreen extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              "Uygulama dili '$title' olarak değiştirildi",
+              tr("language_changed_message", namedArgs: {"language": title}),
               style: TextStyle(color: scheme.onPrimary),
             ),
             backgroundColor: scheme.primary,

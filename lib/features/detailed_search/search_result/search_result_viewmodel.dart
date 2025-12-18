@@ -38,4 +38,9 @@ class TourSearchResultsViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void clearMessages() {
+    errorMessage = null;
+    notifyListeners();
+  }
 }

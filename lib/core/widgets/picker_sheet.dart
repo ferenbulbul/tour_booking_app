@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
@@ -213,7 +214,7 @@ class _SearchBar extends StatelessWidget {
             color: AppColors.textSecondary.withOpacity(.8),
             size: 20,
           ),
-          hintText: "Ara...",
+          hintText: 'search_placeholder'.tr(),
           hintStyle: TextStyle(color: AppColors.textLight.withOpacity(.85)),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(

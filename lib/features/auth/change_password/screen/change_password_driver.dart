@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/auth/change_password/change_password_viewmodel.dart';
 
@@ -24,18 +26,21 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
     r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{9,}$',
   );
 
+  // 🔹 Validator artık KEY döner
   String? _pwdValidator(String? v) {
     final value = (v ?? '').trim();
-    if (value.isEmpty) return 'Şifre zorunlu.';
+    if (value.isEmpty) return 'password_required';
     if (!_passwordRegex.hasMatch(value)) {
-      return 'En az 9 karakter, 1 büyük, 1 küçük, 1 sayı ve 1 özel karakter içermeli.';
+      return 'password_must_include_special'; // genel regex hatası
     }
     return null;
   }
 
   String? _confirmValidator(String? v) {
-    if ((v ?? '').trim().isEmpty) return 'Şifre tekrarı zorunlu.';
-    if (v!.trim() != _pwdCtrl.text.trim()) return 'Şifreler eşleşmiyor.';
+    if ((v ?? '').trim().isEmpty) return 'password_required';
+    if (v!.trim() != _pwdCtrl.text.trim()) {
+      return 'passwords_do_not_match';
+    }
     return null;
   }
 
@@ -53,7 +58,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
       child: Consumer<ChangePasswordViewModel>(
         builder: (context, vm, _) {
           return Scaffold(
-            appBar: const CommonAppBar(title: "Şifre Değiştir"),
+            appBar: CommonAppBar(title: 'reset_password'.tr()),
             body: Form(
               key: _formKey,
               child: ListView(
@@ -63,8 +68,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
                     controller: _pwdCtrl,
                     obscureText: _ob1,
                     decoration: InputDecoration(
-                      labelText: 'Yeni Şifre',
-                      hintText: 'Min 9, A/a, 0-9, özel (!@#...)',
+                      labelText: 'new_password'.tr(),
+                      hintText: 'new_password'.tr(),
                       suffixIcon: IconButton(
                         onPressed: () => setState(() => _ob1 = !_ob1),
                         icon: Icon(
@@ -72,7 +77,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
                         ),
                       ),
                     ),
-                    validator: _pwdValidator,
+                    validator: (v) => _pwdValidator(v)?.tr(),
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.newPassword],
                   ),
@@ -81,7 +86,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
                     controller: _pwd2Ctrl,
                     obscureText: _ob2,
                     decoration: InputDecoration(
-                      labelText: 'Şifre Tekrar',
+                      labelText: 'confirm_password'.tr(),
                       suffixIcon: IconButton(
                         onPressed: () => setState(() => _ob2 = !_ob2),
                         icon: Icon(
@@ -89,7 +94,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
                         ),
                       ),
                     ),
-                    validator: _confirmValidator,
+                    validator: (v) => _confirmValidator(v)?.tr(),
                     textInputAction: TextInputAction.done,
                     onFieldSubmitted: (_) => _submit(context, vm),
                   ),
@@ -106,18 +111,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
                               width: 20,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text('Şifreyi Güncelle'),
+                          : Text('update_password'.tr()),
                     ),
                   ),
                   const SizedBox(height: 12),
                   const _RulesNote(),
-                  if (vm.message != null || vm.validationErrors.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Text(
-                      _buildError(vm),
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  ],
                 ],
               ),
             ),
@@ -129,27 +127,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
 
   void _submit(BuildContext context, ChangePasswordViewModel vm) async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    final result = await vm.changePassword(_pwdCtrl.text.trim());
 
-    // Snackbar/UI sadece ekranda (VM içinde değil)
+    final result = await vm.changePassword(_pwdCtrl.text.trim());
     if (!mounted) return;
+
     if (result.isSuccess) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Şifre güncellendi.')));
-      Navigator.of(context).maybePop();
+      UIHelper.showSuccess(context, 'password_updated_success'.tr());
       context.go('/login');
     } else {
-      final msg = vm.message ?? 'İşlem başarısız.';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+      UIHelper.showError(context, vm.message?.tr() ?? 'operation_failed'.tr());
     }
-  }
-
-  String _buildError(ChangePasswordViewModel vm) {
-    if (vm.validationErrors.isNotEmpty) {
-      return vm.validationErrors.join('\n');
-    }
-    return vm.message ?? '';
   }
 }
 
@@ -158,16 +145,16 @@ class _RulesNote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Card(
+    return Card(
       child: Padding(
-        padding: EdgeInsets.all(12),
+        padding: const EdgeInsets.all(12),
         child: Text(
-          'Şifre kuralları:\n'
-          '• En az 9 karakter\n'
-          '• En az 1 büyük (A–Z)\n'
-          '• En az 1 küçük (a–z)\n'
-          '• En az 1 rakam (0–9)\n'
-          '• En az 1 özel karakter (!@#\$%^&* vb.)',
+          '${'password_rules_title'.tr()}\n'
+          '${'password_rule_1'.tr()}\n'
+          '${'password_rule_2'.tr()}\n'
+          '${'password_rule_3'.tr()}\n'
+          '${'password_rule_4'.tr()}\n'
+          '${'password_rule_5'.tr()}',
         ),
       ),
     );

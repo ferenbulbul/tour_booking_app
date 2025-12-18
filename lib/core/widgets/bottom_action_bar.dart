@@ -42,7 +42,7 @@ class BottomActionBar extends StatelessWidget {
           children: [
             if (hasPrice)
               Padding(
-                padding: const EdgeInsets.only(right: 25),
+                padding: EdgeInsetsDirectional.only(start: 25),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,

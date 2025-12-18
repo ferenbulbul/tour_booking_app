@@ -22,7 +22,7 @@ class TourSearchResultCard extends StatelessWidget {
       ),
 
       child: Container(
-        margin: const EdgeInsets.only(bottom: 18),
+        margin: const EdgeInsetsDirectional.only(bottom: 18),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.large),
