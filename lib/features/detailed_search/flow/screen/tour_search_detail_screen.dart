@@ -22,6 +22,7 @@ import 'package:tour_booking/features/detailed_search/flow/widget/tour_detail_he
 import 'package:tour_booking/features/detailed_search/flow/widget/tour_detail_skeleton.dart';
 import 'package:tour_booking/core/widgets/time_picker_sheet.dart';
 import 'package:tour_booking/features/detailed_search/flow/screen/full_screen_gallery_screen.dart';
+import 'package:tour_booking/features/favorite/favorite_viewmodel.dart';
 import 'package:tour_booking/models/place_section/place_section.dart';
 
 class TourSearchDetailScreen extends StatefulWidget {
@@ -75,7 +76,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
+    final favVm = context.watch<FavoriteViewModel>();
     final vm = context.watch<TourSearchDetailViewModel>();
     final rawDetail = vm.detail;
 
@@ -227,7 +228,10 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
                               ? Icons
                                     .favorite // dolu kalp
                               : Icons.favorite_border, // boş kalp
-                          onTap: () => vm.toggleFavorite(detail!.isFavorites),
+                          onTap: () {
+                            favVm.toggleFavorite(detail!.id);
+                            vm.toggleFavorite(detail!.isFavorites);
+                          },
 
                           // 🔥 SİHİR BURADA
                           iconColor: vm.isFavorite ? Colors.red : Colors.black,

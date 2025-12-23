@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +8,7 @@ import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/auth/register/widgets/register_view_model.dart';
 import 'package:tour_booking/models/register/register_request.dart';
+import 'package:flutter/material.dart' as ui;
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({super.key});
@@ -124,18 +126,22 @@ class _RegisterFormState extends State<RegisterForm> {
           const SizedBox(height: 16),
 
           // Phone Number
-          IntlPhoneField(
-            decoration: InputDecoration(labelText: tr("phone_number")),
-            initialCountryCode: 'TR',
-            style: text.bodyMedium,
-            cursorColor: scheme.primary,
-            onChanged: (p) => _selectedPhone = p,
-            validator: (value) {
-              if (value == null || value.number.isEmpty) {
-                return tr("phone_required");
-              }
-              return null;
-            },
+          Directionality(
+            textDirection: ui.TextDirection.ltr,
+            child: IntlPhoneField(
+              invalidNumberMessage: tr("invalid_phone_number"),
+              decoration: InputDecoration(labelText: tr("phone_number")),
+              initialCountryCode: 'TR',
+              style: text.bodyMedium,
+              cursorColor: scheme.primary,
+              onChanged: (p) => _selectedPhone = p,
+              validator: (value) {
+                if (value == null || value.number.isEmpty) {
+                  return tr("phone_required");
+                }
+                return null;
+              },
+            ),
           ),
 
           const SizedBox(height: 16),
@@ -200,27 +206,50 @@ class _RegisterFormState extends State<RegisterForm> {
     final scheme = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
 
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      validator: validator,
-      obscureText: isPassword ? isObscure : false,
-      style: text.bodyMedium,
-      cursorColor: scheme.primary,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: scheme.onSurfaceVariant),
-        suffixIcon: isPassword
-            ? IconButton(
-                icon: Icon(
-                  isObscure
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                  color: scheme.onSurfaceVariant,
+    final isLatinField =
+        keyboardType == TextInputType.emailAddress || isPassword;
+
+    return Directionality(
+      textDirection: isLatinField
+          ? ui.TextDirection.ltr
+          : Directionality.of(context),
+      child: TextFormField(
+        controller: controller,
+        keyboardType:
+            keyboardType ??
+            (isPassword ? TextInputType.visiblePassword : TextInputType.text),
+        validator: validator,
+        obscureText: isPassword ? isObscure : false,
+        textAlign: isLatinField ? TextAlign.left : TextAlign.start,
+        style: text.bodyMedium,
+        cursorColor: scheme.primary,
+
+        // 🔒 Password için ASCII zorunlu
+        inputFormatters: isPassword
+            ? [
+                FilteringTextInputFormatter.allow(
+                  RegExp(
+                    r'[A-Za-z0-9!@#\$%\^&\*\(\)_\+\-=\[\]{};:"\\|,.<>\/?]',
+                  ),
                 ),
-                onPressed: onToggle,
-              )
+              ]
             : null,
+
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(icon, color: scheme.onSurfaceVariant),
+          suffixIcon: isPassword
+              ? IconButton(
+                  icon: Icon(
+                    isObscure
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                  onPressed: onToggle,
+                )
+              : null,
+        ),
       ),
     );
   }

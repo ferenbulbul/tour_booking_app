@@ -13,10 +13,10 @@ _$BookingDtoImpl _$$BookingDtoImplFromJson(Map<String, dynamic> json) =>
       tourPointDistrict: json['tourPointDistrict'] as String,
       departureTime: json['departureTime'] as String,
       driverName: json['driverName'] as String,
-      tourPointPrice: (json['tourPointPrice'] as num).toInt(),
+      tourPointPrice: json['tourPointPrice'] as num,
       guideName: json['guideName'] as String,
-      guidePrice: (json['guidePrice'] as num).toInt(),
-      totalPrice: (json['totalPrice'] as num).toInt(),
+      guidePrice: json['guidePrice'] as num,
+      totalPrice: json['totalPrice'] as num,
       vehicleBrand: json['vehicleBrand'] as String,
       seatCount: (json['seatCount'] as num).toInt(),
       departureLocationDescription:

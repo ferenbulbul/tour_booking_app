@@ -2,8 +2,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 import 'package:tour_booking/models/update_phone_number/update_phone_request.dart';
+import 'package:flutter/material.dart' as ui;
 
 class UpdatePhoneScreen extends StatefulWidget {
   const UpdatePhoneScreen({super.key});
@@ -53,53 +55,55 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
     final vm = context.watch<ProfileViewModel>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          oldCompleteNumber.isEmpty
-              ? tr("add_phone_number")
-              : tr("update_phone_number"),
-        ),
+      appBar: CommonAppBar(
+        title: oldCompleteNumber.isEmpty
+            ? tr("add_phone_number")
+            : tr("update_phone_number"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            IntlPhoneField(
-              initialCountryCode: oldCountryCode.isEmpty ? "TR" : null,
-              initialValue: oldCompleteNumber.isNotEmpty
-                  ? oldCompleteNumber
-                  : null,
-              decoration: InputDecoration(
-                labelText: tr("phone_number"),
-                filled: true,
-                fillColor: const Color(0xFFF3F4F6),
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 18,
-                  horizontal: 20,
+            Directionality(
+              textDirection: ui.TextDirection.ltr,
+              child: IntlPhoneField(
+                invalidNumberMessage: tr("invalid_phone_number"),
+                initialCountryCode: oldCountryCode.isEmpty ? "TR" : null,
+                initialValue: oldCompleteNumber.isNotEmpty
+                    ? oldCompleteNumber
+                    : null,
+                decoration: InputDecoration(
+                  labelText: tr("phone_number"),
+                  filled: true,
+                  fillColor: const Color(0xFFF3F4F6),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 18,
+                    horizontal: 20,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
+                style: const TextStyle(
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w500,
                 ),
+                onChanged: (phone) {
+                  setState(() {
+                    _selectedPhoneNumber = phone;
+                  });
+                },
+                validator: (value) {
+                  if (value == null || value.number.isEmpty) {
+                    return tr("phone_required");
+                  }
+                  if (value.number.length < 7) {
+                    return tr("phone_too_short");
+                  }
+                  return null;
+                },
               ),
-              style: const TextStyle(
-                color: Colors.black87,
-                fontWeight: FontWeight.w500,
-              ),
-              onChanged: (phone) {
-                setState(() {
-                  _selectedPhoneNumber = phone;
-                });
-              },
-              validator: (value) {
-                if (value == null || value.number.isEmpty) {
-                  return tr("phone_required");
-                }
-                if (value.number.length < 7) {
-                  return tr("phone_too_short");
-                }
-                return null;
-              },
             ),
 
             const SizedBox(height: 24),

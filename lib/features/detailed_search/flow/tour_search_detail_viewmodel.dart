@@ -1,9 +1,6 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
-import 'package:google_places_flutter/model/prediction.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tour_booking/features/detailed_search/flow/screen/summary_screen.dart';
-import 'package:tour_booking/features/detailed_search/flow/screen/google_place_saerch.dart';
 import 'package:tour_booking/models/create_booking_request/create_booking_command.dart';
 import 'package:tour_booking/models/guide/guide.dart';
 import 'package:tour_booking/models/place_section/place_section.dart';
@@ -34,13 +31,13 @@ class TourSearchDetailViewModel extends ChangeNotifier {
   String? selectedVehicleId;
   String? selectedGuideId;
   String? tourRouteId;
-  int? selectedGuidePrice;
+  num? selectedGuidePrice;
   String? selectedTourPointId;
   DateTime? selectedDate;
   String? tourpointImage;
 
   VehicleDetail? vehicle;
-  int? setVehiclePrice;
+  num? setVehiclePrice;
   List<Guide> guides = [];
   String? tourPointDetailId;
   Future<void> fetchTourPointDetail(String id) async {
@@ -80,14 +77,6 @@ class TourSearchDetailViewModel extends ChangeNotifier {
   Future<void> toggleFavorite(bool itemId) async {
     _isFavorite = !_isFavorite;
     notifyListeners();
-
-    try {
-      await _tourService.ToggleFavorite(selectedTourPointId!);
-    } catch (e) {
-      // hata → state geri al
-      _isFavorite = !_isFavorite;
-      notifyListeners();
-    }
   }
 
   Future<void> fetchVehicles() async {
@@ -197,17 +186,17 @@ class TourSearchDetailViewModel extends ChangeNotifier {
   // Tur noktası adınız genelde detail.title:
   String? get selectedTourPointName => detail?.title;
 
-  void setSelectedGuide(String? GuideId, int? Price) {
+  void setSelectedGuide(String? GuideId, num? Price) {
     selectedGuideId = GuideId;
     selectedGuidePrice = Price;
     print(selectedGuideId);
     notifyListeners();
   }
 
-  void setSelectedPrice(int? price) {
+  void setSelectedPrice(num? price) {
     setVehiclePrice = price;
     notifyListeners();
-  }
+  } // 5500 - 5788,50
 
   void setSelectedDate(DateTime date) {
     selectedDate = date;

@@ -8,7 +8,7 @@ class Vehicle with _$Vehicle {
   const factory Vehicle({
     required String tourRouteId,
     required String vehicleId,
-    required int price,
+    required num price,
     required String vehicleBrand,
     required String vehicleClass,
     required String vehicleType,

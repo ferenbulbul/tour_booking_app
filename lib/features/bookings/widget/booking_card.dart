@@ -228,7 +228,7 @@ class _BookingCardState extends State<BookingCard> {
                           ),
                         ),
                         Text(
-                          _formatPrice(item.totalPrice),
+                          _formatCurrency(item.totalPrice),
                           style: TextStyle(
                             color: Colors.green.shade700,
                             fontWeight: FontWeight.w700,
@@ -294,7 +294,12 @@ class _BookingCardState extends State<BookingCard> {
   }
 }
 
-String _formatPrice(num value) {
-  final formatter = NumberFormat.decimalPattern('tr_TR');
-  return "${formatter.format(value)} ₺";
+String _formatCurrency(num? v) {
+  if (v == null) return "—";
+  final f = NumberFormat.currency(
+    locale: "tr_TR",
+    symbol: "₺",
+    decimalDigits: 2,
+  );
+  return "${f.format(v)} ₺";
 }

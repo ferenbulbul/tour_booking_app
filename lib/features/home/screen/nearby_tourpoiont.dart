@@ -28,9 +28,9 @@ class _NearbyPointsPageState extends State<NearbyPointsPage> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<HomeViewModel>();
-
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: scheme.surface,
       appBar: CommonAppBar(
         title: tr("nearby_tours"),
         showBack: true,

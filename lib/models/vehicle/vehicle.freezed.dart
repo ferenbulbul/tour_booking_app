@@ -23,7 +23,7 @@ Vehicle _$VehicleFromJson(Map<String, dynamic> json) {
 mixin _$Vehicle {
   String get tourRouteId => throw _privateConstructorUsedError;
   String get vehicleId => throw _privateConstructorUsedError;
-  int get price => throw _privateConstructorUsedError;
+  num get price => throw _privateConstructorUsedError;
   String get vehicleBrand => throw _privateConstructorUsedError;
   String get vehicleClass => throw _privateConstructorUsedError;
   String get vehicleType => throw _privateConstructorUsedError;
@@ -47,7 +47,7 @@ abstract class $VehicleCopyWith<$Res> {
   $Res call({
     String tourRouteId,
     String vehicleId,
-    int price,
+    num price,
     String vehicleBrand,
     String vehicleClass,
     String vehicleType,
@@ -93,7 +93,7 @@ class _$VehicleCopyWithImpl<$Res, $Val extends Vehicle>
             price: null == price
                 ? _value.price
                 : price // ignore: cast_nullable_to_non_nullable
-                      as int,
+                      as num,
             vehicleBrand: null == vehicleBrand
                 ? _value.vehicleBrand
                 : vehicleBrand // ignore: cast_nullable_to_non_nullable
@@ -131,7 +131,7 @@ abstract class _$$VehicleImplCopyWith<$Res> implements $VehicleCopyWith<$Res> {
   $Res call({
     String tourRouteId,
     String vehicleId,
-    int price,
+    num price,
     String vehicleBrand,
     String vehicleClass,
     String vehicleType,
@@ -176,7 +176,7 @@ class __$$VehicleImplCopyWithImpl<$Res>
         price: null == price
             ? _value.price
             : price // ignore: cast_nullable_to_non_nullable
-                  as int,
+                  as num,
         vehicleBrand: null == vehicleBrand
             ? _value.vehicleBrand
             : vehicleBrand // ignore: cast_nullable_to_non_nullable
@@ -224,7 +224,7 @@ class _$VehicleImpl implements _Vehicle {
   @override
   final String vehicleId;
   @override
-  final int price;
+  final num price;
   @override
   final String vehicleBrand;
   @override
@@ -294,7 +294,7 @@ abstract class _Vehicle implements Vehicle {
   const factory _Vehicle({
     required final String tourRouteId,
     required final String vehicleId,
-    required final int price,
+    required final num price,
     required final String vehicleBrand,
     required final String vehicleClass,
     required final String vehicleType,
@@ -309,7 +309,7 @@ abstract class _Vehicle implements Vehicle {
   @override
   String get vehicleId;
   @override
-  int get price;
+  num get price;
   @override
   String get vehicleBrand;
   @override

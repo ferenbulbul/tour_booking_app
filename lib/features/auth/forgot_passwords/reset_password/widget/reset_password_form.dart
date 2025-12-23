@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/auth/forgot_passwords/forgot_password/widget/forgot_password_view_model.dart';
+import 'package:flutter/material.dart' as ui;
 
 class ResetPasswordForm extends StatefulWidget {
   final String email;
@@ -51,22 +53,34 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
       child: Column(
         children: [
           // New Password
-          TextFormField(
-            controller: _newPasswordController,
-            obscureText: _obscure1,
-            validator: _validatePassword,
-            decoration: InputDecoration(
-              labelText: tr("password"),
-              prefixIcon: Icon(
-                Icons.lock_outline,
-                color: scheme.onSurfaceVariant,
-              ),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscure1 ? Icons.visibility_off : Icons.visibility,
+          Directionality(
+            textDirection: ui.TextDirection.ltr,
+            child: TextFormField(
+              controller: _newPasswordController,
+              obscureText: _obscure1,
+              validator: _validatePassword,
+              keyboardType: TextInputType.visiblePassword,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(
+                  RegExp(
+                    r'[A-Za-z0-9!@#\$%\^&\*\(\)_\+\-=\[\]{};:"\\|,.<>\/?]',
+                  ),
+                ),
+              ],
+              textAlign: TextAlign.left,
+              decoration: InputDecoration(
+                labelText: tr("password"),
+                prefixIcon: Icon(
+                  Icons.lock_outline,
                   color: scheme.onSurfaceVariant,
                 ),
-                onPressed: () => setState(() => _obscure1 = !_obscure1),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscure1 ? Icons.visibility_off : Icons.visibility,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                  onPressed: () => setState(() => _obscure1 = !_obscure1),
+                ),
               ),
             ),
           ),
@@ -74,24 +88,36 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
           const SizedBox(height: 16),
 
           // Confirm Password
-          TextFormField(
-            controller: _confirmPasswordController,
-            obscureText: _obscure2,
-            validator: (v) => v == _newPasswordController.text
-                ? null
-                : tr("passwords_do_not_match"),
-            decoration: InputDecoration(
-              labelText: tr("confirm_password"),
-              prefixIcon: Icon(
-                Icons.lock_outline,
-                color: scheme.onSurfaceVariant,
-              ),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscure2 ? Icons.visibility_off : Icons.visibility,
+          Directionality(
+            textDirection: ui.TextDirection.ltr,
+            child: TextFormField(
+              controller: _confirmPasswordController,
+              obscureText: _obscure2,
+              validator: (v) => v == _newPasswordController.text
+                  ? null
+                  : tr("passwords_do_not_match"),
+              keyboardType: TextInputType.visiblePassword,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(
+                  RegExp(
+                    r'[A-Za-z0-9!@#\$%\^&\*\(\)_\+\-=\[\]{};:"\\|,.<>\/?]',
+                  ),
+                ),
+              ],
+              textAlign: TextAlign.left,
+              decoration: InputDecoration(
+                labelText: tr("confirm_password"),
+                prefixIcon: Icon(
+                  Icons.lock_outline,
                   color: scheme.onSurfaceVariant,
                 ),
-                onPressed: () => setState(() => _obscure2 = !_obscure2),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscure2 ? Icons.visibility_off : Icons.visibility,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                  onPressed: () => setState(() => _obscure2 = !_obscure2),
+                ),
               ),
             ),
           ),

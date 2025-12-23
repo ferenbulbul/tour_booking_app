@@ -63,9 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ProfileTile(
               icon: Icons.language_rounded,
               title: tr("language"),
-              trailingText: context.locale.languageCode == "tr"
-                  ? "Türkçe"
-                  : "English",
+              trailingText: getLanguageName(context),
               onTap: () => context.push("/settings/language"),
             ),
 
@@ -116,5 +114,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
+  }
+}
+
+String getLanguageName(BuildContext context) {
+  switch (context.locale.languageCode) {
+    case 'tr':
+      return 'Türkçe';
+    case 'en':
+      return 'English';
+    case 'ar':
+      return 'العربية';
+    default:
+      return 'English';
   }
 }

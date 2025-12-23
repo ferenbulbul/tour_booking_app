@@ -26,10 +26,10 @@ mixin _$BookingDto {
   String get tourPointDistrict => throw _privateConstructorUsedError;
   String get departureTime => throw _privateConstructorUsedError;
   String get driverName => throw _privateConstructorUsedError;
-  int get tourPointPrice => throw _privateConstructorUsedError;
+  num get tourPointPrice => throw _privateConstructorUsedError;
   String get guideName => throw _privateConstructorUsedError;
-  int get guidePrice => throw _privateConstructorUsedError;
-  int get totalPrice => throw _privateConstructorUsedError;
+  num get guidePrice => throw _privateConstructorUsedError;
+  num get totalPrice => throw _privateConstructorUsedError;
   String get vehicleBrand => throw _privateConstructorUsedError;
   int get seatCount => throw _privateConstructorUsedError;
   String get departureLocationDescription => throw _privateConstructorUsedError;
@@ -61,10 +61,10 @@ abstract class $BookingDtoCopyWith<$Res> {
     String tourPointDistrict,
     String departureTime,
     String driverName,
-    int tourPointPrice,
+    num tourPointPrice,
     String guideName,
-    int guidePrice,
-    int totalPrice,
+    num guidePrice,
+    num totalPrice,
     String vehicleBrand,
     int seatCount,
     String departureLocationDescription,
@@ -132,7 +132,7 @@ class _$BookingDtoCopyWithImpl<$Res, $Val extends BookingDto>
             tourPointPrice: null == tourPointPrice
                 ? _value.tourPointPrice
                 : tourPointPrice // ignore: cast_nullable_to_non_nullable
-                      as int,
+                      as num,
             guideName: null == guideName
                 ? _value.guideName
                 : guideName // ignore: cast_nullable_to_non_nullable
@@ -140,11 +140,11 @@ class _$BookingDtoCopyWithImpl<$Res, $Val extends BookingDto>
             guidePrice: null == guidePrice
                 ? _value.guidePrice
                 : guidePrice // ignore: cast_nullable_to_non_nullable
-                      as int,
+                      as num,
             totalPrice: null == totalPrice
                 ? _value.totalPrice
                 : totalPrice // ignore: cast_nullable_to_non_nullable
-                      as int,
+                      as num,
             vehicleBrand: null == vehicleBrand
                 ? _value.vehicleBrand
                 : vehicleBrand // ignore: cast_nullable_to_non_nullable
@@ -194,10 +194,10 @@ abstract class _$$BookingDtoImplCopyWith<$Res>
     String tourPointDistrict,
     String departureTime,
     String driverName,
-    int tourPointPrice,
+    num tourPointPrice,
     String guideName,
-    int guidePrice,
-    int totalPrice,
+    num guidePrice,
+    num totalPrice,
     String vehicleBrand,
     int seatCount,
     String departureLocationDescription,
@@ -264,7 +264,7 @@ class __$$BookingDtoImplCopyWithImpl<$Res>
         tourPointPrice: null == tourPointPrice
             ? _value.tourPointPrice
             : tourPointPrice // ignore: cast_nullable_to_non_nullable
-                  as int,
+                  as num,
         guideName: null == guideName
             ? _value.guideName
             : guideName // ignore: cast_nullable_to_non_nullable
@@ -272,11 +272,11 @@ class __$$BookingDtoImplCopyWithImpl<$Res>
         guidePrice: null == guidePrice
             ? _value.guidePrice
             : guidePrice // ignore: cast_nullable_to_non_nullable
-                  as int,
+                  as num,
         totalPrice: null == totalPrice
             ? _value.totalPrice
             : totalPrice // ignore: cast_nullable_to_non_nullable
-                  as int,
+                  as num,
         vehicleBrand: null == vehicleBrand
             ? _value.vehicleBrand
             : vehicleBrand // ignore: cast_nullable_to_non_nullable
@@ -346,13 +346,13 @@ class _$BookingDtoImpl implements _BookingDto {
   @override
   final String driverName;
   @override
-  final int tourPointPrice;
+  final num tourPointPrice;
   @override
   final String guideName;
   @override
-  final int guidePrice;
+  final num guidePrice;
   @override
-  final int totalPrice;
+  final num totalPrice;
   @override
   final String vehicleBrand;
   @override
@@ -458,10 +458,10 @@ abstract class _BookingDto implements BookingDto {
     required final String tourPointDistrict,
     required final String departureTime,
     required final String driverName,
-    required final int tourPointPrice,
+    required final num tourPointPrice,
     required final String guideName,
-    required final int guidePrice,
-    required final int totalPrice,
+    required final num guidePrice,
+    required final num totalPrice,
     required final String vehicleBrand,
     required final int seatCount,
     required final String departureLocationDescription,
@@ -485,13 +485,13 @@ abstract class _BookingDto implements BookingDto {
   @override
   String get driverName;
   @override
-  int get tourPointPrice;
+  num get tourPointPrice;
   @override
   String get guideName;
   @override
-  int get guidePrice;
+  num get guidePrice;
   @override
-  int get totalPrice;
+  num get totalPrice;
   @override
   String get vehicleBrand;
   @override

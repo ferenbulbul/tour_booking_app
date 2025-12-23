@@ -68,7 +68,7 @@ class _GuidesScreenState extends State<GuidesScreen> {
               return GuideCard(
                 guide: guide,
                 onTap: () {
-                  vm.setSelectedGuide(guide.guideId, guide.price.toInt());
+                  vm.setSelectedGuide(guide.guideId, guide.price);
                   context.push('/summary');
                 },
               );

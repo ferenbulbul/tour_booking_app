@@ -214,7 +214,7 @@
     "update_phone_number": "Update Phone Number",
     "phone_too_short": "Phone number is too short",
     "save": "Save",
-    "removed_from_favorites": "{0} removed from favorites",
+    "removed_from_favorites": "{} removed from favorites",
     "no_favorites_title": "You don't have any favorites yet",
     "no_favorites_subtitle": "Add tours you like to favorites\nand access them easily.",
     "my_favorites": "My Favorites",
@@ -222,5 +222,6 @@
     "phone_verified": "Phone Verified",
     "profile_not_found": "Profile not found",
     "account_settings": "Account Settings",
-    "language": "Language"
+    "language": "Language",
+    "available_vehicles": "Available Vehicles"
 }

@@ -19,6 +19,7 @@ class SummaryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Consumer<TourSearchDetailViewModel>(
       builder: (context, vm, _) {
         final selectedVehicle = _getSelectedVehicle(vm);
@@ -38,6 +39,7 @@ class SummaryScreen extends StatelessWidget {
         final canConfirm = date != null && selectedVehicle != null;
 
         return Scaffold(
+          backgroundColor: scheme.surface,
           appBar: CommonAppBar(title: tr('summary_title')),
           body: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
@@ -157,7 +159,7 @@ class SummaryScreen extends StatelessWidget {
                 const SizedBox(height: 12),
 
                 _paymentCard(
-                  totalPrice: totalPrice.toInt(),
+                  totalPrice: totalPrice,
                   vehiclePrice: vehiclePrice,
                   guidePrice: guidePrice,
                 ),
@@ -165,7 +167,7 @@ class SummaryScreen extends StatelessWidget {
             ),
           ),
           bottomNavigationBar: BottomActionBar(
-            price: totalPrice.toInt(),
+            price: totalPrice,
             buttonText: tr("summary_confirm"),
             onPressed: canConfirm
                 ? () async {
@@ -296,7 +298,7 @@ class SummaryScreen extends StatelessWidget {
   }
 
   Widget _paymentCard({
-    required int totalPrice,
+    required num totalPrice,
     num? vehiclePrice,
     num? guidePrice,
   }) {
@@ -391,7 +393,7 @@ class SummaryScreen extends StatelessWidget {
     final f = NumberFormat.currency(
       locale: "tr_TR",
       symbol: "₺",
-      decimalDigits: 0,
+      decimalDigits: 2,
     );
     return f.format(v);
   }

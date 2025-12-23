@@ -2,10 +2,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/auth/forgot_passwords/forgot_password/widget/forgot_password_view_model.dart';
+import 'package:flutter/material.dart' as ui;
 
 class ForgotPasswordForm extends StatefulWidget {
   const ForgotPasswordForm({super.key});
@@ -45,20 +45,23 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          TextFormField(
-            controller: _emailController,
-            decoration: InputDecoration(labelText: tr("email")),
-            keyboardType: TextInputType.emailAddress,
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return tr("email_required");
-              }
-              final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
-              if (!emailRegex.hasMatch(value.trim())) {
-                return tr("email_invalid");
-              }
-              return null;
-            },
+          Directionality(
+            textDirection: ui.TextDirection.ltr,
+            child: TextFormField(
+              controller: _emailController,
+              decoration: InputDecoration(labelText: tr("email")),
+              keyboardType: TextInputType.emailAddress,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return tr("email_required");
+                }
+                final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
+                if (!emailRegex.hasMatch(value.trim())) {
+                  return tr("email_invalid");
+                }
+                return null;
+              },
+            ),
           ),
 
           const SizedBox(height: 24),

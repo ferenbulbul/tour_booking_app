@@ -213,7 +213,7 @@
   "update_phone_number": "تحديث رقم الهاتف",
   "phone_too_short": "رقم الهاتف قصير جدًا",
   "save": "حفظ",
-  "removed_from_favorites": "تمت إزالة {0} من المفضلة",
+  "removed_from_favorites": "تمت إزالة {} من المفضلة",
   "no_favorites_title": "ليس لديك أي عناصر مفضلة بعد",
   "no_favorites_subtitle": "أضف الجولات التي تعجبك إلى المفضلة\nلتتمكن من الوصول إليها بسهولة.",
   "my_favorites": "مفضلتي",
@@ -221,5 +221,6 @@
   "phone_verified": "تم التحقق من الهاتف",
   "profile_not_found": "لم يتم العثور على الملف الشخصي",
   "account_settings": "إعدادات الحساب",
-  "language": "اللغة"
+  "language": "اللغة",
+  "available_vehicles": "المركبات المتاحة"
 }

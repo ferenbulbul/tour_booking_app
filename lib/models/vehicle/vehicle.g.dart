@@ -10,7 +10,7 @@ _$VehicleImpl _$$VehicleImplFromJson(Map<String, dynamic> json) =>
     _$VehicleImpl(
       tourRouteId: json['tourRouteId'] as String,
       vehicleId: json['vehicleId'] as String,
-      price: (json['price'] as num).toInt(),
+      price: json['price'] as num,
       vehicleBrand: json['vehicleBrand'] as String,
       vehicleClass: json['vehicleClass'] as String,
       vehicleType: json['vehicleType'] as String,

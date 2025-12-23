@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
@@ -8,6 +9,7 @@ import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/auth/login/widgets/login_view_model.dart';
 import 'package:tour_booking/features/auth/login/widgets/social_login_button.dart';
+import 'package:flutter/material.dart' as ui;
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -227,24 +229,43 @@ class _CleanLoginFormState extends State<_CleanLoginForm> {
   }) {
     final scheme = Theme.of(context).colorScheme;
 
-    return TextFormField(
-      controller: controller,
-      obscureText: isPassword ? isObscure : false,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: scheme.onSurfaceVariant),
-        suffixIcon: isPassword
-            ? IconButton(
-                icon: Icon(
-                  isObscure
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                  color: scheme.onSurfaceVariant,
+    return Directionality(
+      textDirection: ui.TextDirection.ltr, // 🔥 KRİTİK
+      child: TextFormField(
+        controller: controller,
+        obscureText: isPassword ? isObscure : false,
+        keyboardType:
+            keyboardType ??
+            (isPassword ? TextInputType.visiblePassword : TextInputType.text),
+
+        // 🔒 Password için ASCII zorunlu
+        inputFormatters: isPassword
+            ? [
+                FilteringTextInputFormatter.allow(
+                  RegExp(
+                    r'[A-Za-z0-9!@#\$%\^&\*\(\)_\+\-=\[\]{};:"\\|,.<>\/?]',
+                  ),
                 ),
-                onPressed: onVisibilityToggle,
-              )
+              ]
             : null,
+
+        textAlign: TextAlign.left,
+        cursorColor: scheme.primary,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(icon, color: scheme.onSurfaceVariant),
+          suffixIcon: isPassword
+              ? IconButton(
+                  icon: Icon(
+                    isObscure
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                  onPressed: onVisibilityToggle,
+                )
+              : null,
+        ),
       ),
     );
   }

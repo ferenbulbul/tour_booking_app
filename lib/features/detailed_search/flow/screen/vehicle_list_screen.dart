@@ -169,7 +169,7 @@ class VehicleCard extends StatelessWidget {
                 children: [
                   _FeatureChip(
                     icon: Icons.event_seat,
-                    label: "${vehicle.seatCount} seat_count",
+                    label: "${vehicle.seatCount} ${'seat_count'.tr()}",
                   ),
                   _FeatureChip(
                     icon: Icons.directions_car_filled_rounded,
@@ -217,7 +217,7 @@ class _PriceBadge extends StatelessWidget {
         ],
       ),
       child: Text(
-        "$price ₺",
+        formatPrice(price),
         style: AppTextStyles.labelLarge.copyWith(
           color: Colors.white,
           fontWeight: FontWeight.w600,
@@ -261,4 +261,12 @@ class _FeatureChip extends StatelessWidget {
       ),
     );
   }
+}
+
+String formatPrice(num value) {
+  return NumberFormat.currency(
+    locale: 'tr_TR',
+    symbol: '₺',
+    decimalDigits: 2,
+  ).format(value);
 }

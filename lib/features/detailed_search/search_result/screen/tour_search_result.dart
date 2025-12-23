@@ -50,7 +50,7 @@ class _TourSearchResultsScreenState extends State<TourSearchResultsScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<TourSearchResultsViewModel>();
-
+    final scheme = Theme.of(context).colorScheme;
     // 🔥 UIHelper tetikleme noktası
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (vm.errorMessage != null) {
@@ -60,6 +60,7 @@ class _TourSearchResultsScreenState extends State<TourSearchResultsScreen> {
     });
 
     return Scaffold(
+      backgroundColor: scheme.surface,
       appBar: CommonAppBar(
         title: tr("tour_search_results_title"),
         centerTitle: true,

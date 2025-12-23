@@ -13,7 +13,7 @@ class RegisterScreen extends StatelessWidget {
     final text = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: scheme.background,
+      backgroundColor: scheme.surface,
       appBar: const CommonAppBar(title: "Register"),
       body: SafeArea(
         child: Center(

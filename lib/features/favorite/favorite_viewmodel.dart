@@ -9,8 +9,21 @@ class FavoriteViewModel extends ChangeNotifier {
 
   bool isLoading = false;
   String? message;
+
+  /// Favoriler listesi (ekran için)
   List<FeaturedTourPointDto> favorites = [];
-  String? selectedTourPointId;
+
+  /// 🔥 GERÇEK SOURCE OF TRUTH
+  final Set<String> _favoriteIds = {};
+
+  Set<String> get favoriteIds => _favoriteIds;
+
+  /// ❤️ Favori mi?
+  bool isFavorite(String id) {
+    return _favoriteIds.contains(id);
+  }
+
+  /// 📥 Favorileri API'den çek
   Future<void> fetchFavorites() async {
     try {
       isLoading = true;
@@ -21,13 +34,20 @@ class FavoriteViewModel extends ChangeNotifier {
 
       if (result.isSuccess && result.data != null) {
         favorites = result.data!.tourPoints;
+
+        _favoriteIds
+          ..clear()
+          ..addAll(favorites.map((f) => f.id));
+
         message = null;
       } else {
         favorites = [];
+        _favoriteIds.clear();
         message = resp.message ?? "Favoriler alınamadı";
       }
     } catch (e) {
       favorites = [];
+      _favoriteIds.clear();
       message = e.toString();
     } finally {
       isLoading = false;
@@ -35,38 +55,29 @@ class FavoriteViewModel extends ChangeNotifier {
     }
   }
 
-  void removeFavoriteLocal(String id) {
-    favorites = favorites.where((f) => f.id != id).toList();
-    selectedTourPointId = id;
+  /// 🔁 FAVORİ EKLE / ÇIKAR (HER YERDE AYNI)
+  Future<void> toggleFavorite(String id) async {
+    final wasFavorite = _favoriteIds.contains(id);
+
+    // 🔥 OPTIMISTIC UPDATE
+    if (wasFavorite) {
+      _favoriteIds.remove(id);
+      favorites = favorites.where((f) => f.id != id).toList();
+    } else {
+      _favoriteIds.add(id);
+    }
+
     notifyListeners();
-  }
 
-  // Future<void> toggleFavorite(String tourPointId) async {
-  //   // basit mantık: eğer listede varsa sil, yoksa ekle
-  //   final exists = favorites.any((f) => f.tourPointId == tourPointId);
-
-  //   try {
-  //     if (exists) {
-  //       await _favoriteService.removeFavorite(tourPointId);
-  //       favorites.removeWhere((f) => f.tourPointId == tourPointId);
-  //     } else {
-  //       final resp = await _favoriteService.addFavorite(tourPointId);
-  //       final result = handleResponse<FavoriteDto>(resp);
-  //       if (result.isSuccess && result.data != null) {
-  //         favorites.add(result.data!);
-  //       }
-  //     }
-  //   } catch (e) {
-  //     message = e.toString();
-  //   }
-
-  //   notifyListeners();
-  // }
-  Future<void> removeFavorite(String tourPointId) async {
-    notifyListeners();
     try {
-      await _service.ToggleFavorite(selectedTourPointId!);
+      await _service.ToggleFavorite(id);
     } catch (e) {
+      // 🔴 ROLLBACK
+      if (wasFavorite) {
+        _favoriteIds.add(id);
+      } else {
+        _favoriteIds.remove(id);
+      }
       notifyListeners();
     }
   }

@@ -14,7 +14,7 @@ class ResetPasswordScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: scheme.surface,
 
-      appBar: CommonAppBar(title: 'new_password'.tr(), showBack: true),
+      appBar: CommonAppBar(title: 'new_password'.tr(), showBack: false),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
