@@ -7,11 +7,13 @@ import 'package:tour_booking/core/theme/app_colors.dart';
 class BookingCard extends StatefulWidget {
   final BookingDto item;
   final bool showCancelAction;
+  final VoidCallback? onCancel;
 
   const BookingCard({
     super.key,
     required this.item,
     this.showCancelAction = false,
+    this.onCancel,
   });
 
   @override
@@ -253,9 +255,8 @@ class _BookingCardState extends State<BookingCard> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          onPressed: () {
-                            // TODO: cancel request
-                          },
+                          onPressed: () => widget.onCancel?.call(),
+
                           child: Text(
                             'booking_cancel_request'.tr(),
                             style: TextStyle(

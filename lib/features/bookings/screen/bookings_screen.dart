@@ -4,11 +4,13 @@ import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/booking_status.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/core/widgets/empty_state.dart';
 import 'package:tour_booking/features/bookings/bookings_viewmodel.dart';
 import 'package:tour_booking/features/bookings/widget/booking_card.dart';
 import 'package:tour_booking/features/bookings/widget/booking_skelaton.dart';
+import 'package:tour_booking/models/booking/booking_dto.dart';
 
 class BookingsScreen extends StatefulWidget {
   const BookingsScreen({super.key});
@@ -32,8 +34,30 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<BookingsViewModel>();
+    return Consumer<BookingsViewModel>(
+      builder: (context, vm, child) {
+        /// 🔥 BACKEND MESSAGE LISTENER (ONE-SHOT)
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+
+          final msg = vm.message;
+          if (msg != null && msg.isNotEmpty) {
+            UIHelper.showSuccess(context, msg);
+            vm.clearMessage(); // 🔥 sadece 1 kere göster
+          }
+        });
+
+        return _buildContent(context, vm);
+      },
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // MAIN CONTENT
+  // -------------------------------------------------------------------------
+  Widget _buildContent(BuildContext context, BookingsViewModel vm) {
     final scheme = Theme.of(context).colorScheme;
+
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -42,7 +66,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
         body: Column(
           children: [
             // -----------------------------------------------------------------
-            // TAB BAR (premium)
+            // TAB BAR
             // -----------------------------------------------------------------
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -64,7 +88,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
             ),
 
             // -----------------------------------------------------------------
-            // CONTENT
+            // TAB CONTENT
             // -----------------------------------------------------------------
             Expanded(
               child: TabBarView(
@@ -74,6 +98,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                     loading: vm.isLoadingAll,
                     type: BookingStatus.upcoming,
                     showCancelAction: true,
+                    onCancel: vm.requestCancellation,
                   ),
                   _list(
                     bookings: vm.completedBookings,
@@ -98,10 +123,11 @@ class _BookingsScreenState extends State<BookingsScreen> {
   // LIST BUILDER
   // -------------------------------------------------------------------------
   Widget _list({
-    required List bookings,
+    required List<BookingDto> bookings,
     required bool loading,
     required BookingStatus type,
     bool showCancelAction = false,
+    Future<void> Function(String bookingId)? onCancel,
   }) {
     if (loading) {
       return const BookingsSkeleton();
@@ -115,14 +141,12 @@ class _BookingsScreenState extends State<BookingsScreen> {
             title: 'empty_upcoming_title'.tr(),
             subtitle: 'empty_upcoming_subtitle'.tr(),
           );
-
         case BookingStatus.completed:
           return EmptyState(
             icon: Icons.check_circle_outline,
             title: 'empty_completed_title'.tr(),
             subtitle: 'empty_completed_subtitle'.tr(),
           );
-
         case BookingStatus.cancelled:
           return EmptyState(
             icon: Icons.cancel_outlined,
@@ -136,8 +160,11 @@ class _BookingsScreenState extends State<BookingsScreen> {
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       itemCount: bookings.length,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (_, i) =>
-          BookingCard(item: bookings[i], showCancelAction: showCancelAction),
+      itemBuilder: (_, i) => BookingCard(
+        item: bookings[i],
+        showCancelAction: showCancelAction,
+        onCancel: () => onCancel?.call(bookings[i].id),
+      ),
     );
   }
 }

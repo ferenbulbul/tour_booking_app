@@ -40,13 +40,27 @@ class BookingsViewModel extends ChangeNotifier {
             break;
         }
       } else {
-        message = resp.message;
+        setMessage(resp.message);
       }
     } catch (e) {
-      message = "Bir hata oluştu: $e";
+      setMessage("Bir hata oluştu: $e");
     } finally {
       _setLoading(status, false);
       notifyListeners();
+    }
+  }
+
+  Future<void> requestCancellation(String bookingId) async {
+    try {
+      final resp = await _service.requestCancellation(bookingId: bookingId);
+
+      setMessage(resp.message);
+
+      if (resp.isSuccess ?? false) {
+        await fetchBookingsByStatus(BookingStatus.upcoming);
+      }
+    } catch (e) {
+      setMessage("Bir hata oluştu: $e");
     }
   }
 
@@ -63,6 +77,16 @@ class BookingsViewModel extends ChangeNotifier {
         isLoadingCancelled = value;
         break;
     }
+    notifyListeners();
+  }
+
+  void setMessage(String? value) {
+    message = value;
+    notifyListeners();
+  }
+
+  void clearMessage() {
+    message = null;
     notifyListeners();
   }
 }

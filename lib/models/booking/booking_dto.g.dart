@@ -8,6 +8,7 @@ part of 'booking_dto.dart';
 
 _$BookingDtoImpl _$$BookingDtoImplFromJson(Map<String, dynamic> json) =>
     _$BookingDtoImpl(
+      id: json['id'] as String,
       tourPointName: json['tourPointName'] as String,
       tourPointCity: json['tourPointCity'] as String,
       tourPointDistrict: json['tourPointDistrict'] as String,
@@ -29,6 +30,7 @@ _$BookingDtoImpl _$$BookingDtoImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$BookingDtoImplToJson(_$BookingDtoImpl instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'tourPointName': instance.tourPointName,
       'tourPointCity': instance.tourPointCity,
       'tourPointDistrict': instance.tourPointDistrict,

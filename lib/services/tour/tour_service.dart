@@ -253,4 +253,11 @@ class TourService {
           BookingListResponse.fromJson(json as Map<String, dynamic>),
     );
   }
+
+  Future<BaseResponse> requestCancellation({required String bookingId}) async {
+    return _apiClient.post<BookingListResponse>(
+      path: "/Mobile/create-cancellation",
+      body: {'bookingId': bookingId},
+    );
+  }
 }

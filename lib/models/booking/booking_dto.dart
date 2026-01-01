@@ -6,6 +6,7 @@ part 'booking_dto.g.dart';
 @freezed
 class BookingDto with _$BookingDto {
   const factory BookingDto({
+    required String id,
     required String tourPointName,
     required String tourPointCity,
     required String tourPointDistrict,
