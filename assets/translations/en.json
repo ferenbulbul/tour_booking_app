@@ -223,5 +223,9 @@
     "profile_not_found": "Profile not found",
     "account_settings": "Account Settings",
     "language": "Language",
-    "available_vehicles": "Available Vehicles"
+    "available_vehicles": "Available Vehicles",
+    "confirm_title": "Are you sure?",
+    "confirm_cancel_booking": "A cancellation request will be created for this booking.",
+    "common_cancel": "Cancel",
+    "common_yes": "Yes"
 }

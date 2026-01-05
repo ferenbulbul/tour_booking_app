@@ -1,134 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-  <dict>
-
-    <!-- Yerel ağ kullanımı (bazı cihazlarda Google Maps için gerekli olabiliyor) -->
-    <key>NSLocalNetworkUsageDescription</key>
-    <string>Bu uygulama, yerel ağ bağlantısı gerektirir.</string>
-
-    <key>CADisableMinimumFrameDurationOnPhone</key>
-    <true/>
-
-    <key>CFBundleDevelopmentRegion</key>
-    <string>$(DEVELOPMENT_LANGUAGE)</string>
-
-    <key>CFBundleDisplayName</key>
-    <string>TourRent.ai</string>
-
-    <key>CFBundleExecutable</key>
-    <string>$(EXECUTABLE_NAME)</string>
-
-    <key>CFBundleIdentifier</key>
-    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-
-    <key>CFBundleInfoDictionaryVersion</key>
-    <string>6.0</string>
-
-    <key>CFBundleName</key>
-    <string>tour_booking_app</string>
-
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-
-    <key>CFBundleShortVersionString</key>
-    <string>$(FLUTTER_BUILD_NAME)</string>
-
-    <key>CFBundleSignature</key>
-    <string>????</string>
-
-    <!-- URL Schemes (Google Sign-In + custom) -->
-    <key>CFBundleURLTypes</key>
-    <array>
-      <dict>
-        <key>CFBundleTypeRole</key>
-        <string>Editor</string>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>com.googleusercontent.apps.423047904244-ls89sh0e3mnp1vb01c91gg3kosogrtnm</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleTypeRole</key>
-        <string>Editor</string>
-        <key>CFBundleURLName</key>
-        <string>app.tourrent.ios</string>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>app.tourrent.ios</string>
-        </array>
-      </dict>
-    </array>
-
-    <key>CFBundleVersion</key>
-    <string>$(CURRENT_PROJECT_VERSION)</string>
-
-    <key>GoogleSignIn</key>
-    <dict>
-      <key>ClientId</key>
-      <string>423047904244-ls89sh0e3mnp1vb01c91gg3kosogrtnm.apps.googleusercontent.com</string>
-    </dict>
-
-    <key>LSRequiresIPhoneOS</key>
-    <true/>
-
-    <!-- ========================= -->
-    <!--     KONUM İZİNLERİ        -->
-    <!-- ========================= -->
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Yakınınızdaki turları ve etkinlikleri bulmak için konumunuza ihtiyaç duyuyoruz.</string>
-
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>İşletme olarak, müşterilerin sizi haritada canlı takip edebilmesi için uygulama arka plandayken bile konum paylaşımı gereklidir.</string>
-
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>İşletme olarak, müşterilerin sizi haritada canlı takip edebilmesi için uygulama arka plandayken bile konum paylaşımı gereklidir.</string>
-    <!-- ========================= -->
-
-    <key>UIApplicationSupportsIndirectInputEvents</key>
-    <true/>
-
-    <!-- ========================= -->
-    <!--    BACKGROUND MODES       -->
-    <!-- ========================= -->
-    <key>UIBackgroundModes</key>
-    <array>
-      <string>remote-notification</string>
-      <string>location</string> <!-- DRIVER İÇİN ZORUNLU -->
-    </array>
-    <!-- ========================= -->
-
-    <key>UILaunchStoryboardName</key>
-    <string>LaunchScreen</string>
-
-    <key>UIMainStoryboardFile</key>
-    <string>Main</string>
-
-    <key>UIStatusBarHidden</key>
-    <false/>
-
-    <key>UISupportedInterfaceOrientations</key>
-    <array>
-      <string>UIInterfaceOrientationPortrait</string>
-      <string>UIInterfaceOrientationLandscapeLeft</string>
-      <string>UIInterfaceOrientationLandscapeRight</string>
-    </array>
-
-    <key>UISupportedInterfaceOrientations~ipad</key>
-    <array>
-      <string>UIInterfaceOrientationPortrait</string>
-      <string>UIInterfaceOrientationPortraitUpsideDown</string>
-      <string>UIInterfaceOrientationLandscapeLeft</string>
-      <string>UIInterfaceOrientationLandscapeRight</string>
-    </array>
-
-    <!-- ========================= -->
-    <!--     GOOGLE MAPS API       -->
-    <!-- ========================= -->
-    <key>GMSApiKey</key>
-    <string>AIzaSyDZ5a2iSVzbpA8OqYQjExZaaKLrCxV-Bbg</string>
-    <!-- ========================= -->
-
-  </dict>
+	<dict>
+		<!-- Yerel ağ kullanımı (bazı cihazlarda Google Maps için gerekli olabiliyor) -->
+		<key>NSLocalNetworkUsageDescription</key>
+		<string>Bu uygulama, yerel ağ bağlantısı gerektirir.</string>
+		<key>CADisableMinimumFrameDurationOnPhone</key>
+		<true/>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>$(DEVELOPMENT_LANGUAGE)</string>
+		<key>CFBundleDisplayName</key>
+		<string>TourRent.ai</string>
+		<key>CFBundleExecutable</key>
+		<string>$(EXECUTABLE_NAME)</string>
+		<key>CFBundleIdentifier</key>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleName</key>
+		<string>tour_booking_app</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleShortVersionString</key>
+		<string>$(FLUTTER_BUILD_NAME)</string>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<!-- URL Schemes (Google Sign-In + custom) -->
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.googleusercontent.apps.423047904244-ls89sh0e3mnp1vb01c91gg3kosogrtnm</string>
+				</array>
+			</dict>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>app.tourrent.ios</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>app.tourrent.ios</string>
+				</array>
+			</dict>
+		</array>
+		<key>CFBundleVersion</key>
+		<string>$(CURRENT_PROJECT_VERSION)</string>
+		<key>GoogleSignIn</key>
+		<dict>
+			<key>ClientId</key>
+			<string>423047904244-ls89sh0e3mnp1vb01c91gg3kosogrtnm.apps.googleusercontent.com</string>
+		</dict>
+		<key>LSRequiresIPhoneOS</key>
+		<true/>
+		<!-- ========================= -->
+		<!--     KONUM İZİNLERİ        -->
+		<!-- ========================= -->
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>Yakınınızdaki turları ve etkinlikleri bulmak için konumunuza ihtiyaç duyuyoruz.</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>İşletme olarak, müşterilerin sizi haritada canlı takip edebilmesi için uygulama arka plandayken bile konum paylaşımı gereklidir.</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>İşletme olarak, müşterilerin sizi haritada canlı takip edebilmesi için uygulama arka plandayken bile konum paylaşımı gereklidir.</string>
+		<!-- ========================= -->
+		<key>UIApplicationSupportsIndirectInputEvents</key>
+		<true/>
+		<!-- ========================= -->
+		<!--    BACKGROUND MODES       -->
+		<!-- ========================= -->
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>remote-notification</string>
+			<string>location</string>
+			<!-- DRIVER İÇİN ZORUNLU -->
+		</array>
+		<!-- ========================= -->
+		<key>UILaunchStoryboardName</key>
+		<string>LaunchScreen</string>
+		<key>UIMainStoryboardFile</key>
+		<string>Main</string>
+		<key>UIStatusBarHidden</key>
+		<false/>
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>UISupportedInterfaceOrientations~ipad</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationPortraitUpsideDown</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<!-- ========================= -->
+		<!--     GOOGLE MAPS API       -->
+		<!-- ========================= -->
+		<key>GMSApiKey</key>
+		<string>AIzaSyDZ5a2iSVzbpA8OqYQjExZaaKLrCxV-Bbg</string>
+		<!-- ========================= -->
+	</dict>
 </plist>

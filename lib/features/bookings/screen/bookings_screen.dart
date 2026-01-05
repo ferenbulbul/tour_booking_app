@@ -20,6 +20,7 @@ class BookingsScreen extends StatefulWidget {
 }
 
 class _BookingsScreenState extends State<BookingsScreen> {
+  String? _cancellingBookingId;
   @override
   void initState() {
     super.initState();
@@ -160,11 +161,59 @@ class _BookingsScreenState extends State<BookingsScreen> {
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       itemCount: bookings.length,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (_, i) => BookingCard(
-        item: bookings[i],
-        showCancelAction: showCancelAction,
-        onCancel: () => onCancel?.call(bookings[i].id),
+      itemBuilder: (_, i) {
+        final item = bookings[i];
+
+        return BookingCard(
+          item: item,
+          showCancelAction: showCancelAction,
+          isCancelling: _cancellingBookingId == item.id,
+          onCancel: () => _onCancelPressed(context, item.id),
+        );
+      },
+    );
+  }
+
+  Future<void> _onCancelPressed(BuildContext context, String bookingId) async {
+    // 🔒 Aynı anda 2 kere basılamaz
+    if (_cancellingBookingId != null) return;
+
+    final confirmed = await showDialog<bool>(
+      context: Navigator.of(context, rootNavigator: true).context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        title: Text('confirm_title'.tr()),
+        content: Text('confirm_cancel_booking'.tr()),
+        actions: [
+          TextButton(
+            onPressed: () =>
+                Navigator.of(context, rootNavigator: true).pop(false),
+            child: Text('common_cancel'.tr()),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            onPressed: () =>
+                Navigator.of(context, rootNavigator: true).pop(true),
+            child: Text('common_yes'.tr()),
+          ),
+        ],
       ),
     );
+
+    if (confirmed != true) return;
+
+    setState(() {
+      _cancellingBookingId = bookingId;
+    });
+
+    try {
+      await context.read<BookingsViewModel>().requestCancellation(bookingId);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _cancellingBookingId = null;
+        });
+      }
+    }
   }
 }

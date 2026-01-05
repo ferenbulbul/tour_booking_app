@@ -319,7 +319,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
                     const SizedBox(height: 16),
                     SectionTitle(
                       title: tr("departure_details_title"),
-                      subtitle: tr("Choose the details for your pickup"),
+                      subtitle: tr("departure_details_subtitle"),
                     ),
                     const SizedBox(height: 16),
                     DepartureFormSection(

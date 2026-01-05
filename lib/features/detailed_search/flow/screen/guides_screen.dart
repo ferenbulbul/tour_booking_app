@@ -286,7 +286,7 @@ class _NoGuideFoundCard extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              "no_guide_available_message",
+              tr("no_guide_available_message"),
               style: AppTextStyles.bodyMedium,
             ),
           ),

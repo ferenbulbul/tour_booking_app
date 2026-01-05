@@ -223,5 +223,9 @@
     "profile_not_found": "Profil bulunamadı",
     "account_settings": "Hesap Ayarları",
     "language": "Dil",
-    "available_vehicles": "Müsait Araçlar"
-} 
+    "available_vehicles": "Müsait Araçlar",
+    "confirm_title": "Emin misiniz?",
+    "confirm_cancel_booking": "Bu rezervasyon için iptal talebi oluşturulacaktır.",
+    "common_cancel": "Vazgeç",
+    "common_yes": "Evet"
+}

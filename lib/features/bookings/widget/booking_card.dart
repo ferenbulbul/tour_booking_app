@@ -8,12 +8,14 @@ class BookingCard extends StatefulWidget {
   final BookingDto item;
   final bool showCancelAction;
   final VoidCallback? onCancel;
+  final bool isCancelling;
 
   const BookingCard({
     super.key,
     required this.item,
     this.showCancelAction = false,
     this.onCancel,
+    this.isCancelling = false,
   });
 
   @override
@@ -255,15 +257,25 @@ class _BookingCardState extends State<BookingCard> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          onPressed: () => widget.onCancel?.call(),
+                          onPressed: widget.isCancelling
+                              ? null
+                              : widget.onCancel,
 
-                          child: Text(
-                            'booking_cancel_request'.tr(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13.5,
-                            ),
-                          ),
+                          child: widget.isCancelling
+                              ? const SizedBox(
+                                  height: 18,
+                                  width: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Text(
+                                  'booking_cancel_request'.tr(),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13.5,
+                                  ),
+                                ),
                         ),
                       ),
                   ],

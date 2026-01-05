@@ -222,5 +222,9 @@
   "profile_not_found": "لم يتم العثور على الملف الشخصي",
   "account_settings": "إعدادات الحساب",
   "language": "اللغة",
-  "available_vehicles": "المركبات المتاحة"
+  "available_vehicles": "المركبات المتاحة",
+   "confirm_title": "هل أنت متأكد؟",
+  "confirm_cancel_booking": "سيتم إنشاء طلب إلغاء لهذا الحجز.",
+  "common_cancel": "إلغاء",
+  "common_yes": "نعم"
 }
