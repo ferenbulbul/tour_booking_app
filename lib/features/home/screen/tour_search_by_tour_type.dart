@@ -42,9 +42,9 @@ class _TourSearchResultsByTourTypeScreenState
     );
     final items = context.select((HomeViewModel vm) => vm.searchItemsByType);
     final msg = context.select((HomeViewModel vm) => vm.messageSearchByType);
-
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: scheme.surface,
 
       appBar: CommonAppBar(
         title: tr("tour_search_results_title"),

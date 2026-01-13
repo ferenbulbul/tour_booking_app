@@ -65,6 +65,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Spacer(),
 
@@ -139,7 +140,9 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                           ),
                         ),
                         const SizedBox(height: 6),
+
                         Text(
+                          textAlign: TextAlign.center,
                           widget.conversitationId,
                           style: AppTextStyles.bodyMedium.copyWith(
                             letterSpacing: .6,

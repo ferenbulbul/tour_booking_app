@@ -179,24 +179,94 @@ class _BookingsScreenState extends State<BookingsScreen> {
     if (_cancellingBookingId != null) return;
 
     final confirmed = await showDialog<bool>(
-      context: Navigator.of(context, rootNavigator: true).context,
+      context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        title: Text('confirm_title'.tr()),
-        content: Text('confirm_cancel_booking'.tr()),
-        actions: [
-          TextButton(
-            onPressed: () =>
-                Navigator.of(context, rootNavigator: true).pop(false),
-            child: Text('common_cancel'.tr()),
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24), // 🔥 daha modern
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20), // bol iç boşluk
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // ICON HEADER
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: AppColors.error.withOpacity(.12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(
+                  Icons.warning_amber_rounded,
+                  size: 28,
+                  color: AppColors.error,
+                ),
+              ),
+
+              const SizedBox(height: 14),
+
+              // TITLE
+              Text(
+                "Rezervasyonu İptal Et",
+                style: AppTextStyles.titleMedium.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ).tr(),
+
+              const SizedBox(height: 10),
+
+              // CONTENT
+              Text(
+                "Bu rezervasyonu iptal etmek istediğine emin misin?",
+                textAlign: TextAlign.center,
+                style: AppTextStyles.bodyMedium,
+              ).tr(),
+
+              const SizedBox(height: 16),
+
+              // ACTION BUTTONS
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0, // çok sert gölgeyi kaldırdık
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        backgroundColor: AppColors.error, // sade kırmızı accent
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () =>
+                          Navigator.of(context, rootNavigator: true).pop(true),
+                      child: Text("common_yes".tr()),
+                    ),
+                  ),
+
+                  const SizedBox(width: 10),
+
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        foregroundColor: Colors.grey.shade700,
+                        side: BorderSide(color: Colors.grey.shade300),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () =>
+                          Navigator.of(context, rootNavigator: true).pop(false),
+                      child: Text("common_cancel".tr()),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            onPressed: () =>
-                Navigator.of(context, rootNavigator: true).pop(true),
-            child: Text('common_yes'.tr()),
-          ),
-        ],
+        ),
       ),
     );
 

@@ -181,10 +181,10 @@
     "hello_greeting": "Hello 👋",
     "nearby_tours": "Nearby Tours",
     "enable_location_permission_from_settings": "Please enable location permission from Settings",
-    "enter_place_name_example": "Enter place name (e.g. Ayder)",
+    "enter_place_name_example": "Where would you like to go?",
     "min_2_characters_required": "Please enter at least 2 characters",
     "featured_tours": "Featured Tours",
-    "find_tours_nearby": "Find tours close to your location",
+    "find_tours_nearby": "Tour routes near you",
     "about_us": "About Us",
     "no_nearby_tour_found": "No nearby tour point was found.",
     "no_tour_matching_criteria": "No tour matched your criteria.",
@@ -227,5 +227,9 @@
     "confirm_title": "Are you sure?",
     "confirm_cancel_booking": "A cancellation request will be created for this booking.",
     "common_cancel": "Cancel",
-    "common_yes": "Yes"
+    "common_yes": "Yes",
+    "pending_approvel": "Pending Approval",
+    "complete_profile": "Complete Your Profile",
+    "verify_phone_desc": "You can make a reservation by verifying your phone number.",
+    "verify_now": "Verify Now"
 }

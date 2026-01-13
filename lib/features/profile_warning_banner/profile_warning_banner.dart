@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/features/profile/profile_status_viewmodel.dart';
@@ -57,7 +58,7 @@ class ProfileWarningBanner extends StatelessWidget {
                     children: [
                       // Title
                       Text(
-                        "Profilini Tamamla",
+                        tr("complete_profile"),
                         style: text.titleSmall?.copyWith(
                           fontWeight: FontWeight.w700,
                           color: scheme.onSurface,
@@ -68,7 +69,7 @@ class ProfileWarningBanner extends StatelessWidget {
 
                       // Subtitle
                       Text(
-                        "Telefon numaranı doğrulayarak rezervasyon oluşturabilirsin.",
+                        tr("verify_phone_desc"),
                         style: text.bodySmall?.copyWith(
                           color: scheme.onSurface.withOpacity(.7),
                           height: 1.3,
@@ -80,7 +81,7 @@ class ProfileWarningBanner extends StatelessWidget {
                         GestureDetector(
                           onTap: onAction,
                           child: Text(
-                            "Şimdi doğrula",
+                            tr("verify_now"),
                             style: text.labelLarge?.copyWith(
                               color: scheme.primary,
                               fontWeight: FontWeight.bold,

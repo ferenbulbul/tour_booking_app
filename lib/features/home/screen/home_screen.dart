@@ -160,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
                   return Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.screenPadding,
+                      horizontal: AppSpacing.xs,
                     ),
                     child: Column(
                       children: [
@@ -169,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             context,
                           ).push('/settings/permissions'),
                         ),
-                        const SizedBox(height: AppSpacing.sectionSpacing),
+                        const SizedBox(height: AppSpacing.xl),
                       ],
                     ),
                   );
@@ -186,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 child: Column(
                   children: [
                     FakeSearchBar(),
-                    SizedBox(height: AppSpacing.sectionSpacing),
+                    SizedBox(height: AppSpacing.xl),
                   ],
                 ),
               ),
@@ -215,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             _sliverSection(
               title: tr("about_us"),
               body: const AboutSection(),
-              bottomSpace: AppSpacing.sectionSpacing * 2,
+              bottomSpace: AppSpacing.m,
             ),
           ],
         ),
@@ -230,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     required String title,
     String? subtitle,
     required Widget body,
-    double bottomSpace = AppSpacing.sectionSpacing,
+    double bottomSpace = AppSpacing.xxl,
   }) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
@@ -238,15 +238,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Text(
-            //   'Hello مرحبا',
-            //   style: const TextStyle(fontFamily: 'Inter', fontSize: 22),
-            // ),
-            // Text(
-            //   'مرحبا ',
-            //   style: const TextStyle(fontFamily: 'Cairo', fontSize: 24),
-            // ),
-            // Text('مرحبا ', style: const TextStyle(fontSize: 24)),
             SectionTitle(title: title, subtitle: subtitle),
             const SizedBox(height: AppSpacing.m),
             RepaintBoundary(child: body),

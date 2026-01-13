@@ -243,41 +243,53 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                   const SizedBox(height: 16),
 
                   // --- 3x2 GRID (araç özellikleri) ---
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
-                    children: [
-                      _specTile(
-                        Icons.directions_bus_outlined,
-                        tr("vehicle_brand"),
-                        v.vehicleBrand,
-                      ),
-                      _specTile(
-                        Icons.category_outlined,
-                        tr("vehicle_class"),
-                        v.vehicleClass,
-                      ),
-                      _specTile(
-                        Icons.confirmation_number_outlined,
-                        tr("vehicle_type"),
-                        v.vehicleType,
-                      ),
-                      _specTile(
-                        Icons.event_seat_outlined,
-                        tr("seat_count"),
-                        "${v.seatCount}",
-                      ),
-                      _specTile(
-                        Icons.calendar_today_outlined,
-                        tr("model_year"),
-                        "${v.modelYear}",
-                      ),
-                      _specTile(
-                        Icons.airline_seat_legroom_extra_outlined,
-                        tr("legroom"),
-                        v.legRoomSpace ?? "-",
-                      ),
-                    ],
+                  LayoutBuilder(
+                    builder: (_, c) {
+                      final maxW = c.maxWidth;
+                      final itemW = (maxW - 12) / 2; // 12 = spacing
+                      return Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
+                        children: [
+                          _specTile(
+                            Icons.directions_bus_outlined,
+                            tr("vehicle_brand"),
+                            v.vehicleBrand,
+                            itemW,
+                          ),
+                          _specTile(
+                            Icons.category_outlined,
+                            tr("vehicle_class"),
+                            v.vehicleClass,
+                            itemW,
+                          ),
+                          _specTile(
+                            Icons.confirmation_number_outlined,
+                            tr("vehicle_type"),
+                            v.vehicleType,
+                            itemW,
+                          ),
+                          _specTile(
+                            Icons.event_seat_outlined,
+                            tr("seat_count"),
+                            "${v.seatCount}",
+                            itemW,
+                          ),
+                          _specTile(
+                            Icons.calendar_today_outlined,
+                            tr("model_year"),
+                            "${v.modelYear}",
+                            itemW,
+                          ),
+                          _specTile(
+                            Icons.airline_seat_legroom_extra_outlined,
+                            tr("legroom"),
+                            v.legRoomSpace ?? "-",
+                            itemW,
+                          ),
+                        ],
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 26),
@@ -343,9 +355,9 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
   // -------------------------------------------------------------------------
   // SPEC TILE (6'lık grid)
   // -------------------------------------------------------------------------
-  Widget _specTile(IconData icon, String label, String value) {
+  Widget _specTile(IconData icon, String label, String value, double width) {
     return Container(
-      width: 160,
+      width: width,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
         color: AppColors.background,
@@ -465,7 +477,10 @@ Widget _driverSection({
                   Text(name ?? "", style: AppTextStyles.titleSmall),
                   const SizedBox(height: 4),
                   Text(
-                    tr("driver_experience", args: ["${experience ?? '—'}"]),
+                    tr(
+                      "driver_experience",
+                      namedArgs: {"year": experience?.toString() ?? "—"},
+                    ),
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.textSecondary,
                     ),

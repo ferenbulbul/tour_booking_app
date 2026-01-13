@@ -81,7 +81,11 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
                   calendarFormat: CalendarFormat.month,
 
                   selectedDayPredicate: (day) => isSameDay(selectedDate, day),
+                  enabledDayPredicate: (day) {
+                    final today = DateTime.now();
 
+                    return !isSameDay(day, today);
+                  },
                   onDaySelected: (day, focus) {
                     setState(() {
                       selectedDate = day;

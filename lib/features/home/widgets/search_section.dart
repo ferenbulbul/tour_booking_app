@@ -23,7 +23,7 @@ class FakeSearchBar extends StatelessWidget {
 
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.l,
-            vertical: AppSpacing.m,
+            vertical: AppSpacing.xs,
           ),
           decoration: BoxDecoration(
             color: scheme.surface,

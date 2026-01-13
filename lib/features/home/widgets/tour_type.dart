@@ -16,25 +16,34 @@ class TourTypeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<HomeViewModel>();
 
-    if (vm.isLoading) return const CategoryCardSkeleton();
+    if (vm.isLoading) {
+      return const CategoryCardSkeleton();
+    }
 
     if (vm.message != null) {
       return Padding(
-        padding: const EdgeInsets.all(AppSpacing.m),
+        padding: const EdgeInsets.all(AppSpacing.s),
         child: Text(vm.message!),
       );
     }
 
-    return ListView.builder(
+    return GridView.builder(
+      padding: EdgeInsets.zero, // ❗️anasayfa spacing'ine saygı
+      primary: false,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: vm.tourTypes.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: AppSpacing.m,
+        mainAxisSpacing: AppSpacing.m, // 🔥 DİKEY BOŞLUK SADECE BURADA
+        childAspectRatio: 0.95, // 🔥 TÜM ORAN KONTROLÜ
+      ),
       itemBuilder: (context, index) {
         final item = vm.tourTypes[index];
 
-        return CategoryCard(
+        return TourTypeGridItem(
           title: item.title,
-          description: item.description,
           imageUrl: item.thumbImageUrl,
           onTap: () => context.pushNamed(
             'tour-search-by-type',
@@ -46,16 +55,14 @@ class TourTypeWidget extends StatelessWidget {
   }
 }
 
-class CategoryCard extends StatelessWidget {
+class TourTypeGridItem extends StatelessWidget {
   final String title;
-  final String description;
   final String imageUrl;
   final VoidCallback onTap;
 
-  const CategoryCard({
+  const TourTypeGridItem({
     super.key,
     required this.title,
-    required this.description,
     required this.imageUrl,
     required this.onTap,
   });
@@ -64,97 +71,61 @@ class CategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.s),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.large),
-        onTap: onTap,
-        child: Container(
-          height: 110,
-          decoration: BoxDecoration(
-            color: scheme.surface,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // IMAGE
+        Expanded(
+          child: InkWell(
             borderRadius: BorderRadius.circular(AppRadius.large),
-            boxShadow: [
-              BoxShadow(
-                color: scheme.shadow.withOpacity(.06),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+            onTap: onTap,
+            child: Container(
+              decoration: BoxDecoration(
+                color: scheme.surface,
+                borderRadius: BorderRadius.circular(AppRadius.large),
+                border: Border.all(color: scheme.outline.withOpacity(.12)),
+                boxShadow: [
+                  BoxShadow(
+                    color: scheme.shadow.withOpacity(.06),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-            ],
-            border: Border.all(color: scheme.outline.withOpacity(.12)),
-          ),
-          child: Row(
-            children: [
-              // IMAGE
-              ClipRRect(
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.large),
                 child: CachedNetworkImage(
                   imageUrl: imageUrl,
-                  width: 112,
-                  height: 112,
                   fit: BoxFit.cover,
-                  memCacheWidth: 360,
-                  placeholder: (_, __) => Container(
-                    width: 112,
-                    height: 112,
-                    color: scheme.surfaceVariant.withOpacity(.3),
-                  ),
-                  errorWidget: (_, __, ___) => Container(
-                    width: 112,
-                    height: 112,
-                    color: scheme.surfaceVariant.withOpacity(.25),
-                    child: Icon(
-                      Icons.image_not_supported,
-                      color: scheme.onSurfaceVariant,
-                      size: 20,
-                    ),
+                  memCacheWidth: 400,
+                  placeholder: (_, __) =>
+                      Container(color: scheme.surfaceVariant.withOpacity(.25)),
+                  errorWidget: (_, __, ___) => Icon(
+                    Icons.image_not_supported,
+                    color: scheme.onSurfaceVariant,
+                    size: 22,
                   ),
                 ),
               ),
-
-              const SizedBox(width: AppSpacing.m),
-
-              // TEXTS
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.titleMedium.copyWith(
-                        color: scheme.onSurface,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: scheme.onSurfaceVariant.withOpacity(.8),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(width: AppSpacing.s),
-
-              Icon(
-                Icons.chevron_right_rounded,
-                size: 24,
-                color: scheme.onSurfaceVariant.withOpacity(.7),
-              ),
-
-              const SizedBox(width: AppSpacing.m),
-            ],
+            ),
           ),
         ),
-      ),
+
+        const SizedBox(height: AppSpacing.xs),
+
+        // TITLE
+        Text(
+          title,
+          maxLines: 2,
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextStyles.titleSmall.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: scheme.onSurface,
+          ),
+        ),
+      ],
     );
   }
 }

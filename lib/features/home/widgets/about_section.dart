@@ -29,8 +29,6 @@ class AboutSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: AppSpacing.s),
-
         /// FEATURE LIST
         Column(
           children: items.map((item) {
@@ -79,25 +77,24 @@ class AboutSection extends StatelessWidget {
           }).toList(),
         ),
 
-        const SizedBox(height: AppSpacing.l),
+        // const SizedBox(height: AppSpacing.s),
 
-        /// FOOTER
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.m),
-          decoration: BoxDecoration(
-            color: scheme.surfaceVariant.withOpacity(.4),
-            borderRadius: BorderRadius.circular(AppRadius.medium),
-          ),
-          child: Text(
-            tr("about_footer_rights"),
-            textAlign: TextAlign.center,
-            style: textTheme.bodySmall?.copyWith(
-              color: scheme.onSurface.withOpacity(.6),
-              letterSpacing: 0.3,
-            ),
-          ),
-        ),
+        // /// FOOTER
+        // Container(
+        //   width: double.infinity,
+        //   padding: const EdgeInsets.symmetric(vertical: AppSpacing.s),
+        //   decoration: BoxDecoration(
+        //     borderRadius: BorderRadius.circular(AppRadius.medium),
+        //   ),
+        //   child: Text(
+        //     tr("about_footer_rights"),
+        //     textAlign: TextAlign.center,
+        //     style: textTheme.bodySmall?.copyWith(
+        //       color: scheme.onSurface.withOpacity(.6),
+        //       letterSpacing: 0.3,
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

@@ -31,7 +31,7 @@ class HomeHeader extends StatelessWidget {
     final logoHeight = width < 360 ? 30.0 : 36.0;
 
     return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 12),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 0, 8),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Image.asset(

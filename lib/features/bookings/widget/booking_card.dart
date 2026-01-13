@@ -25,22 +25,40 @@ class BookingCard extends StatefulWidget {
 class _BookingCardState extends State<BookingCard> {
   bool _isOpen = false;
 
+  // -------------------------------------------------------------------------
+  // STATUS COLOR
+  // -------------------------------------------------------------------------
   Color _statusColor(String status) {
     final s = status.toLowerCase();
+
     if (s == "completed") {
       return Colors.green.shade600;
     }
+
     if (s == "cancelled") {
       return Colors.red.shade600;
     }
+
+    if (s == "cancellationpending") {
+      return const Color.fromARGB(255, 174, 60, 240);
+    }
+
     return AppColors.primary;
   }
 
+  // -------------------------------------------------------------------------
+  // STATUS LABEL
+  // -------------------------------------------------------------------------
   String _statusLabel(String status, DateTime departureDate) {
     final s = status.toLowerCase();
 
     if (s == "completed") return 'booking_tab_completed'.tr();
     if (s == "cancelled") return 'booking_tab_cancelled'.tr();
+
+    if (status == "CancellationPending") {
+      return "pending_approvel".tr();
+    }
+
     if (departureDate.isAfter(DateTime.now())) {
       return 'booking_tab_upcoming'.tr();
     }
@@ -48,16 +66,35 @@ class _BookingCardState extends State<BookingCard> {
     return status;
   }
 
+  // -------------------------------------------------------------------------
+  // CANCEL CONTROL
+  // -------------------------------------------------------------------------
   bool _isCancelable(String status) {
     final s = status.toLowerCase();
     return !(s == "completed" || s == "cancelled");
   }
 
+  String _formatCurrency(num? v) {
+    if (v == null) return "—";
+
+    final f = NumberFormat.currency(
+      locale: "tr_TR",
+      symbol: "₺",
+      decimalDigits: 2,
+    );
+
+    return f.format(v);
+  }
+
   @override
   Widget build(BuildContext context) {
     final item = widget.item;
+
     final departureDate = DateTime.parse(item.departureDate);
-    final date = DateFormat('dd MMMM yyyy', 'tr_TR').format(departureDate);
+    final formattedDate = DateFormat(
+      'dd MMMM yyyy',
+      'tr_TR',
+    ).format(departureDate);
 
     final statusColor = _statusColor(item.status);
     final statusText = _statusLabel(item.status, departureDate);
@@ -107,11 +144,14 @@ class _BookingCardState extends State<BookingCard> {
 
                   const SizedBox(width: 12),
 
-                  // TITLE + DATE
+                  // -----------------------------------------------------------------
+                  // TITLE + DATE + BADGE COLUMN
+                  // -----------------------------------------------------------------
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // TITLE
                         Text(
                           item.tourPointName,
                           maxLines: 1,
@@ -122,35 +162,49 @@ class _BookingCardState extends State<BookingCard> {
                             color: Colors.black,
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          date,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey.shade600,
-                          ),
+
+                        const SizedBox(height: 6),
+
+                        // DATE + BADGE ROW
+                        Row(
+                          children: [
+                            // DATE
+                            Expanded(
+                              child: Text(
+                                formattedDate,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(width: 8),
+
+                            // BADGE
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: statusColor.withOpacity(.12),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                statusText,
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  color: statusColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
-                    ),
-                  ),
-
-                  // STATUS BADGE
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: statusColor.withOpacity(.12),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      statusText,
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        color: statusColor,
-                        fontWeight: FontWeight.w600,
-                      ),
                     ),
                   ),
 
@@ -181,8 +235,9 @@ class _BookingCardState extends State<BookingCard> {
               heightFactor: _isOpen ? 1 : 0,
               curve: Curves.easeInOut,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                padding: const EdgeInsets.all(16),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Divider(
                       height: 22,
@@ -203,7 +258,7 @@ class _BookingCardState extends State<BookingCard> {
                     _info(
                       Icons.directions_bus_rounded,
                       'booking_label_vehicle'.tr(),
-                      "${item.vehicleBrand} • ${item.seatCount} ${'booking_seat_count'.tr()}",
+                      "${item.vehicleBrand} • ${item.seatCount}",
                     ),
                     _info(
                       Icons.person_rounded,
@@ -211,14 +266,19 @@ class _BookingCardState extends State<BookingCard> {
                       item.driverName,
                     ),
 
-                    if (item.guideName.trim().isNotEmpty)
-                      _info(
-                        Icons.map_rounded,
-                        'booking_label_guide'.tr(),
-                        item.guideName,
-                      ),
+                    const SizedBox(height: 12),
 
-                    const SizedBox(height: 14),
+                    // STATUS TEXT SECTION
+                    Text(
+                      statusText,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: statusColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
 
                     // PRICE
                     Row(
@@ -226,18 +286,17 @@ class _BookingCardState extends State<BookingCard> {
                       children: [
                         Text(
                           'booking_total_price'.tr(),
-                          style: TextStyle(
-                            fontSize: 14.5,
+                          style: const TextStyle(
+                            fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         Text(
-                          _formatCurrency(item.totalPrice),
+                          "${_formatCurrency(item.totalPrice)}",
                           style: TextStyle(
                             color: Colors.green.shade700,
                             fontWeight: FontWeight.w700,
-                            fontSize: 16.5,
-                            letterSpacing: -.2,
+                            fontSize: 16,
                           ),
                         ),
                       ],
@@ -260,7 +319,6 @@ class _BookingCardState extends State<BookingCard> {
                           onPressed: widget.isCancelling
                               ? null
                               : widget.onCancel,
-
                           child: widget.isCancelling
                               ? const SizedBox(
                                   height: 18,
@@ -269,13 +327,7 @@ class _BookingCardState extends State<BookingCard> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : Text(
-                                  'booking_cancel_request'.tr(),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 13.5,
-                                  ),
-                                ),
+                              : Text('booking_cancel_request'.tr()),
                         ),
                       ),
                   ],
@@ -298,21 +350,11 @@ class _BookingCardState extends State<BookingCard> {
           Expanded(
             child: Text(
               "$label: $value",
-              style: const TextStyle(fontSize: 13.5, height: 1.35),
+              style: const TextStyle(fontSize: 13.5),
             ),
           ),
         ],
       ),
     );
   }
-}
-
-String _formatCurrency(num? v) {
-  if (v == null) return "—";
-  final f = NumberFormat.currency(
-    locale: "tr_TR",
-    symbol: "₺",
-    decimalDigits: 2,
-  );
-  return "${f.format(v)} ₺";
 }

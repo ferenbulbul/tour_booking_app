@@ -15,7 +15,7 @@ class BookingsViewModel extends ChangeNotifier {
   List<BookingDto> allBookings = [];
   List<BookingDto> completedBookings = [];
   List<BookingDto> cancelledBookings = [];
-
+  List<BookingDto> cancellationPendingBookings = [];
   String? message;
 
   /// --- Filtreli veri çek (ENUM ile) ---
@@ -36,6 +36,14 @@ class BookingsViewModel extends ChangeNotifier {
             completedBookings = list;
             break;
           case BookingStatus.cancelled:
+            cancelledBookings = list
+                .where((b) => b.status.toLowerCase() == "cancelled")
+                .toList();
+
+            // 🕒 admin onayı bekleyenler
+            cancellationPendingBookings = list
+                .where((b) => b.status == "cancellationPending")
+                .toList();
             cancelledBookings = list;
             break;
         }
@@ -58,6 +66,7 @@ class BookingsViewModel extends ChangeNotifier {
 
       if (resp.isSuccess ?? false) {
         await fetchBookingsByStatus(BookingStatus.upcoming);
+        await fetchBookingsByStatus(BookingStatus.cancelled);
       }
     } catch (e) {
       setMessage("Bir hata oluştu: $e");
