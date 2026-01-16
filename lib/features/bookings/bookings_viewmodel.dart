@@ -6,74 +6,72 @@ import 'package:tour_booking/services/tour/tour_service.dart';
 class BookingsViewModel extends ChangeNotifier {
   final TourService _service = TourService();
 
-  /// --- Loading States ---
   bool isLoadingAll = false;
   bool isLoadingCompleted = false;
   bool isLoadingCancelled = false;
 
-  /// --- Lists ---
   List<BookingDto> allBookings = [];
   List<BookingDto> completedBookings = [];
   List<BookingDto> cancelledBookings = [];
   List<BookingDto> cancellationPendingBookings = [];
+
   String? message;
 
-  /// --- Filtreli veri çek (ENUM ile) ---
+  // ------------------------------------------------------------
   Future<void> fetchBookingsByStatus(BookingStatus status) async {
     _setLoading(status, true);
 
     try {
       final resp = await _service.getCustomerBookings(status: status);
 
-      if (resp.isSuccess ?? false) {
+      if (resp.isSuccess == true) {
         final list = resp.data?.customerBookings ?? [];
 
         switch (status) {
           case BookingStatus.upcoming:
             allBookings = list;
             break;
+
           case BookingStatus.completed:
             completedBookings = list;
             break;
-          case BookingStatus.cancelled:
-            cancelledBookings = list
-                .where((b) => b.status.toLowerCase() == "cancelled")
-                .toList();
 
-            // 🕒 admin onayı bekleyenler
+          case BookingStatus.cancelled:
+            cancelledBookings = list;
             cancellationPendingBookings = list
                 .where((b) => b.status == "cancellationPending")
                 .toList();
-            cancelledBookings = list;
             break;
         }
-      } else {
-        setMessage(resp.message);
+      } else if (resp.message != null) {
+        setMessage(resp.message); // 🔥 key gelir (error_generic vs)
       }
-    } catch (e) {
-      setMessage("Bir hata oluştu: $e");
+    } catch (_) {
+      setMessage("error_generic"); // 🔥 backend yoksa buradan
     } finally {
       _setLoading(status, false);
-      notifyListeners();
     }
   }
 
+  // ------------------------------------------------------------
   Future<void> requestCancellation(String bookingId) async {
     try {
       final resp = await _service.requestCancellation(bookingId: bookingId);
 
-      setMessage(resp.message);
+      if (resp.message != null) {
+        setMessage(resp.message); // success / error key
+      }
 
-      if (resp.isSuccess ?? false) {
+      if (resp.isSuccess == true) {
         await fetchBookingsByStatus(BookingStatus.upcoming);
         await fetchBookingsByStatus(BookingStatus.cancelled);
       }
-    } catch (e) {
-      setMessage("Bir hata oluştu: $e");
+    } catch (_) {
+      setMessage("error_generic");
     }
   }
 
-  /// --- Loading yönetimi (ENUM tabanlı) ---
+  // ------------------------------------------------------------
   void _setLoading(BookingStatus status, bool value) {
     switch (status) {
       case BookingStatus.upcoming:
@@ -86,10 +84,12 @@ class BookingsViewModel extends ChangeNotifier {
         isLoadingCancelled = value;
         break;
     }
-    notifyListeners();
+    notifyListeners(); // 🔥 SADECE BURADA
   }
 
+  // ------------------------------------------------------------
   void setMessage(String? value) {
+    if (message == value) return; // 🔥 aynı mesajı tekrar basma
     message = value;
     notifyListeners();
   }

@@ -82,4 +82,24 @@ class ProfileViewModel extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> deleteAccount() async {
+    isLoading = true;
+    message = null;
+    notifyListeners();
+
+    // 🔹 OneSignal logout (push bağını kopar)
+    try {
+      await OneSignal.logout();
+    } catch (_) {}
+
+    final result = await _authService.deleteAccount();
+
+    isLoading = false;
+    message = result.message;
+
+    notifyListeners();
+
+    return result.isSuccess == true;
+  }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 
@@ -47,7 +46,7 @@ class ProfileTile extends StatelessWidget {
             // ---------------------------------
             // ICON
             // ---------------------------------
-            Icon(icon, size: 22, color: iconColor ?? scheme.primary),
+            Icon(icon, size: 24, color: iconColor ?? scheme.primary),
 
             const SizedBox(width: AppSpacing.l),
 
@@ -60,8 +59,7 @@ class ProfileTile extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: AppTextStyles.titleMedium.copyWith(
-                      fontSize: 15,
+                    style: AppTextStyles.titleSmall.copyWith(
                       color: titleColor ?? scheme.onSurface,
                     ),
                   ),

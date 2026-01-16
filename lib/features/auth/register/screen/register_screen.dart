@@ -14,7 +14,7 @@ class RegisterScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: scheme.surface,
-      appBar: const CommonAppBar(title: "Register"),
+      appBar: CommonAppBar(title: tr("register")),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

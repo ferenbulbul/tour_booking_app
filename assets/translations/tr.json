@@ -189,8 +189,8 @@
     "no_tour_matching_criteria": "Aradığınız kritere uygun tur bulunamadı.",
     "language_settings": "Dil Ayarları",
     "language_turkish": "Türkçe",
-    "language_english": "İngilizce",
-    "language_arabic": "Arapça",
+    "language_english": "English",
+    "language_arabic": "العربية",
     "language_changed_message": "Uygulama dili '{language}' olarak değiştirildi",
     "phone_usage_info": "Bu numara rezervasyon hatırlatmaları için kullanılacaktır.",
     "phone_not_verified": "Numaran doğrulanmadı. Güncelleyebilirsin.",
@@ -231,5 +231,8 @@
     "pending_approvel": "Onay Bekliyor",
     "complete_profile": "Profilini Tamamla",
     "verify_phone_desc": "Telefon numaranı doğrulayarak rezervasyon oluşturabilirsin.",
-    "verify_now": "Şimdi doğrula"
+    "verify_now": "Şimdi doğrula",
+    "delete_account_warning": "Bu işlem geri alınamaz. Hesabınız ve tüm verileriniz kalıcı olarak silinecektir.",
+    "first_name_required": "İsim gerekli",
+    "last_name_required": "Soyisim gerekli"
 }

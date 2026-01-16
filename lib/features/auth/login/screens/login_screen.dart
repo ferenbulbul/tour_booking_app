@@ -18,7 +18,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
-
+    final topInset = MediaQuery.of(context).padding.top;
     return Scaffold(
       backgroundColor: scheme.background,
       resizeToAvoidBottomInset: false,
@@ -28,6 +28,7 @@ class LoginScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
             child: Column(
               children: [
+                SizedBox(height: topInset + 16),
                 const _CleanHeader(),
                 const SizedBox(height: 40),
 
@@ -48,7 +49,7 @@ class LoginScreen extends StatelessWidget {
                   child: const _CleanLoginForm(),
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
 
                 Text(
                   tr('or_continue_with'),
@@ -57,7 +58,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 const SocialLoginButtons(),
 
                 const SizedBox(height: 20),
@@ -81,26 +82,20 @@ class _CleanHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
+    final width = MediaQuery.of(context).size.width;
 
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: scheme.primary.withOpacity(0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(Icons.travel_explore, size: 48, color: scheme.primary),
-        ),
-        const SizedBox(height: 24),
+          width: double.infinity,
+          height: width * 0.20, // 🔥 banner oranı
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(24)),
+          clipBehavior: Clip.antiAlias,
+          child: Image.asset(
+            'assets/images/header.png',
 
-        Text(
-          'welcome_title'.tr(),
-          style: text.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w800,
-            letterSpacing: -0.5,
+            alignment: Alignment.center,
           ),
-          textAlign: TextAlign.center,
         ),
 
         const SizedBox(height: 8),

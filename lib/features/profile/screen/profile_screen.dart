@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/features/auth/login/widgets/google_view_model.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 import 'package:tour_booking/features/profile/widget/profil_header.dart';
@@ -42,78 +43,190 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return Scaffold(body: Center(child: Text(tr("profile_not_found"))));
     }
 
-    return Scaffold(
-      backgroundColor: scheme.surface,
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.screenPadding),
-          children: [
-            // HEADER
-            ProfileHeader(
-              name: p.fullName,
-              email: p.email,
-              phoneVerified: p.phoneNumberConfirmed,
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: scheme.surface,
+          body: SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.all(AppSpacing.screenPadding),
+              children: [
+                ProfileHeader(
+                  name: p.fullName,
+                  email: p.email,
+                  phoneVerified: p.phoneNumberConfirmed,
+                ),
+
+                const SizedBox(height: AppSpacing.xl),
+
+                ProfileSection(title: tr("account_settings")),
+
+                ProfileTile(
+                  icon: Icons.language_rounded,
+                  title: tr("language"),
+                  trailingText: getLanguageName(context),
+                  onTap: () => context.push("/settings/language"),
+                ),
+
+                ProfileTile(
+                  icon: Icons.tune_rounded,
+                  title: tr("permissions"),
+                  subtitle: tr("manage_location_and_phone_verification"),
+                  onTap: () => context.push("/settings/permissions"),
+                ),
+
+                const SizedBox(height: AppSpacing.xl),
+
+                ProfileSection(title: tr("security")),
+
+                ProfileTile(
+                  icon: Icons.lock_outline,
+                  title: tr("change_password"),
+                  onTap: () => context.push('/change-password'),
+                ),
+
+                const SizedBox(height: AppSpacing.xl),
+
+                ProfileSection(title: tr("other")),
+
+                ProfileTile(
+                  icon: Icons.delete_forever_rounded,
+                  title: tr("delete_account"),
+                  titleColor: AppColors.error,
+                  iconColor: AppColors.error,
+                  onTap: () => _showDeleteAccountDialog(context),
+                ),
+
+                ProfileTile(
+                  icon: Icons.logout_rounded,
+                  title: tr("logout"),
+                  titleColor: AppColors.error,
+                  iconColor: AppColors.error,
+                  onTap: () async {
+                    await authVm.signOut();
+                    context.go("/login");
+                  },
+                ),
+              ],
             ),
+          ),
+        ),
 
-            const SizedBox(height: AppSpacing.xl),
+        // 🔒 FULLSCREEN LOADING
+        if (vm.isLoading)
+          Container(
+            color: Colors.black.withOpacity(0.35),
+            child: const Center(child: CircularProgressIndicator()),
+          ),
+      ],
+    );
+  }
 
-            // HESAP AYARLARI
-            ProfileSection(title: tr("account_settings")),
+  void _showDeleteAccountDialog(BuildContext context) {
+    final profileVm = context.read<ProfileViewModel>();
+    final authVm = context.read<AuthViewModel>();
 
-            ProfileTile(
-              icon: Icons.language_rounded,
-              title: tr("language"),
-              trailingText: getLanguageName(context),
-              onTap: () => context.push("/settings/language"),
-            ),
+    showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // ICON
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: AppColors.error.withOpacity(.12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(
+                  Icons.delete_forever_rounded,
+                  size: 28,
+                  color: AppColors.error,
+                ),
+              ),
 
-            ProfileTile(
-              icon: Icons.tune_rounded,
-              title: tr("permissions"),
-              subtitle: tr("manage_location_and_phone_verification"),
-              onTap: () => context.push("/settings/permissions"),
-            ),
+              const SizedBox(height: 14),
 
-            const SizedBox(height: AppSpacing.xl),
+              // TITLE
+              Text(
+                tr("delete_account"),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+              ),
 
-            // GÜVENLİK
-            ProfileSection(title: tr("security")),
+              const SizedBox(height: 10),
 
-            ProfileTile(
-              icon: Icons.lock_outline,
-              title: tr("change_password"),
-              onTap: () => context.push('/change-password'),
-            ),
+              // MESSAGE
+              Text(tr("delete_account_warning"), textAlign: TextAlign.center),
 
-            const SizedBox(height: AppSpacing.xl),
+              const SizedBox(height: 18),
 
-            // DİĞER
-            ProfileSection(title: tr("other")),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.error,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () =>
+                          Navigator.of(context, rootNavigator: true).pop(true),
+                      child: Text(tr("common_yes")),
+                    ),
+                  ),
 
-            ProfileTile(
-              icon: Icons.delete_forever_rounded,
-              title: tr("delete_account"),
-              titleColor: AppColors.error,
-              iconColor: AppColors.error,
-              onTap: () {
-                // TODO hesap silme flow
-              },
-            ),
+                  const SizedBox(width: 10),
 
-            ProfileTile(
-              icon: Icons.logout_rounded,
-              title: tr("logout"),
-              titleColor: AppColors.error,
-              iconColor: AppColors.error,
-              onTap: () {
-                authVm.signOut();
-                context.go("/login");
-              },
-            ),
-          ],
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        side: BorderSide(color: Colors.grey.shade300),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () =>
+                          Navigator.of(context, rootNavigator: true).pop(false),
+                      child: Text(tr("common_cancel")),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-    );
+    ).then((confirmed) async {
+      if (confirmed != true) return;
+
+      final success = await profileVm.deleteAccount();
+
+      if (!context.mounted) return;
+
+      final msg = profileVm.message ?? tr("error_generic");
+
+      if (success) {
+        UIHelper.showSuccess(context, msg.tr());
+      } else {
+        UIHelper.showError(context, msg.tr());
+      }
+
+      if (success) {
+        await authVm.DeleteAccountSignOut();
+        context.go("/login");
+      }
+    });
   }
 }
 

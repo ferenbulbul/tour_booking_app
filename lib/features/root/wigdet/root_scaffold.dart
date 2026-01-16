@@ -104,7 +104,7 @@ class _PremiumNavBar extends StatelessWidget {
         child: SafeArea(
           top: false,
           child: SizedBox(
-            height: 65,
+            height: 70,
             child: Row(
               children: List.generate(items.length, (i) {
                 final active = i == currentIndex;
@@ -126,16 +126,16 @@ class _PremiumNavBar extends StatelessWidget {
                             active
                                 ? items[i]['active'] as IconData
                                 : items[i]['icon'] as IconData,
-                            size: 24,
+                            size: 29,
                             color: active
                                 ? AppColors.primary
                                 : Colors.black.withOpacity(.45),
                           ),
-                          const SizedBox(height: 3),
+                          const SizedBox(height: 6),
                           AnimatedDefaultTextStyle(
                             duration: const Duration(milliseconds: 200),
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: active
                                   ? FontWeight.w600
                                   : FontWeight.w500,

@@ -35,20 +35,19 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<BookingsViewModel>(
-      builder: (context, vm, child) {
-        /// 🔥 BACKEND MESSAGE LISTENER (ONE-SHOT)
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!context.mounted) return;
+    return Selector<BookingsViewModel, String?>(
+      selector: (_, vm) => vm.message,
+      builder: (context, message, child) {
+        if (message != null && message.isNotEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!context.mounted) return;
 
-          final msg = vm.message;
-          if (msg != null && msg.isNotEmpty) {
-            UIHelper.showSuccess(context, msg);
-            vm.clearMessage(); // 🔥 sadece 1 kere göster
-          }
-        });
+            UIHelper.showSuccess(context, message.tr());
+            context.read<BookingsViewModel>().clearMessage();
+          });
+        }
 
-        return _buildContent(context, vm);
+        return _buildContent(context, context.watch<BookingsViewModel>());
       },
     );
   }

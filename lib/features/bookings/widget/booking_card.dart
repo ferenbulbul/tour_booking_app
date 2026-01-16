@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:tour_booking/models/booking/booking_dto.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 
@@ -135,10 +137,34 @@ class _BookingCardState extends State<BookingCard> {
                       color: statusColor.withOpacity(.12),
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: Icon(
-                      Icons.terrain_rounded,
-                      size: 22,
-                      color: statusColor,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: CachedNetworkImage(
+                        imageUrl: item.image,
+                        width: 56,
+                        height: 56,
+                        fit: BoxFit.cover,
+
+                        placeholder: (_, __) => const ShimmerBox(
+                          width: 56,
+                          height: 56,
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
+
+                        errorWidget: (_, __, ___) => Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.image_not_supported_outlined,
+                            color: Colors.grey,
+                            size: 22,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
 
@@ -354,6 +380,35 @@ class _BookingCardState extends State<BookingCard> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ShimmerBox extends StatelessWidget {
+  final double width;
+  final double height;
+  final BorderRadius borderRadius;
+
+  const ShimmerBox({
+    super.key,
+    required this.width,
+    required this.height,
+    required this.borderRadius,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade300,
+          borderRadius: borderRadius,
+        ),
       ),
     );
   }

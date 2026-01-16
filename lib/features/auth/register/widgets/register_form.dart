@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
+
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/auth/register/widgets/register_view_model.dart';
 import 'package:tour_booking/models/register/register_request.dart';
@@ -18,8 +19,19 @@ class RegisterForm extends StatefulWidget {
 }
 
 class _RegisterFormState extends State<RegisterForm> {
-  final _formKey = GlobalKey<FormState>();
+  bool get _isPasswordValid {
+    final v = _passwordValue;
 
+    return v.length >= 9 &&
+        RegExp(r'[A-Z]').hasMatch(v) &&
+        RegExp(r'[a-z]').hasMatch(v) &&
+        RegExp(r'\d').hasMatch(v) &&
+        RegExp(r'[!@#\$%\^&\*\(\)_\+\-=\[\]{};:"\\|,.<>\/\?]').hasMatch(v);
+  }
+
+  final _formKey = GlobalKey<FormState>();
+  String _passwordValue = "";
+  bool _passwordTouched = false;
   final _firstName = TextEditingController();
   final _lastName = TextEditingController();
   final _email = TextEditingController();
@@ -43,7 +55,18 @@ class _RegisterFormState extends State<RegisterForm> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-
+    if (!_isPasswordValid) {
+      setState(() {
+        _passwordTouched = true; // kuralları göster
+      });
+      return;
+    }
+    if (!_isPasswordValid) {
+      setState(() {
+        _passwordTouched = true;
+      });
+      return;
+    }
     if (_selectedPhone == null) {
       UIHelper.showError(context, tr("phone_required"));
       return;
@@ -71,7 +94,12 @@ class _RegisterFormState extends State<RegisterForm> {
       UIHelper.showSuccess(context, tr("register_success"));
       context.go("/email-confirmed");
     } else {
-      if (vm.message != null) UIHelper.showError(context, vm.message!);
+      if (vm.validationErrors.isNotEmpty) {
+        final message = vm.validationErrors.join('\n• ');
+        UIHelper.showError(context, '• $message');
+      } else if (vm.message != null) {
+        UIHelper.showError(context, vm.message!);
+      }
     }
   }
 
@@ -85,7 +113,6 @@ class _RegisterFormState extends State<RegisterForm> {
       key: _formKey,
       child: Column(
         children: [
-          // First + Last name
           Row(
             children: [
               Expanded(
@@ -93,7 +120,8 @@ class _RegisterFormState extends State<RegisterForm> {
                   controller: _firstName,
                   label: tr("first_name"),
                   icon: Icons.person_outline,
-                  validator: (v) => v!.isEmpty ? tr("required") : null,
+                  validator: (v) =>
+                      v!.isEmpty ? tr("first_name_required") : null,
                 ),
               ),
               const SizedBox(width: 16),
@@ -102,7 +130,8 @@ class _RegisterFormState extends State<RegisterForm> {
                   controller: _lastName,
                   label: tr("last_name"),
                   icon: Icons.person_outline,
-                  validator: (v) => v!.isEmpty ? tr("required") : null,
+                  validator: (v) =>
+                      v!.isEmpty ? tr("last_name_required") : null,
                 ),
               ),
             ],
@@ -125,7 +154,6 @@ class _RegisterFormState extends State<RegisterForm> {
 
           const SizedBox(height: 16),
 
-          // Phone Number
           Directionality(
             textDirection: ui.TextDirection.ltr,
             child: IntlPhoneField(
@@ -161,7 +189,18 @@ class _RegisterFormState extends State<RegisterForm> {
               if (v.length < 8) return tr("password_too_short");
               return null;
             },
+            onChanged: (v) {
+              setState(() {
+                _passwordValue = v;
+                _passwordTouched = true;
+              });
+            },
           ),
+
+          const SizedBox(height: 8),
+
+          // 🔐 PASSWORD RULES (YENİ EKLENEN)
+          if (_passwordTouched) ...[_PasswordRules(password: _passwordValue)],
 
           const SizedBox(height: 16),
 
@@ -195,6 +234,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
   Widget _input({
     required TextEditingController controller,
+    ValueChanged<String>? onChanged,
     required String label,
     required IconData icon,
     TextInputType? keyboardType,
@@ -215,6 +255,7 @@ class _RegisterFormState extends State<RegisterForm> {
           : Directionality.of(context),
       child: TextFormField(
         controller: controller,
+        onChanged: onChanged,
         keyboardType:
             keyboardType ??
             (isPassword ? TextInputType.visiblePassword : TextInputType.text),
@@ -223,8 +264,6 @@ class _RegisterFormState extends State<RegisterForm> {
         textAlign: isLatinField ? TextAlign.left : TextAlign.start,
         style: text.bodyMedium,
         cursorColor: scheme.primary,
-
-        // 🔒 Password için ASCII zorunlu
         inputFormatters: isPassword
             ? [
                 FilteringTextInputFormatter.allow(
@@ -234,7 +273,6 @@ class _RegisterFormState extends State<RegisterForm> {
                 ),
               ]
             : null,
-
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(icon, color: scheme.onSurfaceVariant),
@@ -251,6 +289,56 @@ class _RegisterFormState extends State<RegisterForm> {
               : null,
         ),
       ),
+    );
+  }
+}
+
+class _PasswordRules extends StatelessWidget {
+  final String password;
+  const _PasswordRules({required this.password});
+
+  Widget _item(bool ok, String text) {
+    return Row(
+      children: [
+        Icon(
+          ok ? Icons.check_circle : Icons.cancel,
+          size: 16,
+          color: ok ? Colors.green : Colors.red,
+        ),
+        const SizedBox(width: 6),
+        Text(
+          text,
+          style: TextStyle(fontSize: 12, color: ok ? Colors.green : Colors.red),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _item(password.length >= 9, tr("password_too_short")),
+        _item(
+          RegExp(r'[A-Z]').hasMatch(password),
+          tr("password_must_include_upper"),
+        ),
+        _item(
+          RegExp(r'[a-z]').hasMatch(password),
+          tr("password_must_include_lower"),
+        ),
+        _item(
+          RegExp(r'\d').hasMatch(password),
+          tr("password_must_include_digit"),
+        ),
+        _item(
+          RegExp(
+            r'[!@#\$%\^&\*\(\)_\+\-=\[\]{};:"\\|,.<>\/\?]',
+          ).hasMatch(password),
+          tr("password_must_include_special"),
+        ),
+      ],
     );
   }
 }

@@ -7,6 +7,7 @@ part 'booking_dto.g.dart';
 class BookingDto with _$BookingDto {
   const factory BookingDto({
     required String id,
+    required String image,
     required String tourPointName,
     required String tourPointCity,
     required String tourPointDistrict,

@@ -86,7 +86,7 @@
   "booking_seat_count": "مقاعد",
   "booking_total_price": "السعر الإجمالي",
   "booking_cancel_request": "إنشاء طلب إلغاء",
-  "tour_search_results_title":  "أقرب مسارات الرحلات إليك",
+  "tour_search_results_title": "أقرب مسارات الرحلات إليك",
   "search_no_results_title": "لم يتم العثور على نتائج",
   "search_no_results_subtitle": "جرّب تغيير عوامل التصفية والبحث مرة أخرى.",
   "detailed_search_title": "بحث تفصيلي",
@@ -189,8 +189,8 @@
   "no_nearby_tour_found": "لم يتم العثور على نقطة جولة قريبة.",
   "no_tour_matching_criteria": "لم يتم العثور على جولة مطابقة لمعاييرك.",
   "language_settings": "إعدادات اللغة",
-  "language_turkish": "التركية",
-  "language_english": "الإنجليزية",
+  "language_turkish": "Türkçe",
+  "language_english": "English",
   "language_arabic": "العربية",
   "language_changed_message": "تم تغيير لغة التطبيق إلى '{language}'",
   "phone_usage_info": "سيتم استخدام هذا الرقم لتذكيرات الحجز.",
@@ -231,5 +231,8 @@
   "pending_approvel": "في انتظار الموافقة",
   "complete_profile": "أكمل ملفك الشخصي",
   "verify_phone_desc": "يمكنك إنشاء حجز بعد التحقق من رقم هاتفك.",
-  "verify_now": "تحقق الآن"
+  "verify_now": "تحقق الآن",
+  "delete_account_warning": "لا يمكن التراجع عن هذا الإجراء. سيتم حذف حسابك وجميع بياناتك نهائيًا.",
+  "first_name_required": "الاسم مطلوب",
+  "last_name_required": "اسم العائلة مطلوب"
 }

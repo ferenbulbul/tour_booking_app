@@ -136,4 +136,17 @@ class AuthViewModel extends ChangeNotifier {
       notifyListeners();
     } catch (e) {}
   }
+
+  Future<void> DeleteAccountSignOut() async {
+    try {
+      await _googleSignIn.signOut();
+      await _firebaseAuth.signOut();
+      _tokenStorage.clearTokens();
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      _user = null;
+      notifyListeners();
+    } catch (e) {}
+  }
 }

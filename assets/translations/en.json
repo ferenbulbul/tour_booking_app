@@ -189,9 +189,9 @@
     "no_nearby_tour_found": "No nearby tour point was found.",
     "no_tour_matching_criteria": "No tour matched your criteria.",
     "language_settings": "Language Settings",
-    "language_turkish": "Turkish",
+    "language_turkish": "Türkçe",
     "language_english": "English",
-    "language_arabic": "Arabic",
+    "language_arabic": "العربية",
     "language_changed_message": "App language changed to '{language}'",
     "phone_usage_info": "This number will be used for reservation reminders.",
     "phone_not_verified": "Your number is not verified. You can update it.",
@@ -231,5 +231,8 @@
     "pending_approvel": "Pending Approval",
     "complete_profile": "Complete Your Profile",
     "verify_phone_desc": "You can make a reservation by verifying your phone number.",
-    "verify_now": "Verify Now"
+    "verify_now": "Verify Now",
+    "delete_account_warning": "This action cannot be undone. Your account and all data will be permanently deleted.",
+    "first_name_required": "First name is required",
+    "last_name_required": "Last name is required"
 }

@@ -44,7 +44,7 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
     return Scaffold(
       backgroundColor: scheme.surface,
 
-      appBar: const CommonAppBar(title: "Favorilerim", showBack: false),
+      appBar: CommonAppBar(title: tr("my_favorites"), showBack: false),
 
       body: vm.isLoading
           ? const FavoriteSkeleton()

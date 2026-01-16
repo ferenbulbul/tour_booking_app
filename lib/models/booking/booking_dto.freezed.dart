@@ -22,6 +22,7 @@ BookingDto _$BookingDtoFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$BookingDto {
   String get id => throw _privateConstructorUsedError;
+  String get image => throw _privateConstructorUsedError;
   String get tourPointName => throw _privateConstructorUsedError;
   String get tourPointCity => throw _privateConstructorUsedError;
   String get tourPointDistrict => throw _privateConstructorUsedError;
@@ -58,6 +59,7 @@ abstract class $BookingDtoCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String image,
     String tourPointName,
     String tourPointCity,
     String tourPointDistrict,
@@ -93,6 +95,7 @@ class _$BookingDtoCopyWithImpl<$Res, $Val extends BookingDto>
   @override
   $Res call({
     Object? id = null,
+    Object? image = null,
     Object? tourPointName = null,
     Object? tourPointCity = null,
     Object? tourPointDistrict = null,
@@ -115,6 +118,10 @@ class _$BookingDtoCopyWithImpl<$Res, $Val extends BookingDto>
             id: null == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            image: null == image
+                ? _value.image
+                : image // ignore: cast_nullable_to_non_nullable
                       as String,
             tourPointName: null == tourPointName
                 ? _value.tourPointName
@@ -197,6 +204,7 @@ abstract class _$$BookingDtoImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
+    String image,
     String tourPointName,
     String tourPointCity,
     String tourPointDistrict,
@@ -231,6 +239,7 @@ class __$$BookingDtoImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? image = null,
     Object? tourPointName = null,
     Object? tourPointCity = null,
     Object? tourPointDistrict = null,
@@ -253,6 +262,10 @@ class __$$BookingDtoImplCopyWithImpl<$Res>
         id: null == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        image: null == image
+            ? _value.image
+            : image // ignore: cast_nullable_to_non_nullable
                   as String,
         tourPointName: null == tourPointName
             ? _value.tourPointName
@@ -328,6 +341,7 @@ class __$$BookingDtoImplCopyWithImpl<$Res>
 class _$BookingDtoImpl implements _BookingDto {
   const _$BookingDtoImpl({
     required this.id,
+    required this.image,
     required this.tourPointName,
     required this.tourPointCity,
     required this.tourPointDistrict,
@@ -351,6 +365,8 @@ class _$BookingDtoImpl implements _BookingDto {
 
   @override
   final String id;
+  @override
+  final String image;
   @override
   final String tourPointName;
   @override
@@ -386,7 +402,7 @@ class _$BookingDtoImpl implements _BookingDto {
 
   @override
   String toString() {
-    return 'BookingDto(id: $id, tourPointName: $tourPointName, tourPointCity: $tourPointCity, tourPointDistrict: $tourPointDistrict, departureTime: $departureTime, driverName: $driverName, tourPointPrice: $tourPointPrice, guideName: $guideName, guidePrice: $guidePrice, totalPrice: $totalPrice, vehicleBrand: $vehicleBrand, seatCount: $seatCount, departureLocationDescription: $departureLocationDescription, departureCity: $departureCity, departureDistrict: $departureDistrict, departureDate: $departureDate, status: $status)';
+    return 'BookingDto(id: $id, image: $image, tourPointName: $tourPointName, tourPointCity: $tourPointCity, tourPointDistrict: $tourPointDistrict, departureTime: $departureTime, driverName: $driverName, tourPointPrice: $tourPointPrice, guideName: $guideName, guidePrice: $guidePrice, totalPrice: $totalPrice, vehicleBrand: $vehicleBrand, seatCount: $seatCount, departureLocationDescription: $departureLocationDescription, departureCity: $departureCity, departureDistrict: $departureDistrict, departureDate: $departureDate, status: $status)';
   }
 
   @override
@@ -395,6 +411,7 @@ class _$BookingDtoImpl implements _BookingDto {
         (other.runtimeType == runtimeType &&
             other is _$BookingDtoImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.image, image) || other.image == image) &&
             (identical(other.tourPointName, tourPointName) ||
                 other.tourPointName == tourPointName) &&
             (identical(other.tourPointCity, tourPointCity) ||
@@ -437,6 +454,7 @@ class _$BookingDtoImpl implements _BookingDto {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    image,
     tourPointName,
     tourPointCity,
     tourPointDistrict,
@@ -472,6 +490,7 @@ class _$BookingDtoImpl implements _BookingDto {
 abstract class _BookingDto implements BookingDto {
   const factory _BookingDto({
     required final String id,
+    required final String image,
     required final String tourPointName,
     required final String tourPointCity,
     required final String tourPointDistrict,
@@ -495,6 +514,8 @@ abstract class _BookingDto implements BookingDto {
 
   @override
   String get id;
+  @override
+  String get image;
   @override
   String get tourPointName;
   @override

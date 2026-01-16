@@ -118,9 +118,13 @@ class AuthService {
     _apiClient.post<void>(path: '/Auth/logout', body: {'deviceId': deviceId});
   }
 
+  Future<BaseResponse<void>> deleteAccount() async {
+    return _apiClient.post<void>(path: '/Auth/delete-user');
+  }
+
   Future<BaseResponse<UserMe>> getUserMe() async {
     var response = _apiClient.get<UserMe>(
-      path: "/Mobile/user-me",
+      path: "/Auth/user-me",
       queryParams: {},
       fromJson: (json) => UserMe.fromJson(json as Map<String, dynamic>),
     );
