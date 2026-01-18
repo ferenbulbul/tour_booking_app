@@ -50,6 +50,7 @@ dependencies:
   table_calendar: ^3.2.0
   photo_view: ^0.15.0
   confetti: ^0.8.0
+  share_plus: ^12.0.1
 
 
 
@@ -87,7 +88,7 @@ flutter_launcher_icons:
   remove_alpha_ios: true
 
 flutter_native_splash:
-  color: "#1D2B40"               
+  color: "#182b40"               
   image: "assets/splash.png"   
   android: true
   ios: true
@@ -95,5 +96,5 @@ flutter_native_splash:
   ios_content_mode: center
 
   android_12:
-    color: "#1D2B40"
+    color: "#182b40"
     image: "assets/splash.png"
