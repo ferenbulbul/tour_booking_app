@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/enum/user_role.dart';
 import 'package:tour_booking/features/auth/change_password/screen/change_password.dart';
 import 'package:tour_booking/features/detailed_search/flow/screen/tour_search_detail_screen.dart';
 import 'package:tour_booking/features/bookings/screen/bookings_screen.dart';
@@ -32,6 +33,7 @@ import 'package:tour_booking/features/detailed_search/flow/screen/summary_screen
 import 'package:tour_booking/features/detailed_search/flow/screen/vehicle_list_screen.dart';
 import 'package:tour_booking/features/detailed_search/flow/screen/vehicle_detail_screen.dart';
 import 'package:tour_booking/features/detailed_search/flow/screen/google_place_saerch.dart';
+import 'package:tour_booking/features/splash/splash_view_model.dart';
 import 'package:tour_booking/models/vehicle_detail_request/vehicle_detail_request.dart';
 import 'package:tour_booking/navigation/app_navigator.dart';
 import '../features/splash/screen/splash_screen.dart';
@@ -40,10 +42,67 @@ import '../features/home/screen/home_screen.dart';
 
 final RouteObserver<ModalRoute<void>> globalRouteObserver =
     RouteObserver<ModalRoute<void>>();
+final SplashViewModel splashViewModel = SplashViewModel();
 final GoRouter router = GoRouter(
   navigatorKey: appNavigatorKey,
-  debugLogDiagnostics: true,
 
+  refreshListenable: splashViewModel, // ViewModel'i dinlemesi şart!
+  debugLogDiagnostics: true,
+  initialLocation: '/',
+
+  redirect: (context, state) {
+    final splashVM = splashViewModel;
+
+    if (splashVM.isChecking) return null;
+
+    final bool loggedIn = splashVM.isLoggedInStatus;
+    final bool isEmailConfirmed = splashVM.user?.emailConfirmed ?? false;
+    final UserRole? role = splashVM.role;
+
+    final String path = state.uri.path;
+    final bool isDeepLink = path.startsWith('/tour/');
+    final redirectParam = state.uri.queryParameters['redirect'];
+
+    debugPrint(
+      '🧭 redirect | path=$path | loggedIn=$loggedIn | deepLink=$isDeepLink',
+    );
+
+    // 🔴 Login yok
+    if (!loggedIn) {
+      if (isDeepLink) {
+        final encoded = Uri.encodeComponent(state.uri.toString());
+        return '/login?redirect=$encoded';
+      }
+
+      if (path != '/login' &&
+          path != '/register' &&
+          path != '/forgot-password') {
+        return '/login';
+      }
+
+      return null;
+    }
+
+    // 🟠 Email onaysız
+    if (!isEmailConfirmed) {
+      return path == '/email-confirmed' ? null : '/email-confirmed';
+    }
+
+    // 🟢 Login sonrası deep link dönüşü
+    if (redirectParam != null) {
+      return Uri.decodeComponent(redirectParam);
+    }
+
+    // Auth/splash sayfalarından çık
+    if (path == '/' ||
+        path == '/login' ||
+        path == '/register' ||
+        path == '/forgot-password') {
+      return role == UserRole.driver ? '/driver' : '/home';
+    }
+
+    return null;
+  },
   routes: [
     GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
@@ -121,6 +180,18 @@ final GoRouter router = GoRouter(
         );
       },
     ),
+    GoRoute(
+      path: '/tour/:id',
+      name: 'tourDetailDeepLink',
+      pageBuilder: (context, state) {
+        final tourPointId = state.pathParameters['id']!;
+        return MaterialPage(
+          key: ValueKey('tourDetail_$tourPointId'),
+          child: TourSearchDetailScreen(tourPointId: tourPointId),
+        );
+      },
+    ),
+
     GoRoute(
       path: '/vehicle-list',
       name: 'vehicleList',

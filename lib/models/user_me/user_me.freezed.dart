@@ -21,9 +21,9 @@ UserMe _$UserMeFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$UserMe {
-  String get userId => throw _privateConstructorUsedError;
+  String? get userId => throw _privateConstructorUsedError;
   bool get emailConfirmed => throw _privateConstructorUsedError;
-  String get firstName => throw _privateConstructorUsedError;
+  String? get firstName => throw _privateConstructorUsedError;
 
   /// Serializes this UserMe to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -39,7 +39,7 @@ abstract class $UserMeCopyWith<$Res> {
   factory $UserMeCopyWith(UserMe value, $Res Function(UserMe) then) =
       _$UserMeCopyWithImpl<$Res, UserMe>;
   @useResult
-  $Res call({String userId, bool emailConfirmed, String firstName});
+  $Res call({String? userId, bool emailConfirmed, String? firstName});
 }
 
 /// @nodoc
@@ -57,24 +57,24 @@ class _$UserMeCopyWithImpl<$Res, $Val extends UserMe>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? userId = null,
+    Object? userId = freezed,
     Object? emailConfirmed = null,
-    Object? firstName = null,
+    Object? firstName = freezed,
   }) {
     return _then(
       _value.copyWith(
-            userId: null == userId
+            userId: freezed == userId
                 ? _value.userId
                 : userId // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
             emailConfirmed: null == emailConfirmed
                 ? _value.emailConfirmed
                 : emailConfirmed // ignore: cast_nullable_to_non_nullable
                       as bool,
-            firstName: null == firstName
+            firstName: freezed == firstName
                 ? _value.firstName
                 : firstName // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
           )
           as $Val,
     );
@@ -89,7 +89,7 @@ abstract class _$$UserMeImplCopyWith<$Res> implements $UserMeCopyWith<$Res> {
   ) = __$$UserMeImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String userId, bool emailConfirmed, String firstName});
+  $Res call({String? userId, bool emailConfirmed, String? firstName});
 }
 
 /// @nodoc
@@ -106,24 +106,24 @@ class __$$UserMeImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? userId = null,
+    Object? userId = freezed,
     Object? emailConfirmed = null,
-    Object? firstName = null,
+    Object? firstName = freezed,
   }) {
     return _then(
       _$UserMeImpl(
-        userId: null == userId
+        userId: freezed == userId
             ? _value.userId
             : userId // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
         emailConfirmed: null == emailConfirmed
             ? _value.emailConfirmed
             : emailConfirmed // ignore: cast_nullable_to_non_nullable
                   as bool,
-        firstName: null == firstName
+        firstName: freezed == firstName
             ? _value.firstName
             : firstName // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
       ),
     );
   }
@@ -133,20 +133,20 @@ class __$$UserMeImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$UserMeImpl implements _UserMe {
   const _$UserMeImpl({
-    required this.userId,
+    this.userId,
     required this.emailConfirmed,
-    required this.firstName,
+    this.firstName,
   });
 
   factory _$UserMeImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserMeImplFromJson(json);
 
   @override
-  final String userId;
+  final String? userId;
   @override
   final bool emailConfirmed;
   @override
-  final String firstName;
+  final String? firstName;
 
   @override
   String toString() {
@@ -186,19 +186,19 @@ class _$UserMeImpl implements _UserMe {
 
 abstract class _UserMe implements UserMe {
   const factory _UserMe({
-    required final String userId,
+    final String? userId,
     required final bool emailConfirmed,
-    required final String firstName,
+    final String? firstName,
   }) = _$UserMeImpl;
 
   factory _UserMe.fromJson(Map<String, dynamic> json) = _$UserMeImpl.fromJson;
 
   @override
-  String get userId;
+  String? get userId;
   @override
   bool get emailConfirmed;
   @override
-  String get firstName;
+  String? get firstName;
 
   /// Create a copy of UserMe
   /// with the given fields replaced by the non-null parameter values.

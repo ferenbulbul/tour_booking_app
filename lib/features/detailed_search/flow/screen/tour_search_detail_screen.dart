@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:tour_booking/core/theme/app_bar_styles.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
@@ -105,7 +106,13 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
     final media = MediaQuery.of(context);
     final expandedHeight = media.size.height * 0.55;
     final topPadding = media.padding.top;
+    const int iconCount = 2;
+    const double iconSize = 44;
+    const double iconSpacing = 8;
+    const double sidePadding = 10;
 
+    final double rightIconsWidth =
+        (iconCount * iconSize) + ((iconCount - 1) * iconSpacing) + sidePadding;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: BottomActionBar(
@@ -156,16 +163,11 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
                   moveT,
                 )!;
 
-                final double fontSize = lerpDouble(26, 18, moveT) ?? 22;
-                final double scale = lerpDouble(1.0, 0.95, moveT) ?? 1.0;
-
                 // Appbar band opacity
                 final double appBarBgOpacity =
                     lerpDouble(0.0, 1.0, collapseT.clamp(0.0, 1.0)) ?? 0.0;
 
                 // 🔥 İkonlar için opacity: en üstte 0, collapse oldukça 1
-                final double iconOpacity =
-                    lerpDouble(0.0, 1.0, collapseT.clamp(0.90, 1.0)) ?? 0.0;
 
                 return Stack(
                   fit: StackFit.expand,
@@ -178,6 +180,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
                         images: galleryImages,
                       ),
                     ),
+                    // 🧷 SABİT ICON BAR (HER ZAMAN AYNI YERDE)
 
                     // 🔳 ÜST BANT
                     Positioned(
@@ -185,62 +188,74 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
                       left: 0,
                       right: 0,
                       height: topPadding + kToolbarHeight,
-                      child: Container(
-                        color: AppColors.background.withOpacity(
-                          appBarBgOpacity,
+                      child: IgnorePointer(
+                        child: Container(
+                          color: AppColors.background.withOpacity(
+                            appBarBgOpacity,
+                          ),
                         ),
                       ),
                     ),
-
                     Positioned(
-                      left: 10,
-                      top: topPadding + 4,
-                      child: Opacity(
-                        opacity: iconOpacity,
-                        child: SimpleIconButton(
-                          icon: Icons.arrow_back_ios_new_rounded,
-                          onTap: () => Navigator.pop(context),
-                          fillColor: const Color.fromARGB(
-                            255,
-                            249,
-                            250,
-                            251,
-                          ), // içi beyaz
-                          iconColor: Colors.black, // ikon siyah
-                          borderColor: Color.fromARGB(
-                            255,
-                            249,
-                            250,
-                            251,
-                          ), // hafif beyaz çember
-                          borderWidth: 1.2,
-                        ),
-                      ),
-                    ),
+                      top: topPadding,
+                      left: 0,
+                      right: 0,
+                      height: kToolbarHeight,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // 🔙 BACK
+                            SimpleIconButton(
+                              icon: Icons.arrow_back_ios_new_rounded,
+                              onTap: () => Navigator.pop(context),
+                              fillColor: const Color.fromARGB(
+                                255,
+                                249,
+                                250,
+                                251,
+                              ),
+                              iconColor: Colors.black,
+                            ),
 
-                    Positioned(
-                      right: 10,
-                      top: topPadding + 4,
-                      child: Opacity(
-                        opacity: iconOpacity,
-                        child: SimpleIconButton(
-                          icon: vm.isFavorite
-                              ? Icons
-                                    .favorite // dolu kalp
-                              : Icons.favorite_border, // boş kalp
-                          onTap: () {
-                            favVm.toggleFavorite(detail!.id);
-                            vm.toggleFavorite(detail!.isFavorites);
-                          },
+                            const Spacer(),
 
-                          // 🔥 SİHİR BURADA
-                          iconColor: vm.isFavorite ? Colors.red : Colors.black,
+                            // 🔗 SHARE
+                            SimpleIconButton(
+                              icon: Icons.share_rounded,
+                              onTap: _onShareTap,
+                              fillColor: const Color.fromARGB(
+                                255,
+                                249,
+                                250,
+                                251,
+                              ),
+                              iconColor: Colors.black,
+                            ),
 
-                          fillColor: const Color.fromARGB(255, 249, 250, 251),
-                          borderColor: const Color.fromARGB(255, 249, 250, 251),
-                          borderWidth: 1.0,
-                          size: 22,
-                          padding: 10,
+                            const SizedBox(width: 8),
+
+                            // ❤️ FAVORİ
+                            SimpleIconButton(
+                              icon: vm.isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              onTap: () {
+                                favVm.toggleFavorite(detail!.id);
+                                vm.toggleFavorite(detail!.isFavorites);
+                              },
+                              iconColor: vm.isFavorite
+                                  ? Colors.red
+                                  : Colors.black,
+                              fillColor: const Color.fromARGB(
+                                255,
+                                249,
+                                250,
+                                251,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -249,35 +264,23 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
                     if (detail != null && detail.title.isNotEmpty)
                       Align(
                         alignment: titleAlignment,
-                        child: Transform.scale(
-                          scale: scale,
-                          child: Padding(
-                            padding: EdgeInsetsDirectional.only(
-                              start: lerpDouble(20, 72, moveT) ?? 20,
-                              end: lerpDouble(40, 72, moveT) ?? 40,
-                            ),
+                        child: Padding(
+                          padding: EdgeInsetsDirectional.only(
+                            start: lerpDouble(20, 56, collapseT)!,
+                            end: rightIconsWidth,
+                          ),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
                             child: Text(
                               detail.title,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: moveT < 0.5
-                                  ? TextAlign.left
-                                  : TextAlign.center,
+                              maxLines: 1,
+                              softWrap: false,
                               style: AppBarStyles.title(context).copyWith(
-                                color: onHero
+                                fontSize: lerpDouble(26, 18, collapseT),
+                                color: collapseT < 0.85
                                     ? Colors.white
                                     : AppColors.textPrimary,
-                                fontWeight: FontWeight.w600,
-                                fontSize: fontSize,
-                                shadows: onHero
-                                    ? [
-                                        Shadow(
-                                          offset: const Offset(0, 2),
-                                          blurRadius: 8,
-                                          color: Colors.black.withOpacity(0.6),
-                                        ),
-                                      ]
-                                    : [],
                               ),
                             ),
                           ),
@@ -452,6 +455,18 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
         }
       }
     }
+  }
+
+  void _onShareTap() {
+    final text =
+        '''
+      Bu turu gördün mü? 👀
+      https://tourrentai.com/tour/${widget.tourPointId}
+''';
+
+    SharePlus.instance.share(
+      ShareParams(text: text, subject: 'Harika bir tur buldum!'),
+    );
   }
 
   void _selectDate(TourSearchDetailViewModel vm) async {

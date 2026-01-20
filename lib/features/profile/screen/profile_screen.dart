@@ -11,6 +11,7 @@ import 'package:tour_booking/features/profile/widget/profil_header.dart';
 import 'package:tour_booking/features/profile/widget/profile_section.dart';
 import 'package:tour_booking/features/profile/widget/profile_skleton.dart';
 import 'package:tour_booking/features/profile/widget/profile_title.dart';
+import 'package:tour_booking/features/splash/splash_view_model.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -103,8 +104,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   titleColor: AppColors.error,
                   iconColor: AppColors.error,
                   onTap: () async {
+                    // 1. Servislerden çıkış yap (Tokenları siler)
                     await authVm.signOut();
-                    context.go("/login");
+
+                    // 2. SplashViewModel'i uyandır (Yeni yazdığın fonksiyonu çalıştırır)
+                    // Bu fonksiyon token'ın silindiğini görecek ve _isLoggedIn = false yapacak.
+                    await context.read<SplashViewModel>().initializeApp();
+
+                    // 3. context.go("/login") DEMENE GEREK YOK!
+                    // initializeApp bitince GoRouter bekçisi durumu anlayıp seni kapı dışarı edecek.
                   },
                 ),
               ],
@@ -125,6 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _showDeleteAccountDialog(BuildContext context) {
     final profileVm = context.read<ProfileViewModel>();
     final authVm = context.read<AuthViewModel>();
+    final splashVm = context.read<SplashViewModel>(); // 🔥 Bunu ekledik
 
     showDialog<bool>(
       context: context,
@@ -136,7 +145,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // ICON
+              // ICON (Tasarımın aynı kalıyor)
               Container(
                 width: 56,
                 height: 56,
@@ -150,9 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: AppColors.error,
                 ),
               ),
-
               const SizedBox(height: 14),
-
               // TITLE
               Text(
                 tr("delete_account"),
@@ -160,14 +167,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
               ),
-
               const SizedBox(height: 10),
-
               // MESSAGE
               Text(tr("delete_account_warning"), textAlign: TextAlign.center),
-
               const SizedBox(height: 18),
-
               Row(
                 children: [
                   Expanded(
@@ -184,9 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Text(tr("common_yes")),
                     ),
                   ),
-
                   const SizedBox(width: 10),
-
                   Expanded(
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
@@ -210,21 +211,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ).then((confirmed) async {
       if (confirmed != true) return;
 
+      // 1. Backend tarafında hesabı sil
       final success = await profileVm.deleteAccount();
 
       if (!context.mounted) return;
 
+      // Mesaj yönetimi
       final msg = profileVm.message ?? tr("error_generic");
-
       if (success) {
         UIHelper.showSuccess(context, msg.tr());
+
+        // 2. 🔥 KRİTİK: Lokal verileri ve Firebase oturumunu temizle
+        // Az önce AuthViewModel'de yazdığımız fonksiyonu çağırıyoruz
+        await authVm.deleteAccount();
+
+        // 3. 🔥 Router bekçisini uyandır.
+        // Tokenlar silindiği için otomatik olarak /login sayfasına fırlatılacaksın.
+        await splashVm.initializeApp();
       } else {
         UIHelper.showError(context, msg.tr());
-      }
-
-      if (success) {
-        await authVm.DeleteAccountSignOut();
-        context.go("/login");
       }
     });
   }

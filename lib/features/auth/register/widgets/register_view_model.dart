@@ -9,7 +9,6 @@ import 'package:tour_booking/services/core/secure_token_storage.dart';
 
 class RegisterViewModel extends ChangeNotifier {
   final AuthService _authService = AuthService();
-  // Token depolama servisini burada initialize ediyoruz
   final SecureTokenStorage _tokenStorage = SecureTokenStorage();
 
   bool isLoading = false;
@@ -22,51 +21,41 @@ class RegisterViewModel extends ChangeNotifier {
     validationErrors = [];
     notifyListeners();
 
-    // DEBUG: Gelen isteğin içeriğini kontrol etme
-    print('Register Request Gönderiliyor:');
-    print('Email: ${request.email}');
-    print('Ülke Kodu: ${request.countryCode}');
+    try {
+      final response = await _authService.register(request);
+      final result = handleResponse<LoginResponse>(response);
 
-    final response = await _authService.register(request);
-    final result = handleResponse<LoginResponse>(response);
+      if (result.isSuccess && result.data != null) {
+        final loginResponse = result.data!;
 
-    if (result.isSuccess) {
-      final loginResponse = result.data;
-
-      if (loginResponse != null) {
+        // 1. Tokenları Güvenli Depoya Kaydet
         await _tokenStorage.saveTokens(
           loginResponse.accessToken,
           loginResponse.refreshToken,
         );
 
+        // 2. SharedPreferences Kayıtları
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('user_role', loginResponse.role);
         await prefs.setBool(
           'is_profile_complete',
           loginResponse.isProfileComplete,
         );
+
+        // NOT: tempUser'ı burada oluşturmuyoruz,
+        // direkt View katmanında (RegisterForm) SplashViewModel'e paslayacağız.
+        // Çünkü ViewModel'lerin birbirine bağımlı olması (coupling) iyi değildir.
+
+        message = null;
+        validationErrors = [];
+      } else {
+        message = result.error?.message;
+        validationErrors = result.error?.validationErrors ?? [];
       }
-
-      // Mesajları temizle
-      message = null;
-      validationErrors = [];
-    } else {
-      // 5. Başarısız İşlem: Hata ve Validasyon Mesajlarını Alma
-      message = result.error?.message;
-      validationErrors = result.error?.validationErrors ?? [];
+      return result;
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
-
-    // 6. Yüklenme Durumunu Kapatma ve Bildirme
-    isLoading = false;
-    notifyListeners();
-
-    // İşlenmiş sonucu döndür
-    return result;
-  }
-
-  void clearMessages() {
-    message = null;
-    validationErrors = [];
-    notifyListeners();
   }
 }

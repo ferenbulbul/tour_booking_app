@@ -6,8 +6,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/deeplink/app_router.dart';
 import 'package:tour_booking/core/localization/localization_setup.dart';
-import 'package:tour_booking/core/theme/app_theme.dart';
 import 'package:tour_booking/features/bookings/bookings_viewmodel.dart';
 import 'package:tour_booking/features/auth/change_password/change_password_viewmodel.dart';
 import 'package:tour_booking/features/driver_home_page/driver_viewmodel.dart';
@@ -60,8 +60,8 @@ class AppProviders extends StatelessWidget {
     return LocalizationSetup.wrapWithLocalization(
       MultiProvider(
         providers: [
+          ChangeNotifierProvider<SplashViewModel>.value(value: splashViewModel),
           ChangeNotifierProvider(create: (_) => LoginViewModel()),
-          ChangeNotifierProvider(create: (_) => SplashViewModel()),
           ChangeNotifierProvider(create: (_) => EmailVerificationViewModel()),
           ChangeNotifierProvider(create: (_) => AuthViewModel()),
           ChangeNotifierProvider(create: (_) => RegisterViewModel()),
@@ -91,16 +91,9 @@ class AppProviders extends StatelessWidget {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      locale: context.locale,
-      supportedLocales: context.supportedLocales,
-      localizationsDelegates: context.localizationDelegates,
-      debugShowCheckedModeBanner: false,
-      //showPerformanceOverlay: true,
-      routerConfig: router,
-      theme: AppTheme.light,
-    );
+    return AppRoot(router: router);
   }
 }

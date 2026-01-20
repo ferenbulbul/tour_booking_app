@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tour_booking/services/auth/auth_service.dart';
 
 class EmailVerificationViewModel extends ChangeNotifier {
@@ -44,6 +45,9 @@ class EmailVerificationViewModel extends ChangeNotifier {
 
     if (result.isSuccess == true) {
       message = result.message;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('user_email_confirmed', true);
+
       errorMessage = null;
       notifyListeners();
       return true;

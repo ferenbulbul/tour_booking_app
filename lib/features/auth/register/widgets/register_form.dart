@@ -8,6 +8,7 @@ import 'package:tour_booking/core/ui/ui_helper.dart';
 
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/auth/register/widgets/register_view_model.dart';
+import 'package:tour_booking/features/splash/splash_view_model.dart';
 import 'package:tour_booking/models/register/register_request.dart';
 import 'package:flutter/material.dart' as ui;
 
@@ -56,15 +57,7 @@ class _RegisterFormState extends State<RegisterForm> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (!_isPasswordValid) {
-      setState(() {
-        _passwordTouched = true; // kuralları göster
-      });
-      return;
-    }
-    if (!_isPasswordValid) {
-      setState(() {
-        _passwordTouched = true;
-      });
+      setState(() => _passwordTouched = true);
       return;
     }
     if (_selectedPhone == null) {
@@ -73,6 +66,7 @@ class _RegisterFormState extends State<RegisterForm> {
     }
 
     final vm = context.read<RegisterViewModel>();
+    final splashVM = context.read<SplashViewModel>();
     FocusScope.of(context).unfocus();
 
     final req = RegisterRequest(
@@ -90,9 +84,15 @@ class _RegisterFormState extends State<RegisterForm> {
 
     if (!mounted) return;
 
-    if (result.isSuccess) {
+    if (result.isSuccess && result.data != null) {
       UIHelper.showSuccess(context, tr("register_success"));
-      context.go("/email-confirmed");
+
+      // 🔥 ESKİ HALİ: await splashVM.initializeApp(); (İnternete gidiyordu)
+
+      // ✅ YENİ HALİ: Elimizdeki taze veriyi direkt modele basıyoruz.
+      // Bu metod notifyListeners() tetiklediği için GoRouter anında /email-confirmed sayfasına uçuracak.
+
+      await splashVM.saveAuthData(result.data!);
     } else {
       if (vm.validationErrors.isNotEmpty) {
         final message = vm.validationErrors.join('\n• ');

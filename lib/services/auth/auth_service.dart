@@ -124,7 +124,7 @@ class AuthService {
 
   Future<BaseResponse<UserMe>> getUserMe() async {
     var response = _apiClient.get<UserMe>(
-      path: "/Auth/user-me",
+      path: "/Mobile/user-me",
       queryParams: {},
       fromJson: (json) => UserMe.fromJson(json as Map<String, dynamic>),
     );

@@ -10,6 +10,7 @@ import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/auth/login/widgets/login_view_model.dart';
 import 'package:tour_booking/features/auth/login/widgets/social_login_button.dart';
 import 'package:flutter/material.dart' as ui;
+import 'package:tour_booking/features/splash/splash_view_model.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -128,6 +129,7 @@ class _CleanLoginFormState extends State<_CleanLoginForm> {
   bool _isObscure = true;
 
   void _login() async {
+    final splashVM = Provider.of<SplashViewModel>(context, listen: false);
     final vm = Provider.of<LoginViewModel>(context, listen: false);
     FocusScope.of(context).unfocus();
 
@@ -139,16 +141,7 @@ class _CleanLoginFormState extends State<_CleanLoginForm> {
     if (!mounted) return;
 
     if (result.isSuccess) {
-      final role = UserRoleExtension.fromString(result.data?.role);
-      final data = result.data!;
-      final emailConfirmed = data.emailConfirmed == true;
-      final isFirstLogin = data.isFirstLogin == true;
-
-      if (role == UserRole.driver) {
-        context.go(isFirstLogin ? '/change-password-driver' : '/driver');
-      } else {
-        context.go(emailConfirmed ? '/home' : '/email-confirmed');
-      }
+      await splashVM.saveAuthData(result.data!);
     } else {
       if (vm.message != null) UIHelper.showError(context, vm.message!);
       if (vm.validationErrors.isNotEmpty) {

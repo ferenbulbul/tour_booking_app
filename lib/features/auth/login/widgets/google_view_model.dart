@@ -20,24 +20,29 @@ class AuthViewModel extends ChangeNotifier {
   final SecureTokenStorage _tokenStorage = SecureTokenStorage();
   final AuthService _authService = AuthService();
 
-  User? _user;
-  User? get user => _user;
-  String name = "";
+  bool isLoading = false;
 
+  // --- GİRİŞ YAPMA ---
   Future<Result<LoginResponse>> signIn(AuthProviderType provider) async {
+    isLoading = true;
+    notifyListeners();
+
     try {
       AuthCredential credential;
+      String? fullName;
 
-      // 🔹 Provider seçimine göre credential oluştur
       if (provider == AuthProviderType.google) {
         final googleUser = await _googleSignIn.signIn();
         if (googleUser == null) {
+          isLoading = false;
+          notifyListeners();
           return Result.failure(
             FailureModel(message: 'google_sign_in_cancelled'),
           );
         }
 
         final googleAuth = await googleUser.authentication;
+        fullName = googleUser.displayName;
         credential = GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
@@ -48,47 +53,33 @@ class AuthViewModel extends ChangeNotifier {
             AppleIDAuthorizationScopes.email,
             AppleIDAuthorizationScopes.fullName,
           ],
-          webAuthenticationOptions: WebAuthenticationOptions(
-            clientId:
-                'com.tourbooking.applelogin.', // Apple Developer’da oluşturduğun Service ID
-            redirectUri: Uri.parse(
-              'https://tourbooking-api-272954735037.europe-west2.run.app/callbacks/sign_in_with_apple', // Firebase’in verdiği return URL
-            ),
-          ),
         );
-        // ✅ Burada isim/soyisim'i yakalayabilirsin
-        final fullName = [
+
+        fullName = [
           appleCredential.givenName,
           appleCredential.familyName,
         ].where((e) => e != null && e.isNotEmpty).join(" ");
 
-        print("🍎 Apple FullName: $fullName");
-        name = fullName;
         credential = OAuthProvider("apple.com").credential(
           idToken: appleCredential.identityToken,
           accessToken: appleCredential.authorizationCode,
         );
       }
 
-      // 🔹 Firebase ile giriş yap
       final userCredential = await _firebaseAuth.signInWithCredential(
         credential,
       );
-      final User loggedInUser = userCredential.user!;
-      final String? firebaseIdToken = await loggedInUser.getIdToken();
-      if (firebaseIdToken == null || firebaseIdToken.isEmpty) {
-        return Result.failure(
-          FailureModel(
-            message:
-                "Firebase kimlik token'ı alınamadı. Lütfen tekrar deneyin.",
-          ),
-        );
+      final String? firebaseIdToken = await userCredential.user?.getIdToken();
+
+      if (firebaseIdToken == null) {
+        throw Exception("Firebase ID Token alınamadı");
       }
 
-      final req = FirebaseTokenRequest(token: firebaseIdToken, fullName: name);
-      // 🔹 Backend doğrulama → provider’a göre farklı endpoint çağırabilirsin
+      final req = FirebaseTokenRequest(
+        token: firebaseIdToken,
+        fullName: fullName ?? "",
+      );
       final backendResponse = await _authService.verifyGoogleUser(req);
-      ///////////////
       final result = handleResponse<LoginResponse>(backendResponse);
 
       if (result.isSuccess && result.data != null) {
@@ -103,50 +94,68 @@ class AuthViewModel extends ChangeNotifier {
           'is_profile_complete',
           result.data!.isProfileComplete,
         );
-
-        _user = loggedInUser;
-        print("✅ ${provider.name} girişi başarılı ve token'lar kaydedildi.");
-      } else {
-        _user = null;
       }
 
+      isLoading = false;
       notifyListeners();
       return result;
     } catch (e) {
-      print('🚨 ${provider.name} Sign-In veya Backend hatası: $e');
-      _user = null;
+      isLoading = false;
       notifyListeners();
-
       return Result.failure(
-        FailureModel(message: "${'unexpected_error_occurred'.tr()}"),
+        FailureModel(message: "unexpected_error_occurred".tr()),
       );
     }
   }
 
+  // --- ÇIKIŞ YAPMA ---
   Future<void> signOut() async {
     try {
       await _googleSignIn.signOut();
       await _firebaseAuth.signOut();
       await _authService.logout();
-      _tokenStorage.clearTokens();
+      await _tokenStorage.clearTokens();
 
       final prefs = await SharedPreferences.getInstance();
-      await prefs.clear();
-      _user = null;
+      // 🔥 clear() yerine sadece auth ile ilgili olanları sil
+      await prefs.remove('user_role');
+      await prefs.remove('is_profile_complete');
+
       notifyListeners();
-    } catch (e) {}
+    } catch (e) {
+      debugPrint("SignOut Error: $e");
+    }
   }
 
-  Future<void> DeleteAccountSignOut() async {
-    try {
-      await _googleSignIn.signOut();
-      await _firebaseAuth.signOut();
-      _tokenStorage.clearTokens();
+  // --- HESABI SİLME ---
+  Future<Result<void>> deleteAccount() async {
+    isLoading = true;
+    notifyListeners();
 
+    try {
+      // 1. Önce Backend'den hesabı sil (Eğer bir endpoint'in varsa)
+      // final response = await _authService.deleteAccount();
+      // final result = handleResponse(response);
+
+      // 2. Sosyal ve Firebase oturumlarını kapat/sil
+      if (_firebaseAuth.currentUser != null) {
+        await _firebaseAuth.currentUser!.delete();
+      }
+      await _googleSignIn.signOut();
+
+      // 3. Lokal verileri tamamen sıfırla
+      await _tokenStorage.clearTokens();
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
-      _user = null;
+
+      isLoading = false;
       notifyListeners();
-    } catch (e) {}
+      return Result.success(null);
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+      // Firebase re-authentication isteyebilir, o yüzden hata dönebiliriz
+      return Result.failure(FailureModel(message: e.toString()));
+    }
   }
 }

@@ -2,10 +2,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
+
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/auth/email_verification/widget/email_verification_view_model.dart';
+import 'package:tour_booking/features/splash/splash_view_model.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
   const EmailVerificationScreen({super.key});
@@ -105,7 +107,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               keyboardType: TextInputType.number,
               onCompleted: (code) async {
                 final ok = await vm.verifyCode(code);
-                if (ok && mounted) context.go('/home');
+                if (ok && mounted) {
+                  // 🔥 SplashViewModel'deki kullanıcı verisini güncelle
+                  // Böylece bekçi "Tamam artık onaylı" deyip seni otomatik içeri alacak
+                  context.read<SplashViewModel>().updateEmailConfirmation(true);
+                  context.go('/home');
+                }
               },
             ),
 
@@ -138,7 +145,20 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             const SizedBox(height: 8),
 
             TextButton(
-              onPressed: () => context.go('/login'),
+              onPressed: () async {
+                // 1. SplashViewModel üzerinden oturumu temizle
+                // Not: SplashViewModel'de signOut veya clearAuth gibi bir metodun olduğunu varsayıyorum
+                final splashVM = context.read<SplashViewModel>();
+
+                // Auth verilerini temizle ki bekçi (isLoggedIn) artık false dönsün
+                await splashVM
+                    .signOut(); // veya tokenStorage.clearTokens() + notifyListeners()
+
+                // 2. Şimdi login'e gidebiliriz, bekçi artık engel olmaz
+                if (context.mounted) {
+                  context.go('/login');
+                }
+              },
               child: Text(
                 'back_to_login'.tr(),
                 style: text.labelLarge?.copyWith(
