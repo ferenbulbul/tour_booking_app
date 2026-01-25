@@ -5,6 +5,7 @@ import 'package:tour_booking/models/login/login_response.dart';
 import 'package:tour_booking/models/user_me/user_me.dart';
 import 'package:tour_booking/services/auth/auth_service.dart';
 import 'package:tour_booking/services/core/secure_token_storage.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 class SplashViewModel extends ChangeNotifier {
   final SecureTokenStorage _tokenStorage = SecureTokenStorage();
@@ -55,6 +56,7 @@ class SplashViewModel extends ChangeNotifier {
     } catch (e) {
       _isLoggedIn = false;
     } finally {
+      FlutterNativeSplash.remove();
       notifyListeners();
     }
   }

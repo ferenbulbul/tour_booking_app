@@ -141,7 +141,15 @@ class _CleanLoginFormState extends State<_CleanLoginForm> {
     if (!mounted) return;
 
     if (result.isSuccess) {
+      final user = result.data!;
+
       await splashVM.saveAuthData(result.data!);
+
+      if (user.role.toLowerCase() == UserRole.driver.name &&
+          user.isFirstLogin) {
+        context.go('/change-password-driver');
+        return;
+      }
     } else {
       if (vm.message != null) UIHelper.showError(context, vm.message!);
       if (vm.validationErrors.isNotEmpty) {

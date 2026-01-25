@@ -53,18 +53,26 @@ class _BookingCardState extends State<BookingCard> {
   // -------------------------------------------------------------------------
   String _statusLabel(String status, DateTime departureDate) {
     final s = status.toLowerCase();
+    final now = DateTime.now();
 
     if (s == "completed") return 'booking_tab_completed'.tr();
     if (s == "cancelled") return 'booking_tab_cancelled'.tr();
 
-    if (status == "CancellationPending") {
+    if (s == "cancellationpending") {
       return "pending_approvel".tr();
     }
 
-    if (departureDate.isAfter(DateTime.now())) {
+    // 🔥 BUGÜN
+    if (_isSameDay(departureDate, now)) {
+      return 'today'.tr(); // Today
+    }
+
+    // 🔜 GELECEK
+    if (departureDate.isAfter(now)) {
       return 'booking_tab_upcoming'.tr();
     }
 
+    // 🕰️ GEÇMİŞ
     return status;
   }
 
@@ -412,4 +420,8 @@ class ShimmerBox extends StatelessWidget {
       ),
     );
   }
+}
+
+bool _isSameDay(DateTime a, DateTime b) {
+  return a.year == b.year && a.month == b.month && a.day == b.day;
 }

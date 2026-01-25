@@ -51,7 +51,6 @@ class ApiClient {
           if (response.statusCode == 401) {
             await _authViewModel?.signOut();
             appNavigatorKey.currentContext?.pushReplacement('/login');
-            ;
             return Future.error("Oturum süresi doldu.");
           }
         } else {

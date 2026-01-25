@@ -5,6 +5,7 @@
   "or_continue_with": "أو المتابعة باستخدام",
   "sign_in_with_apple": "تسجيل الدخول باستخدام Apple",
   "unexpected_error_occurred": "حدث خطأ غير متوقع:",
+  "password_reset_success": "تمت إعادة تعيين كلمة المرور بنجاح.",
   "forgot_password": "نسيت كلمة المرور",
   "google_sign_in_cancelled": "تم إلغاء تسجيل الدخول عبر Google.",
   "welcome_title": "مرحبًا",
@@ -234,5 +235,6 @@
   "verify_now": "تحقق الآن",
   "delete_account_warning": "لا يمكن التراجع عن هذا الإجراء. سيتم حذف حسابك وجميع بياناتك نهائيًا.",
   "first_name_required": "الاسم مطلوب",
-  "last_name_required": "اسم العائلة مطلوب"
+  "last_name_required": "اسم العائلة مطلوب",
+  "today": "اليوم"
 }

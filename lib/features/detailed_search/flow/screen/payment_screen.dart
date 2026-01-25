@@ -84,7 +84,7 @@ class _PaymentPageState extends State<PaymentPage> {
                             vm.resultData?.bookingStatus == "Success") {
                           context.replace(
                             '/payment-success',
-                            extra: vm.initData?.conversationId,
+                            extra: widget.bookingId,
                           );
                         } else {
                           context.replace('/payment-fail');

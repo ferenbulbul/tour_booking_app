@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:tour_booking/services/core/secure_token_storage.dart';
+import 'package:tour_booking/models/customer_info_for_driver/customer_info.dart';
+import 'package:tour_booking/services/driver/driver_service.dart';
 
 class DriverHomeViewModel extends ChangeNotifier {
+  final DriverService _driverService;
+
+  DriverHomeViewModel(this._driverService);
+
   bool isLoading = false;
   String? error;
+
+  List<CustomerInfo> customerList = [];
 
   Future<void> refresh() async {
     try {
@@ -11,23 +18,18 @@ class DriverHomeViewModel extends ChangeNotifier {
       error = null;
       notifyListeners();
 
-      // TODO: burada sürücüye özel verileri çek (örn. aktif görevler, bildirimler…)
-      await Future.delayed(const Duration(milliseconds: 600));
+      final response = await _driverService.getCustomerInfo();
+
+      if (response.isSuccess == true && response.data != null) {
+        customerList = response.data!.customerInfo;
+      } else {
+        error = response.message ?? 'Veriler alınamadı';
+      }
     } catch (e) {
       error = 'Bir şeyler ters gitti: $e';
     } finally {
       isLoading = false;
       notifyListeners();
-    }
-  }
-
-  Future<void> signOut() async {
-    try {
-      final SecureTokenStorage _tokenStorage = SecureTokenStorage();
-      _tokenStorage.clearTokens();
-      notifyListeners();
-    } catch (e) {
-      print('🚨 Çıkış yapma hatası: $e');
     }
   }
 }

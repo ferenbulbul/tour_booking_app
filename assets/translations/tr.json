@@ -5,6 +5,7 @@
     "or_continue_with": "Veya devam et",
     "sign_in_with_apple": "Apple ile Giriş Yap",
     "unexpected_error_occurred": "Beklenmedik bir hata oluştu:",
+    "password_reset_success": "Şifren başarıyla sıfırlandı.",
     "google_sign_in_cancelled": "Google girişi iptal edildi.",
     "forgot_password": "Şifremi Unuttum",
     "welcome_title": "Hoş Geldin",
@@ -234,5 +235,6 @@
     "verify_now": "Şimdi doğrula",
     "delete_account_warning": "Bu işlem geri alınamaz. Hesabınız ve tüm verileriniz kalıcı olarak silinecektir.",
     "first_name_required": "İsim gerekli",
-    "last_name_required": "Soyisim gerekli"
+    "last_name_required": "Soyisim gerekli",
+    "today": "Bugün"
 }

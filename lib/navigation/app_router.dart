@@ -63,41 +63,47 @@ final GoRouter router = GoRouter(
     final bool isDeepLink = path.startsWith('/tour/');
     final redirectParam = state.uri.queryParameters['redirect'];
 
+    // 🔓 Login gerektirmeyen sayfalar
+    final publicRoutes = [
+      '/login',
+      '/register',
+      '/forgot-password',
+      '/verify-reset-code',
+      '/reset-password',
+    ];
+
     debugPrint(
       '🧭 redirect | path=$path | loggedIn=$loggedIn | deepLink=$isDeepLink',
     );
 
-    // 🔴 Login yok
+    // 🔴 LOGIN YOKSA
     if (!loggedIn) {
+      // Deep link geldiyse login'e yönlendir + redirect paramı ekle
       if (isDeepLink) {
         final encoded = Uri.encodeComponent(state.uri.toString());
         return '/login?redirect=$encoded';
       }
 
-      if (path != '/login' &&
-          path != '/register' &&
-          path != '/forgot-password') {
+      // Public route değilse login'e at
+      if (!publicRoutes.contains(path)) {
         return '/login';
       }
 
       return null;
     }
 
-    // 🟠 Email onaysız
+    // 🟠 EMAIL ONAYSIZ
     if (!isEmailConfirmed) {
       return path == '/email-confirmed' ? null : '/email-confirmed';
     }
 
-    // 🟢 Login sonrası deep link dönüşü
+    // 🟢 LOGIN SONRASI DEEP LINK GERİ DÖNÜŞ
     if (redirectParam != null) {
       return Uri.decodeComponent(redirectParam);
     }
 
-    // Auth/splash sayfalarından çık
-    if (path == '/' ||
-        path == '/login' ||
-        path == '/register' ||
-        path == '/forgot-password') {
+    // 🧹 Auth sayfalarından çıkış
+    if (publicRoutes.contains(path) || path == '/') {
       return role == UserRole.driver ? '/driver' : '/home';
     }
 
@@ -105,6 +111,7 @@ final GoRouter router = GoRouter(
   },
   routes: [
     GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
+
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     GoRoute(
       path: '/email-confirmed',
