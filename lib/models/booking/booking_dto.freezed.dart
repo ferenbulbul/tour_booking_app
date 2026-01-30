@@ -39,6 +39,9 @@ mixin _$BookingDto {
   String get departureDistrict => throw _privateConstructorUsedError;
   String get departureDate => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
+  bool? get canRate => throw _privateConstructorUsedError;
+  String? get ratingRequestId => throw _privateConstructorUsedError;
+  String? get ratingToken => throw _privateConstructorUsedError;
 
   /// Serializes this BookingDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -76,6 +79,9 @@ abstract class $BookingDtoCopyWith<$Res> {
     String departureDistrict,
     String departureDate,
     String status,
+    bool? canRate,
+    String? ratingRequestId,
+    String? ratingToken,
   });
 }
 
@@ -112,6 +118,9 @@ class _$BookingDtoCopyWithImpl<$Res, $Val extends BookingDto>
     Object? departureDistrict = null,
     Object? departureDate = null,
     Object? status = null,
+    Object? canRate = freezed,
+    Object? ratingRequestId = freezed,
+    Object? ratingToken = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -187,6 +196,18 @@ class _$BookingDtoCopyWithImpl<$Res, $Val extends BookingDto>
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
                       as String,
+            canRate: freezed == canRate
+                ? _value.canRate
+                : canRate // ignore: cast_nullable_to_non_nullable
+                      as bool?,
+            ratingRequestId: freezed == ratingRequestId
+                ? _value.ratingRequestId
+                : ratingRequestId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            ratingToken: freezed == ratingToken
+                ? _value.ratingToken
+                : ratingToken // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -221,6 +242,9 @@ abstract class _$$BookingDtoImplCopyWith<$Res>
     String departureDistrict,
     String departureDate,
     String status,
+    bool? canRate,
+    String? ratingRequestId,
+    String? ratingToken,
   });
 }
 
@@ -256,6 +280,9 @@ class __$$BookingDtoImplCopyWithImpl<$Res>
     Object? departureDistrict = null,
     Object? departureDate = null,
     Object? status = null,
+    Object? canRate = freezed,
+    Object? ratingRequestId = freezed,
+    Object? ratingToken = freezed,
   }) {
     return _then(
       _$BookingDtoImpl(
@@ -331,6 +358,18 @@ class __$$BookingDtoImplCopyWithImpl<$Res>
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
                   as String,
+        canRate: freezed == canRate
+            ? _value.canRate
+            : canRate // ignore: cast_nullable_to_non_nullable
+                  as bool?,
+        ratingRequestId: freezed == ratingRequestId
+            ? _value.ratingRequestId
+            : ratingRequestId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        ratingToken: freezed == ratingToken
+            ? _value.ratingToken
+            : ratingToken // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -358,6 +397,9 @@ class _$BookingDtoImpl implements _BookingDto {
     required this.departureDistrict,
     required this.departureDate,
     required this.status,
+    this.canRate,
+    this.ratingRequestId,
+    this.ratingToken,
   });
 
   factory _$BookingDtoImpl.fromJson(Map<String, dynamic> json) =>
@@ -399,10 +441,16 @@ class _$BookingDtoImpl implements _BookingDto {
   final String departureDate;
   @override
   final String status;
+  @override
+  final bool? canRate;
+  @override
+  final String? ratingRequestId;
+  @override
+  final String? ratingToken;
 
   @override
   String toString() {
-    return 'BookingDto(id: $id, image: $image, tourPointName: $tourPointName, tourPointCity: $tourPointCity, tourPointDistrict: $tourPointDistrict, departureTime: $departureTime, driverName: $driverName, tourPointPrice: $tourPointPrice, guideName: $guideName, guidePrice: $guidePrice, totalPrice: $totalPrice, vehicleBrand: $vehicleBrand, seatCount: $seatCount, departureLocationDescription: $departureLocationDescription, departureCity: $departureCity, departureDistrict: $departureDistrict, departureDate: $departureDate, status: $status)';
+    return 'BookingDto(id: $id, image: $image, tourPointName: $tourPointName, tourPointCity: $tourPointCity, tourPointDistrict: $tourPointDistrict, departureTime: $departureTime, driverName: $driverName, tourPointPrice: $tourPointPrice, guideName: $guideName, guidePrice: $guidePrice, totalPrice: $totalPrice, vehicleBrand: $vehicleBrand, seatCount: $seatCount, departureLocationDescription: $departureLocationDescription, departureCity: $departureCity, departureDistrict: $departureDistrict, departureDate: $departureDate, status: $status, canRate: $canRate, ratingRequestId: $ratingRequestId, ratingToken: $ratingToken)';
   }
 
   @override
@@ -446,12 +494,17 @@ class _$BookingDtoImpl implements _BookingDto {
                 other.departureDistrict == departureDistrict) &&
             (identical(other.departureDate, departureDate) ||
                 other.departureDate == departureDate) &&
-            (identical(other.status, status) || other.status == status));
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.canRate, canRate) || other.canRate == canRate) &&
+            (identical(other.ratingRequestId, ratingRequestId) ||
+                other.ratingRequestId == ratingRequestId) &&
+            (identical(other.ratingToken, ratingToken) ||
+                other.ratingToken == ratingToken));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
     image,
@@ -471,7 +524,10 @@ class _$BookingDtoImpl implements _BookingDto {
     departureDistrict,
     departureDate,
     status,
-  );
+    canRate,
+    ratingRequestId,
+    ratingToken,
+  ]);
 
   /// Create a copy of BookingDto
   /// with the given fields replaced by the non-null parameter values.
@@ -507,6 +563,9 @@ abstract class _BookingDto implements BookingDto {
     required final String departureDistrict,
     required final String departureDate,
     required final String status,
+    final bool? canRate,
+    final String? ratingRequestId,
+    final String? ratingToken,
   }) = _$BookingDtoImpl;
 
   factory _BookingDto.fromJson(Map<String, dynamic> json) =
@@ -548,6 +607,12 @@ abstract class _BookingDto implements BookingDto {
   String get departureDate;
   @override
   String get status;
+  @override
+  bool? get canRate;
+  @override
+  String? get ratingRequestId;
+  @override
+  String? get ratingToken;
 
   /// Create a copy of BookingDto
   /// with the given fields replaced by the non-null parameter values.

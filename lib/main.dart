@@ -10,6 +10,7 @@ import 'package:tour_booking/core/deeplink/app_router.dart';
 import 'package:tour_booking/core/localization/localization_setup.dart';
 import 'package:tour_booking/features/bookings/bookings_viewmodel.dart';
 import 'package:tour_booking/features/auth/change_password/change_password_viewmodel.dart';
+import 'package:tour_booking/features/bookings/rating_viewmodel.dart';
 import 'package:tour_booking/features/driver_home_page/driver_viewmodel.dart';
 import 'package:tour_booking/features/auth/email_verification/widget/email_verification_view_model.dart';
 import 'package:tour_booking/features/favorite/favorite_viewmodel.dart';
@@ -112,6 +113,7 @@ class _AppProvidersState extends State<AppProviders> {
           ChangeNotifierProvider(create: (_) => PaymentViewModel()),
           ChangeNotifierProvider(create: (_) => BookingsViewModel()),
           ChangeNotifierProvider(create: (_) => PermissionsViewModel()),
+          ChangeNotifierProvider(create: (_) => RatingsViewModel()),
         ],
         child: const MyApp(),
       ),

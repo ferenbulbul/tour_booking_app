@@ -27,6 +27,9 @@ _$BookingDtoImpl _$$BookingDtoImplFromJson(Map<String, dynamic> json) =>
       departureDistrict: json['departureDistrict'] as String,
       departureDate: json['departureDate'] as String,
       status: json['status'] as String,
+      canRate: json['canRate'] as bool?,
+      ratingRequestId: json['ratingRequestId'] as String?,
+      ratingToken: json['ratingToken'] as String?,
     );
 
 Map<String, dynamic> _$$BookingDtoImplToJson(_$BookingDtoImpl instance) =>
@@ -49,4 +52,7 @@ Map<String, dynamic> _$$BookingDtoImplToJson(_$BookingDtoImpl instance) =>
       'departureDistrict': instance.departureDistrict,
       'departureDate': instance.departureDate,
       'status': instance.status,
+      'canRate': instance.canRate,
+      'ratingRequestId': instance.ratingRequestId,
+      'ratingToken': instance.ratingToken,
     };

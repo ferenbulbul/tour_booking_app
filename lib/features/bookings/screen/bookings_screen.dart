@@ -168,6 +168,14 @@ class _BookingsScreenState extends State<BookingsScreen> {
           showCancelAction: showCancelAction,
           isCancelling: _cancellingBookingId == item.id,
           onCancel: () => _onCancelPressed(context, item.id),
+          onRated: () {
+            final vm = context.read<BookingsViewModel>();
+
+            // 🔥 rating sonrası tüm state’i yeniden çek
+            vm.fetchBookingsByStatus(BookingStatus.upcoming);
+            vm.fetchBookingsByStatus(BookingStatus.completed);
+            vm.fetchBookingsByStatus(BookingStatus.cancelled);
+          },
         );
       },
     );

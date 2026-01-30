@@ -8,6 +8,7 @@ import 'package:tour_booking/models/featured_tour_point_list/featured_tour_point
 import 'package:tour_booking/models/is_valid_response/is_valid_response.dart';
 import 'package:tour_booking/models/location_update/location_dto.dart';
 import 'package:tour_booking/models/nearby_list/nearby_list_response.dart';
+import 'package:tour_booking/models/pending_rating/pending_rating_dto.dart';
 import 'package:tour_booking/models/profile/profile_response.dart';
 import 'package:tour_booking/models/region_list/region_list_response.dart';
 import 'package:tour_booking/models/tour_guide_request/tour_guide_request.dart';
@@ -259,5 +260,27 @@ class TourService {
       path: "/Mobile/create-cancellation",
       body: {'bookingId': bookingId},
     );
+  }
+
+  Future<BaseResponse<PendingRatingDto>> getPendingRating({
+    required String token,
+  }) async {
+    return _apiClient.get<PendingRatingDto>(
+      path: "/rating/pending",
+      queryParams: {"token": token},
+      fromJson: (json) =>
+          PendingRatingDto.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  Future<BaseResponse<void>> submitRating({
+    required Map<String, dynamic> payload,
+  }) async {
+    final response = await _apiClient.post<void>(
+      path: "/rating/submit", // 🔥 backend endpoint
+      body: payload,
+    );
+
+    return response;
   }
 }

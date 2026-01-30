@@ -236,5 +236,17 @@
   "delete_account_warning": "لا يمكن التراجع عن هذا الإجراء. سيتم حذف حسابك وجميع بياناتك نهائيًا.",
   "first_name_required": "الاسم مطلوب",
   "last_name_required": "اسم العائلة مطلوب",
-  "today": "اليوم"
+  "today": "اليوم",
+  "rating_title": "قيّم تجربتك",
+  "rating_subtitle": "شاركنا تجربتك",
+  "rating_tour": "تقييم الجولة",
+  "rating_vehicle": "تقييم المركبة",
+  "rating_guide": "تقييم المرشد",
+  "rating": "تقييم",
+  "rating_optional_comment": "أضف تعليقًا اختياريًا",
+  "rating_submit": "إرسال",
+  "rating_submit_error": "حدث خطأ أثناء إرسال التقييم",
+  "rating_invalid_link": "رابط التقييم غير صالح أو منتهي الصلاحية",
+  "booking_rate": "قيّم",
+  "booking_rated": "تم التقييم"
 }

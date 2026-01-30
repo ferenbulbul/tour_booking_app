@@ -236,5 +236,17 @@
     "delete_account_warning": "Bu işlem geri alınamaz. Hesabınız ve tüm verileriniz kalıcı olarak silinecektir.",
     "first_name_required": "İsim gerekli",
     "last_name_required": "Soyisim gerekli",
-    "today": "Bugün"
+    "today": "Bugün",
+    "rating_title": "Değerlendir",
+    "rating_subtitle": "Deneyimini bizimle paylaş",
+    "rating_tour": "Tur Değerlendirmesi",
+    "rating_vehicle": "Araç Değerlendirmesi",
+    "rating_guide": "Rehber Değerlendirmesi",
+    "rating": "Değerlendirme",
+    "rating_optional_comment": "İsteğe bağlı yorum ekleyin",
+    "rating_submit": "Gönder",
+    "rating_submit_error": "Değerlendirme gönderilirken bir hata oluştu",
+    "rating_invalid_link": "Bu değerlendirme bağlantısı geçersiz veya süresi dolmuş",
+    "booking_rate": "Değerlendir",
+    "booking_rated": "Değerlendirildi"
 }

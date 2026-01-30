@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tour_booking/core/enum/booking_status.dart';
 import 'package:tour_booking/models/booking/booking_dto.dart';
+import 'package:tour_booking/models/pending_rating/pending_rating_dto.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
 
 class BookingsViewModel extends ChangeNotifier {
@@ -14,6 +15,9 @@ class BookingsViewModel extends ChangeNotifier {
   List<BookingDto> completedBookings = [];
   List<BookingDto> cancelledBookings = [];
   List<BookingDto> cancellationPendingBookings = [];
+
+  PendingRatingDto? pendingRating;
+  bool isRatingLoading = false;
 
   String? message;
 

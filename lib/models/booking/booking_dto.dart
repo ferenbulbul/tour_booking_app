@@ -24,6 +24,9 @@ class BookingDto with _$BookingDto {
     required String departureDistrict,
     required String departureDate,
     required String status,
+    bool? canRate,
+    String? ratingRequestId,
+    String? ratingToken,
   }) = _BookingDto;
 
   factory BookingDto.fromJson(Map<String, dynamic> json) =>

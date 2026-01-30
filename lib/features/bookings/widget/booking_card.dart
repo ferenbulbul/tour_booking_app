@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:tour_booking/features/bookings/widget/rating_dialog.dart';
 import 'package:tour_booking/models/booking/booking_dto.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 
@@ -11,6 +11,7 @@ class BookingCard extends StatefulWidget {
   final bool showCancelAction;
   final VoidCallback? onCancel;
   final bool isCancelling;
+  final VoidCallback? onRated;
 
   const BookingCard({
     super.key,
@@ -18,6 +19,7 @@ class BookingCard extends StatefulWidget {
     this.showCancelAction = false,
     this.onCancel,
     this.isCancelling = false,
+    this.onRated,
   });
 
   @override
@@ -26,6 +28,21 @@ class BookingCard extends StatefulWidget {
 
 class _BookingCardState extends State<BookingCard> {
   bool _isOpen = false;
+  bool? _canRate;
+
+  @override
+  void initState() {
+    super.initState();
+    _canRate = widget.item.canRate; // ✅ backend'den gelen ilk değer
+  }
+
+  @override
+  void didUpdateWidget(covariant BookingCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.item.canRate != widget.item.canRate) {
+      _canRate = widget.item.canRate; // ✅ parent refresh ederse sync
+    }
+  }
 
   // -------------------------------------------------------------------------
   // STATUS COLOR
@@ -99,7 +116,7 @@ class _BookingCardState extends State<BookingCard> {
   @override
   Widget build(BuildContext context) {
     final item = widget.item;
-
+    final canRate = _canRate == true;
     final departureDate = DateTime.parse(item.departureDate);
     final formattedDate = DateFormat(
       'dd MMMM yyyy',
@@ -302,18 +319,6 @@ class _BookingCardState extends State<BookingCard> {
 
                     const SizedBox(height: 12),
 
-                    // STATUS TEXT SECTION
-                    Text(
-                      statusText,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: statusColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-
-                    const SizedBox(height: 10),
-
                     // PRICE
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -335,6 +340,56 @@ class _BookingCardState extends State<BookingCard> {
                         ),
                       ],
                     ),
+
+                    const SizedBox(height: 12),
+
+                    if (canRate)
+                      GestureDetector(
+                        onTap: () async {
+                          final rated = await showDialog<bool>(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (_) =>
+                                RatingDialog(token: widget.item.ratingToken!),
+                          );
+
+                          if (rated == true && mounted) {
+                            setState(() => _canRate = false);
+                            widget.onRated?.call();
+                          }
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: AppColors.primary.withOpacity(.35),
+                            ),
+                            color: AppColors.primary.withOpacity(.06),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.star_rounded,
+                                color: AppColors.primary,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'booking_rate'.tr(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      _ratedBadge(),
 
                     const SizedBox(height: 12),
 
@@ -367,6 +422,32 @@ class _BookingCardState extends State<BookingCard> {
                   ],
                 ),
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _ratedBadge() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.green.withOpacity(.12),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.check_circle_rounded, size: 18, color: Colors.green),
+          const SizedBox(width: 8),
+          Text(
+            'booking_rated'.tr(), // "Puanlandı"
+            style: const TextStyle(
+              fontSize: 13.5,
+              fontWeight: FontWeight.w600,
+              color: Colors.green,
             ),
           ),
         ],

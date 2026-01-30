@@ -236,5 +236,17 @@
     "delete_account_warning": "This action cannot be undone. Your account and all data will be permanently deleted.",
     "first_name_required": "First name is required",
     "last_name_required": "Last name is required",
-    "today": "Today"
+    "today": "Today",
+    "rating_title": "Rate Your Experience",
+    "rating_subtitle": "Share your experience with us",
+    "rating_tour": "Tour Rating",
+    "rating_vehicle": "Vehicle Rating",
+    "rating_guide": "Guide Rating",
+    "rating": "Rating",
+    "rating_optional_comment": "Add an optional comment",
+    "rating_submit": "Submit",
+    "rating_submit_error": "An error occurred while submitting your rating",
+    "rating_invalid_link": "This rating link is invalid or has expired",
+    "booking_rate": "Review",
+    "booking_rated": "Reviewed"
 }
