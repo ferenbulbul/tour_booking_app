@@ -18,6 +18,8 @@ class FeaturedTourPointDto with _$FeaturedTourPointDto {
     required String mainImage,
     required String title,
     required String description,
+    double? avgRating,
+    int? ratingCount,
   }) = _FeaturedTourPointDto;
 
   factory FeaturedTourPointDto.fromJson(Map<String, dynamic> json) =>

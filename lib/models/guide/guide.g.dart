@@ -15,6 +15,8 @@ _$GuideImpl _$$GuideImplFromJson(Map<String, dynamic> json) => _$GuideImpl(
   firstName: json['firstName'] as String,
   lastName: json['lastName'] as String,
   image: json['image'] as String?,
+  avgRating: (json['avgRating'] as num?)?.toDouble(),
+  ratingCount: (json['ratingCount'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$$GuideImplToJson(_$GuideImpl instance) =>
@@ -25,4 +27,6 @@ Map<String, dynamic> _$$GuideImplToJson(_$GuideImpl instance) =>
       'firstName': instance.firstName,
       'lastName': instance.lastName,
       'image': instance.image,
+      'avgRating': instance.avgRating,
+      'ratingCount': instance.ratingCount,
     };

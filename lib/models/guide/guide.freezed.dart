@@ -28,6 +28,8 @@ mixin _$Guide {
   String get firstName => throw _privateConstructorUsedError;
   String get lastName => throw _privateConstructorUsedError;
   String? get image => throw _privateConstructorUsedError;
+  double? get avgRating => throw _privateConstructorUsedError;
+  int? get ratingCount => throw _privateConstructorUsedError;
 
   /// Serializes this Guide to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -50,6 +52,8 @@ abstract class $GuideCopyWith<$Res> {
     String firstName,
     String lastName,
     String? image,
+    double? avgRating,
+    int? ratingCount,
   });
 }
 
@@ -74,6 +78,8 @@ class _$GuideCopyWithImpl<$Res, $Val extends Guide>
     Object? firstName = null,
     Object? lastName = null,
     Object? image = freezed,
+    Object? avgRating = freezed,
+    Object? ratingCount = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -101,6 +107,14 @@ class _$GuideCopyWithImpl<$Res, $Val extends Guide>
                 ? _value.image
                 : image // ignore: cast_nullable_to_non_nullable
                       as String?,
+            avgRating: freezed == avgRating
+                ? _value.avgRating
+                : avgRating // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            ratingCount: freezed == ratingCount
+                ? _value.ratingCount
+                : ratingCount // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -122,6 +136,8 @@ abstract class _$$GuideImplCopyWith<$Res> implements $GuideCopyWith<$Res> {
     String firstName,
     String lastName,
     String? image,
+    double? avgRating,
+    int? ratingCount,
   });
 }
 
@@ -145,6 +161,8 @@ class __$$GuideImplCopyWithImpl<$Res>
     Object? firstName = null,
     Object? lastName = null,
     Object? image = freezed,
+    Object? avgRating = freezed,
+    Object? ratingCount = freezed,
   }) {
     return _then(
       _$GuideImpl(
@@ -172,6 +190,14 @@ class __$$GuideImplCopyWithImpl<$Res>
             ? _value.image
             : image // ignore: cast_nullable_to_non_nullable
                   as String?,
+        avgRating: freezed == avgRating
+            ? _value.avgRating
+            : avgRating // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        ratingCount: freezed == ratingCount
+            ? _value.ratingCount
+            : ratingCount // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -187,6 +213,8 @@ class _$GuideImpl implements _Guide {
     required this.firstName,
     required this.lastName,
     this.image,
+    this.avgRating,
+    this.ratingCount,
   }) : _languages = languages;
 
   factory _$GuideImpl.fromJson(Map<String, dynamic> json) =>
@@ -212,10 +240,14 @@ class _$GuideImpl implements _Guide {
   final String lastName;
   @override
   final String? image;
+  @override
+  final double? avgRating;
+  @override
+  final int? ratingCount;
 
   @override
   String toString() {
-    return 'Guide(guideId: $guideId, price: $price, languages: $languages, firstName: $firstName, lastName: $lastName, image: $image)';
+    return 'Guide(guideId: $guideId, price: $price, languages: $languages, firstName: $firstName, lastName: $lastName, image: $image, avgRating: $avgRating, ratingCount: $ratingCount)';
   }
 
   @override
@@ -233,7 +265,11 @@ class _$GuideImpl implements _Guide {
                 other.firstName == firstName) &&
             (identical(other.lastName, lastName) ||
                 other.lastName == lastName) &&
-            (identical(other.image, image) || other.image == image));
+            (identical(other.image, image) || other.image == image) &&
+            (identical(other.avgRating, avgRating) ||
+                other.avgRating == avgRating) &&
+            (identical(other.ratingCount, ratingCount) ||
+                other.ratingCount == ratingCount));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -246,6 +282,8 @@ class _$GuideImpl implements _Guide {
     firstName,
     lastName,
     image,
+    avgRating,
+    ratingCount,
   );
 
   /// Create a copy of Guide
@@ -270,6 +308,8 @@ abstract class _Guide implements Guide {
     required final String firstName,
     required final String lastName,
     final String? image,
+    final double? avgRating,
+    final int? ratingCount,
   }) = _$GuideImpl;
 
   factory _Guide.fromJson(Map<String, dynamic> json) = _$GuideImpl.fromJson;
@@ -286,6 +326,10 @@ abstract class _Guide implements Guide {
   String get lastName;
   @override
   String? get image;
+  @override
+  double? get avgRating;
+  @override
+  int? get ratingCount;
 
   /// Create a copy of Guide
   /// with the given fields replaced by the non-null parameter values.

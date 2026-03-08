@@ -12,6 +12,8 @@ class NearbyTourPointDto with _$NearbyTourPointDto {
     required String title,
     required String mainImage,
     required double distance,
+    double? avgRating,
+    int? ratingCount,
   }) = _NearbyTourPointDto;
 
   factory NearbyTourPointDto.fromJson(Map<String, dynamic> json) =>

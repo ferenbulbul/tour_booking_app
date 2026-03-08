@@ -248,5 +248,11 @@
   "rating_submit_error": "حدث خطأ أثناء إرسال التقييم",
   "rating_invalid_link": "رابط التقييم غير صالح أو منتهي الصلاحية",
   "booking_rate": "قيّم",
-  "booking_rated": "تم التقييم"
+  "booking_rated": "تم التقييم",
+  "share_tour_subject": "وجدت جولة رائعة!",
+  "share_tour_text": "ألقِ نظرة 👀\nوجدت جولة جميلة جدًا.\n\n{{url}}",
+  "common_loading": "جاري التحميل...",
+  "common_close": "إغلاق",
+  "common_rate": "قيّم",
+  "booking_cancel_time_limit": "لا يمكن إلغاء الحجز قبل أقل من 12 ساعة من بدء الجولة."
 }

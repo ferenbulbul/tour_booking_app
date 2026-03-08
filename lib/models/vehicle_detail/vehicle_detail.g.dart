@@ -29,6 +29,8 @@ _$VehicleDetailImpl _$$VehicleDetailImplFromJson(Map<String, dynamic> json) =>
       languages: (json['languages'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      avgRating: (json['avgRating'] as num?)?.toDouble(),
+      ratingCount: (json['ratingCount'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$$VehicleDetailImplToJson(_$VehicleDetailImpl instance) =>
@@ -48,4 +50,6 @@ Map<String, dynamic> _$$VehicleDetailImplToJson(_$VehicleDetailImpl instance) =>
       'experienceYear': instance.experienceYear,
       'photoUrl': instance.photoUrl,
       'languages': instance.languages,
+      'avgRating': instance.avgRating,
+      'ratingCount': instance.ratingCount,
     };

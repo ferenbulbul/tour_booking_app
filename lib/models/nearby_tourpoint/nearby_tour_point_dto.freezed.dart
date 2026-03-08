@@ -27,6 +27,8 @@ mixin _$NearbyTourPointDto {
   String get title => throw _privateConstructorUsedError;
   String get mainImage => throw _privateConstructorUsedError;
   double get distance => throw _privateConstructorUsedError;
+  double? get avgRating => throw _privateConstructorUsedError;
+  int? get ratingCount => throw _privateConstructorUsedError;
 
   /// Serializes this NearbyTourPointDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -52,6 +54,8 @@ abstract class $NearbyTourPointDtoCopyWith<$Res> {
     String title,
     String mainImage,
     double distance,
+    double? avgRating,
+    int? ratingCount,
   });
 }
 
@@ -76,6 +80,8 @@ class _$NearbyTourPointDtoCopyWithImpl<$Res, $Val extends NearbyTourPointDto>
     Object? title = null,
     Object? mainImage = null,
     Object? distance = null,
+    Object? avgRating = freezed,
+    Object? ratingCount = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -103,6 +109,14 @@ class _$NearbyTourPointDtoCopyWithImpl<$Res, $Val extends NearbyTourPointDto>
                 ? _value.distance
                 : distance // ignore: cast_nullable_to_non_nullable
                       as double,
+            avgRating: freezed == avgRating
+                ? _value.avgRating
+                : avgRating // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            ratingCount: freezed == ratingCount
+                ? _value.ratingCount
+                : ratingCount // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -125,6 +139,8 @@ abstract class _$$NearbyTourPointDtoImplCopyWith<$Res>
     String title,
     String mainImage,
     double distance,
+    double? avgRating,
+    int? ratingCount,
   });
 }
 
@@ -148,6 +164,8 @@ class __$$NearbyTourPointDtoImplCopyWithImpl<$Res>
     Object? title = null,
     Object? mainImage = null,
     Object? distance = null,
+    Object? avgRating = freezed,
+    Object? ratingCount = freezed,
   }) {
     return _then(
       _$NearbyTourPointDtoImpl(
@@ -175,6 +193,14 @@ class __$$NearbyTourPointDtoImplCopyWithImpl<$Res>
             ? _value.distance
             : distance // ignore: cast_nullable_to_non_nullable
                   as double,
+        avgRating: freezed == avgRating
+            ? _value.avgRating
+            : avgRating // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        ratingCount: freezed == ratingCount
+            ? _value.ratingCount
+            : ratingCount // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -190,6 +216,8 @@ class _$NearbyTourPointDtoImpl implements _NearbyTourPointDto {
     required this.title,
     required this.mainImage,
     required this.distance,
+    this.avgRating,
+    this.ratingCount,
   });
 
   factory _$NearbyTourPointDtoImpl.fromJson(Map<String, dynamic> json) =>
@@ -207,10 +235,14 @@ class _$NearbyTourPointDtoImpl implements _NearbyTourPointDto {
   final String mainImage;
   @override
   final double distance;
+  @override
+  final double? avgRating;
+  @override
+  final int? ratingCount;
 
   @override
   String toString() {
-    return 'NearbyTourPointDto(id: $id, cityName: $cityName, tourTypeName: $tourTypeName, title: $title, mainImage: $mainImage, distance: $distance)';
+    return 'NearbyTourPointDto(id: $id, cityName: $cityName, tourTypeName: $tourTypeName, title: $title, mainImage: $mainImage, distance: $distance, avgRating: $avgRating, ratingCount: $ratingCount)';
   }
 
   @override
@@ -227,7 +259,11 @@ class _$NearbyTourPointDtoImpl implements _NearbyTourPointDto {
             (identical(other.mainImage, mainImage) ||
                 other.mainImage == mainImage) &&
             (identical(other.distance, distance) ||
-                other.distance == distance));
+                other.distance == distance) &&
+            (identical(other.avgRating, avgRating) ||
+                other.avgRating == avgRating) &&
+            (identical(other.ratingCount, ratingCount) ||
+                other.ratingCount == ratingCount));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -240,6 +276,8 @@ class _$NearbyTourPointDtoImpl implements _NearbyTourPointDto {
     title,
     mainImage,
     distance,
+    avgRating,
+    ratingCount,
   );
 
   /// Create a copy of NearbyTourPointDto
@@ -267,6 +305,8 @@ abstract class _NearbyTourPointDto implements NearbyTourPointDto {
     required final String title,
     required final String mainImage,
     required final double distance,
+    final double? avgRating,
+    final int? ratingCount,
   }) = _$NearbyTourPointDtoImpl;
 
   factory _NearbyTourPointDto.fromJson(Map<String, dynamic> json) =
@@ -284,6 +324,10 @@ abstract class _NearbyTourPointDto implements NearbyTourPointDto {
   String get mainImage;
   @override
   double get distance;
+  @override
+  double? get avgRating;
+  @override
+  int? get ratingCount;
 
   /// Create a copy of NearbyTourPointDto
   /// with the given fields replaced by the non-null parameter values.

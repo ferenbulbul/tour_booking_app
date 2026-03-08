@@ -15,6 +15,8 @@ class FeaturedCard extends StatelessWidget {
   final String? subtitle;
   final String? category;
   final VoidCallback onTap;
+  final double? avgRating;
+  final int? ratingCount;
 
   const FeaturedCard({
     super.key,
@@ -24,6 +26,8 @@ class FeaturedCard extends StatelessWidget {
     required this.onTap,
     this.subtitle,
     this.category,
+    this.avgRating,
+    this.ratingCount,
   });
 
   @override
@@ -89,25 +93,40 @@ class FeaturedCard extends StatelessWidget {
                 ),
 
                 // CATEGORY BADGE
-                if (category != null)
+                if (avgRating != null &&
+                    ratingCount != null &&
+                    ratingCount! > 0)
                   Positioned(
                     top: AppSpacing.s,
-                    left: AppSpacing.s,
+                    right: AppSpacing.s,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.m,
-                        vertical: AppSpacing.xs,
+                        horizontal: AppSpacing.m, // ⬅️ biraz daha geniş
+                        vertical: AppSpacing.xs + 1,
                       ),
                       decoration: BoxDecoration(
-                        color: scheme.surface.withOpacity(.85),
+                        color: Colors.black.withOpacity(.5),
                         borderRadius: BorderRadius.circular(AppRadius.small),
                       ),
-                      child: Text(
-                        category!,
-                        style: AppTextStyles.labelLarge.copyWith(
-                          fontSize: 12,
-                          color: scheme.onSurface,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.star_rounded,
+                            size: 16, // ⬅️ yıldız da büyüdü
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            "${avgRating!.toStringAsFixed(1)} (${ratingCount!})",
+                            style: AppTextStyles.labelLarge.copyWith(
+                              fontSize: 13.5, // ⬅️ net okunurluk
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                              letterSpacing: -0.1,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -135,7 +154,7 @@ class FeaturedCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: AppTextStyles.labelLarge.copyWith(
-                            color: Colors.white,
+                            color: Colors.white.withOpacity(.95),
                           ),
                         ),
                       ],
@@ -183,6 +202,8 @@ class FeaturedPointsWidget extends StatelessWidget {
             imageUrl: p.mainImage,
             title: p.title,
             subtitle: p.cityName,
+            avgRating: p.avgRating,
+            ratingCount: p.ratingCount,
             onTap: () => context.pushNamed(
               'searchDetail',
               extra: {"id": p.id, "initialImage": p.mainImage},

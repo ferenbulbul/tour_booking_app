@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/widgets/badgets/rating_badge.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/guide_skelaton.dart';
@@ -149,13 +150,27 @@ class GuideCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // NAME
                     Text(
                       "${guide.firstName} ${guide.lastName}",
                       style: AppTextStyles.titleSmall.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                     ),
+
                     const SizedBox(height: 4),
+
+                    // ⭐ RATING (secondary meta)
+                    if (guide.ratingCount != null && guide.ratingCount! > 0)
+                      RatingBadge(
+                        avgRating: guide.avgRating,
+                        ratingCount: guide.ratingCount,
+                        compact: true, // 👈 aşağıda anlatıyorum
+                      ),
+
+                    const SizedBox(height: 6),
+
+                    // PRICE
                     Text(
                       "$price ₺",
                       style: AppTextStyles.bodyMedium.copyWith(
@@ -163,7 +178,10 @@ class GuideCard extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+
                     const SizedBox(height: 10),
+
+                    // LANGUAGES
                     Wrap(
                       spacing: 6,
                       runSpacing: 6,
@@ -172,6 +190,7 @@ class GuideCard extends StatelessWidget {
                   ],
                 ),
               ),
+
               Icon(
                 Icons.chevron_right_rounded,
                 color: AppColors.textLight,

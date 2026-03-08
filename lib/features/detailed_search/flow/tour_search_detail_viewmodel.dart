@@ -40,6 +40,7 @@ class TourSearchDetailViewModel extends ChangeNotifier {
   num? setVehiclePrice;
   List<Guide> guides = [];
   String? tourPointDetailId;
+
   Future<void> fetchTourPointDetail(String id) async {
     tourPointDetailId = id;
     isLoading = true;
@@ -121,9 +122,6 @@ class TourSearchDetailViewModel extends ChangeNotifier {
     try {
       final result = await _tourService.getVehicle(request);
       selectedVehicleId = request.vehicleId;
-      print(selectedTourPointId);
-      print("tourRoute beklenen--->");
-      print(request.tourRouteId);
       if (result.isSuccess ?? false) {
         vehicle = result.data!.vehicleDtos;
         errorMessage = result.message;

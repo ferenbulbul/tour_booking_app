@@ -7,6 +7,8 @@ class NearbyCard extends StatelessWidget {
   final String city;
   final String type;
   final double distance;
+  final double? avgRating;
+  final double? ratingCount;
 
   const NearbyCard({
     super.key,
@@ -15,6 +17,8 @@ class NearbyCard extends StatelessWidget {
     required this.city,
     required this.type,
     required this.distance,
+    this.avgRating,
+    this.ratingCount,
   });
 
   @override

@@ -248,5 +248,11 @@
     "rating_submit_error": "Değerlendirme gönderilirken bir hata oluştu",
     "rating_invalid_link": "Bu değerlendirme bağlantısı geçersiz veya süresi dolmuş",
     "booking_rate": "Değerlendir",
-    "booking_rated": "Değerlendirildi"
+    "booking_rated": "Değerlendirildi",
+    "share_tour_subject": "Güzel bir tur keşfettim!",
+    "share_tour_text": "Buna bir bak 👀\nGerçekten çok hoş bir tur buldum.\n\n{{url}}",
+    "common_loading": "Yükleniyor...",
+    "common_close": "Kapat",
+    "common_rate": "Değerlendir",
+    "booking_cancel_time_limit": "Tur başlangıcına 12 saatten az kaldığı için iptal edilemez."
 }

@@ -40,10 +40,8 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {
-        // aşağı kaydı — bar gizlensin
         if (_showBottom) setState(() => _showBottom = false);
       } else {
-        // yukarı kaydı — bar geri gelsin
         if (!_showBottom) setState(() => _showBottom = true);
       }
     });
@@ -175,7 +173,11 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                         ),
                       ),
                     ),
-
+                    Positioned(
+                      left: 20,
+                      bottom: 20,
+                      child: _ratingOverlay(v.avgRating, v.ratingCount),
+                    ),
                     // APPBAR BACKGROUND BLUR
                     Positioned(
                       top: 0,
@@ -513,6 +515,42 @@ Widget _driverSection({
             }).toList(),
           ),
         ],
+      ],
+    ),
+  );
+}
+
+Widget _ratingOverlay(double? avg, int? count) {
+  if (avg == null || count == null || count == 0) {
+    return const SizedBox.shrink();
+  }
+
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+    decoration: BoxDecoration(
+      color: Colors.black.withOpacity(0.55),
+      borderRadius: BorderRadius.circular(999),
+      border: Border.all(color: Colors.white.withOpacity(.15)),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(Icons.star_rounded, size: 18, color: Colors.amber),
+        const SizedBox(width: 6),
+        Text(
+          "${avg.toStringAsFixed(1)}",
+          style: AppTextStyles.bodySmall.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          "($count)",
+          style: AppTextStyles.bodySmall.copyWith(
+            color: Colors.white.withOpacity(.85),
+          ),
+        ),
       ],
     ),
   );

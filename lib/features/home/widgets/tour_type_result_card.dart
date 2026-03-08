@@ -6,6 +6,7 @@ import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/widgets/badgets/app_badge.dart';
 import 'package:tour_booking/core/widgets/badgets/difficulty_badge.dart';
+import 'package:tour_booking/core/widgets/badgets/rating_badge.dart';
 
 class TourTypeResultCard extends StatelessWidget {
   final String id;
@@ -14,7 +15,9 @@ class TourTypeResultCard extends StatelessWidget {
   final String city;
   final String? district;
   final String? difficulty;
-  final VoidCallback onTap;
+  final double? avgRating;
+  final int? ratingCount;
+  final VoidCallback? onTap;
 
   const TourTypeResultCard({
     super.key,
@@ -25,6 +28,8 @@ class TourTypeResultCard extends StatelessWidget {
     required this.district,
     required this.difficulty,
     required this.onTap,
+    this.ratingCount,
+    this.avgRating,
   });
 
   @override
@@ -121,6 +126,10 @@ class TourTypeResultCard extends StatelessWidget {
                       spacing: 8,
                       runSpacing: 6,
                       children: [
+                        RatingBadge(
+                          avgRating: avgRating,
+                          ratingCount: ratingCount,
+                        ),
                         AppBadge(districtText),
                         if (difficulty != null && difficulty!.isNotEmpty)
                           DifficultyBadge(difficulty!),

@@ -33,6 +33,8 @@ mixin _$FeaturedTourPointDto {
   String get mainImage => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
+  double? get avgRating => throw _privateConstructorUsedError;
+  int? get ratingCount => throw _privateConstructorUsedError;
 
   /// Serializes this FeaturedTourPointDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -64,6 +66,8 @@ abstract class $FeaturedTourPointDtoCopyWith<$Res> {
     String mainImage,
     String title,
     String description,
+    double? avgRating,
+    int? ratingCount,
   });
 }
 
@@ -97,6 +101,8 @@ class _$FeaturedTourPointDtoCopyWithImpl<
     Object? mainImage = null,
     Object? title = null,
     Object? description = null,
+    Object? avgRating = freezed,
+    Object? ratingCount = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -148,6 +154,14 @@ class _$FeaturedTourPointDtoCopyWithImpl<
                 ? _value.description
                 : description // ignore: cast_nullable_to_non_nullable
                       as String,
+            avgRating: freezed == avgRating
+                ? _value.avgRating
+                : avgRating // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            ratingCount: freezed == ratingCount
+                ? _value.ratingCount
+                : ratingCount // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -176,6 +190,8 @@ abstract class _$$FeaturedTourPointDtoImplCopyWith<$Res>
     String mainImage,
     String title,
     String description,
+    double? avgRating,
+    int? ratingCount,
   });
 }
 
@@ -205,6 +221,8 @@ class __$$FeaturedTourPointDtoImplCopyWithImpl<$Res>
     Object? mainImage = null,
     Object? title = null,
     Object? description = null,
+    Object? avgRating = freezed,
+    Object? ratingCount = freezed,
   }) {
     return _then(
       _$FeaturedTourPointDtoImpl(
@@ -256,6 +274,14 @@ class __$$FeaturedTourPointDtoImplCopyWithImpl<$Res>
             ? _value.description
             : description // ignore: cast_nullable_to_non_nullable
                   as String,
+        avgRating: freezed == avgRating
+            ? _value.avgRating
+            : avgRating // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        ratingCount: freezed == ratingCount
+            ? _value.ratingCount
+            : ratingCount // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -277,6 +303,8 @@ class _$FeaturedTourPointDtoImpl implements _FeaturedTourPointDto {
     required this.mainImage,
     required this.title,
     required this.description,
+    this.avgRating,
+    this.ratingCount,
   });
 
   factory _$FeaturedTourPointDtoImpl.fromJson(Map<String, dynamic> json) =>
@@ -306,10 +334,14 @@ class _$FeaturedTourPointDtoImpl implements _FeaturedTourPointDto {
   final String title;
   @override
   final String description;
+  @override
+  final double? avgRating;
+  @override
+  final int? ratingCount;
 
   @override
   String toString() {
-    return 'FeaturedTourPointDto(id: $id, cityId: $cityId, cityName: $cityName, countryId: $countryId, countryName: $countryName, regionId: $regionId, regionName: $regionName, tourTypeId: $tourTypeId, tourTypeName: $tourTypeName, mainImage: $mainImage, title: $title, description: $description)';
+    return 'FeaturedTourPointDto(id: $id, cityId: $cityId, cityName: $cityName, countryId: $countryId, countryName: $countryName, regionId: $regionId, regionName: $regionName, tourTypeId: $tourTypeId, tourTypeName: $tourTypeName, mainImage: $mainImage, title: $title, description: $description, avgRating: $avgRating, ratingCount: $ratingCount)';
   }
 
   @override
@@ -337,7 +369,11 @@ class _$FeaturedTourPointDtoImpl implements _FeaturedTourPointDto {
                 other.mainImage == mainImage) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.description, description) ||
-                other.description == description));
+                other.description == description) &&
+            (identical(other.avgRating, avgRating) ||
+                other.avgRating == avgRating) &&
+            (identical(other.ratingCount, ratingCount) ||
+                other.ratingCount == ratingCount));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -356,6 +392,8 @@ class _$FeaturedTourPointDtoImpl implements _FeaturedTourPointDto {
     mainImage,
     title,
     description,
+    avgRating,
+    ratingCount,
   );
 
   /// Create a copy of FeaturedTourPointDto
@@ -390,6 +428,8 @@ abstract class _FeaturedTourPointDto implements FeaturedTourPointDto {
     required final String mainImage,
     required final String title,
     required final String description,
+    final double? avgRating,
+    final int? ratingCount,
   }) = _$FeaturedTourPointDtoImpl;
 
   factory _FeaturedTourPointDto.fromJson(Map<String, dynamic> json) =
@@ -419,6 +459,10 @@ abstract class _FeaturedTourPointDto implements FeaturedTourPointDto {
   String get title;
   @override
   String get description;
+  @override
+  double? get avgRating;
+  @override
+  int? get ratingCount;
 
   /// Create a copy of FeaturedTourPointDto
   /// with the given fields replaced by the non-null parameter values.

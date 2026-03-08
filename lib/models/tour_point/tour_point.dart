@@ -22,6 +22,8 @@ class TourPoint with _$TourPoint {
     required String districtName,
     required String mainImage,
     required List<String> otherImages,
+    double? avgRating,
+    int? ratingCount,
   }) = _TourPoint;
 
   factory TourPoint.fromJson(Map<String, dynamic> json) =>

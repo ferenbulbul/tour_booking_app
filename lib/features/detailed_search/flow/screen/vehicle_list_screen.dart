@@ -7,6 +7,7 @@ import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/widgets/badgets/rating_badge.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/features/detailed_search/flow/widget/vehicle_skelaton.dart';
@@ -167,6 +168,10 @@ class VehicleCard extends StatelessWidget {
                 spacing: AppSpacing.s,
                 runSpacing: AppSpacing.s,
                 children: [
+                  RatingBadge(
+                    avgRating: vehicle.avgRating,
+                    ratingCount: vehicle.ratingCount,
+                  ),
                   _FeatureChip(
                     icon: Icons.event_seat,
                     label: "${vehicle.seatCount} ${'seat_count'.tr()}",
@@ -175,10 +180,11 @@ class VehicleCard extends StatelessWidget {
                     icon: Icons.directions_car_filled_rounded,
                     label: vehicle.vehicleType,
                   ),
-                  _FeatureChip(
-                    icon: Icons.directions_car_filled_rounded,
-                    label: vehicle.vehicleClass,
-                  ),
+
+                  // _FeatureChip(
+                  //   icon: Icons.directions_car_filled_rounded,
+                  //   label: vehicle.vehicleClass,
+                  // ),
                 ],
               ),
             ),
@@ -239,7 +245,7 @@ class _FeatureChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: AppColors.background,
         borderRadius: BorderRadius.circular(AppRadius.small),

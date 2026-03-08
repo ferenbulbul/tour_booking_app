@@ -14,6 +14,8 @@ class Guide with _$Guide {
     required String firstName,
     required String lastName,
     String? image,
+    double? avgRating,
+    int? ratingCount,
   }) = _Guide;
 
   factory Guide.fromJson(Map<String, dynamic> json) => _$GuideFromJson(json);

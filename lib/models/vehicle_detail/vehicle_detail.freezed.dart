@@ -36,6 +36,8 @@ mixin _$VehicleDetail {
   String? get experienceYear => throw _privateConstructorUsedError;
   String? get photoUrl => throw _privateConstructorUsedError;
   List<String>? get languages => throw _privateConstructorUsedError;
+  double? get avgRating => throw _privateConstructorUsedError;
+  int? get ratingCount => throw _privateConstructorUsedError;
 
   /// Serializes this VehicleDetail to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -70,6 +72,8 @@ abstract class $VehicleDetailCopyWith<$Res> {
     String? experienceYear,
     String? photoUrl,
     List<String>? languages,
+    double? avgRating,
+    int? ratingCount,
   });
 }
 
@@ -103,6 +107,8 @@ class _$VehicleDetailCopyWithImpl<$Res, $Val extends VehicleDetail>
     Object? experienceYear = freezed,
     Object? photoUrl = freezed,
     Object? languages = freezed,
+    Object? avgRating = freezed,
+    Object? ratingCount = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -166,6 +172,14 @@ class _$VehicleDetailCopyWithImpl<$Res, $Val extends VehicleDetail>
                 ? _value.languages
                 : languages // ignore: cast_nullable_to_non_nullable
                       as List<String>?,
+            avgRating: freezed == avgRating
+                ? _value.avgRating
+                : avgRating // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            ratingCount: freezed == ratingCount
+                ? _value.ratingCount
+                : ratingCount // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -197,6 +211,8 @@ abstract class _$$VehicleDetailImplCopyWith<$Res>
     String? experienceYear,
     String? photoUrl,
     List<String>? languages,
+    double? avgRating,
+    int? ratingCount,
   });
 }
 
@@ -229,6 +245,8 @@ class __$$VehicleDetailImplCopyWithImpl<$Res>
     Object? experienceYear = freezed,
     Object? photoUrl = freezed,
     Object? languages = freezed,
+    Object? avgRating = freezed,
+    Object? ratingCount = freezed,
   }) {
     return _then(
       _$VehicleDetailImpl(
@@ -292,6 +310,14 @@ class __$$VehicleDetailImplCopyWithImpl<$Res>
             ? _value._languages
             : languages // ignore: cast_nullable_to_non_nullable
                   as List<String>?,
+        avgRating: freezed == avgRating
+            ? _value.avgRating
+            : avgRating // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        ratingCount: freezed == ratingCount
+            ? _value.ratingCount
+            : ratingCount // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -316,6 +342,8 @@ class _$VehicleDetailImpl implements _VehicleDetail {
     this.experienceYear,
     this.photoUrl,
     final List<String>? languages,
+    this.avgRating,
+    this.ratingCount,
   }) : _otherImages = otherImages,
        _vehicleFeatures = vehicleFeatures,
        _languages = languages;
@@ -378,8 +406,13 @@ class _$VehicleDetailImpl implements _VehicleDetail {
   }
 
   @override
+  final double? avgRating;
+  @override
+  final int? ratingCount;
+
+  @override
   String toString() {
-    return 'VehicleDetail(vehicleId: $vehicleId, price: $price, vehicleBrand: $vehicleBrand, vehicleClass: $vehicleClass, vehicleType: $vehicleType, legRoomSpace: $legRoomSpace, seatCount: $seatCount, image: $image, modelYear: $modelYear, otherImages: $otherImages, vehicleFeatures: $vehicleFeatures, nameSurname: $nameSurname, experienceYear: $experienceYear, photoUrl: $photoUrl, languages: $languages)';
+    return 'VehicleDetail(vehicleId: $vehicleId, price: $price, vehicleBrand: $vehicleBrand, vehicleClass: $vehicleClass, vehicleType: $vehicleType, legRoomSpace: $legRoomSpace, seatCount: $seatCount, image: $image, modelYear: $modelYear, otherImages: $otherImages, vehicleFeatures: $vehicleFeatures, nameSurname: $nameSurname, experienceYear: $experienceYear, photoUrl: $photoUrl, languages: $languages, avgRating: $avgRating, ratingCount: $ratingCount)';
   }
 
   @override
@@ -420,7 +453,11 @@ class _$VehicleDetailImpl implements _VehicleDetail {
             const DeepCollectionEquality().equals(
               other._languages,
               _languages,
-            ));
+            ) &&
+            (identical(other.avgRating, avgRating) ||
+                other.avgRating == avgRating) &&
+            (identical(other.ratingCount, ratingCount) ||
+                other.ratingCount == ratingCount));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -442,6 +479,8 @@ class _$VehicleDetailImpl implements _VehicleDetail {
     experienceYear,
     photoUrl,
     const DeepCollectionEquality().hash(_languages),
+    avgRating,
+    ratingCount,
   );
 
   /// Create a copy of VehicleDetail
@@ -475,6 +514,8 @@ abstract class _VehicleDetail implements VehicleDetail {
     final String? experienceYear,
     final String? photoUrl,
     final List<String>? languages,
+    final double? avgRating,
+    final int? ratingCount,
   }) = _$VehicleDetailImpl;
 
   factory _VehicleDetail.fromJson(Map<String, dynamic> json) =
@@ -510,6 +551,10 @@ abstract class _VehicleDetail implements VehicleDetail {
   String? get photoUrl;
   @override
   List<String>? get languages;
+  @override
+  double? get avgRating;
+  @override
+  int? get ratingCount;
 
   /// Create a copy of VehicleDetail
   /// with the given fields replaced by the non-null parameter values.

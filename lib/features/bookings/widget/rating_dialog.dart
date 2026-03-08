@@ -28,21 +28,59 @@ class _RatingDialogState extends State<RatingDialog> {
     return Consumer<RatingsViewModel>(
       builder: (_, vm, __) {
         if (vm.isRatingLoading) {
-          return const Dialog(
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Padding(
-              padding: EdgeInsets.all(32),
-              child: CircularProgressIndicator(),
+              padding: const EdgeInsets.all(28),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(
+                    height: 36,
+                    width: 36,
+                    child: CircularProgressIndicator(strokeWidth: 3),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'common_loading'.tr(),
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         }
 
         if (vm.pendingRating == null) {
           return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(24),
-              child: Text(
-                'rating_invalid_link'.tr(),
-                textAlign: TextAlign.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'rating_invalid_link'.tr(),
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: Text('common_close'.tr()),
+                    ),
+                  ),
+                ],
               ),
             ),
           );
@@ -122,6 +160,7 @@ class _RatingDialogState extends State<RatingDialog> {
           TextField(
             minLines: 2,
             maxLines: 4,
+            maxLength: 250,
             enabled: !vm.isSubmitting, // 🔥 submit sırasında kilitle
             decoration: InputDecoration(
               hintText: 'rating_optional_comment'.tr(),
@@ -173,11 +212,7 @@ class _RatingDialogState extends State<RatingDialog> {
     ),
     trailing: IconButton(
       icon: const Icon(Icons.close),
-      onPressed: vm.isSubmitting
-          ? null
-          : () {
-              Navigator.pop(context);
-            },
+      onPressed: vm.isSubmitting ? null : () => Navigator.pop(context),
     ),
   );
 

@@ -116,6 +116,10 @@ class _BookingCardState extends State<BookingCard> {
   @override
   Widget build(BuildContext context) {
     final item = widget.item;
+    final canCancelByTime = _canCancelWithTimeLimit(
+      item.departureDate,
+      item.departureTime,
+    );
     final canRate = _canRate == true;
     final departureDate = DateTime.parse(item.departureDate);
     final formattedDate = DateFormat(
@@ -343,7 +347,7 @@ class _BookingCardState extends State<BookingCard> {
 
                     const SizedBox(height: 12),
 
-                    if (canRate)
+                    if (item.status == "Completed" && canRate)
                       GestureDetector(
                         onTap: () async {
                           final rated = await showDialog<bool>(
@@ -388,12 +392,14 @@ class _BookingCardState extends State<BookingCard> {
                           ),
                         ),
                       )
+                    else if (item.status == "Completed" && !canRate)
+                      _ratedBadge()
                     else
-                      _ratedBadge(),
+                      const SizedBox.shrink(),
 
                     const SizedBox(height: 12),
 
-                    if (widget.showCancelAction && canCancel)
+                    if (widget.showCancelAction && canCancel && canCancelByTime)
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton(
@@ -418,7 +424,11 @@ class _BookingCardState extends State<BookingCard> {
                                 )
                               : Text('booking_cancel_request'.tr()),
                         ),
-                      ),
+                      )
+                    else if (widget.showCancelAction &&
+                        canCancel &&
+                        !canCancelByTime)
+                      _cancelNotAllowedInfo(),
                   ],
                 ),
               ),
@@ -505,4 +515,51 @@ class ShimmerBox extends StatelessWidget {
 
 bool _isSameDay(DateTime a, DateTime b) {
   return a.year == b.year && a.month == b.month && a.day == b.day;
+}
+
+Widget _cancelNotAllowedInfo() {
+  return Container(
+    width: double.infinity,
+    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+    decoration: BoxDecoration(
+      color: Colors.orange.withOpacity(.08),
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Row(
+      children: [
+        const Icon(Icons.info_outline, size: 18, color: Colors.orange),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            'booking_cancel_time_limit'.tr(),
+            style: const TextStyle(
+              fontSize: 13,
+              color: Colors.orange,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+bool _canCancelWithTimeLimit(String departureDate, String departureTime) {
+  final departure = _parseDepartureDateTime(departureDate, departureTime);
+
+  return departure.isAfter(DateTime.now().add(const Duration(hours: 12)));
+}
+
+DateTime _parseDepartureDateTime(String date, String time) {
+  // date: 2026-02-10
+  // time: 14:30
+
+  final parts = time.split(':');
+
+  final hour = int.parse(parts[0]);
+  final minute = int.parse(parts[1]);
+
+  final d = DateTime.parse(date);
+
+  return DateTime(d.year, d.month, d.day, hour, minute);
 }

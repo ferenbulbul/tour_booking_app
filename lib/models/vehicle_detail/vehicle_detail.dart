@@ -21,6 +21,8 @@ class VehicleDetail with _$VehicleDetail {
     String? experienceYear,
     String? photoUrl,
     List<String>? languages,
+    double? avgRating,
+    int? ratingCount,
   }) = _VehicleDetail;
 
   factory VehicleDetail.fromJson(Map<String, dynamic> json) =>

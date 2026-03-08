@@ -21,6 +21,8 @@ _$FeaturedTourPointDtoImpl _$$FeaturedTourPointDtoImplFromJson(
   mainImage: json['mainImage'] as String,
   title: json['title'] as String,
   description: json['description'] as String,
+  avgRating: (json['avgRating'] as num?)?.toDouble(),
+  ratingCount: (json['ratingCount'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$$FeaturedTourPointDtoImplToJson(
@@ -38,4 +40,6 @@ Map<String, dynamic> _$$FeaturedTourPointDtoImplToJson(
   'mainImage': instance.mainImage,
   'title': instance.title,
   'description': instance.description,
+  'avgRating': instance.avgRating,
+  'ratingCount': instance.ratingCount,
 };

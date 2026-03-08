@@ -15,6 +15,8 @@ _$NearbyTourPointDtoImpl _$$NearbyTourPointDtoImplFromJson(
   title: json['title'] as String,
   mainImage: json['mainImage'] as String,
   distance: (json['distance'] as num).toDouble(),
+  avgRating: (json['avgRating'] as num?)?.toDouble(),
+  ratingCount: (json['ratingCount'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$$NearbyTourPointDtoImplToJson(
@@ -26,4 +28,6 @@ Map<String, dynamic> _$$NearbyTourPointDtoImplToJson(
   'title': instance.title,
   'mainImage': instance.mainImage,
   'distance': instance.distance,
+  'avgRating': instance.avgRating,
+  'ratingCount': instance.ratingCount,
 };

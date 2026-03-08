@@ -90,6 +90,8 @@ class _TourSearchResultsByTourTypeScreenState
           city: items[i].cityName ?? "-",
           district: items[i].districtName,
           difficulty: items[i].tourDifficultyName,
+          ratingCount: items[i].ratingCount,
+          avgRating: items[i].avgRating,
           onTap: () {
             context.pushNamed(
               "searchDetail",

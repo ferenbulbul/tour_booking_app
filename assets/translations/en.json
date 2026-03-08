@@ -248,5 +248,11 @@
     "rating_submit_error": "An error occurred while submitting your rating",
     "rating_invalid_link": "This rating link is invalid or has expired",
     "booking_rate": "Review",
-    "booking_rated": "Reviewed"
+    "booking_rated": "Reviewed",
+    "share_tour_subject": "I found a great tour!",
+    "share_tour_text": "Take a look 👀\nI came across a really nice tour.\n\n{{url}}",
+    "common_loading": "Loading...",
+    "common_close": "Close",
+    "common_rate": "Rate",
+    "booking_cancel_time_limit": "Cancellation is not allowed within 12 hours before the tour starts."
 }

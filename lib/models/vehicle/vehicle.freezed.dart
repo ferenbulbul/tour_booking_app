@@ -29,6 +29,8 @@ mixin _$Vehicle {
   String get vehicleType => throw _privateConstructorUsedError;
   int get seatCount => throw _privateConstructorUsedError;
   String get image => throw _privateConstructorUsedError;
+  double? get avgRating => throw _privateConstructorUsedError;
+  int? get ratingCount => throw _privateConstructorUsedError;
 
   /// Serializes this Vehicle to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -53,6 +55,8 @@ abstract class $VehicleCopyWith<$Res> {
     String vehicleType,
     int seatCount,
     String image,
+    double? avgRating,
+    int? ratingCount,
   });
 }
 
@@ -79,6 +83,8 @@ class _$VehicleCopyWithImpl<$Res, $Val extends Vehicle>
     Object? vehicleType = null,
     Object? seatCount = null,
     Object? image = null,
+    Object? avgRating = freezed,
+    Object? ratingCount = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -114,6 +120,14 @@ class _$VehicleCopyWithImpl<$Res, $Val extends Vehicle>
                 ? _value.image
                 : image // ignore: cast_nullable_to_non_nullable
                       as String,
+            avgRating: freezed == avgRating
+                ? _value.avgRating
+                : avgRating // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            ratingCount: freezed == ratingCount
+                ? _value.ratingCount
+                : ratingCount // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -137,6 +151,8 @@ abstract class _$$VehicleImplCopyWith<$Res> implements $VehicleCopyWith<$Res> {
     String vehicleType,
     int seatCount,
     String image,
+    double? avgRating,
+    int? ratingCount,
   });
 }
 
@@ -162,6 +178,8 @@ class __$$VehicleImplCopyWithImpl<$Res>
     Object? vehicleType = null,
     Object? seatCount = null,
     Object? image = null,
+    Object? avgRating = freezed,
+    Object? ratingCount = freezed,
   }) {
     return _then(
       _$VehicleImpl(
@@ -197,6 +215,14 @@ class __$$VehicleImplCopyWithImpl<$Res>
             ? _value.image
             : image // ignore: cast_nullable_to_non_nullable
                   as String,
+        avgRating: freezed == avgRating
+            ? _value.avgRating
+            : avgRating // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        ratingCount: freezed == ratingCount
+            ? _value.ratingCount
+            : ratingCount // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -214,6 +240,8 @@ class _$VehicleImpl implements _Vehicle {
     required this.vehicleType,
     required this.seatCount,
     required this.image,
+    this.avgRating,
+    this.ratingCount,
   });
 
   factory _$VehicleImpl.fromJson(Map<String, dynamic> json) =>
@@ -235,10 +263,14 @@ class _$VehicleImpl implements _Vehicle {
   final int seatCount;
   @override
   final String image;
+  @override
+  final double? avgRating;
+  @override
+  final int? ratingCount;
 
   @override
   String toString() {
-    return 'Vehicle(tourRouteId: $tourRouteId, vehicleId: $vehicleId, price: $price, vehicleBrand: $vehicleBrand, vehicleClass: $vehicleClass, vehicleType: $vehicleType, seatCount: $seatCount, image: $image)';
+    return 'Vehicle(tourRouteId: $tourRouteId, vehicleId: $vehicleId, price: $price, vehicleBrand: $vehicleBrand, vehicleClass: $vehicleClass, vehicleType: $vehicleType, seatCount: $seatCount, image: $image, avgRating: $avgRating, ratingCount: $ratingCount)';
   }
 
   @override
@@ -259,7 +291,11 @@ class _$VehicleImpl implements _Vehicle {
                 other.vehicleType == vehicleType) &&
             (identical(other.seatCount, seatCount) ||
                 other.seatCount == seatCount) &&
-            (identical(other.image, image) || other.image == image));
+            (identical(other.image, image) || other.image == image) &&
+            (identical(other.avgRating, avgRating) ||
+                other.avgRating == avgRating) &&
+            (identical(other.ratingCount, ratingCount) ||
+                other.ratingCount == ratingCount));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -274,6 +310,8 @@ class _$VehicleImpl implements _Vehicle {
     vehicleType,
     seatCount,
     image,
+    avgRating,
+    ratingCount,
   );
 
   /// Create a copy of Vehicle
@@ -300,6 +338,8 @@ abstract class _Vehicle implements Vehicle {
     required final String vehicleType,
     required final int seatCount,
     required final String image,
+    final double? avgRating,
+    final int? ratingCount,
   }) = _$VehicleImpl;
 
   factory _Vehicle.fromJson(Map<String, dynamic> json) = _$VehicleImpl.fromJson;
@@ -320,6 +360,10 @@ abstract class _Vehicle implements Vehicle {
   int get seatCount;
   @override
   String get image;
+  @override
+  double? get avgRating;
+  @override
+  int? get ratingCount;
 
   /// Create a copy of Vehicle
   /// with the given fields replaced by the non-null parameter values.

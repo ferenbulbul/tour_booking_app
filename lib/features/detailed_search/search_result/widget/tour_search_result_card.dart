@@ -7,6 +7,7 @@ import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/widgets/badgets/app_badge.dart';
 import 'package:tour_booking/core/widgets/badgets/difficulty_badge.dart';
+import 'package:tour_booking/core/widgets/badgets/rating_badge.dart';
 
 class TourSearchResultCard extends StatelessWidget {
   final dynamic point;
@@ -94,9 +95,13 @@ class TourSearchResultCard extends StatelessWidget {
                     spacing: 8,
                     runSpacing: 6,
                     children: [
+                      RatingBadge(
+                        avgRating: point.avgRating,
+                        ratingCount: point.ratingCount,
+                      ),
                       AppBadge("${point.cityName}, ${point.districtName}"),
                       AppBadge(point.tourTypeName),
-                      DifficultyBadge(point.tourDifficultyName),
+                      // DifficultyBadge(point.tourDifficultyName),
                     ],
                   ),
 

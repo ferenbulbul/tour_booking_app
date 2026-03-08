@@ -10,6 +10,7 @@ import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/badgets/app_badge.dart';
 import 'package:tour_booking/core/widgets/badgets/difficulty_badge.dart';
+import 'package:tour_booking/core/widgets/badgets/rating_badge.dart';
 import 'package:tour_booking/core/widgets/bottom_action_bar.dart';
 import 'package:tour_booking/core/widgets/buttons/simple_icon_button.dart';
 import 'package:tour_booking/core/widgets/picker_sheet.dart';
@@ -312,6 +313,10 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
                     Wrap(
                       spacing: AppSpacing.s,
                       children: [
+                        RatingBadge(
+                          avgRating: detail.avgRating,
+                          ratingCount: detail.ratingCount,
+                        ),
                         AppBadge("${detail.cityName}, ${detail.districtName}"),
                         AppBadge(detail.tourTypeName),
                         DifficultyBadge(detail.tourDifficultyName),
@@ -458,14 +463,12 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
   }
 
   void _onShareTap() {
-    final text =
-        '''
-      Bu turu gördün mü? 👀
-      https://tourrentai.com/tour/${widget.tourPointId}
-''';
+    final url = "https://tourrentai.com/tour/${widget.tourPointId}";
+
+    final text = tr("share_tour_text", namedArgs: {"url": url});
 
     SharePlus.instance.share(
-      ShareParams(text: text, subject: 'Harika bir tur buldum!'),
+      ShareParams(text: text, subject: tr("share_tour_subject")),
     );
   }
 

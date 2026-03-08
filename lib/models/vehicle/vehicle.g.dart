@@ -16,6 +16,8 @@ _$VehicleImpl _$$VehicleImplFromJson(Map<String, dynamic> json) =>
       vehicleType: json['vehicleType'] as String,
       seatCount: (json['seatCount'] as num).toInt(),
       image: json['image'] as String,
+      avgRating: (json['avgRating'] as num?)?.toDouble(),
+      ratingCount: (json['ratingCount'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$$VehicleImplToJson(_$VehicleImpl instance) =>
@@ -28,4 +30,6 @@ Map<String, dynamic> _$$VehicleImplToJson(_$VehicleImpl instance) =>
       'vehicleType': instance.vehicleType,
       'seatCount': instance.seatCount,
       'image': instance.image,
+      'avgRating': instance.avgRating,
+      'ratingCount': instance.ratingCount,
     };
