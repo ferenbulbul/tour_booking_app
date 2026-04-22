@@ -8,7 +8,6 @@ import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/auth/phone_verification/verify_phone_viewmodel.dart';
-import 'package:tour_booking/features/profile/profile_status_viewmodel.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 
 class VerifyPhoneScreen extends StatefulWidget {
@@ -113,9 +112,6 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
 
                 if (ok) {
                   await context.read<ProfileViewModel>().fetchProfile();
-                  context.read<ProfileStatusViewModel>().setProfileComplete(
-                    true,
-                  );
 
                   UIHelper.showSuccess(
                     context,

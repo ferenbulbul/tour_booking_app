@@ -10,24 +10,33 @@ import 'package:tour_booking/features/auth/login/widgets/google_view_model.dart'
 import 'package:tour_booking/features/splash/splash_view_model.dart';
 import 'package:tour_booking/services/driver/driver_service.dart';
 
-class DriverHomePage extends StatefulWidget {
+class DriverHomePage extends StatelessWidget {
   const DriverHomePage({super.key});
 
   @override
-  State<DriverHomePage> createState() => _DriverHomePageState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (ctx) => DriverHomeViewModel(ctx.read<DriverService>()),
+      child: const _DriverHomePageContent(),
+    );
+  }
 }
 
-class _DriverHomePageState extends State<DriverHomePage> {
-  late final DriverHomeViewModel _vm;
+class _DriverHomePageContent extends StatefulWidget {
+  const _DriverHomePageContent();
+
+  @override
+  State<_DriverHomePageContent> createState() => _DriverHomePageState();
+}
+
+class _DriverHomePageState extends State<_DriverHomePageContent> {
   UserRole? _currentUserRole;
 
   @override
   void initState() {
     super.initState();
-    _vm = DriverHomeViewModel(context.read<DriverService>());
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _vm.refresh();
+      context.read<DriverHomeViewModel>().refresh();
       _loadUserRole();
     });
   }
@@ -46,13 +55,11 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-      value: _vm,
-      child: Consumer<DriverHomeViewModel>(
-        builder: (context, vm, _) {
-          final isDriver = _currentUserRole == UserRole.driver;
+    return Consumer<DriverHomeViewModel>(
+      builder: (context, vm, _) {
+        final isDriver = _currentUserRole == UserRole.driver;
 
-          return Scaffold(
+        return Scaffold(
             appBar: AppBar(
               title: const Text('Tourlio Sürücü'),
               actions: [
@@ -64,7 +71,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                   icon: const Icon(Icons.logout),
                   onPressed: () async {
                     await context.read<AuthViewModel>().signOut();
-                    await context.read<SplashViewModel>().initializeApp();
+                    if (!context.mounted) return;
+                    await context.read<SplashViewModel>().signOutToGuest();
                   },
                 ),
               ],
@@ -100,14 +108,16 @@ class _DriverHomePageState extends State<DriverHomePage> {
                         ),
                       )
                     else
-                      CustomerInfoListView(items: vm.customerList),
+                      CustomerInfoListView(
+                        items: vm.customerList,
+                        onCompleteDropoff: vm.completeDropoff,
+                      ),
                   ],
                 ],
               ),
             ),
           );
-        },
-      ),
+      },
     );
   }
 }

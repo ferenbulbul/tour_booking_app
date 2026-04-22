@@ -17,7 +17,7 @@ class ApiClient {
   final String _baseUrl = dotenv.env['baseUrl'] ?? '';
   final String _mobileUrl = dotenv.env['mobileAndroid'] ?? '';
   final String _cloudUrl = dotenv.env['cloud'] ?? '';
-  late String _url = _cloudUrl;
+  late String _url = _baseUrl;
   final AuthViewModel? _authViewModel;
 
   ApiClient({AuthViewModel? authViewModel, http.Client? client})
@@ -58,6 +58,15 @@ class ApiClient {
           appNavigatorKey.currentContext?.pushReplacement('/login');
           return Future.error("Oturum süresi doldu.");
         }
+      }
+
+      if (response.body.isEmpty) {
+        return BaseResponse<T>(
+          isSuccess: false,
+          message: 'error_generic',
+          validationErrors: const [],
+          data: null,
+        );
       }
 
       final map = jsonDecode(response.body) as Map<String, dynamic>;

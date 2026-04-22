@@ -20,6 +20,10 @@ class CreateBookingCommand with _$CreateBookingCommand {
     double? Latitude,
     double? Longitude,
     String? LocationDescription,
+    required String buyerFirstName,
+    required String buyerLastName,
+    required String buyerEmail,
+    required String buyerPhone,
 
     @JsonKey(toJson: _dateToString) required DateTime date,
   }) = _CreateBookingCommand;

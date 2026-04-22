@@ -19,14 +19,17 @@ class NearbyPointsButton extends StatelessWidget {
       builder: (context, snapshot) {
         return _MinimalNearbyCard(
           onTap: () async {
-            final status = await Permission.locationWhenInUse.status;
+            var status = await Permission.locationWhenInUse.status;
 
-            if (status.isGranted) {
-              if (context.mounted) context.pushNamed("nearbyPoints");
-              return;
+            if (!status.isGranted) {
+              status = await Permission.locationWhenInUse.request();
             }
 
-            if (context.mounted) {
+            if (!context.mounted) return;
+
+            if (status.isGranted) {
+              context.pushNamed("nearbyPoints");
+            } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(tr("enable_location_permission_from_settings")),

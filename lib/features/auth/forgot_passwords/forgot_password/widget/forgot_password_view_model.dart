@@ -113,6 +113,12 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     _cooldownTimer?.cancel();
   }
 
+  @override
+  void dispose() {
+    stopCooldown();
+    super.dispose();
+  }
+
   // 🔄 Mesajları temizle
   void clearMessages() {
     message = null;

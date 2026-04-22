@@ -18,6 +18,12 @@ _$CustomerInfoImpl _$$CustomerInfoImplFromJson(Map<String, dynamic> json) =>
       status: const DriverBookingStatusConverter().fromJson(
         (json['status'] as num).toInt(),
       ),
+      bookingType: (json['bookingType'] as num?)?.toInt() ?? 0,
+      bookingId: json['bookingId'] as String?,
+      pickupAddress: json['pickupAddress'] as String?,
+      dropoffAddress: json['dropoffAddress'] as String?,
+      dropoffLatitude: (json['dropoffLatitude'] as num?)?.toDouble(),
+      dropoffLongitude: (json['dropoffLongitude'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$$CustomerInfoImplToJson(_$CustomerInfoImpl instance) =>
@@ -30,4 +36,10 @@ Map<String, dynamic> _$$CustomerInfoImplToJson(_$CustomerInfoImpl instance) =>
       'departureLongitude': instance.departureLongitude,
       'tourDate': instance.tourDate,
       'status': const DriverBookingStatusConverter().toJson(instance.status),
+      'bookingType': instance.bookingType,
+      'bookingId': instance.bookingId,
+      'pickupAddress': instance.pickupAddress,
+      'dropoffAddress': instance.dropoffAddress,
+      'dropoffLatitude': instance.dropoffLatitude,
+      'dropoffLongitude': instance.dropoffLongitude,
     };

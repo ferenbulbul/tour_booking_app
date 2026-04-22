@@ -30,6 +30,12 @@ mixin _$CustomerInfo {
   String get tourDate => throw _privateConstructorUsedError;
   @DriverBookingStatusConverter()
   DriverBookingStatus get status => throw _privateConstructorUsedError;
+  int get bookingType => throw _privateConstructorUsedError;
+  String? get bookingId => throw _privateConstructorUsedError;
+  String? get pickupAddress => throw _privateConstructorUsedError;
+  String? get dropoffAddress => throw _privateConstructorUsedError;
+  double? get dropoffLatitude => throw _privateConstructorUsedError;
+  double? get dropoffLongitude => throw _privateConstructorUsedError;
 
   /// Serializes this CustomerInfo to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -57,6 +63,12 @@ abstract class $CustomerInfoCopyWith<$Res> {
     double departureLongitude,
     String tourDate,
     @DriverBookingStatusConverter() DriverBookingStatus status,
+    int bookingType,
+    String? bookingId,
+    String? pickupAddress,
+    String? dropoffAddress,
+    double? dropoffLatitude,
+    double? dropoffLongitude,
   });
 }
 
@@ -83,6 +95,12 @@ class _$CustomerInfoCopyWithImpl<$Res, $Val extends CustomerInfo>
     Object? departureLongitude = null,
     Object? tourDate = null,
     Object? status = null,
+    Object? bookingType = null,
+    Object? bookingId = freezed,
+    Object? pickupAddress = freezed,
+    Object? dropoffAddress = freezed,
+    Object? dropoffLatitude = freezed,
+    Object? dropoffLongitude = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -118,6 +136,30 @@ class _$CustomerInfoCopyWithImpl<$Res, $Val extends CustomerInfo>
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
                       as DriverBookingStatus,
+            bookingType: null == bookingType
+                ? _value.bookingType
+                : bookingType // ignore: cast_nullable_to_non_nullable
+                      as int,
+            bookingId: freezed == bookingId
+                ? _value.bookingId
+                : bookingId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            pickupAddress: freezed == pickupAddress
+                ? _value.pickupAddress
+                : pickupAddress // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            dropoffAddress: freezed == dropoffAddress
+                ? _value.dropoffAddress
+                : dropoffAddress // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            dropoffLatitude: freezed == dropoffLatitude
+                ? _value.dropoffLatitude
+                : dropoffLatitude // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            dropoffLongitude: freezed == dropoffLongitude
+                ? _value.dropoffLongitude
+                : dropoffLongitude // ignore: cast_nullable_to_non_nullable
+                      as double?,
           )
           as $Val,
     );
@@ -142,6 +184,12 @@ abstract class _$$CustomerInfoImplCopyWith<$Res>
     double departureLongitude,
     String tourDate,
     @DriverBookingStatusConverter() DriverBookingStatus status,
+    int bookingType,
+    String? bookingId,
+    String? pickupAddress,
+    String? dropoffAddress,
+    double? dropoffLatitude,
+    double? dropoffLongitude,
   });
 }
 
@@ -167,6 +215,12 @@ class __$$CustomerInfoImplCopyWithImpl<$Res>
     Object? departureLongitude = null,
     Object? tourDate = null,
     Object? status = null,
+    Object? bookingType = null,
+    Object? bookingId = freezed,
+    Object? pickupAddress = freezed,
+    Object? dropoffAddress = freezed,
+    Object? dropoffLatitude = freezed,
+    Object? dropoffLongitude = freezed,
   }) {
     return _then(
       _$CustomerInfoImpl(
@@ -202,6 +256,30 @@ class __$$CustomerInfoImplCopyWithImpl<$Res>
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
                   as DriverBookingStatus,
+        bookingType: null == bookingType
+            ? _value.bookingType
+            : bookingType // ignore: cast_nullable_to_non_nullable
+                  as int,
+        bookingId: freezed == bookingId
+            ? _value.bookingId
+            : bookingId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        pickupAddress: freezed == pickupAddress
+            ? _value.pickupAddress
+            : pickupAddress // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        dropoffAddress: freezed == dropoffAddress
+            ? _value.dropoffAddress
+            : dropoffAddress // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        dropoffLatitude: freezed == dropoffLatitude
+            ? _value.dropoffLatitude
+            : dropoffLatitude // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        dropoffLongitude: freezed == dropoffLongitude
+            ? _value.dropoffLongitude
+            : dropoffLongitude // ignore: cast_nullable_to_non_nullable
+                  as double?,
       ),
     );
   }
@@ -219,6 +297,12 @@ class _$CustomerInfoImpl implements _CustomerInfo {
     required this.departureLongitude,
     required this.tourDate,
     @DriverBookingStatusConverter() required this.status,
+    this.bookingType = 0,
+    this.bookingId,
+    this.pickupAddress,
+    this.dropoffAddress,
+    this.dropoffLatitude,
+    this.dropoffLongitude,
   });
 
   factory _$CustomerInfoImpl.fromJson(Map<String, dynamic> json) =>
@@ -241,10 +325,23 @@ class _$CustomerInfoImpl implements _CustomerInfo {
   @override
   @DriverBookingStatusConverter()
   final DriverBookingStatus status;
+  @override
+  @JsonKey()
+  final int bookingType;
+  @override
+  final String? bookingId;
+  @override
+  final String? pickupAddress;
+  @override
+  final String? dropoffAddress;
+  @override
+  final double? dropoffLatitude;
+  @override
+  final double? dropoffLongitude;
 
   @override
   String toString() {
-    return 'CustomerInfo(cutomerFullName: $cutomerFullName, customerPhoneNumber: $customerPhoneNumber, tourPointName: $tourPointName, departureDescription: $departureDescription, departureLatitude: $departureLatitude, departureLongitude: $departureLongitude, tourDate: $tourDate, status: $status)';
+    return 'CustomerInfo(cutomerFullName: $cutomerFullName, customerPhoneNumber: $customerPhoneNumber, tourPointName: $tourPointName, departureDescription: $departureDescription, departureLatitude: $departureLatitude, departureLongitude: $departureLongitude, tourDate: $tourDate, status: $status, bookingType: $bookingType, bookingId: $bookingId, pickupAddress: $pickupAddress, dropoffAddress: $dropoffAddress, dropoffLatitude: $dropoffLatitude, dropoffLongitude: $dropoffLongitude)';
   }
 
   @override
@@ -266,7 +363,19 @@ class _$CustomerInfoImpl implements _CustomerInfo {
                 other.departureLongitude == departureLongitude) &&
             (identical(other.tourDate, tourDate) ||
                 other.tourDate == tourDate) &&
-            (identical(other.status, status) || other.status == status));
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.bookingType, bookingType) ||
+                other.bookingType == bookingType) &&
+            (identical(other.bookingId, bookingId) ||
+                other.bookingId == bookingId) &&
+            (identical(other.pickupAddress, pickupAddress) ||
+                other.pickupAddress == pickupAddress) &&
+            (identical(other.dropoffAddress, dropoffAddress) ||
+                other.dropoffAddress == dropoffAddress) &&
+            (identical(other.dropoffLatitude, dropoffLatitude) ||
+                other.dropoffLatitude == dropoffLatitude) &&
+            (identical(other.dropoffLongitude, dropoffLongitude) ||
+                other.dropoffLongitude == dropoffLongitude));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -281,6 +390,12 @@ class _$CustomerInfoImpl implements _CustomerInfo {
     departureLongitude,
     tourDate,
     status,
+    bookingType,
+    bookingId,
+    pickupAddress,
+    dropoffAddress,
+    dropoffLatitude,
+    dropoffLongitude,
   );
 
   /// Create a copy of CustomerInfo
@@ -307,6 +422,12 @@ abstract class _CustomerInfo implements CustomerInfo {
     required final double departureLongitude,
     required final String tourDate,
     @DriverBookingStatusConverter() required final DriverBookingStatus status,
+    final int bookingType,
+    final String? bookingId,
+    final String? pickupAddress,
+    final String? dropoffAddress,
+    final double? dropoffLatitude,
+    final double? dropoffLongitude,
   }) = _$CustomerInfoImpl;
 
   factory _CustomerInfo.fromJson(Map<String, dynamic> json) =
@@ -329,6 +450,18 @@ abstract class _CustomerInfo implements CustomerInfo {
   @override
   @DriverBookingStatusConverter()
   DriverBookingStatus get status;
+  @override
+  int get bookingType;
+  @override
+  String? get bookingId;
+  @override
+  String? get pickupAddress;
+  @override
+  String? get dropoffAddress;
+  @override
+  double? get dropoffLatitude;
+  @override
+  double? get dropoffLongitude;
 
   /// Create a copy of CustomerInfo
   /// with the given fields replaced by the non-null parameter values.

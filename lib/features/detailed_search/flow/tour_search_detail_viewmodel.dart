@@ -48,22 +48,18 @@ class TourSearchDetailViewModel extends ChangeNotifier {
 
     try {
       final result = await _tourService.getTourPointDetail(id);
-      print("tourpoint id ${id} ");
-
       selectedTourPointId = id;
       if (result.data != null) {
         detail = result.data!.tourPointDetails;
         errorMessage = null;
-        _isFavorite = detail!.isFavorites;
-        tourpointImage = detail!.mainImage;
+        _isFavorite = detail?.isFavorites ?? false;
+        tourpointImage = detail?.mainImage ?? '';
         // Varsayılan seçimleri yapalım:
         selectedCityId = detail?.cities.firstOrNull?.id;
         selectedDistrictId = detail?.districts
-            .firstWhere(
-              (d) => d.cityId == selectedCityId,
-              orElse: () => detail!.districts.first,
-            )
-            .id;
+                .firstWhereOrNull((d) => d.cityId == selectedCityId)
+                ?.id ??
+            detail?.districts.firstOrNull?.id;
       } else {
         errorMessage = result.message ?? 'Bilinmeyen hata';
       }
@@ -154,11 +150,11 @@ class TourSearchDetailViewModel extends ChangeNotifier {
     notifyListeners();
 
     // 🔥 Otomatik place bul → user değiştirdiği için scroll gerekebilir
-    autoSelectPlace(
-      selectedCityName!,
-      selectedDistrictName!,
-      triggeredByUser: true,
-    );
+    final city = selectedCityName;
+    final district = selectedDistrictName;
+    if (city != null && district != null) {
+      autoSelectPlace(city, district, triggeredByUser: true);
+    }
   }
 
   void setSelectedDistrict(String? districtId) {
@@ -167,11 +163,11 @@ class TourSearchDetailViewModel extends ChangeNotifier {
     resetPlaceSelection();
     notifyListeners();
 
-    autoSelectPlace(
-      selectedCityName!,
-      selectedDistrictName!,
-      triggeredByUser: true,
-    );
+    final city = selectedCityName;
+    final district = selectedDistrictName;
+    if (city != null && district != null) {
+      autoSelectPlace(city, district, triggeredByUser: true);
+    }
   }
 
   String? get selectedCityName =>
@@ -187,7 +183,6 @@ class TourSearchDetailViewModel extends ChangeNotifier {
   void setSelectedGuide(String? GuideId, num? Price) {
     selectedGuideId = GuideId;
     selectedGuidePrice = Price;
-    print(selectedGuideId);
     notifyListeners();
   }
 
@@ -257,7 +252,12 @@ class TourSearchDetailViewModel extends ChangeNotifier {
     setSelectedPlace(result);
   }
 
-  Future<void> ControlBooking() async {
+  Future<void> ControlBooking({
+    required String buyerFirstName,
+    required String buyerLastName,
+    required String buyerEmail,
+    required String buyerPhone,
+  }) async {
     if (selectedCityId == null ||
         selectedDistrictId == null ||
         selectedTourPointId == null ||
@@ -288,6 +288,10 @@ class TourSearchDetailViewModel extends ChangeNotifier {
         Latitude: selectedPlaceLat,
         Longitude: selectedPlaceLng,
         departureTime: selectedTime!,
+        buyerFirstName: buyerFirstName,
+        buyerLastName: buyerLastName,
+        buyerEmail: buyerEmail,
+        buyerPhone: buyerPhone,
       );
       final resp = await _tourService.ControlBooking(req);
 
@@ -331,6 +335,38 @@ class TourSearchDetailViewModel extends ChangeNotifier {
     selectedPlaceLng = null;
     selectedDate = null;
     selectedTime = null;
+    notifyListeners();
+  }
+
+  void resetForNewTour() {
+    selectedTime = null;
+    selectedCityId = null;
+    selectedDistrictId = null;
+    selectedVehicleId = null;
+    selectedGuideId = null;
+    tourRouteId = null;
+    selectedGuidePrice = null;
+    selectedTourPointId = null;
+    selectedDate = null;
+    tourpointImage = null;
+    tourPointDetailId = null;
+    selectedPlaceDesc = null;
+    selectedPlaceLat = null;
+    selectedPlaceLng = null;
+    setVehiclePrice = null;
+    detail = null;
+    vehicle = null;
+    vehicles = [];
+    guides = [];
+    bookingId = null;
+    isValid = false;
+    autoSelected = false;
+    autoSelectedByUserChange = false;
+    errorMessage = null;
+    _isFavorite = false;
+    isLoading = false;
+    isVehiclesLoading = false;
+    isVehicleLoading = false;
     notifyListeners();
   }
 

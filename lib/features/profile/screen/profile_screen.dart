@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/features/auth/login/widgets/google_view_model.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 import 'package:tour_booking/features/profile/widget/profil_header.dart';
@@ -12,6 +13,7 @@ import 'package:tour_booking/features/profile/widget/profile_section.dart';
 import 'package:tour_booking/features/profile/widget/profile_skleton.dart';
 import 'package:tour_booking/features/profile/widget/profile_title.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
+import 'package:tour_booking/navigation/app_router.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -25,15 +27,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      context.read<ProfileViewModel>().fetchProfile();
+      if (!splashViewModel.isGuest) {
+        context.read<ProfileViewModel>().fetchProfile();
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    // Guest kullanici icin ozel profil gorunumu
+    if (splashViewModel.isGuest) {
+      return _buildGuestProfile(context, scheme);
+    }
+
     final vm = context.watch<ProfileViewModel>();
     final authVm = context.watch<AuthViewModel>();
-    final scheme = Theme.of(context).colorScheme;
 
     if (vm.isLoading && vm.profile == null) {
       return const ProfileSkeleton();
@@ -104,15 +114,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   titleColor: AppColors.error,
                   iconColor: AppColors.error,
                   onTap: () async {
-                    // 1. Servislerden çıkış yap (Tokenları siler)
                     await authVm.signOut();
-
-                    // 2. SplashViewModel'i uyandır (Yeni yazdığın fonksiyonu çalıştırır)
-                    // Bu fonksiyon token'ın silindiğini görecek ve _isLoggedIn = false yapacak.
-                    await context.read<SplashViewModel>().initializeApp();
-
-                    // 3. context.go("/login") DEMENE GEREK YOK!
-                    // initializeApp bitince GoRouter bekçisi durumu anlayıp seni kapı dışarı edecek.
+                    if (!context.mounted) return;
+                    await context.read<SplashViewModel>().signOutToGuest();
                   },
                 ),
               ],
@@ -120,13 +124,115 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
 
-        // 🔒 FULLSCREEN LOADING
         if (vm.isLoading)
           Container(
             color: Colors.black.withOpacity(0.35),
             child: const Center(child: CircularProgressIndicator()),
           ),
       ],
+    );
+  }
+
+  Widget _buildGuestProfile(BuildContext context, ColorScheme scheme) {
+    return Scaffold(
+      backgroundColor: scheme.surface,
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(AppSpacing.screenPadding),
+          children: [
+            // Guest header
+            Center(
+              child: Column(
+                children: [
+                  const SizedBox(height: 16),
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: AppColors.primary.withOpacity(0.12),
+                    child: const Icon(
+                      Icons.person_outline_rounded,
+                      size: 40,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    tr("guest_user"),
+                    style: AppTextStyles.titleMedium.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    tr("guest_profile_subtitle"),
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: Colors.grey.shade600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
+            // Hesap Olustur butonu
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.person_add_alt_1_rounded),
+                label: Text(tr("upgrade_account_button")),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                onPressed: () => context.push('/upgrade-account'),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            // Giris Yap butonu
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.login_rounded),
+                label: Text(tr("login")),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  side: BorderSide(color: Colors.grey.shade300),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                onPressed: () async {
+                  await splashViewModel.redirectToLogin();
+                },
+              ),
+            ),
+
+            const SizedBox(height: AppSpacing.xl),
+
+            // Dil ve izin ayarlari erisilebilir kalsin
+            ProfileSection(title: tr("account_settings")),
+
+            ProfileTile(
+              icon: Icons.language_rounded,
+              title: tr("language"),
+              trailingText: getLanguageName(context),
+              onTap: () => context.push("/settings/language"),
+            ),
+
+            ProfileTile(
+              icon: Icons.tune_rounded,
+              title: tr("permissions"),
+              subtitle: tr("manage_location_and_phone_verification"),
+              onTap: () => context.push("/settings/permissions"),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -221,13 +327,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (success) {
         UIHelper.showSuccess(context, msg.tr());
 
-        // 2. 🔥 KRİTİK: Lokal verileri ve Firebase oturumunu temizle
-        // Az önce AuthViewModel'de yazdığımız fonksiyonu çağırıyoruz
+        // 2. Lokal verileri ve Firebase oturumunu temizle
         await authVm.deleteAccount();
 
-        // 3. 🔥 Router bekçisini uyandır.
-        // Tokenlar silindiği için otomatik olarak /login sayfasına fırlatılacaksın.
-        await splashVm.initializeApp();
+        // 3. Guest olarak devam et
+        await splashVm.signOutToGuest();
       } else {
         UIHelper.showError(context, msg.tr());
       }

@@ -60,12 +60,16 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final vm = context.read<TourSearchDetailViewModel>();
 
-      vm.resetPlaceSelection();
+      vm.resetForNewTour();
 
       // Tur detayını bekleyerek al
       await vm.fetchTourPointDetail(widget.tourPointId);
 
-      vm.autoSelectPlace(vm.selectedCityName!, vm.selectedDistrictName!);
+      final cityName = vm.selectedCityName;
+      final districtName = vm.selectedDistrictName;
+      if (cityName != null && districtName != null) {
+        vm.autoSelectPlace(cityName, districtName);
+      }
     });
   }
 
@@ -243,8 +247,9 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
                                   ? Icons.favorite
                                   : Icons.favorite_border,
                               onTap: () {
-                                favVm.toggleFavorite(detail!.id);
-                                vm.toggleFavorite(detail!.isFavorites);
+                                if (detail == null) return;
+                                favVm.toggleFavorite(detail.id);
+                                vm.toggleFavorite(detail.isFavorites);
                               },
                               iconColor: vm.isFavorite
                                   ? Colors.red
@@ -374,6 +379,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
   // -------------------------- NAVIGATION --------------------------
 
   void _selectCity(TourSearchDetailViewModel vm) async {
+    if (vm.detail == null) return;
     final selected = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
@@ -392,6 +398,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
   }
 
   void _selectDistrict(TourSearchDetailViewModel vm) async {
+    if (vm.detail == null) return;
     final districts = vm.detail!.districts
         .where((d) => d.cityId == vm.selectedCityId)
         .toList();
@@ -412,16 +419,20 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
   }
 
   void _openFullMap(TourSearchDetailViewModel vm) async {
-    if (vm.selectedPlaceLat == null || vm.selectedPlaceLng == null) return;
+    final lat = vm.selectedPlaceLat;
+    final lng = vm.selectedPlaceLng;
+    final cityName = vm.selectedCityName;
+    final districtName = vm.selectedDistrictName;
+    if (lat == null || lng == null || cityName == null || districtName == null) return;
 
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => FullMapView(
-          lat: vm.selectedPlaceLat!,
-          lng: vm.selectedPlaceLng!,
-          city: vm.selectedCityName!,
-          district: vm.selectedDistrictName!,
+          lat: lat,
+          lng: lng,
+          city: cityName,
+          district: districtName,
         ),
       ),
     );

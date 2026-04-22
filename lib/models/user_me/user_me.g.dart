@@ -10,6 +10,7 @@ _$UserMeImpl _$$UserMeImplFromJson(Map<String, dynamic> json) => _$UserMeImpl(
   userId: json['userId'] as String?,
   emailConfirmed: json['emailConfirmed'] as bool,
   firstName: json['firstName'] as String?,
+  role: json['role'] as String?,
 );
 
 Map<String, dynamic> _$$UserMeImplToJson(_$UserMeImpl instance) =>
@@ -17,4 +18,5 @@ Map<String, dynamic> _$$UserMeImplToJson(_$UserMeImpl instance) =>
       'userId': instance.userId,
       'emailConfirmed': instance.emailConfirmed,
       'firstName': instance.firstName,
+      'role': instance.role,
     };

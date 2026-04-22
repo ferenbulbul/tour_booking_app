@@ -154,8 +154,6 @@ class TourService {
   Future<BaseResponse<IsValidResponse>> ControlBooking(
     CreateBookingCommand request,
   ) async {
-    var b = request.toJson();
-    print(b);
     var response = _apiClient.post<IsValidResponse>(
       path: "/Mobile/create-booking",
       body: request.toJson(),

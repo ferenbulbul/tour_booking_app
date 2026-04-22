@@ -9,6 +9,7 @@ class UserMe with _$UserMe {
     String? userId,
     required bool emailConfirmed,
     String? firstName,
+    String? role,
   }) = _UserMe;
 
   factory UserMe.fromJson(Map<String, dynamic> json) => _$UserMeFromJson(json);

@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
+import 'package:tour_booking/features/auth/change_password/change_password_viewmodel.dart';
+import 'package:tour_booking/features/auth/email_verification/widget/email_verification_view_model.dart';
+import 'package:tour_booking/features/auth/forgot_passwords/forgot_password/widget/forgot_password_view_model.dart';
+import 'package:tour_booking/features/auth/login/widgets/login_view_model.dart';
+import 'package:tour_booking/features/auth/phone_verification/verify_phone_viewmodel.dart';
+import 'package:tour_booking/features/auth/register/widgets/register_view_model.dart';
 import 'package:tour_booking/features/auth/change_password/screen/change_password.dart';
 import 'package:tour_booking/features/detailed_search/flow/screen/tour_search_detail_screen.dart';
 import 'package:tour_booking/features/bookings/screen/bookings_screen.dart';
@@ -33,8 +39,22 @@ import 'package:tour_booking/features/detailed_search/flow/screen/summary_screen
 import 'package:tour_booking/features/detailed_search/flow/screen/vehicle_list_screen.dart';
 import 'package:tour_booking/features/detailed_search/flow/screen/vehicle_detail_screen.dart';
 import 'package:tour_booking/features/detailed_search/flow/screen/google_place_saerch.dart';
+import 'package:tour_booking/features/checkout/screen/contact_info_screen.dart';
+import 'package:tour_booking/features/checkout/viewmodel/contact_info_viewmodel.dart';
+import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
+import 'package:tour_booking/features/auth/upgrade_account/screen/upgrade_account_screen.dart';
+import 'package:tour_booking/features/auth/upgrade_account/widget/upgrade_account_viewmodel.dart';
 import 'package:tour_booking/models/vehicle_detail_request/vehicle_detail_request.dart';
+import 'package:tour_booking/features/transport/screen/transport_screen.dart';
+import 'package:tour_booking/features/transport/screen/transport_vehicle_list_screen.dart';
+import 'package:tour_booking/features/transport/screen/transport_summary_screen.dart';
+import 'package:tour_booking/features/transport/screen/transport_vehicle_detail_screen.dart';
+import 'package:tour_booking/features/transport/transport_viewmodel.dart';
+import 'package:tour_booking/features/transport/transport_vehicle_list_viewmodel.dart';
+import 'package:tour_booking/features/transport/transport_summary_viewmodel.dart';
+import 'package:tour_booking/models/transport/search_vehicles_request/search_vehicles_request.dart';
+import 'package:tour_booking/models/transport/transport_vehicle/transport_vehicle.dart';
 import 'package:tour_booking/navigation/app_navigator.dart';
 import '../features/splash/screen/splash_screen.dart';
 import '../features/auth/register/screen/register_screen.dart';
@@ -46,8 +66,8 @@ final SplashViewModel splashViewModel = SplashViewModel();
 final GoRouter router = GoRouter(
   navigatorKey: appNavigatorKey,
 
-  refreshListenable: splashViewModel, // ViewModel'i dinlemesi şart!
-  debugLogDiagnostics: true,
+  refreshListenable: splashViewModel, // ViewModel'i dinlemesi sart!
+  debugLogDiagnostics: false,
   initialLocation: '/',
 
   redirect: (context, state) {
@@ -57,13 +77,14 @@ final GoRouter router = GoRouter(
 
     final bool loggedIn = splashVM.isLoggedInStatus;
     final bool isEmailConfirmed = splashVM.user?.emailConfirmed ?? false;
+    final bool isGuestUser = splashVM.isGuest;
     final UserRole? role = splashVM.role;
 
     final String path = state.uri.path;
     final bool isDeepLink = path.startsWith('/tour/');
     final redirectParam = state.uri.queryParameters['redirect'];
 
-    // 🔓 Login gerektirmeyen sayfalar
+    // Login gerektirmeyen sayfalar
     final publicRoutes = [
       '/login',
       '/register',
@@ -73,18 +94,18 @@ final GoRouter router = GoRouter(
     ];
 
     debugPrint(
-      '🧭 redirect | path=$path | loggedIn=$loggedIn | deepLink=$isDeepLink',
+      'redirect | path=$path | loggedIn=$loggedIn | guest=$isGuestUser | deepLink=$isDeepLink',
     );
 
-    // 🔴 LOGIN YOKSA
+    // LOGIN YOKSA
     if (!loggedIn) {
-      // Deep link geldiyse login'e yönlendir + redirect paramı ekle
+      // Deep link geldiyse login'e yonlendir + redirect parami ekle
       if (isDeepLink) {
         final encoded = Uri.encodeComponent(state.uri.toString());
         return '/login?redirect=$encoded';
       }
 
-      // Public route değilse login'e at
+      // Public route degilse login'e at
       if (!publicRoutes.contains(path)) {
         return '/login';
       }
@@ -92,17 +113,30 @@ final GoRouter router = GoRouter(
       return null;
     }
 
-    // 🟠 EMAIL ONAYSIZ
+    // GUEST KULLANICI — email dogrulamayi atla, direkt home'a git
+    if (isGuestUser) {
+      // Guest auth sayfalarinda olmamali (login/register disinda)
+      if (publicRoutes.contains(path) || path == '/' || path == '/email-confirmed') {
+        return '/home';
+      }
+      // Upgrade-account sayfasina gidebilir
+      if (path == '/upgrade-account') {
+        return null;
+      }
+      return null;
+    }
+
+    // NORMAL KULLANICI — EMAIL ONAYSIZ
     if (!isEmailConfirmed) {
       return path == '/email-confirmed' ? null : '/email-confirmed';
     }
 
-    // 🟢 LOGIN SONRASI DEEP LINK GERİ DÖNÜŞ
+    // LOGIN SONRASI DEEP LINK GERI DONUS
     if (redirectParam != null) {
       return Uri.decodeComponent(redirectParam);
     }
 
-    // 🧹 Auth sayfalarından çıkış
+    // Auth sayfalarindan cikis
     if (publicRoutes.contains(path) || path == '/') {
       return role == UserRole.driver ? '/driver' : '/home';
     }
@@ -112,31 +146,52 @@ final GoRouter router = GoRouter(
   routes: [
     GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
 
-    GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (_) => LoginViewModel(),
+        child: const LoginScreen(),
+      ),
+    ),
     GoRoute(
       path: '/email-confirmed',
-      builder: (context, state) => const EmailVerificationScreen(),
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (_) => EmailVerificationViewModel(),
+        child: const EmailVerificationScreen(),
+      ),
     ),
     GoRoute(
       path: '/register',
-      builder: (context, state) => const RegisterScreen(),
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (_) => RegisterViewModel(),
+        child: const RegisterScreen(),
+      ),
     ),
     GoRoute(
       path: '/forgot-password',
-      builder: (context, state) => const ForgotPasswordScreen(),
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (_) => ForgotPasswordViewModel(),
+        child: const ForgotPasswordScreen(),
+      ),
     ),
     GoRoute(
       path: '/verify-reset-code',
       builder: (context, state) {
-        final email = state.extra as String;
-        return VerifyResetCodeScreen(email: email);
+        final email = state.extra is String ? state.extra as String : '';
+        return ChangeNotifierProvider(
+          create: (_) => ForgotPasswordViewModel(),
+          child: VerifyResetCodeScreen(email: email),
+        );
       },
     ),
     GoRoute(
       path: '/reset-password',
       builder: (context, state) {
-        final email = state.extra as String;
-        return ResetPasswordScreen(email: email);
+        final email = state.extra is String ? state.extra as String : '';
+        return ChangeNotifierProvider(
+          create: (_) => ForgotPasswordViewModel(),
+          child: ResetPasswordScreen(email: email),
+        );
       },
     ),
     GoRoute(
@@ -167,22 +222,20 @@ final GoRouter router = GoRouter(
         String? initialImage;
 
         if (data is String) {
-          // Eski kullanım: sadece ID
+          // Eski kullanim: sadece ID
           tourPointId = data;
         } else if (data is Map<String, dynamic>) {
           tourPointId = data["id"] as String;
-          // 🔥 GÖNDERDİĞİN KEY İLE AYNISI
           initialImage = data["initialImage"] as String?;
         } else {
-          throw Exception('Invalid extra for searchDetail');
+          return MaterialPage(key: state.pageKey, child: const HomeScreen());
         }
 
         return MaterialPage(
-          // 🔥 Her id için unique key — reuse olmasın
           key: ValueKey('searchDetail_$tourPointId'),
           child: TourSearchDetailScreen(
             tourPointId: tourPointId,
-            initialImage: initialImage, // 🔥 ARTIK GERÇEKTEN GÖNDERİYORUZ
+            initialImage: initialImage,
           ),
         );
       },
@@ -210,8 +263,10 @@ final GoRouter router = GoRouter(
       path: '/vehicle-detail',
       name: 'vehicleDetail',
       builder: (context, state) {
-        final args = state.extra as VehicleDetailRequest;
-
+        final args = state.extra;
+        if (args is! VehicleDetailRequest) {
+          return const TourSearchDetailScreen(tourPointId: '');
+        }
         return VehicleDetailScreen(args: args);
       },
     ),
@@ -232,14 +287,17 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/verify-phone',
       name: 'verifyPhone',
-      builder: (context, state) {
-        return VerifyPhoneScreen();
-      },
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (_) => VerifyPhoneViewModel(),
+        child: VerifyPhoneScreen(),
+      ),
     ),
     GoRoute(
       path: '/payment',
       builder: (context, state) {
-        final bookingId = state.extra as String;
+        final rawBookingId = state.extra;
+        final bookingId = rawBookingId is String ? rawBookingId : '';
+        if (bookingId.isEmpty) return const HomeScreen();
         return ChangeNotifierProvider(
           create: (_) => PaymentViewModel(),
           child: PaymentPage(bookingId: bookingId),
@@ -247,10 +305,59 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
+      path: '/checkout/contact-info',
+      name: 'contactInfo',
+      builder: (context, state) {
+        final bookingType = state.extra is String ? state.extra as String : 'tour';
+        return ChangeNotifierProvider(
+          create: (_) => ContactInfoViewModel(),
+          child: ContactInfoScreen(
+            onContinue: (firstName, lastName, email, phone) async {
+              final nav = GoRouter.of(context);
+              final messenger = ScaffoldMessenger.of(context);
+              if (bookingType == 'transport') {
+                final transportVm = context.read<TransportSummaryViewModel>();
+                await transportVm.createBooking(
+                  buyerFirstName: firstName,
+                  buyerLastName: lastName,
+                  buyerEmail: email,
+                  buyerPhone: phone,
+                );
+                if (transportVm.bookingId != null && transportVm.bookingId!.isNotEmpty) {
+                  nav.push('/payment', extra: transportVm.bookingId);
+                } else if (transportVm.errorMessage != null) {
+                  messenger.showSnackBar(
+                    SnackBar(content: Text(transportVm.errorMessage!)),
+                  );
+                }
+              } else {
+                final tourVm = context.read<TourSearchDetailViewModel>();
+                await tourVm.ControlBooking(
+                  buyerFirstName: firstName,
+                  buyerLastName: lastName,
+                  buyerEmail: email,
+                  buyerPhone: phone,
+                );
+                if (tourVm.isValid && tourVm.bookingId != null) {
+                  nav.push('/payment', extra: tourVm.bookingId);
+                } else if (tourVm.errorMessage != null) {
+                  messenger.showSnackBar(
+                    SnackBar(content: Text(tourVm.errorMessage!)),
+                  );
+                }
+              }
+            },
+          ),
+        );
+      },
+    ),
+    GoRoute(
       name: 'placePicker',
       path: '/place-picker',
       builder: (context, state) {
-        final params = Map<String, dynamic>.from(state.extra as Map);
+        final params = state.extra is Map
+            ? Map<String, dynamic>.from(state.extra as Map)
+            : <String, dynamic>{};
 
         return PlacePickerPage(
           city: params['city'],
@@ -278,16 +385,18 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/change-password-driver',
       name: 'changePasswordDriver',
-      builder: (context, state) {
-        return ChangePasswordDriverScreen();
-      },
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (_) => ChangePasswordViewModel(),
+        child: ChangePasswordDriverScreen(),
+      ),
     ),
     GoRoute(
       path: '/change-password',
       name: 'changePassword',
-      builder: (context, state) {
-        return ChangePasswordScreen();
-      },
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (_) => ChangePasswordViewModel(),
+        child: ChangePasswordScreen(),
+      ),
     ),
     GoRoute(
       path: '/tour-search-by-type',
@@ -300,7 +409,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/payment-success',
       builder: (context, state) {
-        final conversitationId = state.extra as String;
+        final conversitationId = state.extra is String ? state.extra as String : '';
         return PaymentSuccessPage(conversitationId: conversitationId);
       },
     ),
@@ -325,7 +434,81 @@ final GoRouter router = GoRouter(
       path: '/payment-fail',
       builder: (context, state) => const PaymentFailPage(),
     ),
-    GoRoute(path: '/deneme', builder: (context, state) => const HomeScreen()),
+
+    // --- Upgrade Account ---
+    GoRoute(
+      path: '/upgrade-account',
+      name: 'upgradeAccount',
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (_) => UpgradeAccountViewModel(),
+        child: const UpgradeAccountScreen(),
+      ),
+    ),
+
+    // --- Transport Routes ---
+    GoRoute(
+      path: '/transport',
+      name: 'transport',
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (_) => TransportViewModel(),
+        child: const TransportScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/transport-vehicles',
+      name: 'transportVehicles',
+      builder: (context, state) {
+        final args = state.extra as Map<String, dynamic>;
+        final request = TransportSearchVehiclesRequest.fromJson(
+          args['request'] as Map<String, dynamic>,
+        );
+        return ChangeNotifierProvider(
+          create: (_) => TransportVehicleListViewModel()
+            ..searchVehicles(request),
+          child: TransportVehicleListScreen(searchContext: args),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/transport-vehicle-detail',
+      name: 'transportVehicleDetail',
+      builder: (context, state) {
+        final args = state.extra as Map<String, dynamic>;
+        final vehicle = args['vehicle'] as TransportVehicle;
+        return TransportVehicleDetailScreen(
+          vehicle: vehicle,
+          searchContext: args,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/transport-summary',
+      name: 'transportSummary',
+      builder: (context, state) {
+        final args = state.extra as Map<String, dynamic>;
+        final vehicle = args['vehicle'] as TransportVehicle;
+        return ChangeNotifierProvider(
+          create: (_) => TransportSummaryViewModel()
+            ..setContext(
+              vehicle: vehicle,
+              pickup: args['pickupAddress'] as String?,
+              pLat: args['pickupLat'] as double?,
+              pLng: args['pickupLng'] as double?,
+              dropoff: args['dropoffAddress'] as String?,
+              dLat: args['dropoffLat'] as double?,
+              dLng: args['dropoffLng'] as double?,
+              date: args['date'] != null
+                  ? DateTime.parse(args['date'] as String)
+                  : null,
+              time: args['time'] as String?,
+              distanceKm: args['clientDistanceKm'] as double?,
+              durationMinutes: args['clientDurationMinutes'] as int?,
+            ),
+          child: const TransportSummaryScreen(),
+        );
+      },
+    ),
+
     ShellRoute(
       builder: (context, state, child) {
         return RootScaffold(child: child);

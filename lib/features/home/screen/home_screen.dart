@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,11 +15,10 @@ import 'package:tour_booking/features/home/widgets/featured_tour_points.dart';
 import 'package:tour_booking/features/home/widgets/near_by_points_button.dart';
 import 'package:tour_booking/features/home/widgets/search_section.dart';
 import 'package:tour_booking/features/home/widgets/tour_type.dart';
+import 'package:tour_booking/features/home/widgets/transport_entry_card.dart';
 
 import 'package:tour_booking/features/profile/permission_viewmodel.dart';
-import 'package:tour_booking/features/profile/profile_status_viewmodel.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
-import 'package:tour_booking/features/profile_warning_banner/profile_warning_banner.dart';
 
 import 'package:tour_booking/services/location/location_viewmodel.dart';
 
@@ -62,7 +60,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final prefs = await SharedPreferences.getInstance();
 
     // PROFILE & PERMISSIONS & PLAYER ID
-    context.read<ProfileStatusViewModel>().init();
     context.read<ProfileViewModel>().fetchProfile();
     context.read<PermissionsViewModel>().syncPlayerId();
 
@@ -103,12 +100,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   // 🔥 Ask only missing permissions
   // ============================================================
   Future<void> _askMissingPermissions() async {
-    final locationStatus = await Permission.location.status;
-
-    if (!locationStatus.isGranted) {
-      await Permission.location.request();
-    }
-
     await OneSignal.Notifications.requestPermission(false);
   }
 
@@ -149,34 +140,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ),
             ),
 
-            // PROFILE WARNING
-            SliverToBoxAdapter(
-              child: Consumer<ProfileStatusViewModel>(
-                builder: (_, vm, __) {
-                  final show =
-                      vm.isComplete == false && !vm.dismissedThisSession;
-
-                  if (!show) return const SizedBox.shrink();
-
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.xs,
-                    ),
-                    child: Column(
-                      children: [
-                        ProfileWarningBanner(
-                          onAction: () => GoRouter.of(
-                            context,
-                          ).push('/settings/permissions'),
-                        ),
-                        const SizedBox(height: AppSpacing.xl),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-
             // SEARCH BAR
             SliverPadding(
               padding: const EdgeInsets.symmetric(
@@ -196,6 +159,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             _sliverSection(
               title: tr("featured_tours"),
               body: const FeaturedPointsWidget(),
+            ),
+
+            // TRANSPORT
+            _sliverSection(
+              title: tr("transport_title"),
+              subtitle: tr("transport_entry_subtitle"),
+              body: const TransportEntryCard(),
             ),
 
             // NEARBY

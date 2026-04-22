@@ -6,13 +6,7 @@ class SecureTokenStorage {
   static const _keyAccessToken = 'access_token';
   static const _keyRefreshToken = 'refresh_token';
 
-  void test() async {
-    await _storage.write(key: 'test', value: 'value');
-    String? val = await _storage.read(key: 'test');
-    print('Secure storage value: $val');
-  }
-
-  Future<void> saveTokens(String accessToken, String refreshToken) async {
+Future<void> saveTokens(String accessToken, String refreshToken) async {
     await _storage.write(key: _keyAccessToken, value: accessToken);
     await _storage.write(key: _keyRefreshToken, value: refreshToken);
   }

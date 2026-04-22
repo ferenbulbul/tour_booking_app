@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:tour_booking/models/base/base_response.dart';
 
 /// Verilen async fn’i çalıştırır, exception fırlatılsa da yakalar
@@ -13,7 +14,7 @@ Future<BaseResponse<T>> safeCall<T>(
   try {
     return await fn();
   } catch (e, st) {
-    // debugPrint('$e\n$st');
+    debugPrint('$e\n$st');
 
     return BaseResponse<T>(
       isSuccess: false,

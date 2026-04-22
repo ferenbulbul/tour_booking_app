@@ -55,7 +55,7 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!(_formKey.currentState?.validate() ?? false)) return;
     if (!_isPasswordValid) {
       setState(() => _passwordTouched = true);
       return;

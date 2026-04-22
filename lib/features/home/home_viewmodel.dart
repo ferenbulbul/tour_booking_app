@@ -19,10 +19,10 @@ class HomeViewModel extends ChangeNotifier {
   List<TourTypeDto> tourTypes = [];
 
   Future<void> init() async {
-    await fetchTourTypes();
-    await fetchFeaturedTourPoints();
-    await fetchNearbyTourPoints();
-    // ileride başka veri çekme metotları buraya eklenebilir
+    await Future.wait([
+      fetchTourTypes(),
+      fetchFeaturedTourPoints(),
+    ]);
   }
 
   Future<Result<List<TourTypeDto>>> fetchTourTypes() async {
@@ -55,7 +55,7 @@ class HomeViewModel extends ChangeNotifier {
     final result = handleResponse<FeaturedTourPointListDto>(response);
 
     if (result.isSuccess && result.data != null) {
-      featuredPoints = result.data!.tourPoints;
+      featuredPoints = result.data?.tourPoints ?? [];
       message = null;
     } else {
       message = result.error?.message ?? 'Veri alınamadı';

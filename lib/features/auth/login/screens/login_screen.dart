@@ -64,6 +64,8 @@ class LoginScreen extends StatelessWidget {
 
                 const SizedBox(height: 20),
                 const _RegisterPrompt(),
+                const SizedBox(height: 12),
+                const _GuestContinueButton(),
               ],
             ),
           ),
@@ -140,7 +142,7 @@ class _CleanLoginFormState extends State<_CleanLoginForm> {
 
     if (!mounted) return;
 
-    if (result.isSuccess) {
+    if (result.isSuccess && result.data != null) {
       final user = result.data!;
 
       await splashVM.saveAuthData(result.data!);
@@ -299,6 +301,33 @@ class _RegisterPrompt extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// --------------------------------------
+// GUEST CONTINUE
+// --------------------------------------
+class _GuestContinueButton extends StatelessWidget {
+  const _GuestContinueButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+
+    return TextButton(
+      onPressed: () async {
+        final splashVm = context.read<SplashViewModel>();
+        await splashVm.signOutToGuest();
+      },
+      child: Text(
+        'continue_as_guest'.tr(),
+        style: text.bodyMedium?.copyWith(
+          color: scheme.onSurface.withOpacity(0.6),
+          decoration: TextDecoration.underline,
+        ),
+      ),
     );
   }
 }

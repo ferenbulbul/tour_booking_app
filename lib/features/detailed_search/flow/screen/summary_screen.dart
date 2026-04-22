@@ -170,16 +170,8 @@ class SummaryScreen extends StatelessWidget {
             price: totalPrice,
             buttonText: tr("summary_confirm"),
             onPressed: canConfirm
-                ? () async {
-                    await vm.ControlBooking();
-                    if (vm.isValid && vm.bookingId != null) {
-                      context.push("/payment", extra: vm.bookingId);
-                    } else if (vm.errorMessage != null) {
-                      UIHelper.showError(
-                        context,
-                        vm.errorMessage ?? tr("error_generic"),
-                      );
-                    }
+                ? () {
+                    context.push('/checkout/contact-info', extra: 'tour');
                   }
                 : () {
                     UIHelper.showError(context, tr("error_generic"));

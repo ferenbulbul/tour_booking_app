@@ -15,6 +15,12 @@ class CustomerInfo with _$CustomerInfo {
     required double departureLongitude,
     required String tourDate,
     @DriverBookingStatusConverter() required DriverBookingStatus status,
+    @Default(0) int bookingType,
+    String? bookingId,
+    String? pickupAddress,
+    String? dropoffAddress,
+    double? dropoffLatitude,
+    double? dropoffLongitude,
   }) = _CustomerInfo;
 
   factory CustomerInfo.fromJson(Map<String, dynamic> json) =>

@@ -18,8 +18,9 @@ class DriverLocationStatus extends StatelessWidget {
         final status = viewModel.permissionStatus;
 
         if (viewModel.isTracking) {
-          final lat = viewModel.currentPosition!.latitude.toStringAsFixed(4);
-          final lon = viewModel.currentPosition!.longitude.toStringAsFixed(4);
+          final pos = viewModel.currentPosition;
+          final lat = pos?.latitude.toStringAsFixed(4) ?? '...';
+          final lon = pos?.longitude.toStringAsFixed(4) ?? '...';
           statusText = "Konum paylaşılıyor: $lat, $lon";
           statusColor = Colors.green;
           statusIcon = Icons.location_on;

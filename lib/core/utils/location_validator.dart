@@ -134,19 +134,8 @@ class LocationValidator {
     final wantCity = normalize(expectedCity);
     final wantDist = normalize(expectedDistrict);
 
-    print("------ VALIDATOR DEBUG START ------");
-    print("API CITY RAW      = $apiCityRaw");
-    print("API DIST RAW      = $apiDistRaw");
-    print("FORMATTED         = $formatted");
-    print("API CITY NORMAL   = $apiCity");
-    print("API DIST NORMAL   = $apiDist");
-    print("WANT CITY         = $wantCity");
-    print("WANT DIST         = $wantDist");
-
     // 1) Şehir uyuşmazsa direkt fail
     if (apiCity != wantCity) {
-      print("CITY FAIL ❌");
-      print("------ VALIDATOR DEBUG END ------");
       return LocationValidationResult(
         isValid: false,
         errorMessage:
@@ -160,14 +149,11 @@ class LocationValidator {
     // 3) Global otomatik merkez eşleştirmesi
     if (!match) {
       if (isGlobalCenterMatch(apiDistRaw, apiCityRaw, wantDist)) {
-        print("GLOBAL CENTER MATCH ✔");
         match = true;
       }
     }
 
     if (!match) {
-      print("DISTRICT FAIL ❌");
-      print("------ VALIDATOR DEBUG END ------");
       return LocationValidationResult(
         isValid: false,
         errorMessage:
@@ -175,8 +161,6 @@ class LocationValidator {
       );
     }
 
-    print("SUCCESS ✔");
-    print("------ VALIDATOR DEBUG END ------");
     return const LocationValidationResult(isValid: true);
   }
 }

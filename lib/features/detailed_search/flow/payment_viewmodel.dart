@@ -14,6 +14,21 @@ class PaymentViewModel extends ChangeNotifier {
   PaymentInitResponse? initData;
   PaymentResultResponse? resultData;
 
+  bool isPageFinished = false;
+  bool isCheckingPayment = false;
+
+  void setPageFinished() {
+    if (!isPageFinished) {
+      isPageFinished = true;
+      notifyListeners();
+    }
+  }
+
+  void setCheckingPayment(bool value) {
+    isCheckingPayment = value;
+    notifyListeners();
+  }
+
   /// Checkout form başlat
   Future<void> initPayment(String bookingId) async {
     isLoading = true;

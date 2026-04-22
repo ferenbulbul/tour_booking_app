@@ -34,6 +34,10 @@ mixin _$CreateBookingCommand {
   double? get Latitude => throw _privateConstructorUsedError;
   double? get Longitude => throw _privateConstructorUsedError;
   String? get LocationDescription => throw _privateConstructorUsedError;
+  String get buyerFirstName => throw _privateConstructorUsedError;
+  String get buyerLastName => throw _privateConstructorUsedError;
+  String get buyerEmail => throw _privateConstructorUsedError;
+  String get buyerPhone => throw _privateConstructorUsedError;
   @JsonKey(toJson: _dateToString)
   DateTime get date => throw _privateConstructorUsedError;
 
@@ -66,6 +70,10 @@ abstract class $CreateBookingCommandCopyWith<$Res> {
     double? Latitude,
     double? Longitude,
     String? LocationDescription,
+    String buyerFirstName,
+    String buyerLastName,
+    String buyerEmail,
+    String buyerPhone,
     @JsonKey(toJson: _dateToString) DateTime date,
   });
 }
@@ -99,6 +107,10 @@ class _$CreateBookingCommandCopyWithImpl<
     Object? Latitude = freezed,
     Object? Longitude = freezed,
     Object? LocationDescription = freezed,
+    Object? buyerFirstName = null,
+    Object? buyerLastName = null,
+    Object? buyerEmail = null,
+    Object? buyerPhone = null,
     Object? date = null,
   }) {
     return _then(
@@ -147,6 +159,22 @@ class _$CreateBookingCommandCopyWithImpl<
                 ? _value.LocationDescription
                 : LocationDescription // ignore: cast_nullable_to_non_nullable
                       as String?,
+            buyerFirstName: null == buyerFirstName
+                ? _value.buyerFirstName
+                : buyerFirstName // ignore: cast_nullable_to_non_nullable
+                      as String,
+            buyerLastName: null == buyerLastName
+                ? _value.buyerLastName
+                : buyerLastName // ignore: cast_nullable_to_non_nullable
+                      as String,
+            buyerEmail: null == buyerEmail
+                ? _value.buyerEmail
+                : buyerEmail // ignore: cast_nullable_to_non_nullable
+                      as String,
+            buyerPhone: null == buyerPhone
+                ? _value.buyerPhone
+                : buyerPhone // ignore: cast_nullable_to_non_nullable
+                      as String,
             date: null == date
                 ? _value.date
                 : date // ignore: cast_nullable_to_non_nullable
@@ -178,6 +206,10 @@ abstract class _$$CreateBookingCommandImplCopyWith<$Res>
     double? Latitude,
     double? Longitude,
     String? LocationDescription,
+    String buyerFirstName,
+    String buyerLastName,
+    String buyerEmail,
+    String buyerPhone,
     @JsonKey(toJson: _dateToString) DateTime date,
   });
 }
@@ -207,6 +239,10 @@ class __$$CreateBookingCommandImplCopyWithImpl<$Res>
     Object? Latitude = freezed,
     Object? Longitude = freezed,
     Object? LocationDescription = freezed,
+    Object? buyerFirstName = null,
+    Object? buyerLastName = null,
+    Object? buyerEmail = null,
+    Object? buyerPhone = null,
     Object? date = null,
   }) {
     return _then(
@@ -255,6 +291,22 @@ class __$$CreateBookingCommandImplCopyWithImpl<$Res>
             ? _value.LocationDescription
             : LocationDescription // ignore: cast_nullable_to_non_nullable
                   as String?,
+        buyerFirstName: null == buyerFirstName
+            ? _value.buyerFirstName
+            : buyerFirstName // ignore: cast_nullable_to_non_nullable
+                  as String,
+        buyerLastName: null == buyerLastName
+            ? _value.buyerLastName
+            : buyerLastName // ignore: cast_nullable_to_non_nullable
+                  as String,
+        buyerEmail: null == buyerEmail
+            ? _value.buyerEmail
+            : buyerEmail // ignore: cast_nullable_to_non_nullable
+                  as String,
+        buyerPhone: null == buyerPhone
+            ? _value.buyerPhone
+            : buyerPhone // ignore: cast_nullable_to_non_nullable
+                  as String,
         date: null == date
             ? _value.date
             : date // ignore: cast_nullable_to_non_nullable
@@ -279,6 +331,10 @@ class _$CreateBookingCommandImpl implements _CreateBookingCommand {
     this.Latitude,
     this.Longitude,
     this.LocationDescription,
+    required this.buyerFirstName,
+    required this.buyerLastName,
+    required this.buyerEmail,
+    required this.buyerPhone,
     @JsonKey(toJson: _dateToString) required this.date,
   });
 
@@ -310,12 +366,20 @@ class _$CreateBookingCommandImpl implements _CreateBookingCommand {
   @override
   final String? LocationDescription;
   @override
+  final String buyerFirstName;
+  @override
+  final String buyerLastName;
+  @override
+  final String buyerEmail;
+  @override
+  final String buyerPhone;
+  @override
   @JsonKey(toJson: _dateToString)
   final DateTime date;
 
   @override
   String toString() {
-    return 'CreateBookingCommand(tourPointId: $tourPointId, guideId: $guideId, cityId: $cityId, districtId: $districtId, vehicleId: $vehicleId, departureTime: $departureTime, tourPrice: $tourPrice, guidePrice: $guidePrice, Latitude: $Latitude, Longitude: $Longitude, LocationDescription: $LocationDescription, date: $date)';
+    return 'CreateBookingCommand(tourPointId: $tourPointId, guideId: $guideId, cityId: $cityId, districtId: $districtId, vehicleId: $vehicleId, departureTime: $departureTime, tourPrice: $tourPrice, guidePrice: $guidePrice, Latitude: $Latitude, Longitude: $Longitude, LocationDescription: $LocationDescription, buyerFirstName: $buyerFirstName, buyerLastName: $buyerLastName, buyerEmail: $buyerEmail, buyerPhone: $buyerPhone, date: $date)';
   }
 
   @override
@@ -343,6 +407,14 @@ class _$CreateBookingCommandImpl implements _CreateBookingCommand {
                 other.Longitude == Longitude) &&
             (identical(other.LocationDescription, LocationDescription) ||
                 other.LocationDescription == LocationDescription) &&
+            (identical(other.buyerFirstName, buyerFirstName) ||
+                other.buyerFirstName == buyerFirstName) &&
+            (identical(other.buyerLastName, buyerLastName) ||
+                other.buyerLastName == buyerLastName) &&
+            (identical(other.buyerEmail, buyerEmail) ||
+                other.buyerEmail == buyerEmail) &&
+            (identical(other.buyerPhone, buyerPhone) ||
+                other.buyerPhone == buyerPhone) &&
             (identical(other.date, date) || other.date == date));
   }
 
@@ -361,6 +433,10 @@ class _$CreateBookingCommandImpl implements _CreateBookingCommand {
     Latitude,
     Longitude,
     LocationDescription,
+    buyerFirstName,
+    buyerLastName,
+    buyerEmail,
+    buyerPhone,
     date,
   );
 
@@ -395,6 +471,10 @@ abstract class _CreateBookingCommand implements CreateBookingCommand {
     final double? Latitude,
     final double? Longitude,
     final String? LocationDescription,
+    required final String buyerFirstName,
+    required final String buyerLastName,
+    required final String buyerEmail,
+    required final String buyerPhone,
     @JsonKey(toJson: _dateToString) required final DateTime date,
   }) = _$CreateBookingCommandImpl;
 
@@ -425,6 +505,14 @@ abstract class _CreateBookingCommand implements CreateBookingCommand {
   double? get Longitude;
   @override
   String? get LocationDescription;
+  @override
+  String get buyerFirstName;
+  @override
+  String get buyerLastName;
+  @override
+  String get buyerEmail;
+  @override
+  String get buyerPhone;
   @override
   @JsonKey(toJson: _dateToString)
   DateTime get date;

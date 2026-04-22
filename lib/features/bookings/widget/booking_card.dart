@@ -116,12 +116,17 @@ class _BookingCardState extends State<BookingCard> {
   @override
   Widget build(BuildContext context) {
     final item = widget.item;
+    final effectiveTime = item.bookingType == 1
+        ? (item.pickupTime ?? item.departureTime)
+        : item.departureTime;
     final canCancelByTime = _canCancelWithTimeLimit(
       item.departureDate,
-      item.departureTime,
+      effectiveTime,
     );
     final canRate = _canRate == true;
-    final departureDate = DateTime.parse(item.departureDate);
+    final departureDate = item.departureDate.isNotEmpty
+        ? DateTime.parse(item.departureDate)
+        : DateTime.now();
     final formattedDate = DateFormat(
       'dd MMMM yyyy',
       'tr_TR',
@@ -166,35 +171,42 @@ class _BookingCardState extends State<BookingCard> {
                       color: statusColor.withOpacity(.12),
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: CachedNetworkImage(
-                        imageUrl: item.image,
-                        width: 56,
-                        height: 56,
-                        fit: BoxFit.cover,
-
-                        placeholder: (_, __) => const ShimmerBox(
-                          width: 56,
-                          height: 56,
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
-                        ),
-
-                        errorWidget: (_, __, ___) => Container(
-                          width: 56,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
+                    child: item.bookingType == 1
+                        ? Center(
+                            child: Icon(
+                              Icons.directions_car_rounded,
+                              color: statusColor,
+                              size: 24,
+                            ),
+                          )
+                        : ClipRRect(
                             borderRadius: BorderRadius.circular(12),
+                            child: CachedNetworkImage(
+                              imageUrl: item.image,
+                              width: 56,
+                              height: 56,
+                              fit: BoxFit.cover,
+                              placeholder: (_, __) => const ShimmerBox(
+                                width: 56,
+                                height: 56,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(12)),
+                              ),
+                              errorWidget: (_, __, ___) => Container(
+                                width: 56,
+                                height: 56,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade300,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Icon(
+                                  Icons.image_not_supported_outlined,
+                                  color: Colors.grey,
+                                  size: 22,
+                                ),
+                              ),
+                            ),
                           ),
-                          child: const Icon(
-                            Icons.image_not_supported_outlined,
-                            color: Colors.grey,
-                            size: 22,
-                          ),
-                        ),
-                      ),
-                    ),
                   ),
 
                   const SizedBox(width: 12),
@@ -208,7 +220,9 @@ class _BookingCardState extends State<BookingCard> {
                       children: [
                         // TITLE
                         Text(
-                          item.tourPointName,
+                          item.bookingType == 1
+                              ? '${item.pickupAddress ?? ''} → ${item.dropoffAddress ?? ''}'
+                              : item.tourPointName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -300,26 +314,55 @@ class _BookingCardState extends State<BookingCard> {
                       color: Colors.grey.withOpacity(.15),
                     ),
 
-                    _info(
-                      Icons.place_outlined,
-                      'booking_label_departure_location'.tr(),
-                      item.departureLocationDescription,
-                    ),
-                    _info(
-                      Icons.access_time_rounded,
-                      'booking_label_time'.tr(),
-                      item.departureTime,
-                    ),
-                    _info(
-                      Icons.directions_bus_rounded,
-                      'booking_label_vehicle'.tr(),
-                      "${item.vehicleBrand} • ${item.seatCount}",
-                    ),
-                    _info(
-                      Icons.person_rounded,
-                      'booking_label_driver'.tr(),
-                      item.driverName,
-                    ),
+                    if (item.bookingType == 1) ...[
+                      _info(
+                        Icons.circle,
+                        'transport_pickup'.tr(),
+                        item.pickupAddress ?? '-',
+                      ),
+                      _info(
+                        Icons.circle,
+                        'transport_dropoff'.tr(),
+                        item.dropoffAddress ?? '-',
+                      ),
+                      if (item.distanceKm != null)
+                        _info(
+                          Icons.straighten,
+                          'transport_distance'.tr(),
+                          '${item.distanceKm!.toStringAsFixed(1)} km',
+                        ),
+                      _info(
+                        Icons.access_time_rounded,
+                        'booking_label_time'.tr(),
+                        item.pickupTime ?? item.departureTime,
+                      ),
+                      _info(
+                        Icons.person_rounded,
+                        'booking_label_driver'.tr(),
+                        item.driverName,
+                      ),
+                    ] else ...[
+                      _info(
+                        Icons.place_outlined,
+                        'booking_label_departure_location'.tr(),
+                        item.departureLocationDescription,
+                      ),
+                      _info(
+                        Icons.access_time_rounded,
+                        'booking_label_time'.tr(),
+                        item.departureTime,
+                      ),
+                      _info(
+                        Icons.directions_bus_rounded,
+                        'booking_label_vehicle'.tr(),
+                        "${item.vehicleBrand} • ${item.seatCount}",
+                      ),
+                      _info(
+                        Icons.person_rounded,
+                        'booking_label_driver'.tr(),
+                        item.driverName,
+                      ),
+                    ],
 
                     const SizedBox(height: 12),
 
@@ -545,6 +588,7 @@ Widget _cancelNotAllowedInfo() {
 }
 
 bool _canCancelWithTimeLimit(String departureDate, String departureTime) {
+  if (departureDate.isEmpty || departureTime.isEmpty) return false;
   final departure = _parseDepartureDateTime(departureDate, departureTime);
 
   return departure.isAfter(DateTime.now().add(const Duration(hours: 12)));

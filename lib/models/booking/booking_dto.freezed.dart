@@ -42,6 +42,11 @@ mixin _$BookingDto {
   bool? get canRate => throw _privateConstructorUsedError;
   String? get ratingRequestId => throw _privateConstructorUsedError;
   String? get ratingToken => throw _privateConstructorUsedError;
+  int get bookingType => throw _privateConstructorUsedError;
+  String? get pickupAddress => throw _privateConstructorUsedError;
+  String? get dropoffAddress => throw _privateConstructorUsedError;
+  double? get distanceKm => throw _privateConstructorUsedError;
+  String? get pickupTime => throw _privateConstructorUsedError;
 
   /// Serializes this BookingDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -82,6 +87,11 @@ abstract class $BookingDtoCopyWith<$Res> {
     bool? canRate,
     String? ratingRequestId,
     String? ratingToken,
+    int bookingType,
+    String? pickupAddress,
+    String? dropoffAddress,
+    double? distanceKm,
+    String? pickupTime,
   });
 }
 
@@ -121,6 +131,11 @@ class _$BookingDtoCopyWithImpl<$Res, $Val extends BookingDto>
     Object? canRate = freezed,
     Object? ratingRequestId = freezed,
     Object? ratingToken = freezed,
+    Object? bookingType = null,
+    Object? pickupAddress = freezed,
+    Object? dropoffAddress = freezed,
+    Object? distanceKm = freezed,
+    Object? pickupTime = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -208,6 +223,26 @@ class _$BookingDtoCopyWithImpl<$Res, $Val extends BookingDto>
                 ? _value.ratingToken
                 : ratingToken // ignore: cast_nullable_to_non_nullable
                       as String?,
+            bookingType: null == bookingType
+                ? _value.bookingType
+                : bookingType // ignore: cast_nullable_to_non_nullable
+                      as int,
+            pickupAddress: freezed == pickupAddress
+                ? _value.pickupAddress
+                : pickupAddress // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            dropoffAddress: freezed == dropoffAddress
+                ? _value.dropoffAddress
+                : dropoffAddress // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            distanceKm: freezed == distanceKm
+                ? _value.distanceKm
+                : distanceKm // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            pickupTime: freezed == pickupTime
+                ? _value.pickupTime
+                : pickupTime // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -245,6 +280,11 @@ abstract class _$$BookingDtoImplCopyWith<$Res>
     bool? canRate,
     String? ratingRequestId,
     String? ratingToken,
+    int bookingType,
+    String? pickupAddress,
+    String? dropoffAddress,
+    double? distanceKm,
+    String? pickupTime,
   });
 }
 
@@ -283,6 +323,11 @@ class __$$BookingDtoImplCopyWithImpl<$Res>
     Object? canRate = freezed,
     Object? ratingRequestId = freezed,
     Object? ratingToken = freezed,
+    Object? bookingType = null,
+    Object? pickupAddress = freezed,
+    Object? dropoffAddress = freezed,
+    Object? distanceKm = freezed,
+    Object? pickupTime = freezed,
   }) {
     return _then(
       _$BookingDtoImpl(
@@ -370,6 +415,26 @@ class __$$BookingDtoImplCopyWithImpl<$Res>
             ? _value.ratingToken
             : ratingToken // ignore: cast_nullable_to_non_nullable
                   as String?,
+        bookingType: null == bookingType
+            ? _value.bookingType
+            : bookingType // ignore: cast_nullable_to_non_nullable
+                  as int,
+        pickupAddress: freezed == pickupAddress
+            ? _value.pickupAddress
+            : pickupAddress // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        dropoffAddress: freezed == dropoffAddress
+            ? _value.dropoffAddress
+            : dropoffAddress // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        distanceKm: freezed == distanceKm
+            ? _value.distanceKm
+            : distanceKm // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        pickupTime: freezed == pickupTime
+            ? _value.pickupTime
+            : pickupTime // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -380,26 +445,31 @@ class __$$BookingDtoImplCopyWithImpl<$Res>
 class _$BookingDtoImpl implements _BookingDto {
   const _$BookingDtoImpl({
     required this.id,
-    required this.image,
-    required this.tourPointName,
-    required this.tourPointCity,
-    required this.tourPointDistrict,
-    required this.departureTime,
-    required this.driverName,
-    required this.tourPointPrice,
-    required this.guideName,
-    required this.guidePrice,
-    required this.totalPrice,
-    required this.vehicleBrand,
-    required this.seatCount,
-    required this.departureLocationDescription,
-    required this.departureCity,
-    required this.departureDistrict,
-    required this.departureDate,
-    required this.status,
+    this.image = '',
+    this.tourPointName = '',
+    this.tourPointCity = '',
+    this.tourPointDistrict = '',
+    this.departureTime = '',
+    this.driverName = '',
+    this.tourPointPrice = 0,
+    this.guideName = '',
+    this.guidePrice = 0,
+    this.totalPrice = 0,
+    this.vehicleBrand = '',
+    this.seatCount = 0,
+    this.departureLocationDescription = '',
+    this.departureCity = '',
+    this.departureDistrict = '',
+    this.departureDate = '',
+    this.status = '',
     this.canRate,
     this.ratingRequestId,
     this.ratingToken,
+    this.bookingType = 0,
+    this.pickupAddress,
+    this.dropoffAddress,
+    this.distanceKm,
+    this.pickupTime,
   });
 
   factory _$BookingDtoImpl.fromJson(Map<String, dynamic> json) =>
@@ -408,38 +478,55 @@ class _$BookingDtoImpl implements _BookingDto {
   @override
   final String id;
   @override
+  @JsonKey()
   final String image;
   @override
+  @JsonKey()
   final String tourPointName;
   @override
+  @JsonKey()
   final String tourPointCity;
   @override
+  @JsonKey()
   final String tourPointDistrict;
   @override
+  @JsonKey()
   final String departureTime;
   @override
+  @JsonKey()
   final String driverName;
   @override
+  @JsonKey()
   final num tourPointPrice;
   @override
+  @JsonKey()
   final String guideName;
   @override
+  @JsonKey()
   final num guidePrice;
   @override
+  @JsonKey()
   final num totalPrice;
   @override
+  @JsonKey()
   final String vehicleBrand;
   @override
+  @JsonKey()
   final int seatCount;
   @override
+  @JsonKey()
   final String departureLocationDescription;
   @override
+  @JsonKey()
   final String departureCity;
   @override
+  @JsonKey()
   final String departureDistrict;
   @override
+  @JsonKey()
   final String departureDate;
   @override
+  @JsonKey()
   final String status;
   @override
   final bool? canRate;
@@ -447,10 +534,21 @@ class _$BookingDtoImpl implements _BookingDto {
   final String? ratingRequestId;
   @override
   final String? ratingToken;
+  @override
+  @JsonKey()
+  final int bookingType;
+  @override
+  final String? pickupAddress;
+  @override
+  final String? dropoffAddress;
+  @override
+  final double? distanceKm;
+  @override
+  final String? pickupTime;
 
   @override
   String toString() {
-    return 'BookingDto(id: $id, image: $image, tourPointName: $tourPointName, tourPointCity: $tourPointCity, tourPointDistrict: $tourPointDistrict, departureTime: $departureTime, driverName: $driverName, tourPointPrice: $tourPointPrice, guideName: $guideName, guidePrice: $guidePrice, totalPrice: $totalPrice, vehicleBrand: $vehicleBrand, seatCount: $seatCount, departureLocationDescription: $departureLocationDescription, departureCity: $departureCity, departureDistrict: $departureDistrict, departureDate: $departureDate, status: $status, canRate: $canRate, ratingRequestId: $ratingRequestId, ratingToken: $ratingToken)';
+    return 'BookingDto(id: $id, image: $image, tourPointName: $tourPointName, tourPointCity: $tourPointCity, tourPointDistrict: $tourPointDistrict, departureTime: $departureTime, driverName: $driverName, tourPointPrice: $tourPointPrice, guideName: $guideName, guidePrice: $guidePrice, totalPrice: $totalPrice, vehicleBrand: $vehicleBrand, seatCount: $seatCount, departureLocationDescription: $departureLocationDescription, departureCity: $departureCity, departureDistrict: $departureDistrict, departureDate: $departureDate, status: $status, canRate: $canRate, ratingRequestId: $ratingRequestId, ratingToken: $ratingToken, bookingType: $bookingType, pickupAddress: $pickupAddress, dropoffAddress: $dropoffAddress, distanceKm: $distanceKm, pickupTime: $pickupTime)';
   }
 
   @override
@@ -499,7 +597,17 @@ class _$BookingDtoImpl implements _BookingDto {
             (identical(other.ratingRequestId, ratingRequestId) ||
                 other.ratingRequestId == ratingRequestId) &&
             (identical(other.ratingToken, ratingToken) ||
-                other.ratingToken == ratingToken));
+                other.ratingToken == ratingToken) &&
+            (identical(other.bookingType, bookingType) ||
+                other.bookingType == bookingType) &&
+            (identical(other.pickupAddress, pickupAddress) ||
+                other.pickupAddress == pickupAddress) &&
+            (identical(other.dropoffAddress, dropoffAddress) ||
+                other.dropoffAddress == dropoffAddress) &&
+            (identical(other.distanceKm, distanceKm) ||
+                other.distanceKm == distanceKm) &&
+            (identical(other.pickupTime, pickupTime) ||
+                other.pickupTime == pickupTime));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -527,6 +635,11 @@ class _$BookingDtoImpl implements _BookingDto {
     canRate,
     ratingRequestId,
     ratingToken,
+    bookingType,
+    pickupAddress,
+    dropoffAddress,
+    distanceKm,
+    pickupTime,
   ]);
 
   /// Create a copy of BookingDto
@@ -546,26 +659,31 @@ class _$BookingDtoImpl implements _BookingDto {
 abstract class _BookingDto implements BookingDto {
   const factory _BookingDto({
     required final String id,
-    required final String image,
-    required final String tourPointName,
-    required final String tourPointCity,
-    required final String tourPointDistrict,
-    required final String departureTime,
-    required final String driverName,
-    required final num tourPointPrice,
-    required final String guideName,
-    required final num guidePrice,
-    required final num totalPrice,
-    required final String vehicleBrand,
-    required final int seatCount,
-    required final String departureLocationDescription,
-    required final String departureCity,
-    required final String departureDistrict,
-    required final String departureDate,
-    required final String status,
+    final String image,
+    final String tourPointName,
+    final String tourPointCity,
+    final String tourPointDistrict,
+    final String departureTime,
+    final String driverName,
+    final num tourPointPrice,
+    final String guideName,
+    final num guidePrice,
+    final num totalPrice,
+    final String vehicleBrand,
+    final int seatCount,
+    final String departureLocationDescription,
+    final String departureCity,
+    final String departureDistrict,
+    final String departureDate,
+    final String status,
     final bool? canRate,
     final String? ratingRequestId,
     final String? ratingToken,
+    final int bookingType,
+    final String? pickupAddress,
+    final String? dropoffAddress,
+    final double? distanceKm,
+    final String? pickupTime,
   }) = _$BookingDtoImpl;
 
   factory _BookingDto.fromJson(Map<String, dynamic> json) =
@@ -613,6 +731,16 @@ abstract class _BookingDto implements BookingDto {
   String? get ratingRequestId;
   @override
   String? get ratingToken;
+  @override
+  int get bookingType;
+  @override
+  String? get pickupAddress;
+  @override
+  String? get dropoffAddress;
+  @override
+  double? get distanceKm;
+  @override
+  String? get pickupTime;
 
   /// Create a copy of BookingDto
   /// with the given fields replaced by the non-null parameter values.

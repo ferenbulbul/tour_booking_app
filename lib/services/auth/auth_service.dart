@@ -14,7 +14,7 @@ class AuthService {
 
   AuthService({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
 
-  /// 🔹 Login
+  /// Login
   Future<BaseResponse<LoginResponse>> login(LoginRequest req) async {
     final device = await DeviceInfoHelper.getDevice();
 
@@ -30,7 +30,7 @@ class AuthService {
     );
   }
 
-  /// 🔹 Register
+  /// Register
   Future<BaseResponse<LoginResponse>> register(RegisterRequest req) async {
     final device = await DeviceInfoHelper.getDevice();
 
@@ -46,7 +46,7 @@ class AuthService {
     );
   }
 
-  /// 🔹 Google veya Apple login (Firebase token üzerinden)
+  /// Google veya Apple login (Firebase token uzerinden)
   Future<BaseResponse<LoginResponse>> verifyGoogleUser(
     FirebaseTokenRequest req,
   ) async {
@@ -60,6 +60,47 @@ class AuthService {
     return _apiClient.post<LoginResponse>(
       path: '/Auth/signin-with-google',
       body: updatedReq.toJson(),
+      fromJson: (json) => LoginResponse.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  /// Guest sign-in (anonim giris)
+  Future<BaseResponse<LoginResponse>> guestSignIn() async {
+    final device = await DeviceInfoHelper.getDevice();
+
+    return _apiClient.post<LoginResponse>(
+      path: '/Auth/guest-signin',
+      body: {
+        'deviceId': device.deviceId,
+        'deviceModel': device.deviceModel,
+      },
+      fromJson: (json) => LoginResponse.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  /// Upgrade guest account to full customer
+  Future<BaseResponse<LoginResponse>> upgradeAccount({
+    required String email,
+    required String password,
+    required String firstName,
+    required String lastName,
+    String? phoneNumber,
+    String? countryCode,
+  }) async {
+    final device = await DeviceInfoHelper.getDevice();
+
+    return _apiClient.post<LoginResponse>(
+      path: '/Auth/upgrade-account',
+      body: {
+        'email': email,
+        'password': password,
+        'firstName': firstName,
+        'lastName': lastName,
+        if (phoneNumber != null) 'phoneNumber': phoneNumber,
+        if (countryCode != null) 'countryCode': countryCode,
+        'deviceId': device.deviceId,
+        'deviceModel': device.deviceModel,
+      },
       fromJson: (json) => LoginResponse.fromJson(json as Map<String, dynamic>),
     );
   }
@@ -106,7 +147,7 @@ class AuthService {
 
   Future<void> updatePlayerId(String id) async {
     final device = await DeviceInfoHelper.getDevice();
-    _apiClient.post<void>(
+    await _apiClient.post<void>(
       path: '/Auth/onesignal-id',
       body: {'playerId': id, 'deviceId': device.deviceId},
     );
@@ -115,7 +156,7 @@ class AuthService {
   Future<void> logout() async {
     final device = await DeviceInfoHelper.getDevice();
     final deviceId = device.deviceId;
-    _apiClient.post<void>(path: '/Auth/logout', body: {'deviceId': deviceId});
+    await _apiClient.post<void>(path: '/Auth/logout', body: {'deviceId': deviceId});
   }
 
   Future<BaseResponse<void>> deleteAccount() async {

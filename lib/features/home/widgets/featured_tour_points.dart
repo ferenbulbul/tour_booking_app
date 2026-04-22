@@ -7,6 +7,7 @@ import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/features/home/home_viewmodel.dart';
 import 'package:tour_booking/features/home/widgets/featured_card_skelaton.dart';
+import 'package:tour_booking/models/featured_tour_point/featured_tour_point_dto.dart';
 
 class FeaturedCard extends StatelessWidget {
   final String id;
@@ -175,13 +176,16 @@ class FeaturedPointsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<HomeViewModel>();
+    final isLoading = context.select<HomeViewModel, bool>((vm) => vm.isLoading);
+    final featuredPoints = context.select<HomeViewModel, List<FeaturedTourPointDto>>(
+      (vm) => vm.featuredPoints,
+    );
 
-    if (vm.isLoading) {
+    if (isLoading) {
       return const FeaturedPointsSkeleton();
     }
 
-    if (vm.featuredPoints.isEmpty) {
+    if (featuredPoints.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -192,10 +196,10 @@ class FeaturedPointsWidget extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
 
-        itemCount: vm.featuredPoints.length,
+        itemCount: featuredPoints.length,
         separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.l),
         itemBuilder: (context, index) {
-          final p = vm.featuredPoints[index];
+          final p = featuredPoints[index];
 
           return FeaturedCard(
             id: p.id,

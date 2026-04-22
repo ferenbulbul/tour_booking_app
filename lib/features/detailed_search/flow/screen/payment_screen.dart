@@ -16,10 +16,6 @@ class PaymentPage extends StatefulWidget {
 
 class _PaymentPageState extends State<PaymentPage> {
   WebViewController? _controller;
-  bool _isCheckingPayment = false;
-
-  // DEĞİŞİKLİK: WebView'in ilk yüklemesinin bitip bitmediğini takip etmek için yeni bir bayrak
-  bool _isPageFinished = false;
 
   @override
   void initState() {
@@ -55,25 +51,15 @@ class _PaymentPageState extends State<PaymentPage> {
             ..setNavigationDelegate(
               NavigationDelegate(
                 onNavigationRequest: (req) {
-                  debugPrint("WebView gezinme isteği: ${req.url}");
                   return NavigationDecision.navigate;
                 },
                 onPageFinished: (String url) {
-                  debugPrint("Sayfa yüklendi: $url");
-
-                  // DEĞİŞİKLİK: İlk sayfa yüklemesi bittiğinde bayrağı true yapıyoruz ki yükleme ekranı kaybolsun.
-                  if (!_isPageFinished) {
-                    setState(() {
-                      _isPageFinished = true;
-                    });
-                  }
+                  vm.setPageFinished();
 
                   const String callbackIdentifier = "payments/callback";
 
-                  if (url.contains(callbackIdentifier) && !_isCheckingPayment) {
-                    setState(() {
-                      _isCheckingPayment = true;
-                    });
+                  if (url.contains(callbackIdentifier) && !vm.isCheckingPayment) {
+                    vm.setCheckingPayment(true);
 
                     final token = vm.initData?.token;
                     if (token != null) {
@@ -98,7 +84,7 @@ class _PaymentPageState extends State<PaymentPage> {
             ..loadRequest(Uri.parse(url));
         }
 
-        if (_isCheckingPayment) {
+        if (vm.isCheckingPayment) {
           return Scaffold(
             appBar: AppBar(title: Text(tr('payment_title'))),
             body: Center(
@@ -124,8 +110,8 @@ class _PaymentPageState extends State<PaymentPage> {
                     // WebView her zaman altta, görünmez bile olsa var olacak.
                     WebViewWidget(controller: _controller!),
 
-                    // Sayfa yüklenmediyse (_isPageFinished false ise) bu katman WebView'in üzerinde görünecek.
-                    if (!_isPageFinished)
+                    // Sayfa yüklenmediyse (isPageFinished false ise) bu katman WebView'in üzerinde görünecek.
+                    if (!vm.isPageFinished)
                       Scaffold(
                         // Arka planın temiz görünmesi için Scaffold kullandık
                         body: Center(

@@ -24,6 +24,7 @@ mixin _$UserMe {
   String? get userId => throw _privateConstructorUsedError;
   bool get emailConfirmed => throw _privateConstructorUsedError;
   String? get firstName => throw _privateConstructorUsedError;
+  String? get role => throw _privateConstructorUsedError;
 
   /// Serializes this UserMe to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -39,7 +40,12 @@ abstract class $UserMeCopyWith<$Res> {
   factory $UserMeCopyWith(UserMe value, $Res Function(UserMe) then) =
       _$UserMeCopyWithImpl<$Res, UserMe>;
   @useResult
-  $Res call({String? userId, bool emailConfirmed, String? firstName});
+  $Res call({
+    String? userId,
+    bool emailConfirmed,
+    String? firstName,
+    String? role,
+  });
 }
 
 /// @nodoc
@@ -60,6 +66,7 @@ class _$UserMeCopyWithImpl<$Res, $Val extends UserMe>
     Object? userId = freezed,
     Object? emailConfirmed = null,
     Object? firstName = freezed,
+    Object? role = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -75,6 +82,10 @@ class _$UserMeCopyWithImpl<$Res, $Val extends UserMe>
                 ? _value.firstName
                 : firstName // ignore: cast_nullable_to_non_nullable
                       as String?,
+            role: freezed == role
+                ? _value.role
+                : role // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -89,7 +100,12 @@ abstract class _$$UserMeImplCopyWith<$Res> implements $UserMeCopyWith<$Res> {
   ) = __$$UserMeImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String? userId, bool emailConfirmed, String? firstName});
+  $Res call({
+    String? userId,
+    bool emailConfirmed,
+    String? firstName,
+    String? role,
+  });
 }
 
 /// @nodoc
@@ -109,6 +125,7 @@ class __$$UserMeImplCopyWithImpl<$Res>
     Object? userId = freezed,
     Object? emailConfirmed = null,
     Object? firstName = freezed,
+    Object? role = freezed,
   }) {
     return _then(
       _$UserMeImpl(
@@ -124,6 +141,10 @@ class __$$UserMeImplCopyWithImpl<$Res>
             ? _value.firstName
             : firstName // ignore: cast_nullable_to_non_nullable
                   as String?,
+        role: freezed == role
+            ? _value.role
+            : role // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -136,6 +157,7 @@ class _$UserMeImpl implements _UserMe {
     this.userId,
     required this.emailConfirmed,
     this.firstName,
+    this.role,
   });
 
   factory _$UserMeImpl.fromJson(Map<String, dynamic> json) =>
@@ -147,10 +169,12 @@ class _$UserMeImpl implements _UserMe {
   final bool emailConfirmed;
   @override
   final String? firstName;
+  @override
+  final String? role;
 
   @override
   String toString() {
-    return 'UserMe(userId: $userId, emailConfirmed: $emailConfirmed, firstName: $firstName)';
+    return 'UserMe(userId: $userId, emailConfirmed: $emailConfirmed, firstName: $firstName, role: $role)';
   }
 
   @override
@@ -162,13 +186,14 @@ class _$UserMeImpl implements _UserMe {
             (identical(other.emailConfirmed, emailConfirmed) ||
                 other.emailConfirmed == emailConfirmed) &&
             (identical(other.firstName, firstName) ||
-                other.firstName == firstName));
+                other.firstName == firstName) &&
+            (identical(other.role, role) || other.role == role));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, userId, emailConfirmed, firstName);
+      Object.hash(runtimeType, userId, emailConfirmed, firstName, role);
 
   /// Create a copy of UserMe
   /// with the given fields replaced by the non-null parameter values.
@@ -189,6 +214,7 @@ abstract class _UserMe implements UserMe {
     final String? userId,
     required final bool emailConfirmed,
     final String? firstName,
+    final String? role,
   }) = _$UserMeImpl;
 
   factory _UserMe.fromJson(Map<String, dynamic> json) = _$UserMeImpl.fromJson;
@@ -199,6 +225,8 @@ abstract class _UserMe implements UserMe {
   bool get emailConfirmed;
   @override
   String? get firstName;
+  @override
+  String? get role;
 
   /// Create a copy of UserMe
   /// with the given fields replaced by the non-null parameter values.

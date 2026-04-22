@@ -20,6 +20,10 @@ _$CreateBookingCommandImpl _$$CreateBookingCommandImplFromJson(
   Latitude: (json['Latitude'] as num?)?.toDouble(),
   Longitude: (json['Longitude'] as num?)?.toDouble(),
   LocationDescription: json['LocationDescription'] as String?,
+  buyerFirstName: json['buyerFirstName'] as String,
+  buyerLastName: json['buyerLastName'] as String,
+  buyerEmail: json['buyerEmail'] as String,
+  buyerPhone: json['buyerPhone'] as String,
   date: DateTime.parse(json['date'] as String),
 );
 
@@ -40,6 +44,10 @@ Map<String, dynamic> _$$CreateBookingCommandImplToJson(
   'Latitude': instance.Latitude,
   'Longitude': instance.Longitude,
   'LocationDescription': instance.LocationDescription,
+  'buyerFirstName': instance.buyerFirstName,
+  'buyerLastName': instance.buyerLastName,
+  'buyerEmail': instance.buyerEmail,
+  'buyerPhone': instance.buyerPhone,
   'date': _dateToString(instance.date),
 };
 
