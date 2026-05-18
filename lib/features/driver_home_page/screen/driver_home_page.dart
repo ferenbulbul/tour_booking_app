@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
 import 'package:tour_booking/features/driver_home_page/driver_viewmodel.dart';
 import 'package:tour_booking/features/driver_home_page/widget/customer_info_list_view.dart';
 import 'package:tour_booking/features/driver_home_page/widget/location_control_card.dart';
-import 'package:tour_booking/features/home/widgets/driver_location_status.dart';
-import 'package:tour_booking/features/auth/login/widgets/google_view_model.dart';
+import 'package:tour_booking/features/home/widget/driver_location_status.dart';
+import 'package:tour_booking/features/auth/login/google_viewmodel.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
 import 'package:tour_booking/services/driver/driver_service.dart';
 
@@ -41,15 +41,10 @@ class _DriverHomePageState extends State<_DriverHomePageContent> {
     });
   }
 
-  Future<void> _loadUserRole() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!mounted) return;
-
-    final roleString = prefs.getString('user_role');
+  void _loadUserRole() {
+    final role = context.read<SplashViewModel>().role ?? UserRole.customer;
     setState(() {
-      _currentUserRole = roleString != null
-          ? UserRoleExtension.fromString(roleString)
-          : UserRole.customer;
+      _currentUserRole = role;
     });
   }
 
@@ -64,15 +59,17 @@ class _DriverHomePageState extends State<_DriverHomePageContent> {
               title: const Text('Tourlio Sürücü'),
               actions: [
                 IconButton(
-                  icon: const Icon(Icons.refresh),
+                  icon: const Icon(SolarIconsOutline.refresh),
                   onPressed: vm.isLoading ? null : vm.refresh,
                 ),
                 IconButton(
-                  icon: const Icon(Icons.logout),
+                  icon: const Icon(SolarIconsOutline.logout),
                   onPressed: () async {
-                    await context.read<AuthViewModel>().signOut();
-                    if (!context.mounted) return;
-                    await context.read<SplashViewModel>().signOutToGuest();
+                    final splashVm = context.read<SplashViewModel>();
+                    final authVm = context.read<AuthViewModel>();
+                    await splashVm.performFullSignOut(
+                      socialCleanup: () => authVm.socialSignOut(),
+                    );
                   },
                 ),
               ],

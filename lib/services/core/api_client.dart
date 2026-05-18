@@ -1,9 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
-import 'package:tour_booking/features/auth/login/widgets/google_view_model.dart';
 import 'package:tour_booking/models/auth_response/auth_response.dart';
 import 'package:tour_booking/models/base/base_response.dart';
 import 'package:tour_booking/models/refresh_token_request/refresh_token_request.dart';
@@ -18,11 +18,18 @@ class ApiClient {
   final String _mobileUrl = dotenv.env['mobileAndroid'] ?? '';
   final String _cloudUrl = dotenv.env['cloud'] ?? '';
   late String _url = _baseUrl;
-  final AuthViewModel? _authViewModel;
 
-  ApiClient({AuthViewModel? authViewModel, http.Client? client})
-    : _client = client ?? http.Client(),
-      _authViewModel = authViewModel;
+  /// HTTP request timeout — prevents hanging indefinitely
+  static const Duration _requestTimeout = Duration(seconds: 30);
+
+  /// Session expired callback — SplashVM tarafindan set edilir
+  static Future<void> Function()? onSessionExpired;
+
+  /// In-memory token cache — avoids expensive secure storage reads on every request
+  static String? _cachedAccessToken;
+  static String? _cachedRefreshToken;
+
+  ApiClient({http.Client? client}) : _client = client ?? http.Client();
 
   Map<String, String> _headers({String? token, Map<String, String>? extra}) {
     final localeCode =
@@ -35,27 +42,53 @@ class ApiClient {
     };
   }
 
+  /// Get token from memory cache first, fallback to secure storage
+  Future<String?> _getToken() async {
+    if (_cachedAccessToken != null) return _cachedAccessToken;
+    _cachedAccessToken = await _tokenStorage.getAccessToken();
+    return _cachedAccessToken;
+  }
+
+  /// Save tokens to both memory and secure storage
+  Future<void> _saveTokens(String accessToken, String refreshToken) async {
+    _cachedAccessToken = accessToken;
+    _cachedRefreshToken = refreshToken;
+    await _tokenStorage.saveTokens(accessToken, refreshToken);
+  }
+
+  /// Clear token cache
+  static void clearTokenCache() {
+    _cachedAccessToken = null;
+    _cachedRefreshToken = null;
+  }
+
   Future<BaseResponse<T>> _handle<T>({
     required Future<http.Response> Function(String token) send,
     T Function(Object?)? fromJson,
+    String? debugPath,
   }) async {
     return safeCall<T>(() async {
-      String? token = await _tokenStorage.getAccessToken();
-      http.Response response = await send(token ?? '');
+      final sw = Stopwatch()..start();
+      String? token = await _getToken();
+      debugPrint(
+        '[ApiClient] ${debugPath ?? "?"} → token: ${token != null ? "${token.substring(0, 10)}..." : "NULL"} (${sw.elapsedMilliseconds}ms)',
+      );
+      http.Response response = await send(token ?? '').timeout(_requestTimeout);
+      debugPrint(
+        '[ApiClient] ${debugPath ?? "?"} → ${response.statusCode} (${sw.elapsedMilliseconds}ms)',
+      );
 
       if (response.statusCode == 401) {
         final refreshSuccess = await _refreshAccessToken();
         if (refreshSuccess) {
-          final newToken = await _tokenStorage.getAccessToken();
-          response = await send(newToken ?? '');
+          final newToken = _cachedAccessToken;
+          response = await send(newToken ?? '').timeout(_requestTimeout);
           if (response.statusCode == 401) {
-            await _authViewModel?.signOut();
-            appNavigatorKey.currentContext?.pushReplacement('/login');
+            await onSessionExpired?.call();
             return Future.error("Oturum süresi doldu.");
           }
         } else {
-          await _authViewModel?.signOut();
-          appNavigatorKey.currentContext?.pushReplacement('/login');
+          await onSessionExpired?.call();
           return Future.error("Oturum süresi doldu.");
         }
       }
@@ -75,26 +108,33 @@ class ApiClient {
   }
 
   Future<bool> _refreshAccessToken() async {
-    final refreshToken = await _tokenStorage.getRefreshToken();
+    final refreshToken =
+        _cachedRefreshToken ?? await _tokenStorage.getRefreshToken();
     if (refreshToken == null) return false;
 
-    // freezed model kullanarak body hazırla
-    final request = RefreshTokenRequest(refreshToken: refreshToken);
+    try {
+      final request = RefreshTokenRequest(refreshToken: refreshToken);
 
-    final response = await _client.post(
-      Uri.parse('$_url/auth/refresh-token'),
-      headers: _headers(),
-      body: jsonEncode(request.toJson()), // modelden json
-    );
+      final response = await _client
+          .post(
+            Uri.parse('$_url/auth/refresh-token'),
+            headers: _headers(),
+            body: jsonEncode(request.toJson()),
+          )
+          .timeout(_requestTimeout);
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body) as Map<String, dynamic>;
-
-      // backend ApiResponse<AuthResponse> dönüyor, önce data’yı çekiyoruz
-      final auth = AuthResponse.fromJson(data['data'] as Map<String, dynamic>);
-
-      await _tokenStorage.saveTokens(auth.accessToken, auth.refreshToken);
-      return true;
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        final auth = AuthResponse.fromJson(
+          data['data'] as Map<String, dynamic>,
+        );
+        await _saveTokens(auth.accessToken, auth.refreshToken);
+        return true;
+      }
+    } on TimeoutException {
+      debugPrint('[ApiClient] Token refresh timed out');
+    } catch (e) {
+      debugPrint('[ApiClient] Token refresh failed: $e');
     }
 
     return false;
@@ -107,10 +147,15 @@ class ApiClient {
     Map<String, String>? extraHeaders,
     T Function(Object?)? fromJson,
   }) {
+    final fullUri = Uri.parse(
+      '$_url$path',
+    ).replace(queryParameters: queryParams);
+    debugPrint('[ApiClient] GET $fullUri');
     return _handle<T>(
+      debugPath: 'GET $path',
       fromJson: fromJson,
       send: (token) => _client.get(
-        Uri.parse('$_url$path').replace(queryParameters: queryParams),
+        fullUri,
         headers: _headers(token: token, extra: extraHeaders),
       ),
     );
@@ -123,7 +168,9 @@ class ApiClient {
     Map<String, String>? extraHeaders,
     T Function(Object?)? fromJson,
   }) {
+    debugPrint('[ApiClient] POST $_url$path');
     return _handle<T>(
+      debugPath: 'POST $path',
       fromJson: fromJson,
       send: (token) => _client.post(
         Uri.parse('$_url$path'),

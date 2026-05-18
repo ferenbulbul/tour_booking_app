@@ -9,6 +9,11 @@ class MobileTourPointsBySearchDto with _$MobileTourPointsBySearchDto {
     required String id,
     required String name,
     required String type,
+    String? image,
+    String? cityName,
+    String? cityId,
+    double? avgRating,
+    int? tourCount,
   }) = _MobileTourPointsBySearchDto;
 
   factory MobileTourPointsBySearchDto.fromJson(Map<String, dynamic> json) =>

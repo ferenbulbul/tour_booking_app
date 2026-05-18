@@ -16,6 +16,7 @@ class Vehicle with _$Vehicle {
     required String image,
     double? avgRating,
     int? ratingCount,
+    String? companyName,
   }) = _Vehicle;
 
   factory Vehicle.fromJson(Map<String, dynamic> json) =>

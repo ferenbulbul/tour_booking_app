@@ -1,15 +1,18 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/booking_status.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
-import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/core/widgets/empty_state.dart';
 import 'package:tour_booking/features/bookings/bookings_viewmodel.dart';
 import 'package:tour_booking/features/bookings/widget/booking_card.dart';
-import 'package:tour_booking/features/bookings/widget/booking_skelaton.dart';
+import 'package:tour_booking/features/bookings/widget/booking_card_content.dart';
+import 'package:tour_booking/features/bookings/widget/booking_card_header.dart';
+import 'package:tour_booking/features/bookings/widget/booking_skeleton.dart';
 import 'package:tour_booking/models/booking/booking_dto.dart';
 
 class BookingsScreen extends StatefulWidget {
@@ -19,12 +22,14 @@ class BookingsScreen extends StatefulWidget {
   State<BookingsScreen> createState() => _BookingsScreenState();
 }
 
-class _BookingsScreenState extends State<BookingsScreen> {
-  String? _cancellingBookingId;
+class _BookingsScreenState extends State<BookingsScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+
   @override
   void initState() {
     super.initState();
-
+    _tabController = TabController(length: 3, vsync: this);
     Future.microtask(() {
       final vm = context.read<BookingsViewModel>();
       vm.fetchBookingsByStatus(BookingStatus.upcoming);
@@ -34,263 +39,257 @@ class _BookingsScreenState extends State<BookingsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Selector<BookingsViewModel, String?>(
-      selector: (_, vm) => vm.message,
-      builder: (context, message, child) {
-        if (message != null && message.isNotEmpty) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!context.mounted) return;
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
-            UIHelper.showSuccess(context, message.tr());
-            context.read<BookingsViewModel>().clearMessage();
-          });
-        }
+  void _refreshAll() {
+    final vm = context.read<BookingsViewModel>();
+    vm.fetchBookingsByStatus(BookingStatus.upcoming);
+    vm.fetchBookingsByStatus(BookingStatus.completed);
+    vm.fetchBookingsByStatus(BookingStatus.cancelled);
+  }
 
-        return _buildContent(context, context.watch<BookingsViewModel>());
-      },
+  void _openDetail(BookingDto item) {
+    showBookingDetailSheet(
+      context,
+      item: item,
+      onCancel: context.read<BookingsViewModel>().requestCancellation,
+      onRated: _refreshAll,
+      onCancelled: _refreshAll,
     );
   }
 
-  // -------------------------------------------------------------------------
-  // MAIN CONTENT
-  // -------------------------------------------------------------------------
-  Widget _buildContent(BuildContext context, BookingsViewModel vm) {
-    final scheme = Theme.of(context).colorScheme;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.surface,
+      body: SafeArea(
+        child: Selector<BookingsViewModel, String?>(
+          selector: (_, vm) => vm.message,
+          builder: (context, message, _) {
+            if (message != null && message.isNotEmpty) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!context.mounted) return;
+                UIHelper.showSuccess(context, message.tr());
+                context.read<BookingsViewModel>().clearMessage();
+              });
+            }
 
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        backgroundColor: scheme.surface,
-        appBar: CommonAppBar(title: 'my_bookings_title'.tr(), showBack: false),
-        body: Column(
-          children: [
-            // -----------------------------------------------------------------
-            // TAB BAR
-            // -----------------------------------------------------------------
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: TabBar(
-                indicatorColor: AppColors.primary,
-                indicatorWeight: 3,
-                labelColor: AppColors.primary,
-                unselectedLabelColor: Colors.black54,
-                labelStyle: AppTextStyles.labelLarge.copyWith(
-                  fontWeight: FontWeight.w700,
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // HEADER
+                _buildHeader(),
+                const SizedBox(height: 16),
+
+                // TAB BAR
+                _buildTabBar(),
+                const SizedBox(height: 4),
+
+                // TAB CONTENT
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    physics: const BouncingScrollPhysics(),
+                    children: [
+                      _UpcomingTab(onOpenDetail: _openDetail),
+                      _CompletedTab(onOpenDetail: _openDetail),
+                      _CancelledTab(onOpenDetail: _openDetail),
+                    ],
+                  ),
                 ),
-                unselectedLabelStyle: AppTextStyles.labelLarge,
-                tabs: [
-                  Tab(text: 'booking_tab_upcoming'.tr()),
-                  Tab(text: 'booking_tab_completed'.tr()),
-                  Tab(text: 'booking_tab_cancelled'.tr()),
-                ],
-              ),
-            ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
 
-            // -----------------------------------------------------------------
-            // TAB CONTENT
-            // -----------------------------------------------------------------
-            Expanded(
-              child: TabBarView(
-                children: [
-                  _list(
-                    bookings: vm.allBookings,
-                    loading: vm.isLoadingAll,
-                    type: BookingStatus.upcoming,
-                    showCancelAction: true,
-                    onCancel: vm.requestCancellation,
-                  ),
-                  _list(
-                    bookings: vm.completedBookings,
-                    loading: vm.isLoadingCompleted,
-                    type: BookingStatus.completed,
-                  ),
-                  _list(
-                    bookings: vm.cancelledBookings,
-                    loading: vm.isLoadingCancelled,
-                    type: BookingStatus.cancelled,
-                  ),
-                ],
-              ),
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.screenPadding, 24, AppSpacing.screenPadding, 0,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            tr("my_bookings_title"),
+            style: AppTextStyles.headlineSmall.copyWith(
+              fontWeight: FontWeight.w700,
             ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            tr("bookings_subtitle"),
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
+      child: Container(
+        height: 40,
+        decoration: BoxDecoration(
+          color: AppColors.background,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: TabBar(
+          controller: _tabController,
+          indicator: BoxDecoration(
+            color: AppColors.primary,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          indicatorSize: TabBarIndicatorSize.tab,
+          dividerHeight: 0,
+          labelColor: Colors.white,
+          unselectedLabelColor: AppColors.textSecondary,
+          labelStyle: AppTextStyles.labelLarge.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+          ),
+          unselectedLabelStyle: AppTextStyles.labelLarge.copyWith(
+            fontWeight: FontWeight.w500,
+            fontSize: 13,
+          ),
+          labelPadding: EdgeInsets.zero,
+          padding: const EdgeInsets.all(3),
+          tabs: [
+            Tab(text: tr('booking_tab_upcoming')),
+            Tab(text: tr('booking_tab_completed')),
+            Tab(text: tr('booking_tab_cancelled')),
           ],
         ),
       ),
     );
   }
+}
 
-  // -------------------------------------------------------------------------
-  // LIST BUILDER
-  // -------------------------------------------------------------------------
-  Widget _list({
-    required List<BookingDto> bookings,
-    required bool loading,
-    required BookingStatus type,
-    bool showCancelAction = false,
-    Future<void> Function(String bookingId)? onCancel,
-  }) {
-    if (loading) {
-      return const BookingsSkeleton();
-    }
+// ─────────────────────────────────────────────────────────────
+// UPCOMING TAB
+// ─────────────────────────────────────────────────────────────
+class _UpcomingTab extends StatelessWidget {
+  final void Function(BookingDto) onOpenDetail;
+  const _UpcomingTab({required this.onOpenDetail});
 
-    if (bookings.isEmpty) {
-      switch (type) {
-        case BookingStatus.upcoming:
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<BookingsViewModel>(
+      builder: (context, vm, _) {
+        if (vm.isLoadingAll && vm.allBookings.isEmpty) {
+          return const BookingsSkeleton();
+        }
+
+        if (vm.allBookings.isEmpty) {
           return EmptyState(
-            icon: Icons.event_available_outlined,
+            icon: SolarIconsOutline.calendarDate,
             title: 'empty_upcoming_title'.tr(),
             subtitle: 'empty_upcoming_subtitle'.tr(),
           );
-        case BookingStatus.completed:
-          return EmptyState(
-            icon: Icons.check_circle_outline,
-            title: 'empty_completed_title'.tr(),
-            subtitle: 'empty_completed_subtitle'.tr(),
-          );
-        case BookingStatus.cancelled:
-          return EmptyState(
-            icon: Icons.cancel_outlined,
-            title: 'empty_cancelled_title'.tr(),
-            subtitle: 'empty_cancelled_subtitle'.tr(),
-          );
-      }
-    }
+        }
 
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-      itemCount: bookings.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (_, i) {
-        final item = bookings[i];
-
-        return BookingCard(
-          item: item,
-          showCancelAction: showCancelAction,
-          isCancelling: _cancellingBookingId == item.id,
-          onCancel: () => _onCancelPressed(context, item.id),
-          onRated: () {
-            final vm = context.read<BookingsViewModel>();
-
-            // 🔥 rating sonrası tüm state’i yeniden çek
-            vm.fetchBookingsByStatus(BookingStatus.upcoming);
-            vm.fetchBookingsByStatus(BookingStatus.completed);
-            vm.fetchBookingsByStatus(BookingStatus.cancelled);
-          },
+        return ListView.separated(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.screenPadding, 12, AppSpacing.screenPadding, 24,
+          ),
+          itemCount: vm.allBookings.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 14),
+          itemBuilder: (_, i) => UpcomingBookingCard(
+            item: vm.allBookings[i],
+            onTap: () => onOpenDetail(vm.allBookings[i]),
+          ),
         );
       },
     );
   }
+}
 
-  Future<void> _onCancelPressed(BuildContext context, String bookingId) async {
-    // 🔒 Aynı anda 2 kere basılamaz
-    if (_cancellingBookingId != null) return;
+// ─────────────────────────────────────────────────────────────
+// COMPLETED TAB
+// ─────────────────────────────────────────────────────────────
+class _CompletedTab extends StatelessWidget {
+  final void Function(BookingDto) onOpenDetail;
+  const _CompletedTab({required this.onOpenDetail});
 
-    final confirmed = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24), // 🔥 daha modern
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20), // bol iç boşluk
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // ICON HEADER
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: AppColors.error.withOpacity(.12),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Icon(
-                  Icons.warning_amber_rounded,
-                  size: 28,
-                  color: AppColors.error,
-                ),
-              ),
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<BookingsViewModel>(
+      builder: (context, vm, _) {
+        if (vm.isLoadingCompleted && vm.completedBookings.isEmpty) {
+          return const BookingsSkeleton();
+        }
 
-              const SizedBox(height: 14),
+        if (vm.completedBookings.isEmpty) {
+          return EmptyState(
+            icon: SolarIconsOutline.checkCircle,
+            title: 'empty_completed_title'.tr(),
+            subtitle: 'empty_completed_subtitle'.tr(),
+          );
+        }
 
-              // TITLE
-              Text(
-                "Rezervasyonu İptal Et",
-                style: AppTextStyles.titleMedium.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
-              ).tr(),
-
-              const SizedBox(height: 10),
-
-              // CONTENT
-              Text(
-                "Bu rezervasyonu iptal etmek istediğine emin misin?",
-                textAlign: TextAlign.center,
-                style: AppTextStyles.bodyMedium,
-              ).tr(),
-
-              const SizedBox(height: 16),
-
-              // ACTION BUTTONS
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 0, // çok sert gölgeyi kaldırdık
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        backgroundColor: AppColors.error, // sade kırmızı accent
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: () =>
-                          Navigator.of(context, rootNavigator: true).pop(true),
-                      child: Text("common_yes".tr()),
-                    ),
-                  ),
-
-                  const SizedBox(width: 10),
-
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        foregroundColor: Colors.grey.shade700,
-                        side: BorderSide(color: Colors.grey.shade300),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: () =>
-                          Navigator.of(context, rootNavigator: true).pop(false),
-                      child: Text("common_cancel".tr()),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+        return ListView.separated(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.screenPadding, 12, AppSpacing.screenPadding, 24,
           ),
-        ),
-      ),
+          itemCount: vm.completedBookings.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 10),
+          itemBuilder: (_, i) => PastBookingTile(
+            item: vm.completedBookings[i],
+            onTap: () => onOpenDetail(vm.completedBookings[i]),
+          ),
+        );
+      },
     );
+  }
+}
 
-    if (confirmed != true) return;
+// ─────────────────────────────────────────────────────────────
+// CANCELLED TAB
+// ─────────────────────────────────────────────────────────────
+class _CancelledTab extends StatelessWidget {
+  final void Function(BookingDto) onOpenDetail;
+  const _CancelledTab({required this.onOpenDetail});
 
-    setState(() {
-      _cancellingBookingId = bookingId;
-    });
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<BookingsViewModel>(
+      builder: (context, vm, _) {
+        if (vm.isLoadingCancelled && vm.cancelledBookings.isEmpty) {
+          return const BookingsSkeleton();
+        }
 
-    try {
-      await context.read<BookingsViewModel>().requestCancellation(bookingId);
-    } finally {
-      if (mounted) {
-        setState(() {
-          _cancellingBookingId = null;
-        });
-      }
-    }
+        if (vm.cancelledBookings.isEmpty) {
+          return EmptyState(
+            icon: SolarIconsOutline.closeCircle,
+            title: 'empty_cancelled_title'.tr(),
+            subtitle: 'empty_cancelled_subtitle'.tr(),
+          );
+        }
+
+        return ListView.separated(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.screenPadding, 12, AppSpacing.screenPadding, 24,
+          ),
+          itemCount: vm.cancelledBookings.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 10),
+          itemBuilder: (_, i) => PastBookingTile(
+            item: vm.cancelledBookings[i],
+            onTap: () => onOpenDetail(vm.cancelledBookings[i]),
+          ),
+        );
+      },
+    );
   }
 }

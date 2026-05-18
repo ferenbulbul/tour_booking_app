@@ -24,12 +24,12 @@ class TransportPriceBreakdown extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.primary.withOpacity(0.08),
-            AppColors.primary.withOpacity(0.03),
+            AppColors.accent.withOpacity(0.08),
+            AppColors.accent.withOpacity(0.03),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withOpacity(0.15)),
+        border: Border.all(color: AppColors.accent.withOpacity(0.15)),
       ),
       child: Column(
         children: [
@@ -72,7 +72,7 @@ class TransportPriceBreakdown extends StatelessWidget {
           style: TextStyle(
             fontSize: isLarge ? 18 : 14,
             fontWeight: isBold ? FontWeight.w800 : FontWeight.w600,
-            color: isBold ? AppColors.primary : AppColors.textPrimary,
+            color: isBold ? AppColors.accent : AppColors.textPrimary,
           ),
         ),
       ],

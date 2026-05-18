@@ -25,6 +25,9 @@ mixin _$ProfileResponse {
   String get email => throw _privateConstructorUsedError;
   String get phoneNumber => throw _privateConstructorUsedError;
   bool get phoneNumberConfirmed => throw _privateConstructorUsedError;
+  bool get emailNotification => throw _privateConstructorUsedError;
+  bool get pushNotification => throw _privateConstructorUsedError;
+  bool get smsNotification => throw _privateConstructorUsedError;
 
   /// Serializes this ProfileResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -48,6 +51,9 @@ abstract class $ProfileResponseCopyWith<$Res> {
     String email,
     String phoneNumber,
     bool phoneNumberConfirmed,
+    bool emailNotification,
+    bool pushNotification,
+    bool smsNotification,
   });
 }
 
@@ -70,6 +76,9 @@ class _$ProfileResponseCopyWithImpl<$Res, $Val extends ProfileResponse>
     Object? email = null,
     Object? phoneNumber = null,
     Object? phoneNumberConfirmed = null,
+    Object? emailNotification = null,
+    Object? pushNotification = null,
+    Object? smsNotification = null,
   }) {
     return _then(
       _value.copyWith(
@@ -88,6 +97,18 @@ class _$ProfileResponseCopyWithImpl<$Res, $Val extends ProfileResponse>
             phoneNumberConfirmed: null == phoneNumberConfirmed
                 ? _value.phoneNumberConfirmed
                 : phoneNumberConfirmed // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            emailNotification: null == emailNotification
+                ? _value.emailNotification
+                : emailNotification // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            pushNotification: null == pushNotification
+                ? _value.pushNotification
+                : pushNotification // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            smsNotification: null == smsNotification
+                ? _value.smsNotification
+                : smsNotification // ignore: cast_nullable_to_non_nullable
                       as bool,
           )
           as $Val,
@@ -109,6 +130,9 @@ abstract class _$$ProfileResponseImplCopyWith<$Res>
     String email,
     String phoneNumber,
     bool phoneNumberConfirmed,
+    bool emailNotification,
+    bool pushNotification,
+    bool smsNotification,
   });
 }
 
@@ -130,6 +154,9 @@ class __$$ProfileResponseImplCopyWithImpl<$Res>
     Object? email = null,
     Object? phoneNumber = null,
     Object? phoneNumberConfirmed = null,
+    Object? emailNotification = null,
+    Object? pushNotification = null,
+    Object? smsNotification = null,
   }) {
     return _then(
       _$ProfileResponseImpl(
@@ -149,6 +176,18 @@ class __$$ProfileResponseImplCopyWithImpl<$Res>
             ? _value.phoneNumberConfirmed
             : phoneNumberConfirmed // ignore: cast_nullable_to_non_nullable
                   as bool,
+        emailNotification: null == emailNotification
+            ? _value.emailNotification
+            : emailNotification // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        pushNotification: null == pushNotification
+            ? _value.pushNotification
+            : pushNotification // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        smsNotification: null == smsNotification
+            ? _value.smsNotification
+            : smsNotification // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -158,27 +197,43 @@ class __$$ProfileResponseImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ProfileResponseImpl implements _ProfileResponse {
   const _$ProfileResponseImpl({
-    required this.fullName,
-    required this.email,
-    required this.phoneNumber,
-    required this.phoneNumberConfirmed,
+    this.fullName = '',
+    this.email = '',
+    this.phoneNumber = '',
+    this.phoneNumberConfirmed = false,
+    this.emailNotification = false,
+    this.pushNotification = false,
+    this.smsNotification = false,
   });
 
   factory _$ProfileResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProfileResponseImplFromJson(json);
 
   @override
+  @JsonKey()
   final String fullName;
   @override
+  @JsonKey()
   final String email;
   @override
+  @JsonKey()
   final String phoneNumber;
   @override
+  @JsonKey()
   final bool phoneNumberConfirmed;
+  @override
+  @JsonKey()
+  final bool emailNotification;
+  @override
+  @JsonKey()
+  final bool pushNotification;
+  @override
+  @JsonKey()
+  final bool smsNotification;
 
   @override
   String toString() {
-    return 'ProfileResponse(fullName: $fullName, email: $email, phoneNumber: $phoneNumber, phoneNumberConfirmed: $phoneNumberConfirmed)';
+    return 'ProfileResponse(fullName: $fullName, email: $email, phoneNumber: $phoneNumber, phoneNumberConfirmed: $phoneNumberConfirmed, emailNotification: $emailNotification, pushNotification: $pushNotification, smsNotification: $smsNotification)';
   }
 
   @override
@@ -192,7 +247,13 @@ class _$ProfileResponseImpl implements _ProfileResponse {
             (identical(other.phoneNumber, phoneNumber) ||
                 other.phoneNumber == phoneNumber) &&
             (identical(other.phoneNumberConfirmed, phoneNumberConfirmed) ||
-                other.phoneNumberConfirmed == phoneNumberConfirmed));
+                other.phoneNumberConfirmed == phoneNumberConfirmed) &&
+            (identical(other.emailNotification, emailNotification) ||
+                other.emailNotification == emailNotification) &&
+            (identical(other.pushNotification, pushNotification) ||
+                other.pushNotification == pushNotification) &&
+            (identical(other.smsNotification, smsNotification) ||
+                other.smsNotification == smsNotification));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -203,6 +264,9 @@ class _$ProfileResponseImpl implements _ProfileResponse {
     email,
     phoneNumber,
     phoneNumberConfirmed,
+    emailNotification,
+    pushNotification,
+    smsNotification,
   );
 
   /// Create a copy of ProfileResponse
@@ -224,10 +288,13 @@ class _$ProfileResponseImpl implements _ProfileResponse {
 
 abstract class _ProfileResponse implements ProfileResponse {
   const factory _ProfileResponse({
-    required final String fullName,
-    required final String email,
-    required final String phoneNumber,
-    required final bool phoneNumberConfirmed,
+    final String fullName,
+    final String email,
+    final String phoneNumber,
+    final bool phoneNumberConfirmed,
+    final bool emailNotification,
+    final bool pushNotification,
+    final bool smsNotification,
   }) = _$ProfileResponseImpl;
 
   factory _ProfileResponse.fromJson(Map<String, dynamic> json) =
@@ -241,6 +308,12 @@ abstract class _ProfileResponse implements ProfileResponse {
   String get phoneNumber;
   @override
   bool get phoneNumberConfirmed;
+  @override
+  bool get emailNotification;
+  @override
+  bool get pushNotification;
+  @override
+  bool get smsNotification;
 
   /// Create a copy of ProfileResponse
   /// with the given fields replaced by the non-null parameter values.

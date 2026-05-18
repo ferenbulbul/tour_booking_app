@@ -1,10 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/auth/change_password/change_password_viewmodel.dart';
+import 'package:tour_booking/utils/password_validator.dart';
 
 class ChangePasswordDriverScreen extends StatefulWidget {
   const ChangePasswordDriverScreen({super.key});
@@ -22,19 +24,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
   bool _ob1 = true;
   bool _ob2 = true;
 
-  final _passwordRegex = RegExp(
-    r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{9,}$',
-  );
-
-  // 🔹 Validator artık KEY döner
-  String? _pwdValidator(String? v) {
-    final value = (v ?? '').trim();
-    if (value.isEmpty) return 'password_required';
-    if (!_passwordRegex.hasMatch(value)) {
-      return 'password_must_include_special'; // genel regex hatası
-    }
-    return null;
-  }
+  String? _pwdValidator(String? v) => PasswordValidator.validate(v);
 
   String? _confirmValidator(String? v) {
     if ((v ?? '').trim().isEmpty) return 'password_required';
@@ -73,7 +63,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
                       suffixIcon: IconButton(
                         onPressed: () => setState(() => _ob1 = !_ob1),
                         icon: Icon(
-                          _ob1 ? Icons.visibility : Icons.visibility_off,
+                          _ob1 ? SolarIconsOutline.eye : SolarIconsOutline.eyeClosed,
                         ),
                       ),
                     ),
@@ -90,7 +80,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
                       suffixIcon: IconButton(
                         onPressed: () => setState(() => _ob2 = !_ob2),
                         icon: Icon(
-                          _ob2 ? Icons.visibility : Icons.visibility_off,
+                          _ob2 ? SolarIconsOutline.eye : SolarIconsOutline.eyeClosed,
                         ),
                       ),
                     ),
@@ -133,7 +123,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
 
     if (result.isSuccess) {
       UIHelper.showSuccess(context, 'password_updated_success'.tr());
-      context.go('/login');
+      context.go('/home');
     } else {
       UIHelper.showError(context, vm.message?.tr() ?? 'operation_failed'.tr());
     }

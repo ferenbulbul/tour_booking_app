@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
-import 'package:tour_booking/services/location/location_viewmodel.dart';
+import 'package:tour_booking/features/location/location_viewmodel.dart';
 
 /// Driver için konum izni/akışı butonla yönetilen kart.
 /// ⚠️ Mantık AYNI – dokunulmadı
@@ -36,7 +37,7 @@ class LocationControlCard extends StatelessWidget {
             Row(
               children: [
                 OutlinedButton.icon(
-                  icon: Icon(tracking ? Icons.stop : Icons.play_arrow),
+                  icon: Icon(tracking ? SolarIconsOutline.stop : SolarIconsOutline.play),
                   label: Text(tracking ? 'Konumu Durdur' : 'Konumu Başlat'),
                   onPressed: () async {
                     if (tracking) {
@@ -50,7 +51,7 @@ class LocationControlCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 OutlinedButton.icon(
-                  icon: const Icon(Icons.settings),
+                  icon: const Icon(SolarIconsOutline.settings),
                   label: const Text('Ayarlar'),
                   onPressed: () {
                     openAppSettings();

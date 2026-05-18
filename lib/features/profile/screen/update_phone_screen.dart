@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
+import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 import 'package:tour_booking/models/update_phone_number/update_phone_request.dart';
 import 'package:flutter/material.dart' as ui;
@@ -18,6 +20,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
   dynamic _selectedPhoneNumber;
   String oldCompleteNumber = "";
   String oldCountryCode = "";
+  bool _phoneVerified = false;
 
   @override
   void didChangeDependencies() {
@@ -27,8 +30,8 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
 
     if (profile != null && oldCompleteNumber.isEmpty) {
       oldCompleteNumber = profile.phoneNumber.trim();
+      _phoneVerified = profile.phoneNumberConfirmed;
 
-      // eski numara + ülke kodu ayrıştırma
       if (oldCompleteNumber.startsWith("+")) {
         final onlyDigits = oldCompleteNumber.substring(1);
         oldCountryCode = onlyDigits.substring(0, onlyDigits.length - 10);
@@ -36,18 +39,26 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
     }
   }
 
-  bool get isButtonEnabled {
+  /// Numara değişti mi?
+  bool get _isNumberChanged {
     if (_selectedPhoneNumber == null) return false;
-
     final newComplete = _selectedPhoneNumber.completeNumber;
-
-    // boşsa disable
     if (newComplete.isEmpty) return false;
+    return newComplete != oldCompleteNumber;
+  }
 
-    // aynı numara ise disable
-    if (newComplete == oldCompleteNumber) return false;
+  /// Numara aynı + doğrulanmamış → doğrulama modu
+  bool get _isVerifyMode {
+    if (oldCompleteNumber.isEmpty) return false;
+    if (_phoneVerified) return false;
+    return !_isNumberChanged;
+  }
 
-    return true;
+  bool get isButtonEnabled {
+    // Doğrulama modu: numara var ama doğrulanmamış, numara değişmemiş
+    if (_isVerifyMode) return true;
+    // Kaydet modu: numara değişmiş
+    return _isNumberChanged;
   }
 
   @override
@@ -61,7 +72,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
             : tr("update_phone_number"),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           children: [
             Directionality(
@@ -74,16 +85,6 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                     : null,
                 decoration: InputDecoration(
                   labelText: tr("phone_number"),
-                  filled: true,
-                  fillColor: const Color(0xFFF3F4F6),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 18,
-                    horizontal: 20,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
                 ),
                 style: const TextStyle(
                   color: Colors.black87,
@@ -108,27 +109,34 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
 
             const SizedBox(height: 24),
 
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: isButtonEnabled
-                    ? () async {
-                        final complete = _selectedPhoneNumber.completeNumber;
-                        final country = _selectedPhoneNumber.countryCode;
-
-                        await vm.updatePhoneNumber(
-                          UpdatePhoneRequestDto(
-                            phoneNumber: complete,
-                            countryCode: country,
-                          ),
-                        );
-
-                        if (!mounted) return;
-                        Navigator.pop(context);
+            PrimaryButton(
+              text: _isVerifyMode ? tr("verify") : tr("save"),
+              isLoading: vm.isLoading,
+              onPressed: isButtonEnabled
+                  ? () async {
+                      if (_isVerifyMode) {
+                        // Numara aynı, doğrulanmamış → direkt doğrulamaya git
+                        context.push("/verify-phone");
+                        return;
                       }
-                    : null,
-                child: Text(tr("save")),
-              ),
+
+                      // Numara değişmiş → kaydet, sonra doğrulamaya git
+                      final complete = _selectedPhoneNumber.completeNumber;
+                      final country = _selectedPhoneNumber.countryCode;
+
+                      final success = await vm.updatePhoneNumber(
+                        UpdatePhoneRequestDto(
+                          phoneNumber: complete,
+                          countryCode: country,
+                        ),
+                      );
+
+                      if (!mounted) return;
+                      if (success) {
+                        context.push("/verify-phone");
+                      }
+                    }
+                  : null,
             ),
           ],
         ),

@@ -24,6 +24,8 @@ class TourPoint with _$TourPoint {
     required List<String> otherImages,
     double? avgRating,
     int? ratingCount,
+    int? durationHours,
+    int? durationMinutes,
   }) = _TourPoint;
 
   factory TourPoint.fromJson(Map<String, dynamic> json) =>

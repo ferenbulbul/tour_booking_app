@@ -23,6 +23,7 @@ class VehicleDetail with _$VehicleDetail {
     List<String>? languages,
     double? avgRating,
     int? ratingCount,
+    String? companyName,
   }) = _VehicleDetail;
 
   factory VehicleDetail.fromJson(Map<String, dynamic> json) =>

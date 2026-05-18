@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
-import 'package:tour_booking/features/auth/register/widgets/register_form.dart';
+import 'package:tour_booking/features/auth/register/widget/register_form.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});

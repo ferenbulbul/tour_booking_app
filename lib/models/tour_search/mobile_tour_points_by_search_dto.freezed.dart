@@ -26,6 +26,11 @@ mixin _$MobileTourPointsBySearchDto {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String get type => throw _privateConstructorUsedError;
+  String? get image => throw _privateConstructorUsedError;
+  String? get cityName => throw _privateConstructorUsedError;
+  String? get cityId => throw _privateConstructorUsedError;
+  double? get avgRating => throw _privateConstructorUsedError;
+  int? get tourCount => throw _privateConstructorUsedError;
 
   /// Serializes this MobileTourPointsBySearchDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -48,7 +53,16 @@ abstract class $MobileTourPointsBySearchDtoCopyWith<$Res> {
         MobileTourPointsBySearchDto
       >;
   @useResult
-  $Res call({String id, String name, String type});
+  $Res call({
+    String id,
+    String name,
+    String type,
+    String? image,
+    String? cityName,
+    String? cityId,
+    double? avgRating,
+    int? tourCount,
+  });
 }
 
 /// @nodoc
@@ -68,7 +82,16 @@ class _$MobileTourPointsBySearchDtoCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? id = null, Object? name = null, Object? type = null}) {
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+    Object? type = null,
+    Object? image = freezed,
+    Object? cityName = freezed,
+    Object? cityId = freezed,
+    Object? avgRating = freezed,
+    Object? tourCount = freezed,
+  }) {
     return _then(
       _value.copyWith(
             id: null == id
@@ -83,6 +106,26 @@ class _$MobileTourPointsBySearchDtoCopyWithImpl<
                 ? _value.type
                 : type // ignore: cast_nullable_to_non_nullable
                       as String,
+            image: freezed == image
+                ? _value.image
+                : image // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            cityName: freezed == cityName
+                ? _value.cityName
+                : cityName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            cityId: freezed == cityId
+                ? _value.cityId
+                : cityId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            avgRating: freezed == avgRating
+                ? _value.avgRating
+                : avgRating // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            tourCount: freezed == tourCount
+                ? _value.tourCount
+                : tourCount // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -98,7 +141,16 @@ abstract class _$$MobileTourPointsBySearchDtoImplCopyWith<$Res>
   ) = __$$MobileTourPointsBySearchDtoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String name, String type});
+  $Res call({
+    String id,
+    String name,
+    String type,
+    String? image,
+    String? cityName,
+    String? cityId,
+    double? avgRating,
+    int? tourCount,
+  });
 }
 
 /// @nodoc
@@ -118,7 +170,16 @@ class __$$MobileTourPointsBySearchDtoImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? id = null, Object? name = null, Object? type = null}) {
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+    Object? type = null,
+    Object? image = freezed,
+    Object? cityName = freezed,
+    Object? cityId = freezed,
+    Object? avgRating = freezed,
+    Object? tourCount = freezed,
+  }) {
     return _then(
       _$MobileTourPointsBySearchDtoImpl(
         id: null == id
@@ -133,6 +194,26 @@ class __$$MobileTourPointsBySearchDtoImplCopyWithImpl<$Res>
             ? _value.type
             : type // ignore: cast_nullable_to_non_nullable
                   as String,
+        image: freezed == image
+            ? _value.image
+            : image // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        cityName: freezed == cityName
+            ? _value.cityName
+            : cityName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        cityId: freezed == cityId
+            ? _value.cityId
+            : cityId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        avgRating: freezed == avgRating
+            ? _value.avgRating
+            : avgRating // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        tourCount: freezed == tourCount
+            ? _value.tourCount
+            : tourCount // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -146,6 +227,11 @@ class _$MobileTourPointsBySearchDtoImpl
     required this.id,
     required this.name,
     required this.type,
+    this.image,
+    this.cityName,
+    this.cityId,
+    this.avgRating,
+    this.tourCount,
   });
 
   factory _$MobileTourPointsBySearchDtoImpl.fromJson(
@@ -158,10 +244,20 @@ class _$MobileTourPointsBySearchDtoImpl
   final String name;
   @override
   final String type;
+  @override
+  final String? image;
+  @override
+  final String? cityName;
+  @override
+  final String? cityId;
+  @override
+  final double? avgRating;
+  @override
+  final int? tourCount;
 
   @override
   String toString() {
-    return 'MobileTourPointsBySearchDto(id: $id, name: $name, type: $type)';
+    return 'MobileTourPointsBySearchDto(id: $id, name: $name, type: $type, image: $image, cityName: $cityName, cityId: $cityId, avgRating: $avgRating, tourCount: $tourCount)';
   }
 
   @override
@@ -171,12 +267,30 @@ class _$MobileTourPointsBySearchDtoImpl
             other is _$MobileTourPointsBySearchDtoImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.type, type) || other.type == type));
+            (identical(other.type, type) || other.type == type) &&
+            (identical(other.image, image) || other.image == image) &&
+            (identical(other.cityName, cityName) ||
+                other.cityName == cityName) &&
+            (identical(other.cityId, cityId) || other.cityId == cityId) &&
+            (identical(other.avgRating, avgRating) ||
+                other.avgRating == avgRating) &&
+            (identical(other.tourCount, tourCount) ||
+                other.tourCount == tourCount));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, type);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    name,
+    type,
+    image,
+    cityName,
+    cityId,
+    avgRating,
+    tourCount,
+  );
 
   /// Create a copy of MobileTourPointsBySearchDto
   /// with the given fields replaced by the non-null parameter values.
@@ -201,6 +315,11 @@ abstract class _MobileTourPointsBySearchDto
     required final String id,
     required final String name,
     required final String type,
+    final String? image,
+    final String? cityName,
+    final String? cityId,
+    final double? avgRating,
+    final int? tourCount,
   }) = _$MobileTourPointsBySearchDtoImpl;
 
   factory _MobileTourPointsBySearchDto.fromJson(Map<String, dynamic> json) =
@@ -212,6 +331,16 @@ abstract class _MobileTourPointsBySearchDto
   String get name;
   @override
   String get type;
+  @override
+  String? get image;
+  @override
+  String? get cityName;
+  @override
+  String? get cityId;
+  @override
+  double? get avgRating;
+  @override
+  int? get tourCount;
 
   /// Create a copy of MobileTourPointsBySearchDto
   /// with the given fields replaced by the non-null parameter values.

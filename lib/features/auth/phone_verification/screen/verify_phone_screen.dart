@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 
 import 'package:tour_booking/core/ui/ui_helper.dart';
-import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
+import 'package:tour_booking/core/widgets/pin_theme_helper.dart';
 import 'package:tour_booking/features/auth/phone_verification/verify_phone_viewmodel.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 
@@ -32,45 +32,18 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
     final scheme = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
 
-    // ⭐ PIN THEMES — ince, modern, premium
-    final defaultPin = PinTheme(
-      width: 52,
-      height: 56,
-      textStyle: text.titleLarge?.copyWith(
-        fontWeight: FontWeight.w400, // İNCE yazı
-        fontSize: 20,
-        color: scheme.onSurface,
-      ),
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: scheme.outline.withOpacity(1)),
-      ),
-    );
-
-    final focusedPin = defaultPin.copyWith(
-      textStyle: text.titleLarge?.copyWith(
-        fontWeight: FontWeight.w400,
-        fontSize: 20,
-        color: scheme.primary,
-      ),
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: scheme.primary, width: 2),
-      ),
-    );
+    final defaultPin = PinThemeHelper.defaultTheme(context);
+    final focusedPin = PinThemeHelper.focusedTheme(context);
 
     return Scaffold(
       backgroundColor: scheme.surface,
-      appBar: CommonAppBar(title: 'phone_verification_title'.tr()),
+      appBar: CommonAppBar(title: tr('phone_verification_title')),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'phone_verification_instruction'.tr(),
+              tr('phone_verification_instruction'),
               style: text.bodyLarge?.copyWith(
                 color: scheme.onSurface.withOpacity(0.75),
               ),
@@ -79,80 +52,69 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
 
             const SizedBox(height: 32),
 
-            // ⭐ PREMIUM PIN INPUT
-            Center(
-              child: Pinput(
-                length: 6,
-                controller: _codeController,
-                defaultPinTheme: defaultPin,
-                focusedPinTheme: focusedPin,
-                showCursor: true,
-                cursor: Container(width: 2, height: 22, color: scheme.primary),
-              ),
-            ),
-
-            const SizedBox(height: 32),
-
-            // ⭐ ONAYLA BUTTON
-            PrimaryButton(
-              text: "Onayla",
-              isLoading: vm.isLoading,
-              onPressed: () async {
-                final code = _codeController.text.trim();
-                if (code.length < 6) {
-                  UIHelper.showWarning(
-                    context,
-                    "Lütfen geçerli bir kod girin.",
-                  );
-                  return;
-                }
-
-                final ok = await vm.verifyCode(code);
-                if (!mounted) return;
-
-                if (ok) {
-                  await context.read<ProfileViewModel>().fetchProfile();
-
-                  UIHelper.showSuccess(
-                    context,
-                    vm.message ?? 'phone_verification_success'.tr(),
-                  );
-                  context.pop();
-                } else {
-                  UIHelper.showError(
-                    context,
-                    vm.message ?? 'phone_verification_success'.tr(),
-                  );
-                }
-              },
+            Pinput(
+              length: 6,
+              controller: _codeController,
+              defaultPinTheme: defaultPin,
+              focusedPinTheme: focusedPin,
+              showCursor: true,
+              cursor: PinThemeHelper.cursor(context, height: 20),
+              keyboardType: TextInputType.number,
+              onCompleted: (code) => _verify(vm, code),
             ),
 
             const SizedBox(height: 28),
 
-            // ⭐ TIMER TEXT + TIKLANABİLİR RESEND
-            GestureDetector(
-              onTap: vm.canResend ? vm.sendCode : null,
-              child: Center(
-                child: Text(
-                  vm.canResend
-                      ? 'resend_code'.tr()
-                      : "${'resend_in_prefix'.tr()} "
-                            "${vm.remainingSeconds ~/ 60}:${(vm.remainingSeconds % 60).toString().padLeft(2, '0')}",
-                  style: text.bodyMedium?.copyWith(
-                    color: vm.canResend
-                        ? scheme.primary
-                        : scheme.onSurface.withOpacity(0.6),
-                    fontWeight: vm.canResend
-                        ? FontWeight.w600
-                        : FontWeight.w400,
+            vm.canResend
+                ? TextButton(
+                    onPressed: vm.sendCode,
+                    child: Text(
+                      tr("resend_code"),
+                      style: text.labelLarge?.copyWith(
+                        color: scheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  )
+                : Text(
+                    "${tr("resend_in_prefix")} "
+                    "${vm.remainingSeconds ~/ 60}:"
+                    "${(vm.remainingSeconds % 60).toString().padLeft(2, '0')}",
+                    style: text.bodyMedium?.copyWith(
+                      color: scheme.onSurface.withOpacity(0.6),
+                    ),
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _verify(VerifyPhoneViewModel vm, String code) async {
+    if (code.length < 6) {
+      UIHelper.showWarning(context, tr("enter_valid_code"));
+      return;
+    }
+
+    final ok = await vm.verifyCode(code);
+    if (!mounted) return;
+
+    if (ok) {
+      await context.read<ProfileViewModel>().fetchProfile();
+      if (!mounted) return;
+
+      UIHelper.showSuccess(
+        context,
+        vm.message ?? tr('phone_verification_success'),
+      );
+      // update-phone sayfasını da kapat
+      context.pop();
+      context.pop();
+    } else {
+      UIHelper.showError(
+        context,
+        vm.message ?? tr('phone_verification_failed'),
+      );
+    }
   }
 }

@@ -1,115 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 
 class FavoriteSkeleton extends StatelessWidget {
   const FavoriteSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
+    return GridView.builder(
+      padding:
+          const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 14,
+        childAspectRatio: 0.72,
+      ),
       itemCount: 4,
-      itemBuilder: (_, __) => const FavoriteCardSkeleton(),
+      itemBuilder: (_, __) => const _CardSkeleton(),
     );
   }
 }
 
-class FavoriteCardSkeleton extends StatelessWidget {
-  const FavoriteCardSkeleton({super.key});
+class _CardSkeleton extends StatelessWidget {
+  const _CardSkeleton();
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 135,
-      margin: const EdgeInsetsDirectional.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade200,
+      highlightColor: Colors.grey.shade50,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // --- LEFT IMAGE SKELETON ---
-          ClipRRect(
-            borderRadius: const BorderRadius.horizontal(
-              left: Radius.circular(22),
-            ),
-            child: Shimmer.fromColors(
-              baseColor: Colors.grey.shade300,
-              highlightColor: Colors.grey.shade100,
-              child: Container(
-                width: 130,
-                height: 135,
-                color: Colors.grey.shade300,
-              ),
-            ),
-          ),
-
-          const SizedBox(width: 16),
-
-          // --- TEXT AREA ---
+          // IMAGE
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title skeleton
-                  Shimmer.fromColors(
-                    baseColor: Colors.grey.shade300,
-                    highlightColor: Colors.grey.shade100,
-                    child: Container(
-                      height: 16,
-                      width: 150,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // City badge skeleton
-                  Shimmer.fromColors(
-                    baseColor: Colors.grey.shade300,
-                    highlightColor: Colors.grey.shade100,
-                    child: Container(
-                      height: 22,
-                      width: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-
-                  const Spacer(),
-                ],
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(14),
               ),
             ),
           ),
-
-          // --- HEART PLACEHOLDER ---
-          Padding(
-            padding: const EdgeInsetsDirectional.only(end: 16),
-            child: Shimmer.fromColors(
-              baseColor: Colors.grey.shade300,
-              highlightColor: Colors.grey.shade100,
-              child: Container(
-                width: 26,
-                height: 26,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  shape: BoxShape.circle,
-                ),
-              ),
+          const SizedBox(height: 6),
+          // LOCATION
+          Container(
+            height: 10,
+            width: 60,
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+          const SizedBox(height: 4),
+          // TITLE
+          Container(
+            height: 12,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+          const SizedBox(height: 4),
+          // RATING
+          Container(
+            height: 10,
+            width: 50,
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.circular(5),
             ),
           ),
         ],

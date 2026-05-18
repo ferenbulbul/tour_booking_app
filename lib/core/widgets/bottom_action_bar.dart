@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
-import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 
 class BottomActionBar extends StatelessWidget {
   final num? price;
@@ -19,62 +18,73 @@ class BottomActionBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasPrice = price != null && price! > 0;
-
-    final formatter = NumberFormat.decimalPattern('tr_TR');
-    final formattedPrice = hasPrice ? formatter.format(price) : "";
+    final bottomPad = MediaQuery.of(context).padding.bottom;
 
     return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.10),
-            blurRadius: 18,
-            offset: const Offset(0, -6),
+      decoration: const BoxDecoration(
+        color: AppColors.background,
+        border: Border(top: BorderSide(color: AppColors.border, width: 0.5)),
+      ),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        10,
+        16,
+        bottomPad > 0 ? bottomPad : 12,
+      ),
+      child: Row(
+        children: [
+          if (hasPrice) ...[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Toplam",
+                  style: AppTextStyles.bodySmall.copyWith(
+                    fontSize: 11,
+                    color: AppColors.textLight,
+                  ),
+                ),
+                Text(
+                  _formatPrice(price!),
+                  style: AppTextStyles.titleSmall.copyWith(
+                    color: AppColors.accent,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(width: 16),
+          ],
+          Expanded(
+            child: GestureDetector(
+              onTap: onPressed,
+              child: Container(
+                height: 46,
+                decoration: BoxDecoration(
+                  color: AppColors.accent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  buttonText,
+                  style: AppTextStyles.labelLarge.copyWith(
+                    color: Colors.white,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),
-      child: SafeArea(
-        top: false,
-        minimum: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-        child: Row(
-          children: [
-            if (hasPrice)
-              Padding(
-                padding: EdgeInsetsDirectional.only(start: 25),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      "Toplam",
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-
-                    Text(
-                      "$formattedPrice ₺",
-                      style: AppTextStyles.headlineSmall.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
-                        letterSpacing: -.3,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            SizedBox(width: 12),
-            Expanded(
-              child: SizedBox(
-                height: 52,
-                child: PrimaryButton(text: buttonText, onPressed: onPressed),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
+  }
+
+  String _formatPrice(num value) {
+    return NumberFormat.currency(
+      locale: 'tr_TR',
+      symbol: '\u20BA',
+      decimalDigits: 2,
+    ).format(value);
   }
 }

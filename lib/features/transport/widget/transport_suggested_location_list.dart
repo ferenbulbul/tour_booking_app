@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/models/transport/suggested_location/suggested_location.dart';
 
@@ -31,23 +32,23 @@ class TransportSuggestedLocationList extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.08),
+                color: AppColors.accent.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(22),
                 border: Border.all(
-                  color: AppColors.primary.withOpacity(0.2),
+                  color: AppColors.accent.withOpacity(0.2),
                 ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.place, size: 16, color: AppColors.primary),
+                  Icon(SolarIconsOutline.mapPoint, size: 16, color: AppColors.accent),
                   const SizedBox(width: 6),
                   Text(
                     loc.name,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.primary,
+                      color: AppColors.accent,
                     ),
                   ),
                 ],

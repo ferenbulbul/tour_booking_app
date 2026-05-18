@@ -7,7 +7,7 @@ part 'featured_tour_point_list_dto.g.dart';
 @freezed
 class FeaturedTourPointListDto with _$FeaturedTourPointListDto {
   const factory FeaturedTourPointListDto({
-    @JsonKey(name: 'tourPoints') required List<FeaturedTourPointDto> tourPoints,
+    @JsonKey(name: 'tourPoints') @Default([]) List<FeaturedTourPointDto> tourPoints,
   }) = _FeaturedTourPointListDto;
 
   factory FeaturedTourPointListDto.fromJson(Map<String, dynamic> json) =>

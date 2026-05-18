@@ -1,13 +1,90 @@
 import 'package:flutter/material.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+
+class CompactPickerField extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String? value;
+  final VoidCallback onTap;
+  final bool showError;
+
+  const CompactPickerField({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.onTap,
+    this.showError = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final hasValue = value != null && value!.isNotEmpty;
+
+    final Color borderColor;
+    final Color iconColor;
+    if (showError) {
+      borderColor = AppColors.error.withValues(alpha: 0.5);
+      iconColor = AppColors.error;
+    } else if (hasValue) {
+      borderColor = AppColors.accent.withValues(alpha: 0.2);
+      iconColor = AppColors.accent;
+    } else {
+      borderColor = AppColors.border;
+      iconColor = AppColors.textLight;
+    }
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: borderColor),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: iconColor,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                hasValue ? value! : label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: hasValue
+                      ? AppColors.textPrimary
+                      : AppColors.textLight,
+                  fontWeight: hasValue ? FontWeight.w500 : FontWeight.w400,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            Icon(
+              SolarIconsOutline.altArrowDown,
+              size: 14,
+              color: hasValue ? AppColors.textSecondary : AppColors.textLight,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class PickerField extends StatelessWidget {
   final String label;
   final String? value;
   final IconData icon;
   final VoidCallback onTap;
-  final bool glass;
+  final String? hint;
 
   const PickerField({
     super.key,
@@ -15,78 +92,83 @@ class PickerField extends StatelessWidget {
     required this.value,
     required this.icon,
     required this.onTap,
-    this.glass = false,
+    this.hint,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
-
     final isEmpty = value == null || value!.isEmpty;
 
-    // HYBRID MODE → Blur YOK, sadece yarı transparan arka plan
-    final bgColor = glass
-        ? (isDark
-              ? Colors.white.withOpacity(0.05)
-              : Colors.white.withOpacity(0.12))
-        : scheme.surface;
-
-    final borderColor = glass
-        ? Colors.white.withOpacity(0.18)
-        : scheme.outlineVariant.withOpacity(0.30);
-
-    final shadowColor = Colors.black.withOpacity(glass ? 0.04 : 0.08);
-
-    final content = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderColor, width: glass ? 1 : 0.9),
-        boxShadow: [
-          BoxShadow(
-            color: shadowColor,
-            blurRadius: 3, // hafif shadow → performans dostu
-            offset: const Offset(0, 2),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isEmpty ? AppColors.border : AppColors.accent.withValues(alpha: 0.2),
+            width: 1,
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: AppColors.textPrimary.withOpacity(0.8), size: 20),
-          const SizedBox(width: 12),
-
-          // TEXT
-          Expanded(
-            child: Text(
-              value ?? label,
-              maxLines: 1,
-              overflow: TextOverflow.fade,
-              softWrap: false,
-              style: AppTextStyles.bodyMedium.copyWith(
-                fontSize: 15,
-                fontWeight: isEmpty ? FontWeight.w400 : FontWeight.w600,
+        ),
+        child: Row(
+          children: [
+            // ICON
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
                 color: isEmpty
-                    ? AppColors.textSecondary
-                    : AppColors.textPrimary,
+                    ? AppColors.background
+                    : AppColors.accent.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                icon,
+                size: 18,
+                color: isEmpty ? AppColors.textLight : AppColors.accent,
               ),
             ),
-          ),
 
-          const SizedBox(width: 6),
+            const SizedBox(width: 12),
 
-          Icon(
-            Icons.arrow_forward_ios_rounded,
-            size: 15,
-            color: AppColors.textSecondary.withOpacity(0.8),
-          ),
-        ],
+            // LABEL + VALUE/HINT
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textLight,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    isEmpty ? (hint ?? label) : value!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.titleSmall.copyWith(
+                      color: isEmpty ? AppColors.textLight : AppColors.textPrimary,
+                      fontWeight: isEmpty ? FontWeight.w400 : FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // CHEVRON
+            Icon(
+              SolarIconsOutline.altArrowDown,
+              size: 18,
+              color: isEmpty ? AppColors.textLight : AppColors.textSecondary,
+            ),
+          ],
+        ),
       ),
     );
-
-    // glass: true olsa da widget yapısı aynı, sadece style değişiyor
-    return GestureDetector(onTap: onTap, child: content);
   }
 }

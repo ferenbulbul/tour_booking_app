@@ -1,14 +1,16 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:tour_booking/core/theme/app_colors.dart';
-import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
+import 'package:tour_booking/features/transport/models/place_picker_models.dart';
+import 'package:tour_booking/features/transport/screen/transport_search_sheet.dart';
 import 'package:tour_booking/keys.dart';
 import 'package:tour_booking/models/place_section/place_section.dart';
+import 'package:tour_booking/core/ui/ui_helper.dart';
 
 class TransportPlacePickerScreen extends StatefulWidget {
   final double? pickupLat;
@@ -53,7 +55,7 @@ class _TransportPlacePickerScreenState
   LatLng? _cityCenter;
 
   // Routes
-  List<_ParsedRoute> _routes = [];
+  List<ParsedRoute> _routes = [];
   int _selectedRouteIndex = 0;
   bool _routesLoading = false;
 
@@ -212,11 +214,11 @@ class _TransportPlacePickerScreenState
       if (data['status'] != 'OK') return;
 
       final routesJson = data['routes'] as List<dynamic>;
-      final parsed = <_ParsedRoute>[];
+      final parsed = <ParsedRoute>[];
 
       for (final route in routesJson) {
         final leg = (route['legs'] as List<dynamic>)[0];
-        parsed.add(_ParsedRoute(
+        parsed.add(ParsedRoute(
           points: _decodePolyline(
               route['overview_polyline']['points'] as String),
           distanceKm:
@@ -355,14 +357,7 @@ class _TransportPlacePickerScreenState
             _routes = [];
           });
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                    'Kalkış noktası ${widget.cityName} içinde olmalıdır'),
-                backgroundColor: AppColors.error,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
+            UIHelper.showError(context, 'Kalkış noktası ${widget.cityName} içinde olmalıdır');
           }
           return;
         }
@@ -384,11 +379,12 @@ class _TransportPlacePickerScreenState
   Future<void> _openSearchSheet(bool forPickup) async {
     setState(() => _isPickupMode = forPickup);
 
-    final result = await showModalBottomSheet<_PlaceResult>(
+    final result = await showModalBottomSheet<PlaceResult>(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _SearchSheet(
+      builder: (_) => TransportSearchSheet(
         apiKey: _apiKey,
         cityBias: forPickup ? widget.cityName : null,
         cityCenter: forPickup ? _cityCenter : null,
@@ -558,7 +554,7 @@ class _TransportPlacePickerScreenState
               child: Row(
                 children: [
                   _circleButton(
-                      Icons.arrow_back, () => Navigator.pop(context)),
+                      Icons.arrow_back_ios_new, () => Navigator.pop(context)),
                   const SizedBox(width: 12),
                   Expanded(child: _buildModeToggle()),
                 ],
@@ -636,12 +632,12 @@ class _TransportPlacePickerScreenState
                             width: 36,
                             height: 36,
                             decoration: BoxDecoration(
-                              color: AppColors.primary
+                              color: AppColors.accent
                                   .withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(Icons.swap_vert,
-                                size: 20, color: AppColors.primary),
+                            child: Icon(SolarIconsOutline.roundArrowLeftDown,
+                                size: 20, color: AppColors.accent),
                           ),
                         ),
                       ],
@@ -666,7 +662,7 @@ class _TransportPlacePickerScreenState
 
                     PrimaryButton(
                       text: 'Devam Et',
-                      icon: Icons.arrow_forward,
+                      icon: SolarIconsOutline.altArrowRight,
                       onPressed: _bothSet ? _confirm : null,
                     ),
                   ],
@@ -682,7 +678,7 @@ class _TransportPlacePickerScreenState
   // ---------------------------------------------------------------
   // WIDGETS
   // ---------------------------------------------------------------
-  Widget _routeCard(_ParsedRoute route, int index) {
+  Widget _routeCard(ParsedRoute route, int index) {
     final isSelected = index == _selectedRouteIndex;
     return GestureDetector(
       onTap: () => _selectRoute(index),
@@ -690,16 +686,16 @@ class _TransportPlacePickerScreenState
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : Colors.white,
+          color: isSelected ? AppColors.accent : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border,
+            color: isSelected ? AppColors.accent : AppColors.border,
             width: isSelected ? 2 : 1,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.2),
+                    color: AppColors.accent.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   )
@@ -836,12 +832,12 @@ class _TransportPlacePickerScreenState
                 onTap: onClear,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8),
-                  child: Icon(Icons.close,
+                  child: Icon(SolarIconsOutline.closeCircle,
                       size: 16, color: AppColors.textLight),
                 ),
               )
             else
-              Icon(Icons.search, size: 18, color: AppColors.textLight),
+              Icon(SolarIconsOutline.magnifier, size: 18, color: AppColors.textLight),
           ],
         ),
       ),
@@ -867,332 +863,4 @@ class _TransportPlacePickerScreenState
       ),
     );
   }
-}
-
-// =================================================================
-// SEARCH BOTTOM SHEET
-// =================================================================
-class _SearchSheet extends StatefulWidget {
-  final String apiKey;
-  final String? cityBias;
-  final LatLng? cityCenter;
-  final String? cityName;
-  final String hintText;
-  final Color iconColor;
-
-  const _SearchSheet({
-    required this.apiKey,
-    this.cityBias,
-    this.cityCenter,
-    this.cityName,
-    required this.hintText,
-    required this.iconColor,
-  });
-
-  @override
-  State<_SearchSheet> createState() => _SearchSheetState();
-}
-
-class _SearchSheetState extends State<_SearchSheet> {
-  final _ctrl = TextEditingController();
-  Timer? _debounce;
-  List<_Prediction> _predictions = [];
-  bool _loading = false;
-
-  @override
-  void dispose() {
-    _debounce?.cancel();
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  void _onChanged(String query) {
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 300), () {
-      _search(query);
-    });
-  }
-
-  Future<void> _search(String query) async {
-    if (query.trim().isEmpty) {
-      setState(() => _predictions = []);
-      return;
-    }
-
-    setState(() => _loading = true);
-
-    final params = <String, String>{
-      'input': query,
-      'key': widget.apiKey,
-      'language': 'tr',
-      'components': 'country:tr',
-    };
-
-    if (widget.cityCenter != null) {
-      params['location'] =
-          '${widget.cityCenter!.latitude},${widget.cityCenter!.longitude}';
-      params['radius'] = '50000';
-      params['strictbounds'] = 'true';
-    }
-
-    final uri = Uri.https(
-        'maps.googleapis.com', '/maps/api/place/autocomplete/json', params);
-
-    try {
-      final res = await http.get(uri);
-      if (!mounted) return;
-      if (res.statusCode == 200) {
-        final body = jsonDecode(res.body);
-        if (body['status'] == 'OK') {
-          var list = (body['predictions'] as List)
-              .map((e) => _Prediction.fromJson(e))
-              .toList();
-
-          // Filter results to only show places within the city
-          if (widget.cityName != null) {
-            final cityLower = widget.cityName!.toLowerCase();
-            list = list
-                .where((p) =>
-                    p.description.toLowerCase().contains(cityLower))
-                .toList();
-          }
-
-          setState(() => _predictions = list);
-        } else {
-          setState(() => _predictions = []);
-        }
-      }
-    } catch (_) {}
-
-    if (mounted) setState(() => _loading = false);
-  }
-
-  Future<void> _selectPrediction(_Prediction p) async {
-    final uri = Uri.https(
-      'maps.googleapis.com',
-      '/maps/api/place/details/json',
-      {
-        'place_id': p.placeId,
-        'key': widget.apiKey,
-        'language': 'tr',
-        'fields': 'formatted_address,geometry/location,address_components',
-      },
-    );
-
-    final res = await http.get(uri);
-    if (res.statusCode != 200 || !mounted) return;
-
-    final body = jsonDecode(res.body);
-    if (body['status'] != 'OK') return;
-
-    final result = body['result'];
-    final loc = result['geometry']?['location'];
-    final lat = (loc?['lat'] as num?)?.toDouble();
-    final lng = (loc?['lng'] as num?)?.toDouble();
-    if (lat == null || lng == null) return;
-
-    // Validate city restriction for pickup
-    if (widget.cityName != null) {
-      final components =
-          (result['address_components'] as List<dynamic>?) ?? [];
-      final cityLower = widget.cityName!.toLowerCase();
-      final inCity = components.any((c) {
-        final types = (c['types'] as List).cast<String>();
-        final name = (c['long_name'] as String).toLowerCase();
-        return (types.contains('administrative_area_level_1') ||
-                types.contains('locality')) &&
-            name.contains(cityLower);
-      });
-
-      if (!inCity && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                Text('Kalkış noktası ${widget.cityName} içinde olmalıdır'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        return;
-      }
-    }
-
-    final address = result['formatted_address'] ?? p.description;
-
-    if (mounted) {
-      Navigator.pop(
-          context, _PlaceResult(lat: lat, lng: lng, address: address));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.55,
-      minChildSize: 0.35,
-      maxChildSize: 0.9,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: Column(
-            children: [
-              // Drag handle
-              Container(
-                margin: const EdgeInsets.only(top: 12, bottom: 8),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-
-              // Search field
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                child: TextField(
-                  controller: _ctrl,
-                  autofocus: true,
-                  onChanged: _onChanged,
-                  style: AppTextStyles.bodyMedium,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.search,
-                        size: 22, color: widget.iconColor),
-                    suffixIcon: _ctrl.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear, size: 20),
-                            onPressed: () {
-                              _ctrl.clear();
-                              setState(() => _predictions = []);
-                            },
-                          )
-                        : null,
-                    hintText: widget.hintText,
-                    hintStyle: TextStyle(color: AppColors.textLight),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide(color: AppColors.border),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide:
-                          BorderSide(color: widget.iconColor, width: 2),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 14),
-                  ),
-                ),
-              ),
-
-              if (_loading)
-                LinearProgressIndicator(
-                  color: AppColors.primary,
-                  backgroundColor:
-                      AppColors.primary.withValues(alpha: 0.2),
-                ),
-
-              // Results
-              Expanded(
-                child: _predictions.isEmpty
-                    ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(32),
-                          child: Text(
-                            _ctrl.text.isEmpty
-                                ? 'Aramak için yazmaya başlayın'
-                                : 'Sonuç bulunamadı',
-                            style: TextStyle(
-                                color: AppColors.textLight,
-                                fontSize: 14),
-                          ),
-                        ),
-                      )
-                    : ListView.separated(
-                        controller: scrollController,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        itemCount: _predictions.length,
-                        separatorBuilder: (_, __) => Divider(
-                            height: 1, color: Colors.grey.shade200),
-                        itemBuilder: (_, i) {
-                          final p = _predictions[i];
-                          return ListTile(
-                            leading: Icon(Icons.location_on_outlined,
-                                color: widget.iconColor),
-                            title: Text(p.mainText,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600)),
-                            subtitle: p.secondaryText != null
-                                ? Text(p.secondaryText!,
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey.shade600))
-                                : null,
-                            onTap: () => _selectPrediction(p),
-                          );
-                        },
-                      ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
-
-// =================================================================
-// PRIVATE MODELS
-// =================================================================
-class _PlaceResult {
-  final double lat;
-  final double lng;
-  final String address;
-  const _PlaceResult(
-      {required this.lat, required this.lng, required this.address});
-}
-
-class _Prediction {
-  final String placeId;
-  final String description;
-  final String mainText;
-  final String? secondaryText;
-
-  _Prediction({
-    required this.placeId,
-    required this.description,
-    required this.mainText,
-    this.secondaryText,
-  });
-
-  factory _Prediction.fromJson(Map<String, dynamic> j) {
-    final sf = j['structured_formatting'] ?? {};
-    return _Prediction(
-      placeId: j['place_id'],
-      description: j['description'],
-      mainText: sf['main_text'] ?? j['description'],
-      secondaryText: sf['secondary_text'],
-    );
-  }
-}
-
-class _ParsedRoute {
-  final List<LatLng> points;
-  final double distanceKm;
-  final int durationMinutes;
-  final String distanceText;
-  final String durationText;
-  final String summary;
-
-  const _ParsedRoute({
-    required this.points,
-    required this.distanceKm,
-    required this.durationMinutes,
-    required this.distanceText,
-    required this.durationText,
-    required this.summary,
-  });
 }

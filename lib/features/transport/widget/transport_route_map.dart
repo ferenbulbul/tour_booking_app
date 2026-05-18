@@ -214,7 +214,7 @@ class _TransportRouteMapState extends State<TransportRouteMap> {
     polylines.add(Polyline(
       polylineId: PolylineId('route_selected_$_selectedIndex'),
       points: _routes[_selectedIndex].points,
-      color: AppColors.primary,
+      color: AppColors.accent,
       width: 5,
     ));
 
@@ -330,16 +330,16 @@ class _TransportRouteMapState extends State<TransportRouteMap> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : Colors.white,
+          color: isSelected ? AppColors.accent : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border,
+            color: isSelected ? AppColors.accent : AppColors.border,
             width: isSelected ? 2 : 1,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.2),
+                    color: AppColors.accent.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   )

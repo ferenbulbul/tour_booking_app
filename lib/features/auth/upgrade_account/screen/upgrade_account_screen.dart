@@ -2,13 +2,15 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
-import 'package:tour_booking/features/auth/upgrade_account/widget/upgrade_account_viewmodel.dart';
+import 'package:tour_booking/features/auth/upgrade_account/upgrade_account_viewmodel.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
+import 'package:tour_booking/utils/password_validator.dart';
 import 'package:flutter/material.dart' as ui;
 
 class UpgradeAccountScreen extends StatefulWidget {
@@ -32,14 +34,7 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
   bool _obscureConfirm = true;
   dynamic _selectedPhone;
 
-  bool get _isPasswordValid {
-    final v = _passwordValue;
-    return v.length >= 9 &&
-        RegExp(r'[A-Z]').hasMatch(v) &&
-        RegExp(r'[a-z]').hasMatch(v) &&
-        RegExp(r'\d').hasMatch(v) &&
-        RegExp(r'[!@#\$%\^&\*\(\)_\+\-=\[\]{};:"\\|,.<>\/\?]').hasMatch(v);
-  }
+  bool get _isPasswordValid => PasswordValidator.isValid(_passwordValue);
 
   @override
   void dispose() {
@@ -145,7 +140,7 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
                               child: _input(
                                 controller: _firstName,
                                 label: tr("first_name"),
-                                icon: Icons.person_outline,
+                                icon: SolarIconsOutline.user,
                                 validator: (v) =>
                                     v!.isEmpty ? tr("first_name_required") : null,
                               ),
@@ -155,7 +150,7 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
                               child: _input(
                                 controller: _lastName,
                                 label: tr("last_name"),
-                                icon: Icons.person_outline,
+                                icon: SolarIconsOutline.user,
                                 validator: (v) =>
                                     v!.isEmpty ? tr("last_name_required") : null,
                               ),
@@ -168,7 +163,7 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
                         _input(
                           controller: _email,
                           label: tr("email"),
-                          icon: Icons.email_outlined,
+                          icon: SolarIconsOutline.letter,
                           keyboardType: TextInputType.emailAddress,
                           validator: (v) {
                             if (v == null || v.isEmpty) return tr("email_required");
@@ -198,7 +193,7 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
                         _input(
                           controller: _password,
                           label: tr("password"),
-                          icon: Icons.lock_outline,
+                          icon: SolarIconsOutline.lock,
                           isPassword: true,
                           isObscure: _obscurePassword,
                           onToggle: () => setState(() {
@@ -219,7 +214,7 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
 
                         const SizedBox(height: 8),
 
-                        if (_passwordTouched) ...[_PasswordRules(password: _passwordValue)],
+                        if (_passwordTouched) ...[PasswordRules(password: _passwordValue)],
 
                         const SizedBox(height: 16),
 
@@ -227,7 +222,7 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
                         _input(
                           controller: _confirmPassword,
                           label: tr("confirm_password"),
-                          icon: Icons.lock_outline,
+                          icon: SolarIconsOutline.lock,
                           isPassword: true,
                           isObscure: _obscureConfirm,
                           onToggle: () => setState(() {
@@ -293,13 +288,7 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
         style: text.bodyMedium,
         cursorColor: scheme.primary,
         inputFormatters: isPassword
-            ? [
-                FilteringTextInputFormatter.allow(
-                  RegExp(
-                    r'[A-Za-z0-9!@#\$%\^&\*\(\)_\+\-=\[\]{};:"\\|,.<>\/?]',
-                  ),
-                ),
-              ]
+            ? [PasswordValidator.passwordInputFormatter]
             : null,
         decoration: InputDecoration(
           labelText: label,
@@ -308,8 +297,8 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
               ? IconButton(
                   icon: Icon(
                     isObscure
-                        ? Icons.visibility_off_outlined
-                        : Icons.visibility_outlined,
+                        ? SolarIconsOutline.eyeClosed
+                        : SolarIconsOutline.eye,
                     color: scheme.onSurfaceVariant,
                   ),
                   onPressed: onToggle,
@@ -321,52 +310,3 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
   }
 }
 
-class _PasswordRules extends StatelessWidget {
-  final String password;
-  const _PasswordRules({required this.password});
-
-  Widget _item(bool ok, String text) {
-    return Row(
-      children: [
-        Icon(
-          ok ? Icons.check_circle : Icons.cancel,
-          size: 16,
-          color: ok ? Colors.green : Colors.red,
-        ),
-        const SizedBox(width: 6),
-        Text(
-          text,
-          style: TextStyle(fontSize: 12, color: ok ? Colors.green : Colors.red),
-        ),
-      ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _item(password.length >= 9, tr("password_too_short")),
-        _item(
-          RegExp(r'[A-Z]').hasMatch(password),
-          tr("password_must_include_upper"),
-        ),
-        _item(
-          RegExp(r'[a-z]').hasMatch(password),
-          tr("password_must_include_lower"),
-        ),
-        _item(
-          RegExp(r'\d').hasMatch(password),
-          tr("password_must_include_digit"),
-        ),
-        _item(
-          RegExp(
-            r'[!@#\$%\^&\*\(\)_\+\-=\[\]{};:"\\|,.<>\/\?]',
-          ).hasMatch(password),
-          tr("password_must_include_special"),
-        ),
-      ],
-    );
-  }
-}

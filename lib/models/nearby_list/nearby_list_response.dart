@@ -7,7 +7,7 @@ part 'nearby_list_response.g.dart';
 @freezed
 class NearbyListResponse with _$NearbyListResponse {
   const factory NearbyListResponse({
-    required List<NearbyTourPointDto> nearByList,
+    @Default([]) List<NearbyTourPointDto> nearByList,
   }) = _NearbyListResponse;
 
   factory NearbyListResponse.fromJson(Map<String, dynamic> json) =>

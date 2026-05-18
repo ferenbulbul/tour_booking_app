@@ -5,6 +5,7 @@ import 'package:tour_booking/models/login/login_response.dart';
 import 'package:tour_booking/models/user_me/user_me.dart';
 import 'package:tour_booking/services/auth/auth_service.dart';
 import 'package:tour_booking/services/core/secure_token_storage.dart';
+import 'package:tour_booking/services/core/api_client.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 class SplashViewModel extends ChangeNotifier {
@@ -14,18 +15,37 @@ class SplashViewModel extends ChangeNotifier {
   bool? _isLoggedIn;
   UserMe? _user;
   UserRole? _role;
-  bool _skipAutoGuestSignIn = false;
+
+  // Onboarding state
+  bool _hasSeenOnboarding = true; // default true → flash onleme
+  bool _shouldShowLoginSheet = false;
+
+  // Auth geçiş animasyonu
+  bool _isTransitioning = false;
 
   bool get isChecking => _isLoggedIn == null;
   bool get isLoggedInStatus => _isLoggedIn ?? false;
   UserMe? get user => _user;
   UserRole? get role => _role;
   bool get isGuest => _role == UserRole.guest;
+  bool get shouldShowOnboarding => !_hasSeenOnboarding;
+  bool get shouldShowLoginSheet => _shouldShowLoginSheet;
+  bool get isTransitioning => _isTransitioning;
+
+  void clearLoginSheetFlag() => _shouldShowLoginSheet = false;
 
   // Uygulama ilk acildiginda calisan (Soguk acilis)
   Future<void> initializeApp() async {
+    // Session expired callback'i bagla
+    ApiClient.onSessionExpired = _handleSessionExpired;
+
     _isLoggedIn = null;
     notifyListeners();
+
+    // Onboarding durumunu kontrol et
+    final onboardingPrefs = await SharedPreferences.getInstance();
+    _hasSeenOnboarding = onboardingPrefs.getBool('has_seen_onboarding') ?? false;
+
     try {
       final token = await _tokenStorage.getAccessToken();
       if (token != null && token.isNotEmpty) {
@@ -62,23 +82,17 @@ class SplashViewModel extends ChangeNotifier {
         _isLoggedIn = (_user != null); // User varsa giris basarilidir
 
         // Token vardi ama user alinamadiysa (gecersiz token) → guest'e dus
-        if (_isLoggedIn == false && !_skipAutoGuestSignIn) {
+        if (_isLoggedIn == false) {
           await _tokenStorage.clearTokens();
           await _performGuestSignIn();
         }
-      } else if (!_skipAutoGuestSignIn) {
+      } else {
         // Token yoksa otomatik guest girisi yap
         await _performGuestSignIn();
-      } else {
-        _isLoggedIn = false;
       }
     } catch (e) {
       // Hata olsa bile guest olarak devam etmeyi dene
-      if (!_skipAutoGuestSignIn) {
-        await _performGuestSignIn();
-      } else {
-        _isLoggedIn = false;
-      }
+      await _performGuestSignIn();
     } finally {
       FlutterNativeSplash.remove();
       notifyListeners();
@@ -92,14 +106,8 @@ class SplashViewModel extends ChangeNotifier {
       if (response.isSuccess == true && response.data != null) {
         final loginData = response.data!;
 
-        // Tokenlari kaydet
-        await _tokenStorage.saveTokens(
-          loginData.accessToken,
-          loginData.refreshToken,
-        );
-
-        // Auth datasini kaydet
-        await saveAuthData(loginData);
+        // Auth datasini kaydet (animasyonsuz, dahili)
+        await _saveAuthDataInternal(loginData);
       } else {
         _isLoggedIn = false;
       }
@@ -109,8 +117,26 @@ class SplashViewModel extends ChangeNotifier {
     }
   }
 
-  // Giris/Kayit sonrasi her seyi halleder
+  // Giris/Kayit sonrasi her seyi halleder (geçiş animasyonlu)
   Future<void> saveAuthData(LoginResponse response) async {
+    // Geçiş animasyonunu başlat
+    _isTransitioning = true;
+    notifyListeners();
+    await Future.delayed(const Duration(milliseconds: 350));
+
+    await _saveAuthDataInternal(response);
+
+    // Rebuild tamamlansın, sonra overlay'i kapat
+    await Future.delayed(const Duration(milliseconds: 200));
+    _isTransitioning = false;
+    notifyListeners();
+  }
+
+  /// Auth verilerini kaydet (animasyonsuz, dahili kullanım)
+  Future<void> _saveAuthDataInternal(LoginResponse response) async {
+    // 0. TOKENLARI KAYDET
+    await _tokenStorage.saveTokens(response.accessToken, response.refreshToken);
+
     final prefs = await SharedPreferences.getInstance();
 
     // 1. DISKE YAZ (Hot Restart icin kurtarici)
@@ -155,6 +181,15 @@ class SplashViewModel extends ChangeNotifier {
     }
   }
 
+  /// 401 alindığında ApiClient tarafindan cagrilir
+  /// Guest olarak devam et + login sheet goster
+  Future<void> _handleSessionExpired() async {
+    await _clearAuthData();
+    await _performGuestSignIn();
+    _shouldShowLoginSheet = true;
+    notifyListeners();
+  }
+
   void updateEmailConfirmation(bool status) {
     if (_user != null) {
       _user = _user!.copyWith(emailConfirmed: status);
@@ -162,33 +197,74 @@ class SplashViewModel extends ChangeNotifier {
     }
   }
 
-  /// Guest profilden "Giris Yap" tiklaninca login ekranina yonlendir
-  Future<void> redirectToLogin() async {
-    _skipAutoGuestSignIn = true;
-    await signOut();
+  /// Tam cikis: API logout + social temizlik + guest sign-in
+  Future<void> performFullSignOut({
+    Future<void> Function()? socialCleanup,
+  }) async {
+    // Geçiş animasyonunu başlat
+    _isTransitioning = true;
+    notifyListeners();
+    await Future.delayed(const Duration(milliseconds: 350));
+
+    try {
+      await _authService.logout();
+    } catch (_) {}
+    if (socialCleanup != null) await socialCleanup();
+    await _clearAuthData();
+    await _performGuestSignIn();
+    notifyListeners();
+
+    // Rebuild tamamlansın, sonra overlay'i kapat
+    await Future.delayed(const Duration(milliseconds: 200));
+    _isTransitioning = false;
+    notifyListeners();
   }
 
-  /// Cikis yap ve guest olarak devam et (login'e atmaz)
-  Future<void> signOutToGuest() async {
+  /// Hesap silme sonrasi: social temizlik + guest sign-in
+  Future<void> performAccountDeletion({
+    Future<void> Function()? socialCleanup,
+  }) async {
+    // Geçiş animasyonunu başlat
+    _isTransitioning = true;
+    notifyListeners();
+    await Future.delayed(const Duration(milliseconds: 350));
+
+    if (socialCleanup != null) await socialCleanup();
+    await _clearAuthData();
+    await _performGuestSignIn();
+    notifyListeners();
+
+    // Rebuild tamamlansın, sonra overlay'i kapat
+    await Future.delayed(const Duration(milliseconds: 200));
+    _isTransitioning = false;
+    notifyListeners();
+  }
+
+  /// Login ekranindan guest olarak devam et
+  Future<void> continueAsGuest() async {
+    await _clearAuthData();
+    await _performGuestSignIn();
+    notifyListeners();
+  }
+
+  /// Onboarding tamamlandi
+  Future<void> completeOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('has_seen_onboarding', true);
+    _hasSeenOnboarding = true;
+    _shouldShowLoginSheet = true;
+    notifyListeners();
+  }
+
+  /// Tum auth verilerini temizle (token + prefs + memory)
+  Future<void> _clearAuthData() async {
     await _tokenStorage.clearTokens();
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('user_role');
     await prefs.remove('user_full_name');
     await prefs.remove('user_email_confirmed');
-
-    // Hemen guest sign-in yap — arada _isLoggedIn = false olmadan
-    await _performGuestSignIn();
-    notifyListeners();
-  }
-
-  // Login'e donmek isteyenler icin temizlik
-  Future<void> signOut() async {
     _isLoggedIn = false;
     _user = null;
     _role = null;
-    await _tokenStorage.clearTokens();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('user_role');
-    notifyListeners();
   }
 }

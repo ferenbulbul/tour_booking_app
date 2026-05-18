@@ -28,6 +28,8 @@ _$TourPointImpl _$$TourPointImplFromJson(Map<String, dynamic> json) =>
           .toList(),
       avgRating: (json['avgRating'] as num?)?.toDouble(),
       ratingCount: (json['ratingCount'] as num?)?.toInt(),
+      durationHours: (json['durationHours'] as num?)?.toInt(),
+      durationMinutes: (json['durationMinutes'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$$TourPointImplToJson(_$TourPointImpl instance) =>
@@ -50,4 +52,6 @@ Map<String, dynamic> _$$TourPointImplToJson(_$TourPointImpl instance) =>
       'otherImages': instance.otherImages,
       'avgRating': instance.avgRating,
       'ratingCount': instance.ratingCount,
+      'durationHours': instance.durationHours,
+      'durationMinutes': instance.durationMinutes,
     };

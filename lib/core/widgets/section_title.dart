@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 
 class SectionTitle extends StatelessWidget {
@@ -15,7 +17,6 @@ class SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
 
     return Column(
@@ -25,37 +26,15 @@ class SectionTitle extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            /// Title + accent bar
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: AppTextStyles.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -1,
-                  ),
+            /// Title
+            Flexible(
+              child: Text(
+                title,
+                style: AppTextStyles.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -1,
                 ),
-
-                const SizedBox(height: 2),
-
-                /// Soft gradient accent line
-                Container(
-                  width: 38,
-                  height: 3,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    gradient: LinearGradient(
-                      colors: [
-                        scheme.primary.withOpacity(0.9),
-                        scheme.primary.withOpacity(0.1),
-                      ],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
 
             /// SEE ALL (optional)
@@ -63,9 +42,9 @@ class SectionTitle extends StatelessWidget {
               GestureDetector(
                 onTap: onMore,
                 child: Text(
-                  "See All",
+                  tr("see_all"),
                   style: text.labelLarge?.copyWith(
-                    color: scheme.primary,
+                    color: AppColors.accent,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -79,7 +58,7 @@ class SectionTitle extends StatelessWidget {
           Text(
             subtitle!,
             style: text.bodyMedium?.copyWith(
-              color: scheme.onSurfaceVariant.withOpacity(0.9),
+              color: AppColors.textSecondary,
               height: 1.3,
             ),
           ),

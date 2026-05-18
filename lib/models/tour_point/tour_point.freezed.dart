@@ -39,6 +39,8 @@ mixin _$TourPoint {
   List<String> get otherImages => throw _privateConstructorUsedError;
   double? get avgRating => throw _privateConstructorUsedError;
   int? get ratingCount => throw _privateConstructorUsedError;
+  int? get durationHours => throw _privateConstructorUsedError;
+  int? get durationMinutes => throw _privateConstructorUsedError;
 
   /// Serializes this TourPoint to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -74,6 +76,8 @@ abstract class $TourPointCopyWith<$Res> {
     List<String> otherImages,
     double? avgRating,
     int? ratingCount,
+    int? durationHours,
+    int? durationMinutes,
   });
 }
 
@@ -110,6 +114,8 @@ class _$TourPointCopyWithImpl<$Res, $Val extends TourPoint>
     Object? otherImages = null,
     Object? avgRating = freezed,
     Object? ratingCount = freezed,
+    Object? durationHours = freezed,
+    Object? durationMinutes = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -185,6 +191,14 @@ class _$TourPointCopyWithImpl<$Res, $Val extends TourPoint>
                 ? _value.ratingCount
                 : ratingCount // ignore: cast_nullable_to_non_nullable
                       as int?,
+            durationHours: freezed == durationHours
+                ? _value.durationHours
+                : durationHours // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            durationMinutes: freezed == durationMinutes
+                ? _value.durationMinutes
+                : durationMinutes // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -219,6 +233,8 @@ abstract class _$$TourPointImplCopyWith<$Res>
     List<String> otherImages,
     double? avgRating,
     int? ratingCount,
+    int? durationHours,
+    int? durationMinutes,
   });
 }
 
@@ -254,6 +270,8 @@ class __$$TourPointImplCopyWithImpl<$Res>
     Object? otherImages = null,
     Object? avgRating = freezed,
     Object? ratingCount = freezed,
+    Object? durationHours = freezed,
+    Object? durationMinutes = freezed,
   }) {
     return _then(
       _$TourPointImpl(
@@ -329,6 +347,14 @@ class __$$TourPointImplCopyWithImpl<$Res>
             ? _value.ratingCount
             : ratingCount // ignore: cast_nullable_to_non_nullable
                   as int?,
+        durationHours: freezed == durationHours
+            ? _value.durationHours
+            : durationHours // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        durationMinutes: freezed == durationMinutes
+            ? _value.durationMinutes
+            : durationMinutes // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -356,6 +382,8 @@ class _$TourPointImpl implements _TourPoint {
     required final List<String> otherImages,
     this.avgRating,
     this.ratingCount,
+    this.durationHours,
+    this.durationMinutes,
   }) : _otherImages = otherImages;
 
   factory _$TourPointImpl.fromJson(Map<String, dynamic> json) =>
@@ -403,10 +431,14 @@ class _$TourPointImpl implements _TourPoint {
   final double? avgRating;
   @override
   final int? ratingCount;
+  @override
+  final int? durationHours;
+  @override
+  final int? durationMinutes;
 
   @override
   String toString() {
-    return 'TourPoint(id: $id, name: $name, tourTypeId: $tourTypeId, tourTypeName: $tourTypeName, tourDifficultyId: $tourDifficultyId, tourDifficultyName: $tourDifficultyName, countryId: $countryId, countryName: $countryName, regionId: $regionId, regionName: $regionName, cityId: $cityId, cityName: $cityName, districtId: $districtId, districtName: $districtName, mainImage: $mainImage, otherImages: $otherImages, avgRating: $avgRating, ratingCount: $ratingCount)';
+    return 'TourPoint(id: $id, name: $name, tourTypeId: $tourTypeId, tourTypeName: $tourTypeName, tourDifficultyId: $tourDifficultyId, tourDifficultyName: $tourDifficultyName, countryId: $countryId, countryName: $countryName, regionId: $regionId, regionName: $regionName, cityId: $cityId, cityName: $cityName, districtId: $districtId, districtName: $districtName, mainImage: $mainImage, otherImages: $otherImages, avgRating: $avgRating, ratingCount: $ratingCount, durationHours: $durationHours, durationMinutes: $durationMinutes)';
   }
 
   @override
@@ -448,12 +480,16 @@ class _$TourPointImpl implements _TourPoint {
             (identical(other.avgRating, avgRating) ||
                 other.avgRating == avgRating) &&
             (identical(other.ratingCount, ratingCount) ||
-                other.ratingCount == ratingCount));
+                other.ratingCount == ratingCount) &&
+            (identical(other.durationHours, durationHours) ||
+                other.durationHours == durationHours) &&
+            (identical(other.durationMinutes, durationMinutes) ||
+                other.durationMinutes == durationMinutes));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
     name,
@@ -473,7 +509,9 @@ class _$TourPointImpl implements _TourPoint {
     const DeepCollectionEquality().hash(_otherImages),
     avgRating,
     ratingCount,
-  );
+    durationHours,
+    durationMinutes,
+  ]);
 
   /// Create a copy of TourPoint
   /// with the given fields replaced by the non-null parameter values.
@@ -509,6 +547,8 @@ abstract class _TourPoint implements TourPoint {
     required final List<String> otherImages,
     final double? avgRating,
     final int? ratingCount,
+    final int? durationHours,
+    final int? durationMinutes,
   }) = _$TourPointImpl;
 
   factory _TourPoint.fromJson(Map<String, dynamic> json) =
@@ -550,6 +590,10 @@ abstract class _TourPoint implements TourPoint {
   double? get avgRating;
   @override
   int? get ratingCount;
+  @override
+  int? get durationHours;
+  @override
+  int? get durationMinutes;
 
   /// Create a copy of TourPoint
   /// with the given fields replaced by the non-null parameter values.

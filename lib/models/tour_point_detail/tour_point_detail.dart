@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:tour_booking/models/tour_detail_sub_items/tour_detail_sub_items.dart';
 import 'package:tour_booking/models/tour_point_detail_city/city_dto.dart';
 import 'package:tour_booking/models/tour_point_detail_district/district_dto.dart';
 
@@ -24,6 +25,13 @@ class TourPointDetail with _$TourPointDetail {
     required bool isFavorites,
     double? avgRating,
     int? ratingCount,
+    String? shortDescription,
+    @Default(0) int durationHours,
+    @Default(0) int durationMinutes,
+    @Default([]) List<RoutePointItem> routePoints,
+    @Default([]) List<HighlightItem> highlights,
+    @Default([]) List<InclusionItem> inclusions,
+    @Default([]) List<ImportantInfoItem> importantInfos,
   }) = _TourPointDetail;
 
   factory TourPointDetail.fromJson(Map<String, dynamic> json) =>

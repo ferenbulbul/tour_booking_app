@@ -5,19 +5,19 @@ import 'package:tour_booking/core/theme/app_text_styles.dart';
 
 class ComponentThemes {
   // -------------------------------------------------------------
-  // 🔥 ELEVATED BUTTON THEME — PrimaryButton dahil HER YERDE KULLANILIR
+  // ELEVATED BUTTON — CTA turuncu
   // -------------------------------------------------------------
   static final elevatedButtonTheme = ElevatedButtonThemeData(
     style: ButtonStyle(
       backgroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.disabled)) {
-          return AppColors.primary.withOpacity(0.4); // disabled
+          return AppColors.accent.withOpacity(0.4);
         }
-        return AppColors.primary; // normal
+        return AppColors.accent;
       }),
-      foregroundColor: WidgetStateProperty.all(Colors.white), // yazı/ikon
+      foregroundColor: WidgetStateProperty.all(Colors.white),
       overlayColor: WidgetStateProperty.all(
-        AppColors.primaryDark.withOpacity(0.1),
+        AppColors.accentDark.withOpacity(0.15),
       ),
       padding: WidgetStateProperty.all(
         const EdgeInsets.symmetric(vertical: 16),
@@ -31,32 +31,29 @@ class ComponentThemes {
       textStyle: WidgetStateProperty.all(
         AppTextStyles.labelLarge.copyWith(
           fontWeight: FontWeight.w700,
-          color: Colors.white, // önemli
+          color: Colors.white,
         ),
       ),
     ),
   );
 
   // -------------------------------------------------------------
-  // 🔥 INPUT DECORATION (Login & Register aynı)
+  // INPUT DECORATION
   // -------------------------------------------------------------
   static final inputTheme = InputDecorationTheme(
     filled: true,
-    fillColor: const Color(0xFFF3F4F6),
+    fillColor: const Color(0xFFF1F3F7),
     contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
 
-    // LABEL
     labelStyle: AppTextStyles.bodyMedium.copyWith(
       color: AppColors.textSecondary,
     ),
     hintStyle: AppTextStyles.bodyMedium.copyWith(
-      color: AppColors.textSecondary,
+      color: AppColors.textLight,
     ),
 
-    // ICON
     prefixIconColor: AppColors.textSecondary,
 
-    // BORDER
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppRadius.medium),
       borderSide: BorderSide.none,
@@ -67,12 +64,12 @@ class ComponentThemes {
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppRadius.medium),
-      borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+      borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
     ),
   );
 
   // -------------------------------------------------------------
-  // 🔥 CARD
+  // CARD
   // -------------------------------------------------------------
   static const cardTheme = CardThemeData(
     color: AppColors.surface,
@@ -85,7 +82,7 @@ class ComponentThemes {
   );
 
   // -------------------------------------------------------------
-  // 🔥 CHIP
+  // CHIP
   // -------------------------------------------------------------
   static final chipTheme = ChipThemeData(
     backgroundColor: Colors.black12,
@@ -98,27 +95,22 @@ class ComponentThemes {
   );
 
   // -------------------------------------------------------------
-  // 🔥 SNACKBAR
+  // SNACKBAR
   // -------------------------------------------------------------
   static final snackBarTheme = SnackBarThemeData(
     behavior: SnackBarBehavior.floating,
-    backgroundColor: AppColors.surface,
-    contentTextStyle: AppTextStyles.labelLarge.copyWith(
-      color: AppColors.textPrimary,
-      fontWeight: FontWeight.w600,
-    ),
+    elevation: 6,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(AppRadius.medium),
     ),
-    elevation: 8,
   );
 
   // -------------------------------------------------------------
-  // 🔥 BOTTOM NAVIGATION
+  // BOTTOM NAVIGATION
   // -------------------------------------------------------------
   static final bottomNavTheme = BottomNavigationBarThemeData(
     backgroundColor: AppColors.surface,
-    selectedItemColor: AppColors.primary,
+    selectedItemColor: AppColors.accent,
     unselectedItemColor: AppColors.textSecondary,
     elevation: 8,
     type: BottomNavigationBarType.fixed,

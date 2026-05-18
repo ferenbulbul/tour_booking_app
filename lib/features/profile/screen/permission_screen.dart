@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -118,7 +119,7 @@ class _PhoneCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.phone_iphone_rounded, size: 30, color: scheme.primary),
+          Icon(SolarIconsOutline.smartphone, size: 30, color: scheme.primary),
           const SizedBox(width: AppSpacing.m),
 
           Expanded(
@@ -216,7 +217,7 @@ class _LocationPermissionRow extends StatelessWidget {
     final permanentlyDenied = vm.locationPermanentlyDenied;
 
     return _PermissionRow(
-      icon: Icons.location_on_outlined,
+      icon: SolarIconsOutline.mapPoint,
       title: tr("location"),
       subtitle: tr("location_required_for_suggestions"),
       allowed: allowed,

@@ -6,52 +6,46 @@ import 'package:tour_booking/models/place_section/place_section.dart';
 class GooglePlaceService {
   static final _apiKey = Keys.places;
 
+  /// Timeout for Google API requests
+  static const Duration _timeout = Duration(seconds: 5);
+
+  /// In-memory cache for repeated city+district lookups
+  final Map<String, PlaceSelection> _cache = {};
+
   /// Şehir + ilçe için otomatik default konum bulan fonksiyon
+  /// Tek bir Geocoding API çağrısı ile hem adres hem koordinat alınır.
   Future<PlaceSelection?> findDefaultPlace(String city, String district) async {
+    final query = "$city $district";
+    final cached = _cache[query];
+    if (cached != null) return cached;
+
     try {
-      final query = "$city $district";
-      //"غوموشانه";
-      // AUTOCOMPLETE
-      final autoUri = Uri.https(
+      final uri = Uri.https(
         'maps.googleapis.com',
-        '/maps/api/place/autocomplete/json',
-        {'input': query, 'key': _apiKey, 'language': 'tr'},
+        '/maps/api/geocode/json',
+        {'address': query, 'key': _apiKey, 'language': 'tr'},
       );
 
-      final autoRes = await http.get(autoUri);
-      if (autoRes.statusCode != 200) return null;
+      final res = await http.get(uri).timeout(_timeout);
+      if (res.statusCode != 200) return null;
 
-      final autoBody = jsonDecode(autoRes.body);
-      if (autoBody['status'] != 'OK') return null;
+      final body = jsonDecode(res.body);
+      if (body['status'] != 'OK') return null;
 
-      final predictions = autoBody['predictions'] as List;
-      if (predictions.isEmpty) return null;
+      final results = body['results'] as List;
+      if (results.isEmpty) return null;
 
-      final placeId = predictions.first['place_id'];
-      final description = predictions.first['description'];
-
-      // PLACE DETAILS
-      final detailUri =
-          Uri.https('maps.googleapis.com', '/maps/api/place/details/json', {
-            'place_id': placeId,
-            'key': _apiKey,
-            'language': 'tr',
-            'fields': 'geometry/location',
-          });
-
-      final detailRes = await http.get(detailUri);
-      if (detailRes.statusCode != 200) return null;
-
-      final detailBody = jsonDecode(detailRes.body);
-      if (detailBody['status'] != 'OK') return null;
-
-      final loc = detailBody['result']['geometry']?['location'];
+      final first = results.first;
+      final description = first['formatted_address'] as String? ?? query;
+      final loc = first['geometry']?['location'];
       final lat = (loc?['lat'] as num?)?.toDouble();
       final lng = (loc?['lng'] as num?)?.toDouble();
 
       if (lat == null || lng == null) return null;
 
-      return PlaceSelection(description: description, lat: lat, lng: lng);
+      final result = PlaceSelection(description: description, lat: lat, lng: lng);
+      _cache[query] = result;
+      return result;
     } catch (_) {
       return null;
     }

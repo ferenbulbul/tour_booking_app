@@ -60,8 +60,13 @@ class FavoriteViewModel extends ChangeNotifier {
     final wasFavorite = _favoriteIds.contains(id);
 
     // 🔥 OPTIMISTIC UPDATE
+    FeaturedTourPointDto? removedItem;
     if (wasFavorite) {
       _favoriteIds.remove(id);
+      removedItem = favorites.cast<FeaturedTourPointDto?>().firstWhere(
+            (f) => f?.id == id,
+            orElse: () => null,
+          );
       favorites = favorites.where((f) => f.id != id).toList();
     } else {
       _favoriteIds.add(id);
@@ -75,6 +80,9 @@ class FavoriteViewModel extends ChangeNotifier {
       // 🔴 ROLLBACK
       if (wasFavorite) {
         _favoriteIds.add(id);
+        if (removedItem != null) {
+          favorites = [...favorites, removedItem];
+        }
       } else {
         _favoriteIds.remove(id);
       }

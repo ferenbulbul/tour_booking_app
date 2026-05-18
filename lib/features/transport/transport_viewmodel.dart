@@ -10,6 +10,18 @@ import 'package:tour_booking/services/transport/transport_service.dart';
 class TransportViewModel extends ChangeNotifier {
   final TourService _tourService = TourService();
   final TransportService _transportService = TransportService();
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
+  }
 
   // --- City ---
   List<MobileCityDto> cities = [];
@@ -166,6 +178,25 @@ class TransportViewModel extends ChangeNotifier {
     dropoffAddress = loc.name;
     dropoffLat = loc.latitude;
     dropoffLng = loc.longitude;
+    notifyListeners();
+  }
+
+  void swapLocations() {
+    final tempAddress = pickupAddress;
+    final tempLat = pickupLat;
+    final tempLng = pickupLng;
+
+    pickupAddress = dropoffAddress;
+    pickupLat = dropoffLat;
+    pickupLng = dropoffLng;
+
+    dropoffAddress = tempAddress;
+    dropoffLat = tempLat;
+    dropoffLng = tempLng;
+
+    selectedRouteDistanceKm = null;
+    selectedRouteDurationMinutes = null;
+
     notifyListeners();
   }
 

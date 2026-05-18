@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/navigation/app_router.dart';
@@ -43,7 +44,7 @@ Future<bool> guestGate(BuildContext context) async {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(
-                  Icons.person_add_alt_1_rounded,
+                  SolarIconsOutline.userPlus,
                   size: 28,
                   color: AppColors.primary,
                 ),

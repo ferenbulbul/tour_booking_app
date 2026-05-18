@@ -6,7 +6,7 @@ import 'package:tour_booking/core/theme/component_themes.dart';
 
 class AppTheme {
   // -------------------------------------------------------------
-  // 🔆 LIGHT THEME
+  // LIGHT THEME
   // -------------------------------------------------------------
   static ThemeData light = ThemeData(
     useMaterial3: true,
@@ -16,9 +16,11 @@ class AppTheme {
 
     colorScheme: const ColorScheme(
       brightness: Brightness.light,
+
       primary: AppColors.primary,
       onPrimary: Colors.white,
-      secondary: AppColors.primaryLight,
+
+      secondary: AppColors.accent,
       onSecondary: Colors.white,
 
       error: AppColors.error,
@@ -38,14 +40,13 @@ class AppTheme {
 
       inverseSurface: AppColors.textPrimary,
       onInverseSurface: AppColors.surface,
-      inversePrimary: AppColors.primaryDark,
+      inversePrimary: AppColors.accentLight,
 
-      // Required
       primaryContainer: AppColors.primaryLight,
-      onPrimaryContainer: AppColors.textPrimary,
-      secondaryContainer: AppColors.surface,
+      onPrimaryContainer: Colors.white,
+      secondaryContainer: AppColors.accentLight,
       onSecondaryContainer: AppColors.textPrimary,
-      tertiary: AppColors.primaryLight,
+      tertiary: AppColors.accent,
       onTertiary: Colors.white,
       tertiaryContainer: AppColors.surface,
       onTertiaryContainer: AppColors.textPrimary,
@@ -63,7 +64,7 @@ class AppTheme {
   );
 
   // -------------------------------------------------------------
-  // 🌙 DARK THEME
+  // DARK THEME
   // -------------------------------------------------------------
   static ThemeData dark = ThemeData(
     useMaterial3: true,
@@ -74,7 +75,7 @@ class AppTheme {
     colorScheme: const ColorScheme(
       brightness: Brightness.dark,
 
-      primary: AppColors.primary,
+      primary: AppColors.accent,
       onPrimary: Colors.white,
 
       secondary: AppColors.primaryLight,
@@ -97,14 +98,13 @@ class AppTheme {
 
       inverseSurface: Colors.white,
       onInverseSurface: Colors.black,
-      inversePrimary: AppColors.primaryLight,
+      inversePrimary: AppColors.accentLight,
 
-      // Required fields
       primaryContainer: AppColors.primaryLight,
       onPrimaryContainer: Colors.white,
       secondaryContainer: Color(0xFF1A1A1A),
       onSecondaryContainer: Colors.white,
-      tertiary: AppColors.primaryLight,
+      tertiary: AppColors.accent,
       onTertiary: Colors.white,
       tertiaryContainer: Color(0xFF1A1A1A),
       onTertiaryContainer: Colors.white,
@@ -122,7 +122,7 @@ class AppTheme {
       prefixIconColor: Color(0xFF9E9E9E),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(AppRadius.medium)),
-        borderSide: BorderSide(color: AppColors.primary, width: 1.5),
+        borderSide: BorderSide(color: AppColors.accent, width: 1.5),
       ),
     ),
 

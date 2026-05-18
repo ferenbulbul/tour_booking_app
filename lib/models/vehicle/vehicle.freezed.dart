@@ -31,6 +31,7 @@ mixin _$Vehicle {
   String get image => throw _privateConstructorUsedError;
   double? get avgRating => throw _privateConstructorUsedError;
   int? get ratingCount => throw _privateConstructorUsedError;
+  String? get companyName => throw _privateConstructorUsedError;
 
   /// Serializes this Vehicle to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -57,6 +58,7 @@ abstract class $VehicleCopyWith<$Res> {
     String image,
     double? avgRating,
     int? ratingCount,
+    String? companyName,
   });
 }
 
@@ -85,6 +87,7 @@ class _$VehicleCopyWithImpl<$Res, $Val extends Vehicle>
     Object? image = null,
     Object? avgRating = freezed,
     Object? ratingCount = freezed,
+    Object? companyName = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -128,6 +131,10 @@ class _$VehicleCopyWithImpl<$Res, $Val extends Vehicle>
                 ? _value.ratingCount
                 : ratingCount // ignore: cast_nullable_to_non_nullable
                       as int?,
+            companyName: freezed == companyName
+                ? _value.companyName
+                : companyName // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -153,6 +160,7 @@ abstract class _$$VehicleImplCopyWith<$Res> implements $VehicleCopyWith<$Res> {
     String image,
     double? avgRating,
     int? ratingCount,
+    String? companyName,
   });
 }
 
@@ -180,6 +188,7 @@ class __$$VehicleImplCopyWithImpl<$Res>
     Object? image = null,
     Object? avgRating = freezed,
     Object? ratingCount = freezed,
+    Object? companyName = freezed,
   }) {
     return _then(
       _$VehicleImpl(
@@ -223,6 +232,10 @@ class __$$VehicleImplCopyWithImpl<$Res>
             ? _value.ratingCount
             : ratingCount // ignore: cast_nullable_to_non_nullable
                   as int?,
+        companyName: freezed == companyName
+            ? _value.companyName
+            : companyName // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -242,6 +255,7 @@ class _$VehicleImpl implements _Vehicle {
     required this.image,
     this.avgRating,
     this.ratingCount,
+    this.companyName,
   });
 
   factory _$VehicleImpl.fromJson(Map<String, dynamic> json) =>
@@ -267,10 +281,12 @@ class _$VehicleImpl implements _Vehicle {
   final double? avgRating;
   @override
   final int? ratingCount;
+  @override
+  final String? companyName;
 
   @override
   String toString() {
-    return 'Vehicle(tourRouteId: $tourRouteId, vehicleId: $vehicleId, price: $price, vehicleBrand: $vehicleBrand, vehicleClass: $vehicleClass, vehicleType: $vehicleType, seatCount: $seatCount, image: $image, avgRating: $avgRating, ratingCount: $ratingCount)';
+    return 'Vehicle(tourRouteId: $tourRouteId, vehicleId: $vehicleId, price: $price, vehicleBrand: $vehicleBrand, vehicleClass: $vehicleClass, vehicleType: $vehicleType, seatCount: $seatCount, image: $image, avgRating: $avgRating, ratingCount: $ratingCount, companyName: $companyName)';
   }
 
   @override
@@ -295,7 +311,9 @@ class _$VehicleImpl implements _Vehicle {
             (identical(other.avgRating, avgRating) ||
                 other.avgRating == avgRating) &&
             (identical(other.ratingCount, ratingCount) ||
-                other.ratingCount == ratingCount));
+                other.ratingCount == ratingCount) &&
+            (identical(other.companyName, companyName) ||
+                other.companyName == companyName));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -312,6 +330,7 @@ class _$VehicleImpl implements _Vehicle {
     image,
     avgRating,
     ratingCount,
+    companyName,
   );
 
   /// Create a copy of Vehicle
@@ -340,6 +359,7 @@ abstract class _Vehicle implements Vehicle {
     required final String image,
     final double? avgRating,
     final int? ratingCount,
+    final String? companyName,
   }) = _$VehicleImpl;
 
   factory _Vehicle.fromJson(Map<String, dynamic> json) = _$VehicleImpl.fromJson;
@@ -364,6 +384,8 @@ abstract class _Vehicle implements Vehicle {
   double? get avgRating;
   @override
   int? get ratingCount;
+  @override
+  String? get companyName;
 
   /// Create a copy of Vehicle
   /// with the given fields replaced by the non-null parameter values.

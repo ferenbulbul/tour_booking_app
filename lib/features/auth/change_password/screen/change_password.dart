@@ -1,11 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/auth/change_password/change_password_viewmodel.dart';
+import 'package:tour_booking/utils/password_validator.dart';
 import 'package:flutter/material.dart' as ui;
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -31,27 +33,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     super.dispose();
   }
 
-  // 🔹 Validator → KEY üretir, UI .tr() yapar
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) return 'password_required';
-
-    final pwd = value.trim();
-    if (pwd.length < 9) return 'password_too_short';
-
-    final upper = RegExp(r'[A-Z]');
-    final lower = RegExp(r'[a-z]');
-    final digit = RegExp(r'\d');
-    final special = RegExp(r'[^A-Za-z0-9]');
-
-    final errors = <String>[
-      if (!upper.hasMatch(pwd)) 'password_must_include_upper',
-      if (!lower.hasMatch(pwd)) 'password_must_include_lower',
-      if (!digit.hasMatch(pwd)) 'password_must_include_digit',
-      if (!special.hasMatch(pwd)) 'password_must_include_special',
-    ];
-
-    return errors.isEmpty ? null : errors.join('\n');
-  }
+  String? _validatePassword(String? value) => PasswordValidator.validate(value);
 
   String? _validateConfirm(String? v) {
     if (v == null || v.trim().isEmpty) return 'password_required';
@@ -155,11 +137,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
         // 🔒 ASCII zorunluluğu (çok önemli)
         keyboardType: TextInputType.visiblePassword,
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(
-            RegExp(r'[A-Za-z0-9!@#\$%\^&\*\(\)_\+\-=\[\]{};:"\\|,.<>\/?]'),
-          ),
-        ],
+        inputFormatters: [PasswordValidator.passwordInputFormatter],
         style: const TextStyle(
           color: Colors.black87,
           fontWeight: FontWeight.w500,
@@ -171,15 +149,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           fillColor: const Color(0xFFF3F4F6),
           labelStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
           prefixIcon: Icon(
-            Icons.lock_outline,
+            SolarIconsOutline.lock,
             color: Colors.grey[400],
             size: 22,
           ),
           suffixIcon: IconButton(
             icon: Icon(
               obscure
-                  ? Icons.visibility_off_outlined
-                  : Icons.visibility_outlined,
+                  ? SolarIconsOutline.eyeClosed
+                  : SolarIconsOutline.eye,
               color: Colors.grey[400],
             ),
             onPressed: toggle,

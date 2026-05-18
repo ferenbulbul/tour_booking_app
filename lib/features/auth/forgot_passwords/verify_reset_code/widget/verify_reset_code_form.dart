@@ -6,7 +6,8 @@ import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
-import 'package:tour_booking/features/auth/forgot_passwords/forgot_password/widget/forgot_password_view_model.dart';
+import 'package:tour_booking/core/widgets/pin_theme_helper.dart';
+import 'package:tour_booking/features/auth/forgot_passwords/forgot_password_viewmodel.dart';
 
 class VerifyResetCodeForm extends StatefulWidget {
   final String email;
@@ -49,34 +50,8 @@ class _VerifyResetCodeFormState extends State<VerifyResetCodeForm> {
     final scheme = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
 
-    // 🔥 PREMIUM PIN THEME (ince yazı!)
-    final defaultPin = PinTheme(
-      width: 52,
-      height: 56,
-      textStyle: text.titleLarge?.copyWith(
-        fontWeight: FontWeight.w400, // İNCE yazı
-        fontSize: 20,
-        color: scheme.onSurface,
-      ),
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: scheme.outline.withOpacity(1)),
-      ),
-    );
-
-    final focusedPin = defaultPin.copyWith(
-      textStyle: text.titleLarge?.copyWith(
-        fontWeight: FontWeight.w400,
-        fontSize: 20,
-        color: scheme.primary,
-      ),
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: scheme.primary, width: 2),
-      ),
-    );
+    final defaultPin = PinThemeHelper.defaultTheme(context);
+    final focusedPin = PinThemeHelper.focusedTheme(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -98,7 +73,7 @@ class _VerifyResetCodeFormState extends State<VerifyResetCodeForm> {
             defaultPinTheme: defaultPin,
             focusedPinTheme: focusedPin,
             showCursor: true,
-            cursor: Container(width: 2, height: 22, color: scheme.primary),
+            cursor: PinThemeHelper.cursor(context),
             onCompleted: (_) => _verify(),
           ),
         ),

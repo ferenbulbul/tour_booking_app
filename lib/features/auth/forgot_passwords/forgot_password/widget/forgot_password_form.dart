@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
-import 'package:tour_booking/features/auth/forgot_passwords/forgot_password/widget/forgot_password_view_model.dart';
+import 'package:tour_booking/features/auth/forgot_passwords/forgot_password_viewmodel.dart';
 import 'package:flutter/material.dart' as ui;
 
 class ForgotPasswordForm extends StatefulWidget {

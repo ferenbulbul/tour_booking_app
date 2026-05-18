@@ -1,14 +1,18 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/widgets/bottom_action_bar.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/transport/transport_summary_viewmodel.dart';
 import 'package:tour_booking/features/transport/widget/transport_price_breakdown.dart';
 import 'package:tour_booking/features/transport/widget/transport_route_map.dart';
+import 'package:tour_booking/features/auth/login/widget/login_bottom_sheet.dart';
 import 'package:tour_booking/navigation/app_router.dart';
 
 class TransportSummaryScreen extends StatefulWidget {
@@ -28,12 +32,15 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
   }
 
   Future<void> _handleBooking(TransportSummaryViewModel vm) async {
-    if (!splashViewModel.isLoggedInStatus) {
-      context.push('/login');
+    if (splashViewModel.isGuest) {
+      showLoginBottomSheet(context);
       return;
     }
 
-    context.push('/checkout/contact-info', extra: 'transport');
+    context.push('/checkout/contact-info', extra: {
+      'bookingType': 'transport',
+      'transportVm': vm,
+    });
   }
 
   @override
@@ -59,7 +66,7 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
                             const SizedBox(height: 16),
                             TextButton.icon(
                               onPressed: () => vm.calculatePrice(),
-                              icon: const Icon(Icons.refresh),
+                              icon: const Icon(SolarIconsOutline.refresh),
                               label: Text('retry'.tr()),
                             ),
                           ],
@@ -86,30 +93,31 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
 
                           const SizedBox(height: AppSpacing.l),
 
-                          // Trip Info
+                          // Trip Info with timeline
                           _infoCard(
                             children: [
-                              _infoRow(Icons.circle, Colors.green,
-                                  vm.pickupAddress ?? '-'),
-                              const SizedBox(height: 8),
-                              _infoRow(Icons.circle, Colors.red,
-                                  vm.dropoffAddress ?? '-'),
-                              const Divider(height: 20),
+                              // Timeline: pickup → dropoff
+                              _routeTimeline(
+                                pickupText: vm.pickupAddress ?? '-',
+                                dropoffText: vm.dropoffAddress ?? '-',
+                              ),
+                              const Divider(height: 24),
+                              // Trip stats
                               _infoRow(
-                                Icons.straighten,
+                                SolarIconsOutline.ruler,
                                 AppColors.primary,
                                 '${vm.priceResult!.distanceKm.toStringAsFixed(1)} km',
                               ),
                               const SizedBox(height: 6),
                               _infoRow(
-                                Icons.timer_outlined,
+                                SolarIconsOutline.stopwatch,
                                 AppColors.primary,
                                 '${vm.priceResult!.estimatedDurationMinutes} ${'transport_minutes'.tr()}',
                               ),
                               if (vm.selectedDate != null) ...[
                                 const SizedBox(height: 6),
                                 _infoRow(
-                                  Icons.calendar_today,
+                                  SolarIconsOutline.calendarDate,
                                   AppColors.primary,
                                   DateFormat('dd MMMM yyyy', 'tr_TR')
                                       .format(vm.selectedDate!),
@@ -118,7 +126,7 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
                               if (vm.selectedTime != null) ...[
                                 const SizedBox(height: 6),
                                 _infoRow(
-                                  Icons.access_time,
+                                  SolarIconsOutline.clockCircle,
                                   AppColors.primary,
                                   vm.selectedTime!,
                                 ),
@@ -134,21 +142,20 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
                               children: [
                                 Text(
                                   '${vm.selectedVehicle!.brandName} ${vm.selectedVehicle!.className}',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                                  style: AppTextStyles.titleSmall,
                                 ),
                                 const SizedBox(height: 8),
                                 _infoRow(
-                                    Icons.airline_seat_recline_normal,
-                                    Colors.grey,
+                                    SolarIconsOutline.user,
+                                    AppColors.textSecondary,
                                     '${vm.selectedVehicle!.seatCount} ${'transport_seats'.tr()}'),
                                 const SizedBox(height: 4),
-                                _infoRow(Icons.person_outline, Colors.grey,
+                                _infoRow(SolarIconsOutline.user,
+                                    AppColors.textSecondary,
                                     vm.selectedVehicle!.driverName),
                                 const SizedBox(height: 4),
-                                _infoRow(Icons.business, Colors.grey,
+                                _infoRow(SolarIconsOutline.buildings,
+                                    AppColors.textSecondary,
                                     vm.selectedVehicle!.agencyName),
                               ],
                             ),
@@ -179,13 +186,90 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
     );
   }
 
+  // ── Timeline widget for pickup → dropoff ──
+
+  Widget _routeTimeline({
+    required String pickupText,
+    required String dropoffText,
+  }) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Left rail: dots + dashed line
+          SizedBox(
+            width: 20,
+            child: Column(
+              children: [
+                const SizedBox(height: 4),
+                // Green dot (pickup)
+                Container(
+                  width: 12,
+                  height: 12,
+                  decoration: const BoxDecoration(
+                    color: AppColors.success,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                // Dashed connector
+                Expanded(
+                  child: CustomPaint(
+                    painter: _DashedVerticalLinePainter(
+                      color: AppColors.border,
+                    ),
+                    child: const SizedBox(width: 2),
+                  ),
+                ),
+                // Red dot (dropoff)
+                Container(
+                  width: 12,
+                  height: 12,
+                  decoration: const BoxDecoration(
+                    color: AppColors.error,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(height: 4),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Right: addresses
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  pickupText,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  dropoffText,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Helpers ──
+
   Widget _infoCard({required List<Widget> children}) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.l),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.large),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -209,10 +293,41 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            style: AppTextStyles.bodyMedium.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ],
     );
   }
+}
+
+// ── Painters ──
+
+class _DashedVerticalLinePainter extends CustomPainter {
+  final Color color;
+  _DashedVerticalLinePainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    const dashHeight = 4.0;
+    const dashSpace = 3.0;
+    double y = 0;
+    final x = size.width / 2;
+
+    while (y < size.height) {
+      canvas.drawLine(Offset(x, y), Offset(x, y + dashHeight), paint);
+      y += dashHeight + dashSpace;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

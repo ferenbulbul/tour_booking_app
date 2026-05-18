@@ -1,609 +1,320 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:tour_booking/features/bookings/widget/rating_dialog.dart';
-import 'package:tour_booking/models/booking/booking_dto.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/features/bookings/utils/booking_utils.dart';
+import 'package:tour_booking/models/booking/booking_dto.dart';
 
-class BookingCard extends StatefulWidget {
+/// Large, prominent card for upcoming bookings.
+/// Shows image banner, countdown badge, title, date, price.
+class UpcomingBookingCard extends StatelessWidget {
   final BookingDto item;
-  final bool showCancelAction;
-  final VoidCallback? onCancel;
-  final bool isCancelling;
-  final VoidCallback? onRated;
+  final VoidCallback onTap;
 
-  const BookingCard({
+  const UpcomingBookingCard({
     super.key,
     required this.item,
-    this.showCancelAction = false,
-    this.onCancel,
-    this.isCancelling = false,
-    this.onRated,
+    required this.onTap,
   });
 
-  @override
-  State<BookingCard> createState() => _BookingCardState();
-}
-
-class _BookingCardState extends State<BookingCard> {
-  bool _isOpen = false;
-  bool? _canRate;
-
-  @override
-  void initState() {
-    super.initState();
-    _canRate = widget.item.canRate; // ✅ backend'den gelen ilk değer
-  }
-
-  @override
-  void didUpdateWidget(covariant BookingCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.item.canRate != widget.item.canRate) {
-      _canRate = widget.item.canRate; // ✅ parent refresh ederse sync
-    }
-  }
-
-  // -------------------------------------------------------------------------
-  // STATUS COLOR
-  // -------------------------------------------------------------------------
-  Color _statusColor(String status) {
-    final s = status.toLowerCase();
-
-    if (s == "completed") {
-      return Colors.green.shade600;
-    }
-
-    if (s == "cancelled") {
-      return Colors.red.shade600;
-    }
-
-    if (s == "cancellationpending") {
-      return const Color.fromARGB(255, 174, 60, 240);
-    }
-
-    return AppColors.primary;
-  }
-
-  // -------------------------------------------------------------------------
-  // STATUS LABEL
-  // -------------------------------------------------------------------------
-  String _statusLabel(String status, DateTime departureDate) {
-    final s = status.toLowerCase();
-    final now = DateTime.now();
-
-    if (s == "completed") return 'booking_tab_completed'.tr();
-    if (s == "cancelled") return 'booking_tab_cancelled'.tr();
-
-    if (s == "cancellationpending") {
-      return "pending_approvel".tr();
-    }
-
-    // 🔥 BUGÜN
-    if (_isSameDay(departureDate, now)) {
-      return 'today'.tr(); // Today
-    }
-
-    // 🔜 GELECEK
-    if (departureDate.isAfter(now)) {
-      return 'booking_tab_upcoming'.tr();
-    }
-
-    // 🕰️ GEÇMİŞ
-    return status;
-  }
-
-  // -------------------------------------------------------------------------
-  // CANCEL CONTROL
-  // -------------------------------------------------------------------------
-  bool _isCancelable(String status) {
-    final s = status.toLowerCase();
-    return !(s == "completed" || s == "cancelled");
-  }
-
-  String _formatCurrency(num? v) {
-    if (v == null) return "—";
-
-    final f = NumberFormat.currency(
-      locale: "tr_TR",
-      symbol: "₺",
-      decimalDigits: 2,
-    );
-
-    return f.format(v);
-  }
+  bool get _hasImage => !_isTransport && item.image.isNotEmpty;
+  bool get _isTransport => item.bookingType == 1;
 
   @override
   Widget build(BuildContext context) {
-    final item = widget.item;
-    final effectiveTime = item.bookingType == 1
-        ? (item.pickupTime ?? item.departureTime)
-        : item.departureTime;
-    final canCancelByTime = _canCancelWithTimeLimit(
-      item.departureDate,
-      effectiveTime,
-    );
-    final canRate = _canRate == true;
     final departureDate = item.departureDate.isNotEmpty
         ? DateTime.parse(item.departureDate)
         : DateTime.now();
-    final formattedDate = DateFormat(
-      'dd MMMM yyyy',
-      'tr_TR',
-    ).format(departureDate);
+    final countdown = getCountdownText(departureDate);
+    final statusColor = bookingStatusColor(item.status);
+    final statusText = bookingStatusLabel(item.status, departureDate);
+    final effectiveTime = _isTransport
+        ? (item.pickupTime ?? item.departureTime)
+        : item.departureTime;
+    final formattedDate =
+        DateFormat('dd MMM yyyy', 'tr_TR').format(departureDate);
 
-    final statusColor = _statusColor(item.status);
-    final statusText = _statusLabel(item.status, departureDate);
-    final canCancel = _isCancelable(item.status);
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeInOut,
-      margin: const EdgeInsetsDirectional.only(bottom: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(.05),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: AppColors.border.withValues(alpha: 0.4),
+            width: 0.5,
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // -----------------------------------------------------------------
-          // HEADER
-          // -----------------------------------------------------------------
-          InkWell(
-            borderRadius: BorderRadius.circular(20),
-            onTap: () => setState(() => _isOpen = !_isOpen),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
-              child: Row(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // IMAGE BANNER (only tours with image)
+            if (_hasImage)
+              Stack(
                 children: [
-                  // ICON
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: statusColor.withOpacity(.12),
-                      borderRadius: BorderRadius.circular(14),
+                  ClipRRect(
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(16)),
+                    child: _tourImage(context),
+                  ),
+                  if (countdown.isNotEmpty)
+                    Positioned(
+                      bottom: 10,
+                      left: 12,
+                      child: _countdownBadge(countdown),
                     ),
-                    child: item.bookingType == 1
-                        ? Center(
-                            child: Icon(
-                              Icons.directions_car_rounded,
-                              color: statusColor,
-                              size: 24,
+                  Positioned(
+                    bottom: 10,
+                    right: 12,
+                    child: _statusBadge(statusText, statusColor),
+                  ),
+                ],
+              ),
+
+            // CONTENT
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // BADGES (compact layout — no image)
+                  if (!_hasImage)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Row(
+                        children: [
+                          // TRANSPORT / TOUR ICON
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                          )
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: CachedNetworkImage(
-                              imageUrl: item.image,
-                              width: 56,
-                              height: 56,
-                              fit: BoxFit.cover,
-                              placeholder: (_, __) => const ShimmerBox(
-                                width: 56,
-                                height: 56,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(12)),
-                              ),
-                              errorWidget: (_, __, ___) => Container(
-                                width: 56,
-                                height: 56,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade300,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Icon(
-                                  Icons.image_not_supported_outlined,
-                                  color: Colors.grey,
-                                  size: 22,
-                                ),
-                              ),
+                            child: Icon(
+                              _isTransport ? SolarIconsOutline.routing : SolarIconsOutline.map,
+                              color: AppColors.primary,
+                              size: 20,
                             ),
                           ),
+                          const SizedBox(width: 10),
+                          if (countdown.isNotEmpty) ...[
+                            _countdownBadge(countdown),
+                            const SizedBox(width: 8),
+                          ],
+                          _statusBadge(statusText, statusColor),
+                        ],
+                      ),
+                    ),
+
+                  // TITLE
+                  Text(
+                    _isTransport ? 'Transfer' : item.tourPointName,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.titleSmall.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
 
-                  const SizedBox(width: 12),
-
-                  // -----------------------------------------------------------------
-                  // TITLE + DATE + BADGE COLUMN
-                  // -----------------------------------------------------------------
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  // ROUTE (transport only)
+                  if (_isTransport) ...[
+                    const SizedBox(height: 6),
+                    Row(
                       children: [
-                        // TITLE
-                        Text(
-                          item.bookingType == 1
-                              ? '${item.pickupAddress ?? ''} → ${item.dropoffAddress ?? ''}'
-                              : item.tourPointName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black,
+                        const Icon(SolarIconsOutline.route,
+                            size: 14, color: AppColors.textLight),
+                        const SizedBox(width: 5),
+                        Flexible(
+                          child: Text(
+                            '${item.pickupAddress ?? ''} → ${item.dropoffAddress ?? ''}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              fontSize: 13,
+                              color: AppColors.textSecondary,
+                            ),
                           ),
-                        ),
-
-                        const SizedBox(height: 6),
-
-                        // DATE + BADGE ROW
-                        Row(
-                          children: [
-                            // DATE
-                            Expanded(
-                              child: Text(
-                                formattedDate,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.grey.shade600,
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(width: 8),
-
-                            // BADGE
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: statusColor.withOpacity(.12),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                statusText,
-                                style: TextStyle(
-                                  fontSize: 11.5,
-                                  color: statusColor,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
                         ),
                       ],
                     ),
+                  ],
+
+                  const SizedBox(height: 8),
+
+                  // DATE + TIME
+                  Row(
+                    children: [
+                      const Icon(SolarIconsOutline.calendarDate,
+                          size: 14, color: AppColors.textLight),
+                      const SizedBox(width: 5),
+                      Text(
+                        formattedDate,
+                        style: AppTextStyles.bodySmall.copyWith(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      if (effectiveTime.isNotEmpty) ...[
+                        Container(
+                          width: 3,
+                          height: 3,
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          decoration: const BoxDecoration(
+                            color: AppColors.textLight,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const Icon(SolarIconsOutline.clockCircle,
+                            size: 14, color: AppColors.textLight),
+                        const SizedBox(width: 5),
+                        Text(
+                          effectiveTime,
+                          style: AppTextStyles.bodySmall.copyWith(
+                            fontSize: 13,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
 
-                  const SizedBox(width: 6),
-
-                  // CHEVRON
-                  AnimatedRotation(
-                    turns: _isOpen ? 0.5 : 0,
-                    duration: const Duration(milliseconds: 250),
-                    child: Icon(
-                      Icons.keyboard_arrow_down_rounded,
-                      size: 24,
-                      color: Colors.grey.shade600,
+                  // LOCATION (tour only)
+                  if (!_isTransport && item.tourPointCity.isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        const Icon(SolarIconsOutline.mapPoint,
+                            size: 14, color: AppColors.textLight),
+                        const SizedBox(width: 5),
+                        Flexible(
+                          child: Text(
+                            item.tourPointCity,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              fontSize: 13,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
+                  ],
+
+                  const SizedBox(height: 14),
+
+                  // PRICE + DETAILS
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        formatCurrency(item.totalPrice),
+                        style: AppTextStyles.titleMedium.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.accent,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'booking_details'.tr(),
+                            style: AppTextStyles.labelLarge.copyWith(
+                              color: AppColors.primary,
+                              fontSize: 13,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(SolarIconsOutline.arrowRight,
+                              size: 16, color: AppColors.primary),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-          ),
-
-          // -----------------------------------------------------------------
-          // EXPANDED CONTENT
-          // -----------------------------------------------------------------
-          ClipRect(
-            child: AnimatedAlign(
-              duration: const Duration(milliseconds: 250),
-              alignment: Alignment.center,
-              heightFactor: _isOpen ? 1 : 0,
-              curve: Curves.easeInOut,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Divider(
-                      height: 22,
-                      thickness: 0.8,
-                      color: Colors.grey.withOpacity(.15),
-                    ),
-
-                    if (item.bookingType == 1) ...[
-                      _info(
-                        Icons.circle,
-                        'transport_pickup'.tr(),
-                        item.pickupAddress ?? '-',
-                      ),
-                      _info(
-                        Icons.circle,
-                        'transport_dropoff'.tr(),
-                        item.dropoffAddress ?? '-',
-                      ),
-                      if (item.distanceKm != null)
-                        _info(
-                          Icons.straighten,
-                          'transport_distance'.tr(),
-                          '${item.distanceKm!.toStringAsFixed(1)} km',
-                        ),
-                      _info(
-                        Icons.access_time_rounded,
-                        'booking_label_time'.tr(),
-                        item.pickupTime ?? item.departureTime,
-                      ),
-                      _info(
-                        Icons.person_rounded,
-                        'booking_label_driver'.tr(),
-                        item.driverName,
-                      ),
-                    ] else ...[
-                      _info(
-                        Icons.place_outlined,
-                        'booking_label_departure_location'.tr(),
-                        item.departureLocationDescription,
-                      ),
-                      _info(
-                        Icons.access_time_rounded,
-                        'booking_label_time'.tr(),
-                        item.departureTime,
-                      ),
-                      _info(
-                        Icons.directions_bus_rounded,
-                        'booking_label_vehicle'.tr(),
-                        "${item.vehicleBrand} • ${item.seatCount}",
-                      ),
-                      _info(
-                        Icons.person_rounded,
-                        'booking_label_driver'.tr(),
-                        item.driverName,
-                      ),
-                    ],
-
-                    const SizedBox(height: 12),
-
-                    // PRICE
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'booking_total_price'.tr(),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          "${_formatCurrency(item.totalPrice)}",
-                          style: TextStyle(
-                            color: Colors.green.shade700,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    if (item.status == "Completed" && canRate)
-                      GestureDetector(
-                        onTap: () async {
-                          final rated = await showDialog<bool>(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (_) =>
-                                RatingDialog(token: widget.item.ratingToken!),
-                          );
-
-                          if (rated == true && mounted) {
-                            setState(() => _canRate = false);
-                            widget.onRated?.call();
-                          }
-                        },
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color: AppColors.primary.withOpacity(.35),
-                            ),
-                            color: AppColors.primary.withOpacity(.06),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.star_rounded,
-                                color: AppColors.primary,
-                                size: 18,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'booking_rate'.tr(),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    else if (item.status == "Completed" && !canRate)
-                      _ratedBadge()
-                    else
-                      const SizedBox.shrink(),
-
-                    const SizedBox(height: 12),
-
-                    if (widget.showCancelAction && canCancel && canCancelByTime)
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            foregroundColor: Colors.red.shade600,
-                            side: BorderSide(color: Colors.red.shade200),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: widget.isCancelling
-                              ? null
-                              : widget.onCancel,
-                          child: widget.isCancelling
-                              ? const SizedBox(
-                                  height: 18,
-                                  width: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : Text('booking_cancel_request'.tr()),
-                        ),
-                      )
-                    else if (widget.showCancelAction &&
-                        canCancel &&
-                        !canCancelByTime)
-                      _cancelNotAllowedInfo(),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _ratedBadge() {
+  Widget _countdownBadge(String text) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.green.withOpacity(.12),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.check_circle_rounded, size: 18, color: Colors.green),
-          const SizedBox(width: 8),
-          Text(
-            'booking_rated'.tr(), // "Puanlandı"
-            style: const TextStyle(
-              fontSize: 13.5,
-              fontWeight: FontWeight.w600,
-              color: Colors.green,
-            ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 6,
           ),
         ],
       ),
-    );
-  }
-
-  Widget _info(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsetsDirectional.only(bottom: 10),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: Colors.grey.shade600),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              "$label: $value",
-              style: const TextStyle(fontSize: 13.5),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ShimmerBox extends StatelessWidget {
-  final double width;
-  final double height;
-  final BorderRadius borderRadius;
-
-  const ShimmerBox({
-    super.key,
-    required this.width,
-    required this.height,
-    required this.borderRadius,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade300,
-          borderRadius: borderRadius,
+      child: Text(
+        text,
+        style: AppTextStyles.labelSmall.copyWith(
+          fontWeight: FontWeight.w700,
+          color: AppColors.accent,
+          fontSize: 12,
         ),
       ),
     );
   }
-}
 
-bool _isSameDay(DateTime a, DateTime b) {
-  return a.year == b.year && a.month == b.month && a.day == b.day;
-}
-
-Widget _cancelNotAllowedInfo() {
-  return Container(
-    width: double.infinity,
-    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-    decoration: BoxDecoration(
-      color: Colors.orange.withOpacity(.08),
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: Row(
-      children: [
-        const Icon(Icons.info_outline, size: 18, color: Colors.orange),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            'booking_cancel_time_limit'.tr(),
-            style: const TextStyle(
-              fontSize: 13,
-              color: Colors.orange,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+  Widget _statusBadge(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        text,
+        style: AppTextStyles.labelSmall.copyWith(
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+          fontSize: 11,
         ),
-      ],
-    ),
-  );
-}
+      ),
+    );
+  }
 
-bool _canCancelWithTimeLimit(String departureDate, String departureTime) {
-  if (departureDate.isEmpty || departureTime.isEmpty) return false;
-  final departure = _parseDepartureDateTime(departureDate, departureTime);
+  Widget _tourImage(BuildContext context) {
+    final dpr = MediaQuery.of(context).devicePixelRatio;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final targetWidth = ((screenWidth - 40) * dpr).round();
 
-  return departure.isAfter(DateTime.now().add(const Duration(hours: 12)));
-}
-
-DateTime _parseDepartureDateTime(String date, String time) {
-  // date: 2026-02-10
-  // time: 14:30
-
-  final parts = time.split(':');
-
-  final hour = int.parse(parts[0]);
-  final minute = int.parse(parts[1]);
-
-  final d = DateTime.parse(date);
-
-  return DateTime(d.year, d.month, d.day, hour, minute);
+    return CachedNetworkImage(
+      imageUrl: item.image,
+      height: 160,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      memCacheWidth: targetWidth,
+      fadeInDuration: const Duration(milliseconds: 150),
+      placeholder: (_, __) => Container(
+        height: 160,
+        color: AppColors.background,
+      ),
+      errorWidget: (_, __, ___) => Container(
+        height: 160,
+        color: AppColors.background,
+        child: const Center(
+          child: Icon(SolarIconsOutline.galleryRemove,
+              size: 32, color: AppColors.textLight),
+        ),
+      ),
+    );
+  }
 }

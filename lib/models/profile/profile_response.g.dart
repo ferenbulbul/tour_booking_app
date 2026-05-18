@@ -9,10 +9,13 @@ part of 'profile_response.dart';
 _$ProfileResponseImpl _$$ProfileResponseImplFromJson(
   Map<String, dynamic> json,
 ) => _$ProfileResponseImpl(
-  fullName: json['fullName'] as String,
-  email: json['email'] as String,
-  phoneNumber: json['phoneNumber'] as String,
-  phoneNumberConfirmed: json['phoneNumberConfirmed'] as bool,
+  fullName: json['fullName'] as String? ?? '',
+  email: json['email'] as String? ?? '',
+  phoneNumber: json['phoneNumber'] as String? ?? '',
+  phoneNumberConfirmed: json['phoneNumberConfirmed'] as bool? ?? false,
+  emailNotification: json['emailNotification'] as bool? ?? false,
+  pushNotification: json['pushNotification'] as bool? ?? false,
+  smsNotification: json['smsNotification'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$$ProfileResponseImplToJson(
@@ -22,4 +25,7 @@ Map<String, dynamic> _$$ProfileResponseImplToJson(
   'email': instance.email,
   'phoneNumber': instance.phoneNumber,
   'phoneNumberConfirmed': instance.phoneNumberConfirmed,
+  'emailNotification': instance.emailNotification,
+  'pushNotification': instance.pushNotification,
+  'smsNotification': instance.smsNotification,
 };

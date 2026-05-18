@@ -11,8 +11,10 @@ class ProfileViewModel extends ChangeNotifier {
   ProfileResponse? _profile;
   bool isLoading = false;
   String? message;
+  String? _updatingPreference;
 
   ProfileResponse? get profile => _profile;
+  String? get updatingPreference => _updatingPreference;
 
   final TourService _tourService = TourService();
   final AuthService _authService = AuthService();
@@ -34,23 +36,26 @@ class ProfileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updatePhoneNumber(UpdatePhoneRequestDto request) async {
-    if (_profile == null) return;
+  Future<bool> updatePhoneNumber(UpdatePhoneRequestDto request) async {
+    if (_profile == null) return false;
 
     isLoading = true;
     notifyListeners();
 
     final result = await _tourService.updatePhoneNumber(request);
 
+    bool success = false;
     if (result.isSuccess ?? false) {
-      await fetchProfile(); // güncel veriyi tekrar çek
+      await fetchProfile();
       message = null;
+      success = true;
     } else {
       message = result.message ?? "Telefon numarası güncellenemedi";
     }
 
     isLoading = false;
     notifyListeners();
+    return success;
   }
 
   Future<void> changePassword(String oldPassword, String newPassword) async {
@@ -81,6 +86,37 @@ class ProfileViewModel extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  Future<void> updateNotificationPreference({
+    required String type,
+    required bool value,
+  }) async {
+    if (_profile == null) return;
+
+    final oldProfile = _profile!;
+
+    _profile = _profile!.copyWith(
+      emailNotification: type == 'email' ? value : _profile!.emailNotification,
+      pushNotification: type == 'push' ? value : _profile!.pushNotification,
+      smsNotification: type == 'sms' ? value : _profile!.smsNotification,
+    );
+    _updatingPreference = type;
+    notifyListeners();
+
+    final result = await _tourService.updateNotificationPreferences(
+      emailNotification: _profile!.emailNotification,
+      pushNotification: _profile!.pushNotification,
+      smsNotification: _profile!.smsNotification,
+    );
+
+    if (!(result.isSuccess ?? false)) {
+      _profile = oldProfile;
+      message = result.message;
+    }
+
+    _updatingPreference = null;
+    notifyListeners();
   }
 
   Future<bool> deleteAccount() async {

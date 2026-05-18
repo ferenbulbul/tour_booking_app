@@ -1,17 +1,19 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
-import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
-import 'package:tour_booking/features/auth/login/widgets/google_view_model.dart';
+import 'package:tour_booking/features/auth/login/google_viewmodel.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
-import 'package:tour_booking/features/profile/widget/profil_header.dart';
 import 'package:tour_booking/features/profile/widget/profile_section.dart';
-import 'package:tour_booking/features/profile/widget/profile_skleton.dart';
-import 'package:tour_booking/features/profile/widget/profile_title.dart';
+import 'package:tour_booking/features/profile/widget/profile_skeleton.dart';
+import 'package:tour_booking/features/profile/widget/guest_profile_view.dart';
+import 'package:tour_booking/features/profile/widget/notification_preferences_sheet.dart';
+import 'package:tour_booking/features/profile/widget/profile_menu_tile.dart';
+import 'package:tour_booking/features/auth/login/widget/login_bottom_sheet.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
 import 'package:tour_booking/navigation/app_router.dart';
 
@@ -27,7 +29,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      if (!splashViewModel.isGuest) {
+      if (splashViewModel.isGuest) {
+        showLoginBottomSheet(context);
+      } else {
         context.read<ProfileViewModel>().fetchProfile();
       }
     });
@@ -37,9 +41,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    // Guest kullanici icin ozel profil gorunumu
     if (splashViewModel.isGuest) {
-      return _buildGuestProfile(context, scheme);
+      return const GuestProfileView();
     }
 
     final vm = context.watch<ProfileViewModel>();
@@ -54,288 +57,207 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return Scaffold(body: Center(child: Text(tr("profile_not_found"))));
     }
 
-    return Stack(
-      children: [
-        Scaffold(
-          backgroundColor: scheme.surface,
-          body: SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.screenPadding),
-              children: [
-                ProfileHeader(
-                  name: p.fullName,
-                  email: p.email,
-                  phoneVerified: p.phoneNumberConfirmed,
-                ),
+    const expandedHeight = 90.0;
+    const collapsedHeight = 66.0;
 
-                const SizedBox(height: AppSpacing.xl),
-
-                ProfileSection(title: tr("account_settings")),
-
-                ProfileTile(
-                  icon: Icons.language_rounded,
-                  title: tr("language"),
-                  trailingText: getLanguageName(context),
-                  onTap: () => context.push("/settings/language"),
-                ),
-
-                ProfileTile(
-                  icon: Icons.tune_rounded,
-                  title: tr("permissions"),
-                  subtitle: tr("manage_location_and_phone_verification"),
-                  onTap: () => context.push("/settings/permissions"),
-                ),
-
-                const SizedBox(height: AppSpacing.xl),
-
-                ProfileSection(title: tr("security")),
-
-                ProfileTile(
-                  icon: Icons.lock_outline,
-                  title: tr("change_password"),
-                  onTap: () => context.push('/change-password'),
-                ),
-
-                const SizedBox(height: AppSpacing.xl),
-
-                ProfileSection(title: tr("other")),
-
-                ProfileTile(
-                  icon: Icons.delete_forever_rounded,
-                  title: tr("delete_account"),
-                  titleColor: AppColors.error,
-                  iconColor: AppColors.error,
-                  onTap: () => _showDeleteAccountDialog(context),
-                ),
-
-                ProfileTile(
-                  icon: Icons.logout_rounded,
-                  title: tr("logout"),
-                  titleColor: AppColors.error,
-                  iconColor: AppColors.error,
-                  onTap: () async {
-                    await authVm.signOut();
-                    if (!context.mounted) return;
-                    await context.read<SplashViewModel>().signOutToGuest();
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        if (vm.isLoading)
-          Container(
-            color: Colors.black.withOpacity(0.35),
-            child: const Center(child: CircularProgressIndicator()),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildGuestProfile(BuildContext context, ColorScheme scheme) {
     return Scaffold(
       backgroundColor: scheme.surface,
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.screenPadding),
-          children: [
-            // Guest header
-            Center(
-              child: Column(
-                children: [
-                  const SizedBox(height: 16),
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: AppColors.primary.withOpacity(0.12),
-                    child: const Icon(
-                      Icons.person_outline_rounded,
-                      size: 40,
-                      color: AppColors.primary,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: expandedHeight,
+            collapsedHeight: collapsedHeight,
+            automaticallyImplyLeading: false,
+            backgroundColor: scheme.surface,
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+            flexibleSpace: LayoutBuilder(
+              builder: (context, constraints) {
+                final top = constraints.biggest.height;
+                final statusBar = MediaQuery.of(context).padding.top;
+                final maxExtent = expandedHeight + statusBar;
+                final minExtent = collapsedHeight + statusBar;
+                final t = ((top - minExtent) / (maxExtent - minExtent))
+                    .clamp(0.0, 1.0);
+
+                final avatarSize = 32.0 + (24.0 * t); // 32 → 56
+                final avatarRadius = 10.0 + (6.0 * t); // 10 → 16
+                final iconSize = 18.0 + (8.0 * t); // 18 → 26
+                final nameSize = 14.0 + (4.0 * t); // 14 → 18
+                final emailOpacity = t;
+
+                return Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    AppSpacing.screenPadding,
+                    statusBar + 8,
+                    AppSpacing.screenPadding,
+                    6,
+                  ),
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Row(
+                      children: [
+                        Container(
+                          width: avatarSize,
+                          height: avatarSize,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [
+                                AppColors.primary,
+                                AppColors.primaryLight,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius:
+                                BorderRadius.circular(avatarRadius),
+                          ),
+                          child: Icon(
+                            SolarIconsOutline.user,
+                            size: iconSize,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.m),
+                        Expanded(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                p.fullName,
+                                style: AppTextStyles.titleSmall.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: nameSize,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              if (emailOpacity > 0.05) ...[
+                                const SizedBox(height: 2),
+                                Opacity(
+                                  opacity: emailOpacity,
+                                  child: Text(
+                                    p.email,
+                                    style: AppTextStyles.bodySmall.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    tr("guest_user"),
-                    style: AppTextStyles.titleMedium.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    tr("guest_profile_subtitle"),
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: Colors.grey.shade600,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
+                );
+              },
             ),
+          ),
 
-            const SizedBox(height: 32),
+          // İÇERİK
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.screenPadding,
+            ),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                const SizedBox(height: AppSpacing.xl),
 
-            // Hesap Olustur butonu
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.person_add_alt_1_rounded),
-                label: Text(tr("upgrade_account_button")),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
+                ProfileSection(
+                  title: tr("account"),
+                  children: [
+                    ProfileTile(
+                      icon: SolarIconsOutline.userCircle,
+                      title: tr("personal_info"),
+                      subtitle: p.fullName,
+                      onTap: () => context.push('/personal-info'),
+                      showDivider: false,
+                    ),
+                  ],
                 ),
-                onPressed: () => context.push('/upgrade-account'),
-              ),
-            ),
 
-            const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.xxl),
 
-            // Giris Yap butonu
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                icon: const Icon(Icons.login_rounded),
-                label: Text(tr("login")),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  side: BorderSide(color: Colors.grey.shade300),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
+                ProfileSection(
+                  title: tr("settings"),
+                  children: [
+                    ProfileTile(
+                      icon: SolarIconsOutline.globus,
+                      title: tr("language"),
+                      trailingText: getLanguageName(context),
+                      onTap: () => context.push("/settings/language"),
+                    ),
+                    ProfileTile(
+                      icon: SolarIconsOutline.lock,
+                      title: tr("change_password"),
+                      onTap: () => context.push('/change-password'),
+                    ),
+                    ProfileTile(
+                      icon: SolarIconsOutline.notificationUnread,
+                      title: tr("notifications"),
+                      onTap: () => showNotificationPreferencesSheet(context),
+                      showDivider: false,
+                    ),
+                  ],
                 ),
-                onPressed: () async {
-                  await splashViewModel.redirectToLogin();
-                },
-              ),
+
+                const SizedBox(height: AppSpacing.xxl),
+
+                ProfileSection(
+                  title: tr("legal_info"),
+                  children: [
+                    ProfileTile(
+                      icon: SolarIconsOutline.shieldCheck,
+                      title: tr("privacy_policy"),
+                      onTap: () => context.push('/legal/privacy-policy'),
+                    ),
+                    ProfileTile(
+                      icon: SolarIconsOutline.documentText,
+                      title: tr("kvkk_text"),
+                      onTap: () => context.push('/legal/kvkk'),
+                    ),
+                    ProfileTile(
+                      icon: SolarIconsOutline.billList,
+                      title: tr("sales_agreement"),
+                      onTap: () => context.push('/legal/sales-agreement'),
+                      showDivider: false,
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: AppSpacing.xxl),
+
+                ProfileSection(
+                  title: tr("other"),
+                  children: [
+                    ProfileTile(
+                      icon: SolarIconsOutline.logout,
+                      title: tr("logout"),
+                      titleColor: AppColors.error,
+                      iconColor: AppColors.error,
+                      showDivider: false,
+                      onTap: () async {
+                        final splashVm = context.read<SplashViewModel>();
+                        await splashVm.performFullSignOut(
+                          socialCleanup: () => authVm.socialSignOut(),
+                        );
+                        if (context.mounted) context.go('/home');
+                      },
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: AppSpacing.xxl),
+              ]),
             ),
-
-            const SizedBox(height: AppSpacing.xl),
-
-            // Dil ve izin ayarlari erisilebilir kalsin
-            ProfileSection(title: tr("account_settings")),
-
-            ProfileTile(
-              icon: Icons.language_rounded,
-              title: tr("language"),
-              trailingText: getLanguageName(context),
-              onTap: () => context.push("/settings/language"),
-            ),
-
-            ProfileTile(
-              icon: Icons.tune_rounded,
-              title: tr("permissions"),
-              subtitle: tr("manage_location_and_phone_verification"),
-              onTap: () => context.push("/settings/permissions"),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
-  }
-
-  void _showDeleteAccountDialog(BuildContext context) {
-    final profileVm = context.read<ProfileViewModel>();
-    final authVm = context.read<AuthViewModel>();
-    final splashVm = context.read<SplashViewModel>(); // 🔥 Bunu ekledik
-
-    showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // ICON (Tasarımın aynı kalıyor)
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: AppColors.error.withOpacity(.12),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Icon(
-                  Icons.delete_forever_rounded,
-                  size: 28,
-                  color: AppColors.error,
-                ),
-              ),
-              const SizedBox(height: 14),
-              // TITLE
-              Text(
-                tr("delete_account"),
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 10),
-              // MESSAGE
-              Text(tr("delete_account_warning"), textAlign: TextAlign.center),
-              const SizedBox(height: 18),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.error,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: () =>
-                          Navigator.of(context, rootNavigator: true).pop(true),
-                      child: Text(tr("common_yes")),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        side: BorderSide(color: Colors.grey.shade300),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: () =>
-                          Navigator.of(context, rootNavigator: true).pop(false),
-                      child: Text(tr("common_cancel")),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    ).then((confirmed) async {
-      if (confirmed != true) return;
-
-      // 1. Backend tarafında hesabı sil
-      final success = await profileVm.deleteAccount();
-
-      if (!context.mounted) return;
-
-      // Mesaj yönetimi
-      final msg = profileVm.message ?? tr("error_generic");
-      if (success) {
-        UIHelper.showSuccess(context, msg.tr());
-
-        // 2. Lokal verileri ve Firebase oturumunu temizle
-        await authVm.deleteAccount();
-
-        // 3. Guest olarak devam et
-        await splashVm.signOutToGuest();
-      } else {
-        UIHelper.showError(context, msg.tr());
-      }
-    });
   }
 }
 

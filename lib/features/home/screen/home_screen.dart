@@ -1,26 +1,31 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tour_booking/features/splash/splash_view_model.dart';
 
 import 'package:tour_booking/core/enum/user_role.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 
-import 'package:tour_booking/features/home/widgets/home_header.dart';
+import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/widgets/section_title.dart';
-import 'package:tour_booking/features/home/widgets/about_section.dart';
-import 'package:tour_booking/features/home/widgets/featured_tour_points.dart';
-import 'package:tour_booking/features/home/widgets/near_by_points_button.dart';
-import 'package:tour_booking/features/home/widgets/search_section.dart';
-import 'package:tour_booking/features/home/widgets/tour_type.dart';
-import 'package:tour_booking/features/home/widgets/transport_entry_card.dart';
+import 'package:tour_booking/features/home/widget/featured_tour_points.dart';
+import 'package:tour_booking/features/home/widget/popular_cities.dart';
+import 'package:tour_booking/features/home/widget/search_section.dart';
+import 'package:tour_booking/features/home/widget/tour_type.dart';
+import 'package:tour_booking/features/home/home_viewmodel.dart';
+import 'package:tour_booking/features/home/widget/continue_in_city.dart';
+import 'package:tour_booking/features/home/widget/nearby_tour_points.dart';
+import 'package:tour_booking/services/location/location_permission_service.dart';
 
 import 'package:tour_booking/features/profile/permission_viewmodel.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 
-import 'package:tour_booking/services/location/location_viewmodel.dart';
+import 'package:tour_booking/features/auth/login/widget/login_bottom_sheet.dart';
+import 'package:tour_booking/features/location/location_viewmodel.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -57,31 +62,44 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     if (_initialized) return;
     _initialized = true;
 
-    final prefs = await SharedPreferences.getInstance();
-
     // PROFILE & PERMISSIONS & PLAYER ID
     context.read<ProfileViewModel>().fetchProfile();
     context.read<PermissionsViewModel>().syncPlayerId();
 
     // ROLE LOAD
-    await _loadUserRole(prefs);
+    _loadUserRole();
 
-    // LOCATION CHECK
-    _checkLocation();
+    // CONTINUE IN CITY — sadece hedef şehirleri belirle (API çağrısı yok)
+    context.read<HomeViewModel>().loadCityTargets();
+
+    // LOCATION CHECK + NEARBY
+    await _checkLocation();
+    _fetchNearbyIfPermitted();
 
     // ASK PERMISSIONS ONLY WHEN NEEDED
     await _askMissingPermissions();
+
+    // Onboarding sonrasi login bottom sheet goster
+    _maybeShowLoginSheet();
+  }
+
+  void _maybeShowLoginSheet() {
+    final splashVm = context.read<SplashViewModel>();
+    if (splashVm.shouldShowLoginSheet) {
+      splashVm.clearLoginSheetFlag();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          showLoginBottomSheet(context);
+        }
+      });
+    }
   }
 
   // ============================================================
   // 🔥 User Role Load
   // ============================================================
-  Future<void> _loadUserRole(SharedPreferences prefs) async {
-    final str = prefs.getString('user_role');
-    final role = str != null
-        ? UserRoleExtension.fromString(str)
-        : UserRole.customer;
-
+  void _loadUserRole() {
+    final role = context.read<SplashViewModel>().role ?? UserRole.customer;
     setState(() => _currentRole = role);
   }
 
@@ -97,20 +115,44 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   // ============================================================
+  // 🔥 NEARBY — konum izni varsa yakın turları getir
+  // ============================================================
+  void _fetchNearbyIfPermitted() {
+    final locVm = context.read<LocationViewModel>();
+    final status = locVm.permissionStatus;
+    final pos = locVm.currentPosition;
+    if ((status == LocationPermissionStatus.grantedAlways ||
+            status == LocationPermissionStatus.grantedWhenInUse) &&
+        pos != null) {
+      context.read<HomeViewModel>().fetchNearbyTourPoints(
+            latitude: pos.latitude,
+            longitude: pos.longitude,
+          );
+    }
+  }
+
+  // ============================================================
   // 🔥 Ask only missing permissions
   // ============================================================
   Future<void> _askMissingPermissions() async {
-    await OneSignal.Notifications.requestPermission(false);
+    final accepted = await OneSignal.Notifications.requestPermission(false);
+    if (accepted && mounted) {
+      context.read<ProfileViewModel>().updateNotificationPreference(
+        type: 'push',
+        value: true,
+      );
+    }
   }
 
   // ============================================================
   // 🔥 APP RESUME → izin + konum + profil yenile
   // ============================================================
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
       context.read<PermissionsViewModel>().loadPermissions();
-      _checkLocation(); // kullanıcı ayarlardan konumu açarsa çalışsın
+      await _checkLocation();
+      _fetchNearbyIfPermitted();
     }
   }
 
@@ -126,81 +168,127 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return Scaffold(
       backgroundColor: scheme.surface,
       body: SafeArea(
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            // HEADER
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.screenPadding,
-                vertical: AppSpacing.elementSpacing,
+        child: Column(
+          children: [
+            // FIXED TOP BAR — notification icon + search bar
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.screenPadding, 12, AppSpacing.screenPadding, 16,
               ),
-              sliver: const SliverToBoxAdapter(
-                child: RepaintBoundary(child: HomeHeader()),
+              child: Row(
+                children: [
+                  const Expanded(child: FakeSearchBar()),
+                  const SizedBox(width: AppSpacing.m),
+                  GestureDetector(
+                    onTap: () {
+                      // TODO: bildirimler sayfası
+                    },
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: AppColors.background,
+                        borderRadius: BorderRadius.circular(AppRadius.medium),
+                      ),
+                      child: const Icon(
+                        SolarIconsOutline.bell,
+                        color: AppColors.textPrimary,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
 
-            // SEARCH BAR
+            // SCROLLABLE CONTENT
+            Expanded(
+              child: CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+            // FEATURED (edge-to-edge horizontal scroll)
+            const SliverToBoxAdapter(
+              child: SizedBox(height: AppSpacing.s),
+            ),
             SliverPadding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.screenPadding,
-              ),
-              sliver: const SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    FakeSearchBar(),
-                    SizedBox(height: AppSpacing.xl),
-                  ],
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
+              sliver: SliverToBoxAdapter(
+                child: SectionTitle(
+                  title: tr("featured_tours"),
+                  onMore: () => context.push('/all-featured'),
                 ),
               ),
             ),
-
-            // FEATURED
-            _sliverSection(
-              title: tr("featured_tours"),
-              body: const FeaturedPointsWidget(),
+            const SliverPadding(
+              padding: EdgeInsets.only(top: AppSpacing.m),
+              sliver: SliverToBoxAdapter(
+                child: RepaintBoundary(child: FeaturedPointsWidget()),
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: AppSpacing.sectionSpacing),
             ),
 
-            // TRANSPORT
-            _sliverSection(
-              title: tr("transport_title"),
-              subtitle: tr("transport_entry_subtitle"),
-              body: const TransportEntryCard(),
+            // NEARBY TOURS (konum izni varsa)
+            const SliverToBoxAdapter(
+              child: RepaintBoundary(child: NearbyTourPointsWidget()),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: AppSpacing.sectionSpacing),
             ),
 
-            // NEARBY
-            _sliverSection(
-              title: tr("nearby_tours"),
-              subtitle: tr("find_tours_nearby"),
-              body: const NearbyPointsButton(),
+            // CONTINUE IN CITY — lazy loaded: her bölüm görünürse kendi turlarını çeker
+            ...context.select<HomeViewModel, List<CityToursSection>>(
+              (vm) => vm.citySections,
+            ).map((section) => SliverToBoxAdapter(
+              child: RepaintBoundary(
+                child: LazyCitySection(
+                  key: ValueKey('city_${section.cityId}'),
+                  section: section,
+                ),
+              ),
+            )),
+
+            // POPULAR CITIES
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
+              sliver: SliverToBoxAdapter(
+                child: SectionTitle(title: tr("popular_cities")),
+              ),
+            ),
+            const SliverPadding(
+              padding: EdgeInsets.only(top: AppSpacing.m),
+              sliver: SliverToBoxAdapter(
+                child: RepaintBoundary(child: PopularCitiesWidget()),
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: AppSpacing.sectionSpacing),
             ),
 
             // CATEGORIES
             _sliverSection(
               title: tr("categories"),
               body: const TourTypeWidget(),
-            ),
-
-            // ABOUT US
-            _sliverSection(
-              title: tr("about_us"),
-              body: const AboutSection(),
               bottomSpace: AppSpacing.m,
             ),
           ],
         ),
+      ), // Expanded
+    ], // Column
       ),
+    ),
     );
   }
 
   // ============================================================
-  // 🔥 REUSABLE SECTION BUILDER
+  // REUSABLE SECTION BUILDER
   // ============================================================
   SliverPadding _sliverSection({
     required String title,
     String? subtitle,
     required Widget body,
-    double bottomSpace = AppSpacing.xxl,
+    double bottomSpace = AppSpacing.sectionSpacing,
   }) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),

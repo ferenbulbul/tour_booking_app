@@ -3,13 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
 import 'package:tour_booking/features/auth/change_password/change_password_viewmodel.dart';
-import 'package:tour_booking/features/auth/email_verification/widget/email_verification_view_model.dart';
-import 'package:tour_booking/features/auth/forgot_passwords/forgot_password/widget/forgot_password_view_model.dart';
-import 'package:tour_booking/features/auth/login/widgets/login_view_model.dart';
+import 'package:tour_booking/features/auth/email_verification/email_verification_viewmodel.dart';
+import 'package:tour_booking/features/auth/forgot_passwords/forgot_password_viewmodel.dart';
+import 'package:tour_booking/features/auth/login/login_viewmodel.dart';
 import 'package:tour_booking/features/auth/phone_verification/verify_phone_viewmodel.dart';
-import 'package:tour_booking/features/auth/register/widgets/register_view_model.dart';
+import 'package:tour_booking/features/auth/register/register_viewmodel.dart';
 import 'package:tour_booking/features/auth/change_password/screen/change_password.dart';
-import 'package:tour_booking/features/detailed_search/flow/screen/tour_search_detail_screen.dart';
+import 'package:tour_booking/features/tour/booking/screen/tour_search_detail_screen.dart';
 import 'package:tour_booking/features/bookings/screen/bookings_screen.dart';
 import 'package:tour_booking/features/auth/change_password/screen/change_password_driver.dart';
 import 'package:tour_booking/features/driver_home_page/screen/driver_home_page.dart';
@@ -17,48 +17,55 @@ import 'package:tour_booking/features/auth/email_verification/screen/email_verif
 import 'package:tour_booking/features/favorite/screen/favorite_screen.dart';
 import 'package:tour_booking/features/auth/forgot_passwords/forgot_password/screen/forgot_password_screen.dart';
 import 'package:tour_booking/features/auth/forgot_passwords/reset_password/screen/reset_password_screen.dart';
-import 'package:tour_booking/features/auth/forgot_passwords/verify_reset_code/screen/%20verify_reset_code_screen.dart';
-import 'package:tour_booking/features/home/screen/nearby_tourpoiont.dart';
+import 'package:tour_booking/features/auth/forgot_passwords/verify_reset_code/screen/verify_reset_code_screen.dart';
+import 'package:tour_booking/features/home/screen/nearby_tourpoint.dart';
 import 'package:tour_booking/features/home/screen/detail_search.dart';
 import 'package:tour_booking/features/home/screen/tour_search_by_tour_type.dart';
-import 'package:tour_booking/features/auth/login/screens/login_screen.dart';
+import 'package:tour_booking/features/auth/login/screen/login_screen.dart';
 import 'package:tour_booking/features/auth/phone_verification/screen/verify_phone_screen.dart';
 import 'package:tour_booking/features/profile/screen/language_screen.dart';
+import 'package:tour_booking/features/profile/screen/legal_detail_screen.dart';
 import 'package:tour_booking/features/profile/screen/permission_screen.dart';
 import 'package:tour_booking/features/profile/screen/profile_screen.dart';
+import 'package:tour_booking/core/constants/legal_texts.dart';
+import 'package:tour_booking/features/profile/screen/personal_info_screen.dart';
 import 'package:tour_booking/features/profile/screen/update_phone_screen.dart';
-import 'package:tour_booking/features/root/wigdet/root_scaffold.dart';
-import 'package:tour_booking/features/detailed_search/search/screen/search.dart';
-import 'package:tour_booking/features/detailed_search/search_result/screen/tour_search_result.dart';
-import 'package:tour_booking/features/detailed_search/flow/payment_viewmodel.dart';
-import 'package:tour_booking/features/detailed_search/flow/screen/guides_screen.dart';
-import 'package:tour_booking/features/detailed_search/flow/screen/payment_fail_screen.dart';
-import 'package:tour_booking/features/detailed_search/flow/screen/payment_screen.dart';
-import 'package:tour_booking/features/detailed_search/flow/screen/payment_success_screen.dart';
-import 'package:tour_booking/features/detailed_search/flow/screen/summary_screen.dart';
-import 'package:tour_booking/features/detailed_search/flow/screen/vehicle_list_screen.dart';
-import 'package:tour_booking/features/detailed_search/flow/screen/vehicle_detail_screen.dart';
-import 'package:tour_booking/features/detailed_search/flow/screen/google_place_saerch.dart';
+import 'package:tour_booking/features/root/widget/root_scaffold.dart';
+import 'package:tour_booking/features/tour/search_result/screen/tour_search_result.dart';
+import 'package:tour_booking/features/tour/booking/payment_viewmodel.dart';
+import 'package:tour_booking/features/tour/booking/screen/guides_screen.dart';
+import 'package:tour_booking/features/tour/booking/screen/payment_fail_screen.dart';
+import 'package:tour_booking/features/tour/booking/screen/payment_screen.dart';
+import 'package:tour_booking/features/tour/booking/screen/payment_success_screen.dart';
+import 'package:tour_booking/features/tour/booking/screen/summary_screen.dart';
+import 'package:tour_booking/features/tour/booking/screen/vehicle_list_screen.dart';
+import 'package:tour_booking/features/tour/booking/screen/vehicle_detail_screen.dart';
+import 'package:tour_booking/features/tour/booking/screen/google_place_search.dart';
 import 'package:tour_booking/features/checkout/screen/contact_info_screen.dart';
 import 'package:tour_booking/features/checkout/viewmodel/contact_info_viewmodel.dart';
-import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
+import 'package:tour_booking/features/tour/booking/tour_detail_viewmodel.dart';
+import 'package:tour_booking/features/tour/booking/tour_booking_selection_viewmodel.dart';
+import 'package:tour_booking/features/tour/booking/tour_vehicle_guide_viewmodel.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
 import 'package:tour_booking/features/auth/upgrade_account/screen/upgrade_account_screen.dart';
-import 'package:tour_booking/features/auth/upgrade_account/widget/upgrade_account_viewmodel.dart';
+import 'package:tour_booking/features/auth/upgrade_account/upgrade_account_viewmodel.dart';
 import 'package:tour_booking/models/vehicle_detail_request/vehicle_detail_request.dart';
 import 'package:tour_booking/features/transport/screen/transport_screen.dart';
 import 'package:tour_booking/features/transport/screen/transport_vehicle_list_screen.dart';
 import 'package:tour_booking/features/transport/screen/transport_summary_screen.dart';
-import 'package:tour_booking/features/transport/screen/transport_vehicle_detail_screen.dart';
 import 'package:tour_booking/features/transport/transport_viewmodel.dart';
 import 'package:tour_booking/features/transport/transport_vehicle_list_viewmodel.dart';
 import 'package:tour_booking/features/transport/transport_summary_viewmodel.dart';
 import 'package:tour_booking/models/transport/search_vehicles_request/search_vehicles_request.dart';
 import 'package:tour_booking/models/transport/transport_vehicle/transport_vehicle.dart';
 import 'package:tour_booking/navigation/app_navigator.dart';
+import 'package:tour_booking/core/ui/ui_helper.dart';
+import '../features/onboarding/screen/onboarding_screen.dart';
 import '../features/splash/screen/splash_screen.dart';
 import '../features/auth/register/screen/register_screen.dart';
 import '../features/home/screen/home_screen.dart';
+import 'package:tour_booking/features/tour/search/screen/search.dart';
+import 'package:tour_booking/features/home/screen/all_featured_screen.dart';
 
 final RouteObserver<ModalRoute<void>> globalRouteObserver =
     RouteObserver<ModalRoute<void>>();
@@ -84,9 +91,8 @@ final GoRouter router = GoRouter(
     final bool isDeepLink = path.startsWith('/tour/');
     final redirectParam = state.uri.queryParameters['redirect'];
 
-    // Login gerektirmeyen sayfalar
-    final publicRoutes = [
-      '/login',
+    // Auth sayfalar (login haric — login artik bottom sheet)
+    final authRoutes = [
       '/register',
       '/forgot-password',
       '/verify-reset-code',
@@ -97,32 +103,36 @@ final GoRouter router = GoRouter(
       'redirect | path=$path | loggedIn=$loggedIn | guest=$isGuestUser | deepLink=$isDeepLink',
     );
 
-    // LOGIN YOKSA
+    // /login'e gelen her istegi /home'a yonlendir — login artik bottom sheet
+    if (path == '/login') {
+      return '/home';
+    }
+
+    // ONBOARDING KONTROLU
+    if (splashVM.shouldShowOnboarding) {
+      if (path != '/onboarding') return '/onboarding';
+      return null;
+    }
+    // Onboarding'i gormus ama hala o sayfadaysa
+    if (path == '/onboarding') {
+      return role == UserRole.driver ? '/driver' : '/home';
+    }
+
+    // LOGIN YOKSA — guest sign-in her zaman yapilir, bu durum nadir
+    // Her durumda home'a yonlendir
     if (!loggedIn) {
-      // Deep link geldiyse login'e yonlendir + redirect parami ekle
-      if (isDeepLink) {
-        final encoded = Uri.encodeComponent(state.uri.toString());
-        return '/login?redirect=$encoded';
+      if (path == '/' || !authRoutes.contains(path)) {
+        return '/home';
       }
-
-      // Public route degilse login'e at
-      if (!publicRoutes.contains(path)) {
-        return '/login';
-      }
-
       return null;
     }
 
     // GUEST KULLANICI — email dogrulamayi atla, direkt home'a git
     if (isGuestUser) {
-      // Guest auth sayfalarinda olmamali (login/register disinda)
-      if (publicRoutes.contains(path) || path == '/' || path == '/email-confirmed') {
+      if (path == '/' || path == '/email-confirmed') {
         return '/home';
       }
-      // Upgrade-account sayfasina gidebilir
-      if (path == '/upgrade-account') {
-        return null;
-      }
+      // Upgrade-account ve auth sayfalarına gidebilir
       return null;
     }
 
@@ -136,8 +146,8 @@ final GoRouter router = GoRouter(
       return Uri.decodeComponent(redirectParam);
     }
 
-    // Auth sayfalarindan cikis
-    if (publicRoutes.contains(path) || path == '/') {
+    // Auth/splash sayfalarindan cikis
+    if (authRoutes.contains(path) || path == '/') {
       return role == UserRole.driver ? '/driver' : '/home';
     }
 
@@ -145,6 +155,11 @@ final GoRouter router = GoRouter(
   },
   routes: [
     GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
+
+    GoRoute(
+      path: '/onboarding',
+      builder: (context, state) => const OnboardingScreen(),
+    ),
 
     GoRoute(
       path: '/login',
@@ -195,20 +210,25 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
+      path: '/all-featured',
+      name: 'allFeatured',
+      builder: (context, state) => const AllFeaturedScreen(),
+    ),
+    GoRoute(
       path: '/search-results',
       name: 'searchResults',
       builder: (context, state) {
-        final type =
-            int.tryParse(state.uri.queryParameters['type'] ?? '0') ?? 0;
-        final regionId = state.uri.queryParameters['regionId'];
-        final cityId = state.uri.queryParameters['cityId'];
-        final districtId = state.uri.queryParameters['districtId'];
+        final qp = state.uri.queryParameters;
+        final type = int.tryParse(qp['type'] ?? '0') ?? 0;
 
         return TourSearchResultsScreen(
           type: type,
-          regionId: regionId,
-          cityId: cityId,
-          districtId: districtId,
+          regionId: qp['regionId'],
+          cityId: qp['cityId'],
+          districtId: qp['districtId'],
+          regionName: qp['regionName'],
+          cityName: qp['cityName'],
+          districtName: qp['districtName'],
         );
       },
     ),
@@ -220,6 +240,7 @@ final GoRouter router = GoRouter(
 
         late final String tourPointId;
         String? initialImage;
+        String? heroTag;
 
         if (data is String) {
           // Eski kullanim: sadece ID
@@ -227,6 +248,7 @@ final GoRouter router = GoRouter(
         } else if (data is Map<String, dynamic>) {
           tourPointId = data["id"] as String;
           initialImage = data["initialImage"] as String?;
+          heroTag = data["heroTag"] as String?;
         } else {
           return MaterialPage(key: state.pageKey, child: const HomeScreen());
         }
@@ -236,6 +258,7 @@ final GoRouter router = GoRouter(
           child: TourSearchDetailScreen(
             tourPointId: tourPointId,
             initialImage: initialImage,
+            heroTag: heroTag,
           ),
         );
       },
@@ -308,16 +331,23 @@ final GoRouter router = GoRouter(
       path: '/checkout/contact-info',
       name: 'contactInfo',
       builder: (context, state) {
-        final bookingType = state.extra is String ? state.extra as String : 'tour';
+        final String bookingType;
+        TransportSummaryViewModel? transportVm;
+        if (state.extra is Map<String, dynamic>) {
+          final args = state.extra as Map<String, dynamic>;
+          bookingType = args['bookingType'] as String? ?? 'tour';
+          transportVm = args['transportVm'] as TransportSummaryViewModel?;
+        } else {
+          bookingType = state.extra is String ? state.extra as String : 'tour';
+        }
         return ChangeNotifierProvider(
           create: (_) => ContactInfoViewModel(),
           child: ContactInfoScreen(
             onContinue: (firstName, lastName, email, phone) async {
               final nav = GoRouter.of(context);
-              final messenger = ScaffoldMessenger.of(context);
+              final ctx = context;
               if (bookingType == 'transport') {
-                final transportVm = context.read<TransportSummaryViewModel>();
-                await transportVm.createBooking(
+                await transportVm!.createBooking(
                   buyerFirstName: firstName,
                   buyerLastName: lastName,
                   buyerEmail: email,
@@ -326,24 +356,30 @@ final GoRouter router = GoRouter(
                 if (transportVm.bookingId != null && transportVm.bookingId!.isNotEmpty) {
                   nav.push('/payment', extra: transportVm.bookingId);
                 } else if (transportVm.errorMessage != null) {
-                  messenger.showSnackBar(
-                    SnackBar(content: Text(transportVm.errorMessage!)),
-                  );
+                  UIHelper.showError(ctx, transportVm.errorMessage!);
                 }
               } else {
-                final tourVm = context.read<TourSearchDetailViewModel>();
-                await tourVm.ControlBooking(
+                final detailVm = context.read<TourDetailViewModel>();
+                final selectionVm = context.read<TourBookingSelectionViewModel>();
+                final vehicleGuideVm = context.read<TourVehicleGuideViewModel>();
+                await vehicleGuideVm.controlBooking(
                   buyerFirstName: firstName,
                   buyerLastName: lastName,
                   buyerEmail: email,
                   buyerPhone: phone,
+                  cityId: detailVm.selectedCityId!,
+                  districtId: detailVm.selectedDistrictId!,
+                  tourPointId: detailVm.selectedTourPointId!,
+                  date: selectionVm.selectedDate!,
+                  departureTime: selectionVm.selectedTime!,
+                  locationDescription: selectionVm.selectedPlaceDesc,
+                  latitude: selectionVm.selectedPlaceLat,
+                  longitude: selectionVm.selectedPlaceLng,
                 );
-                if (tourVm.isValid && tourVm.bookingId != null) {
-                  nav.push('/payment', extra: tourVm.bookingId);
-                } else if (tourVm.errorMessage != null) {
-                  messenger.showSnackBar(
-                    SnackBar(content: Text(tourVm.errorMessage!)),
-                  );
+                if (vehicleGuideVm.isValid && vehicleGuideVm.bookingId != null) {
+                  nav.push('/payment', extra: vehicleGuideVm.bookingId);
+                } else if (vehicleGuideVm.errorMessage != null) {
+                  UIHelper.showError(ctx, vehicleGuideVm.errorMessage!);
                 }
               }
             },
@@ -371,6 +407,10 @@ final GoRouter router = GoRouter(
       builder: (context, state) {
         return DetailSearchLocationPage();
       },
+    ),
+    GoRoute(
+      path: '/search',
+      builder: (context, state) => const TourSearchScreen(),
     ),
     GoRoute(
       name: "nearbyPoints",
@@ -402,8 +442,11 @@ final GoRouter router = GoRouter(
       path: '/tour-search-by-type',
       name: 'tour-search-by-type',
       builder: (context, state) {
-        final tourTypeId = state.uri.queryParameters['tourTypeId'];
-        return TourSearchResultsByTourTypeScreen(tourTypeId: tourTypeId);
+        final qp = state.uri.queryParameters;
+        return TourSearchResultsByTourTypeScreen(
+          tourTypeId: qp['tourTypeId'],
+          tourTypeName: qp['tourTypeName'],
+        );
       },
     ),
     GoRoute(
@@ -422,9 +465,40 @@ final GoRouter router = GoRouter(
       builder: (context, state) => const UpdatePhoneScreen(),
     ),
     GoRoute(
+      path: '/personal-info',
+      builder: (context, state) => const PersonalInfoScreen(),
+    ),
+    GoRoute(
       path: '/settings/permissions',
       name: 'permissionsSettings',
       builder: (context, state) => const PermissionsScreen(),
+    ),
+    GoRoute(
+      path: '/legal/:type',
+      name: 'legalDetail',
+      builder: (context, state) {
+        final type = state.pathParameters['type'] ?? '';
+        late final String title;
+        late final String content;
+        switch (type) {
+          case 'privacy-policy':
+            title = 'Gizlilik Politikası';
+            content = LegalTexts.privacyPolicy;
+            break;
+          case 'kvkk':
+            title = 'KVKK Aydınlatma Metni';
+            content = LegalTexts.kvkk;
+            break;
+          case 'sales-agreement':
+            title = 'Mesafeli Satış Sözleşmesi';
+            content = LegalTexts.salesAgreement;
+            break;
+          default:
+            title = '';
+            content = '';
+        }
+        return LegalDetailScreen(title: title, content: content);
+      },
     ),
     GoRoute(
       path: '/past-bookings',
@@ -447,14 +521,6 @@ final GoRouter router = GoRouter(
 
     // --- Transport Routes ---
     GoRoute(
-      path: '/transport',
-      name: 'transport',
-      builder: (context, state) => ChangeNotifierProvider(
-        create: (_) => TransportViewModel(),
-        child: const TransportScreen(),
-      ),
-    ),
-    GoRoute(
       path: '/transport-vehicles',
       name: 'transportVehicles',
       builder: (context, state) {
@@ -466,18 +532,6 @@ final GoRouter router = GoRouter(
           create: (_) => TransportVehicleListViewModel()
             ..searchVehicles(request),
           child: TransportVehicleListScreen(searchContext: args),
-        );
-      },
-    ),
-    GoRoute(
-      path: '/transport-vehicle-detail',
-      name: 'transportVehicleDetail',
-      builder: (context, state) {
-        final args = state.extra as Map<String, dynamic>;
-        final vehicle = args['vehicle'] as TransportVehicle;
-        return TransportVehicleDetailScreen(
-          vehicle: vehicle,
-          searchContext: args,
         );
       },
     ),
@@ -520,8 +574,12 @@ final GoRouter router = GoRouter(
           builder: (context, state) => const FavoritePage(),
         ),
         GoRoute(
-          path: '/search',
-          builder: (context, state) => const TourSearchScreen(),
+          path: '/transport',
+          name: 'transportTab',
+          builder: (context, state) => ChangeNotifierProvider(
+            create: (_) => TransportViewModel(),
+            child: const TransportScreen(),
+          ),
         ),
         GoRoute(
           path: '/reservations',

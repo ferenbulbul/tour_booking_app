@@ -6,23 +6,25 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/core/deeplink/app_router.dart';
+import 'package:tour_booking/core/deeplink/app_root.dart';
 import 'package:tour_booking/core/localization/localization_setup.dart';
 import 'package:tour_booking/features/bookings/bookings_viewmodel.dart';
 import 'package:tour_booking/features/bookings/rating_viewmodel.dart';
 import 'package:tour_booking/features/favorite/favorite_viewmodel.dart';
 import 'package:tour_booking/features/home/home_viewmodel.dart';
-import 'package:tour_booking/features/auth/login/widgets/google_view_model.dart';
-import 'package:tour_booking/features/detailed_search/search/search_viewmodel.dart';
-import 'package:tour_booking/features/detailed_search/search_result/search_result_viewmodel.dart';
+import 'package:tour_booking/features/auth/login/google_viewmodel.dart';
+import 'package:tour_booking/features/tour/search/search_viewmodel.dart';
+import 'package:tour_booking/features/tour/search_result/search_result_viewmodel.dart';
 import 'package:tour_booking/features/profile/permission_viewmodel.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
-import 'package:tour_booking/features/detailed_search/flow/tour_search_detail_viewmodel.dart';
+import 'package:tour_booking/features/tour/booking/tour_detail_viewmodel.dart';
+import 'package:tour_booking/features/tour/booking/tour_booking_selection_viewmodel.dart';
+import 'package:tour_booking/features/tour/booking/tour_vehicle_guide_viewmodel.dart';
 import 'package:tour_booking/firebase_options.dart';
 import 'package:tour_booking/navigation/app_router.dart';
 import 'package:tour_booking/services/driver/driver_service.dart';
-import 'package:tour_booking/services/location/location_viewmodel.dart';
+import 'package:tour_booking/features/location/location_viewmodel.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -84,7 +86,9 @@ class _AppProvidersState extends State<AppProviders> {
           ChangeNotifierProvider(create: (_) => HomeViewModel()..init()),
           ChangeNotifierProvider(create: (_) => SearchViewmodel()),
           ChangeNotifierProvider(create: (_) => TourSearchResultsViewModel()),
-          ChangeNotifierProvider(create: (_) => TourSearchDetailViewModel()),
+          ChangeNotifierProvider(create: (_) => TourDetailViewModel()),
+          ChangeNotifierProvider(create: (_) => TourBookingSelectionViewModel()),
+          ChangeNotifierProvider(create: (_) => TourVehicleGuideViewModel()),
           Provider<DriverService>(create: (_) => DriverService()),
           ChangeNotifierProvider(create: (_) => ProfileViewModel()),
           ChangeNotifierProvider(create: (_) => FavoriteViewModel()),

@@ -31,6 +31,29 @@ _$TourPointDetailImpl _$$TourPointDetailImplFromJson(
   isFavorites: json['isFavorites'] as bool,
   avgRating: (json['avgRating'] as num?)?.toDouble(),
   ratingCount: (json['ratingCount'] as num?)?.toInt(),
+  shortDescription: json['shortDescription'] as String?,
+  durationHours: (json['durationHours'] as num?)?.toInt() ?? 0,
+  durationMinutes: (json['durationMinutes'] as num?)?.toInt() ?? 0,
+  routePoints:
+      (json['routePoints'] as List<dynamic>?)
+          ?.map((e) => RoutePointItem.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  highlights:
+      (json['highlights'] as List<dynamic>?)
+          ?.map((e) => HighlightItem.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  inclusions:
+      (json['inclusions'] as List<dynamic>?)
+          ?.map((e) => InclusionItem.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  importantInfos:
+      (json['importantInfos'] as List<dynamic>?)
+          ?.map((e) => ImportantInfoItem.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
 );
 
 Map<String, dynamic> _$$TourPointDetailImplToJson(
@@ -52,4 +75,11 @@ Map<String, dynamic> _$$TourPointDetailImplToJson(
   'isFavorites': instance.isFavorites,
   'avgRating': instance.avgRating,
   'ratingCount': instance.ratingCount,
+  'shortDescription': instance.shortDescription,
+  'durationHours': instance.durationHours,
+  'durationMinutes': instance.durationMinutes,
+  'routePoints': instance.routePoints.map((e) => e.toJson()).toList(),
+  'highlights': instance.highlights.map((e) => e.toJson()).toList(),
+  'inclusions': instance.inclusions.map((e) => e.toJson()).toList(),
+  'importantInfos': instance.importantInfos.map((e) => e.toJson()).toList(),
 };

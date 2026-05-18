@@ -1,11 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:tour_booking/core/enum/driver_booking_status.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/models/customer_info_for_driver/customer_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:tour_booking/core/ui/ui_helper.dart';
 
 class CustomerInfoListView extends StatelessWidget {
   const CustomerInfoListView({
@@ -44,7 +46,7 @@ class CustomerInfoListView extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 48),
         child: Column(
           children: [
-            Icon(Icons.inbox, size: 72),
+            Icon(SolarIconsOutline.box, size: 72),
             SizedBox(height: 12),
             Text(
               'Şu an aktif bir müşteri yok',
@@ -87,7 +89,7 @@ class CustomerInfoListView extends StatelessWidget {
                           if (isTransport)
                             Padding(
                               padding: const EdgeInsets.only(right: 8),
-                              child: Icon(Icons.directions_car,
+                              child: Icon(SolarIconsOutline.routing,
                                   size: 20, color: AppColors.primary),
                             ),
                           Expanded(
@@ -128,7 +130,7 @@ class CustomerInfoListView extends StatelessWidget {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: TextButton.icon(
-                        icon: const Icon(Icons.map),
+                        icon: const Icon(SolarIconsOutline.map),
                         label: Text('driver_open_dropoff_map'.tr()),
                         onPressed: () => _openMap(
                           item.dropoffLatitude!,
@@ -151,7 +153,7 @@ class CustomerInfoListView extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton.icon(
-                      icon: const Icon(Icons.map),
+                      icon: const Icon(SolarIconsOutline.map),
                       label: const Text('Haritada Aç'),
                       onPressed: () => _openMap(
                         item.departureLatitude,
@@ -166,7 +168,7 @@ class CustomerInfoListView extends StatelessWidget {
                 // CUSTOMER INFO
                 Row(
                   children: [
-                    const Icon(Icons.person, size: 18),
+                    const Icon(SolarIconsOutline.user, size: 18),
                     const SizedBox(width: 6),
                     Expanded(child: Text(item.cutomerFullName)),
                   ],
@@ -174,7 +176,7 @@ class CustomerInfoListView extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.phone, size: 18),
+                    const Icon(SolarIconsOutline.phone, size: 18),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
@@ -200,7 +202,7 @@ class CustomerInfoListView extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      icon: const Icon(Icons.check_circle_outline),
+                      icon: const Icon(SolarIconsOutline.checkCircle),
                       label: Text('driver_transport_dropoff'.tr()),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
@@ -237,31 +239,91 @@ class CustomerInfoListView extends StatelessWidget {
   void _confirmDropoff(BuildContext context, CustomerInfo item) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('driver_transport_dropoff_confirm'.tr()),
-        content: Text('driver_transport_dropoff_confirm_message'.tr()),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('cancel'.tr()),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            onPressed: () async {
-              Navigator.pop(ctx);
-              final success = await onCompleteDropoff?.call(item.bookingId!);
-              if (success == true && context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('driver_transport_dropoff_success'.tr()),
-                    backgroundColor: Colors.green,
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: AppColors.success.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(
+                  SolarIconsOutline.checkCircle,
+                  size: 28,
+                  color: AppColors.success,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'driver_transport_dropoff_confirm'.tr(),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'driver_transport_dropoff_confirm_message'.tr(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 46,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.textSecondary,
+                          side: const BorderSide(color: AppColors.border),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text('cancel'.tr()),
+                      ),
+                    ),
                   ),
-                );
-              }
-            },
-            child: Text('confirm'.tr(), style: const TextStyle(color: Colors.white)),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SizedBox(
+                      height: 46,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          backgroundColor: AppColors.success,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () async {
+                          Navigator.pop(ctx);
+                          final success = await onCompleteDropoff?.call(item.bookingId!);
+                          if (success == true && context.mounted) {
+                            UIHelper.showSuccess(context, 'driver_transport_dropoff_success'.tr());
+                          }
+                        },
+                        child: Text('confirm'.tr()),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -277,11 +339,6 @@ Future<void> _openWhatsApp(BuildContext context, String phone) async {
   if (await canLaunchUrl(uri)) {
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('WhatsApp yüklü değil veya açılamadı'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    UIHelper.showError(context, 'WhatsApp yüklü değil veya açılamadı');
   }
 }

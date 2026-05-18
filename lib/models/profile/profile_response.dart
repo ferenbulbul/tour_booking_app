@@ -6,10 +6,13 @@ part 'profile_response.g.dart';
 @freezed
 class ProfileResponse with _$ProfileResponse {
   const factory ProfileResponse({
-    required String fullName,
-    required String email,
-    required String phoneNumber,
-    required bool phoneNumberConfirmed,
+    @Default('') String fullName,
+    @Default('') String email,
+    @Default('') String phoneNumber,
+    @Default(false) bool phoneNumberConfirmed,
+    @Default(false) bool emailNotification,
+    @Default(false) bool pushNotification,
+    @Default(false) bool smsNotification,
   }) = _ProfileResponse;
 
   factory ProfileResponse.fromJson(Map<String, dynamic> json) =>

@@ -111,7 +111,7 @@ class __$$NearbyListResponseImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$NearbyListResponseImpl implements _NearbyListResponse {
   const _$NearbyListResponseImpl({
-    required final List<NearbyTourPointDto> nearByList,
+    final List<NearbyTourPointDto> nearByList = const [],
   }) : _nearByList = nearByList;
 
   factory _$NearbyListResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -119,6 +119,7 @@ class _$NearbyListResponseImpl implements _NearbyListResponse {
 
   final List<NearbyTourPointDto> _nearByList;
   @override
+  @JsonKey()
   List<NearbyTourPointDto> get nearByList {
     if (_nearByList is EqualUnmodifiableListView) return _nearByList;
     // ignore: implicit_dynamic_type
@@ -167,7 +168,7 @@ class _$NearbyListResponseImpl implements _NearbyListResponse {
 
 abstract class _NearbyListResponse implements NearbyListResponse {
   const factory _NearbyListResponse({
-    required final List<NearbyTourPointDto> nearByList,
+    final List<NearbyTourPointDto> nearByList,
   }) = _$NearbyListResponseImpl;
 
   factory _NearbyListResponse.fromJson(Map<String, dynamic> json) =

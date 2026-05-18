@@ -222,10 +222,16 @@ class TourService {
     );
   }
 
-  Future<BaseResponse<NearbyListResponse>> getNearbyTourPoints() async {
+  Future<BaseResponse<NearbyListResponse>> getNearbyTourPoints({
+    required double latitude,
+    required double longitude,
+  }) async {
     var response = _apiClient.get<NearbyListResponse>(
       path: "/Mobile/nearby",
-      queryParams: {},
+      queryParams: {
+        'latitude': latitude.toString(),
+        'longitude': longitude.toString(),
+      },
       fromJson: (json) =>
           NearbyListResponse.fromJson(json as Map<String, dynamic>),
     );
@@ -280,5 +286,20 @@ class TourService {
     );
 
     return response;
+  }
+
+  Future<BaseResponse<void>> updateNotificationPreferences({
+    required bool emailNotification,
+    required bool pushNotification,
+    required bool smsNotification,
+  }) async {
+    return _apiClient.post<void>(
+      path: '/Mobile/update-notification-preferences',
+      body: {
+        'emailNotification': emailNotification,
+        'pushNotification': pushNotification,
+        'smsNotification': smsNotification,
+      },
+    );
   }
 }

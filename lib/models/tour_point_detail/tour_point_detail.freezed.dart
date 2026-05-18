@@ -37,6 +37,14 @@ mixin _$TourPointDetail {
   bool get isFavorites => throw _privateConstructorUsedError;
   double? get avgRating => throw _privateConstructorUsedError;
   int? get ratingCount => throw _privateConstructorUsedError;
+  String? get shortDescription => throw _privateConstructorUsedError;
+  int get durationHours => throw _privateConstructorUsedError;
+  int get durationMinutes => throw _privateConstructorUsedError;
+  List<RoutePointItem> get routePoints => throw _privateConstructorUsedError;
+  List<HighlightItem> get highlights => throw _privateConstructorUsedError;
+  List<InclusionItem> get inclusions => throw _privateConstructorUsedError;
+  List<ImportantInfoItem> get importantInfos =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this TourPointDetail to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -72,6 +80,13 @@ abstract class $TourPointDetailCopyWith<$Res> {
     bool isFavorites,
     double? avgRating,
     int? ratingCount,
+    String? shortDescription,
+    int durationHours,
+    int durationMinutes,
+    List<RoutePointItem> routePoints,
+    List<HighlightItem> highlights,
+    List<InclusionItem> inclusions,
+    List<ImportantInfoItem> importantInfos,
   });
 }
 
@@ -106,6 +121,13 @@ class _$TourPointDetailCopyWithImpl<$Res, $Val extends TourPointDetail>
     Object? isFavorites = null,
     Object? avgRating = freezed,
     Object? ratingCount = freezed,
+    Object? shortDescription = freezed,
+    Object? durationHours = null,
+    Object? durationMinutes = null,
+    Object? routePoints = null,
+    Object? highlights = null,
+    Object? inclusions = null,
+    Object? importantInfos = null,
   }) {
     return _then(
       _value.copyWith(
@@ -173,6 +195,34 @@ class _$TourPointDetailCopyWithImpl<$Res, $Val extends TourPointDetail>
                 ? _value.ratingCount
                 : ratingCount // ignore: cast_nullable_to_non_nullable
                       as int?,
+            shortDescription: freezed == shortDescription
+                ? _value.shortDescription
+                : shortDescription // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            durationHours: null == durationHours
+                ? _value.durationHours
+                : durationHours // ignore: cast_nullable_to_non_nullable
+                      as int,
+            durationMinutes: null == durationMinutes
+                ? _value.durationMinutes
+                : durationMinutes // ignore: cast_nullable_to_non_nullable
+                      as int,
+            routePoints: null == routePoints
+                ? _value.routePoints
+                : routePoints // ignore: cast_nullable_to_non_nullable
+                      as List<RoutePointItem>,
+            highlights: null == highlights
+                ? _value.highlights
+                : highlights // ignore: cast_nullable_to_non_nullable
+                      as List<HighlightItem>,
+            inclusions: null == inclusions
+                ? _value.inclusions
+                : inclusions // ignore: cast_nullable_to_non_nullable
+                      as List<InclusionItem>,
+            importantInfos: null == importantInfos
+                ? _value.importantInfos
+                : importantInfos // ignore: cast_nullable_to_non_nullable
+                      as List<ImportantInfoItem>,
           )
           as $Val,
     );
@@ -205,6 +255,13 @@ abstract class _$$TourPointDetailImplCopyWith<$Res>
     bool isFavorites,
     double? avgRating,
     int? ratingCount,
+    String? shortDescription,
+    int durationHours,
+    int durationMinutes,
+    List<RoutePointItem> routePoints,
+    List<HighlightItem> highlights,
+    List<InclusionItem> inclusions,
+    List<ImportantInfoItem> importantInfos,
   });
 }
 
@@ -238,6 +295,13 @@ class __$$TourPointDetailImplCopyWithImpl<$Res>
     Object? isFavorites = null,
     Object? avgRating = freezed,
     Object? ratingCount = freezed,
+    Object? shortDescription = freezed,
+    Object? durationHours = null,
+    Object? durationMinutes = null,
+    Object? routePoints = null,
+    Object? highlights = null,
+    Object? inclusions = null,
+    Object? importantInfos = null,
   }) {
     return _then(
       _$TourPointDetailImpl(
@@ -305,6 +369,34 @@ class __$$TourPointDetailImplCopyWithImpl<$Res>
             ? _value.ratingCount
             : ratingCount // ignore: cast_nullable_to_non_nullable
                   as int?,
+        shortDescription: freezed == shortDescription
+            ? _value.shortDescription
+            : shortDescription // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        durationHours: null == durationHours
+            ? _value.durationHours
+            : durationHours // ignore: cast_nullable_to_non_nullable
+                  as int,
+        durationMinutes: null == durationMinutes
+            ? _value.durationMinutes
+            : durationMinutes // ignore: cast_nullable_to_non_nullable
+                  as int,
+        routePoints: null == routePoints
+            ? _value._routePoints
+            : routePoints // ignore: cast_nullable_to_non_nullable
+                  as List<RoutePointItem>,
+        highlights: null == highlights
+            ? _value._highlights
+            : highlights // ignore: cast_nullable_to_non_nullable
+                  as List<HighlightItem>,
+        inclusions: null == inclusions
+            ? _value._inclusions
+            : inclusions // ignore: cast_nullable_to_non_nullable
+                  as List<InclusionItem>,
+        importantInfos: null == importantInfos
+            ? _value._importantInfos
+            : importantInfos // ignore: cast_nullable_to_non_nullable
+                  as List<ImportantInfoItem>,
       ),
     );
   }
@@ -330,9 +422,20 @@ class _$TourPointDetailImpl implements _TourPointDetail {
     required this.isFavorites,
     this.avgRating,
     this.ratingCount,
+    this.shortDescription,
+    this.durationHours = 0,
+    this.durationMinutes = 0,
+    final List<RoutePointItem> routePoints = const [],
+    final List<HighlightItem> highlights = const [],
+    final List<InclusionItem> inclusions = const [],
+    final List<ImportantInfoItem> importantInfos = const [],
   }) : _otherImages = otherImages,
        _cities = cities,
-       _districts = districts;
+       _districts = districts,
+       _routePoints = routePoints,
+       _highlights = highlights,
+       _inclusions = inclusions,
+       _importantInfos = importantInfos;
 
   factory _$TourPointDetailImpl.fromJson(Map<String, dynamic> json) =>
       _$$TourPointDetailImplFromJson(json);
@@ -387,10 +490,53 @@ class _$TourPointDetailImpl implements _TourPointDetail {
   final double? avgRating;
   @override
   final int? ratingCount;
+  @override
+  final String? shortDescription;
+  @override
+  @JsonKey()
+  final int durationHours;
+  @override
+  @JsonKey()
+  final int durationMinutes;
+  final List<RoutePointItem> _routePoints;
+  @override
+  @JsonKey()
+  List<RoutePointItem> get routePoints {
+    if (_routePoints is EqualUnmodifiableListView) return _routePoints;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_routePoints);
+  }
+
+  final List<HighlightItem> _highlights;
+  @override
+  @JsonKey()
+  List<HighlightItem> get highlights {
+    if (_highlights is EqualUnmodifiableListView) return _highlights;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_highlights);
+  }
+
+  final List<InclusionItem> _inclusions;
+  @override
+  @JsonKey()
+  List<InclusionItem> get inclusions {
+    if (_inclusions is EqualUnmodifiableListView) return _inclusions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_inclusions);
+  }
+
+  final List<ImportantInfoItem> _importantInfos;
+  @override
+  @JsonKey()
+  List<ImportantInfoItem> get importantInfos {
+    if (_importantInfos is EqualUnmodifiableListView) return _importantInfos;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_importantInfos);
+  }
 
   @override
   String toString() {
-    return 'TourPointDetail(id: $id, title: $title, description: $description, mainImage: $mainImage, otherImages: $otherImages, cityName: $cityName, districtName: $districtName, regionName: $regionName, countryName: $countryName, tourTypeName: $tourTypeName, tourDifficultyName: $tourDifficultyName, cities: $cities, districts: $districts, isFavorites: $isFavorites, avgRating: $avgRating, ratingCount: $ratingCount)';
+    return 'TourPointDetail(id: $id, title: $title, description: $description, mainImage: $mainImage, otherImages: $otherImages, cityName: $cityName, districtName: $districtName, regionName: $regionName, countryName: $countryName, tourTypeName: $tourTypeName, tourDifficultyName: $tourDifficultyName, cities: $cities, districts: $districts, isFavorites: $isFavorites, avgRating: $avgRating, ratingCount: $ratingCount, shortDescription: $shortDescription, durationHours: $durationHours, durationMinutes: $durationMinutes, routePoints: $routePoints, highlights: $highlights, inclusions: $inclusions, importantInfos: $importantInfos)';
   }
 
   @override
@@ -430,12 +576,34 @@ class _$TourPointDetailImpl implements _TourPointDetail {
             (identical(other.avgRating, avgRating) ||
                 other.avgRating == avgRating) &&
             (identical(other.ratingCount, ratingCount) ||
-                other.ratingCount == ratingCount));
+                other.ratingCount == ratingCount) &&
+            (identical(other.shortDescription, shortDescription) ||
+                other.shortDescription == shortDescription) &&
+            (identical(other.durationHours, durationHours) ||
+                other.durationHours == durationHours) &&
+            (identical(other.durationMinutes, durationMinutes) ||
+                other.durationMinutes == durationMinutes) &&
+            const DeepCollectionEquality().equals(
+              other._routePoints,
+              _routePoints,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._highlights,
+              _highlights,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._inclusions,
+              _inclusions,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._importantInfos,
+              _importantInfos,
+            ));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
     title,
@@ -453,7 +621,14 @@ class _$TourPointDetailImpl implements _TourPointDetail {
     isFavorites,
     avgRating,
     ratingCount,
-  );
+    shortDescription,
+    durationHours,
+    durationMinutes,
+    const DeepCollectionEquality().hash(_routePoints),
+    const DeepCollectionEquality().hash(_highlights),
+    const DeepCollectionEquality().hash(_inclusions),
+    const DeepCollectionEquality().hash(_importantInfos),
+  ]);
 
   /// Create a copy of TourPointDetail
   /// with the given fields replaced by the non-null parameter values.
@@ -490,6 +665,13 @@ abstract class _TourPointDetail implements TourPointDetail {
     required final bool isFavorites,
     final double? avgRating,
     final int? ratingCount,
+    final String? shortDescription,
+    final int durationHours,
+    final int durationMinutes,
+    final List<RoutePointItem> routePoints,
+    final List<HighlightItem> highlights,
+    final List<InclusionItem> inclusions,
+    final List<ImportantInfoItem> importantInfos,
   }) = _$TourPointDetailImpl;
 
   factory _TourPointDetail.fromJson(Map<String, dynamic> json) =
@@ -527,6 +709,20 @@ abstract class _TourPointDetail implements TourPointDetail {
   double? get avgRating;
   @override
   int? get ratingCount;
+  @override
+  String? get shortDescription;
+  @override
+  int get durationHours;
+  @override
+  int get durationMinutes;
+  @override
+  List<RoutePointItem> get routePoints;
+  @override
+  List<HighlightItem> get highlights;
+  @override
+  List<InclusionItem> get inclusions;
+  @override
+  List<ImportantInfoItem> get importantInfos;
 
   /// Create a copy of TourPointDetail
   /// with the given fields replaced by the non-null parameter values.

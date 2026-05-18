@@ -29,6 +29,8 @@ mixin _$NearbyTourPointDto {
   double get distance => throw _privateConstructorUsedError;
   double? get avgRating => throw _privateConstructorUsedError;
   int? get ratingCount => throw _privateConstructorUsedError;
+  int? get durationHours => throw _privateConstructorUsedError;
+  int? get durationMinutes => throw _privateConstructorUsedError;
 
   /// Serializes this NearbyTourPointDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -56,6 +58,8 @@ abstract class $NearbyTourPointDtoCopyWith<$Res> {
     double distance,
     double? avgRating,
     int? ratingCount,
+    int? durationHours,
+    int? durationMinutes,
   });
 }
 
@@ -82,6 +86,8 @@ class _$NearbyTourPointDtoCopyWithImpl<$Res, $Val extends NearbyTourPointDto>
     Object? distance = null,
     Object? avgRating = freezed,
     Object? ratingCount = freezed,
+    Object? durationHours = freezed,
+    Object? durationMinutes = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -117,6 +123,14 @@ class _$NearbyTourPointDtoCopyWithImpl<$Res, $Val extends NearbyTourPointDto>
                 ? _value.ratingCount
                 : ratingCount // ignore: cast_nullable_to_non_nullable
                       as int?,
+            durationHours: freezed == durationHours
+                ? _value.durationHours
+                : durationHours // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            durationMinutes: freezed == durationMinutes
+                ? _value.durationMinutes
+                : durationMinutes // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -141,6 +155,8 @@ abstract class _$$NearbyTourPointDtoImplCopyWith<$Res>
     double distance,
     double? avgRating,
     int? ratingCount,
+    int? durationHours,
+    int? durationMinutes,
   });
 }
 
@@ -166,6 +182,8 @@ class __$$NearbyTourPointDtoImplCopyWithImpl<$Res>
     Object? distance = null,
     Object? avgRating = freezed,
     Object? ratingCount = freezed,
+    Object? durationHours = freezed,
+    Object? durationMinutes = freezed,
   }) {
     return _then(
       _$NearbyTourPointDtoImpl(
@@ -201,6 +219,14 @@ class __$$NearbyTourPointDtoImplCopyWithImpl<$Res>
             ? _value.ratingCount
             : ratingCount // ignore: cast_nullable_to_non_nullable
                   as int?,
+        durationHours: freezed == durationHours
+            ? _value.durationHours
+            : durationHours // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        durationMinutes: freezed == durationMinutes
+            ? _value.durationMinutes
+            : durationMinutes // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -218,6 +244,8 @@ class _$NearbyTourPointDtoImpl implements _NearbyTourPointDto {
     required this.distance,
     this.avgRating,
     this.ratingCount,
+    this.durationHours,
+    this.durationMinutes,
   });
 
   factory _$NearbyTourPointDtoImpl.fromJson(Map<String, dynamic> json) =>
@@ -239,10 +267,14 @@ class _$NearbyTourPointDtoImpl implements _NearbyTourPointDto {
   final double? avgRating;
   @override
   final int? ratingCount;
+  @override
+  final int? durationHours;
+  @override
+  final int? durationMinutes;
 
   @override
   String toString() {
-    return 'NearbyTourPointDto(id: $id, cityName: $cityName, tourTypeName: $tourTypeName, title: $title, mainImage: $mainImage, distance: $distance, avgRating: $avgRating, ratingCount: $ratingCount)';
+    return 'NearbyTourPointDto(id: $id, cityName: $cityName, tourTypeName: $tourTypeName, title: $title, mainImage: $mainImage, distance: $distance, avgRating: $avgRating, ratingCount: $ratingCount, durationHours: $durationHours, durationMinutes: $durationMinutes)';
   }
 
   @override
@@ -263,7 +295,11 @@ class _$NearbyTourPointDtoImpl implements _NearbyTourPointDto {
             (identical(other.avgRating, avgRating) ||
                 other.avgRating == avgRating) &&
             (identical(other.ratingCount, ratingCount) ||
-                other.ratingCount == ratingCount));
+                other.ratingCount == ratingCount) &&
+            (identical(other.durationHours, durationHours) ||
+                other.durationHours == durationHours) &&
+            (identical(other.durationMinutes, durationMinutes) ||
+                other.durationMinutes == durationMinutes));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -278,6 +314,8 @@ class _$NearbyTourPointDtoImpl implements _NearbyTourPointDto {
     distance,
     avgRating,
     ratingCount,
+    durationHours,
+    durationMinutes,
   );
 
   /// Create a copy of NearbyTourPointDto
@@ -307,6 +345,8 @@ abstract class _NearbyTourPointDto implements NearbyTourPointDto {
     required final double distance,
     final double? avgRating,
     final int? ratingCount,
+    final int? durationHours,
+    final int? durationMinutes,
   }) = _$NearbyTourPointDtoImpl;
 
   factory _NearbyTourPointDto.fromJson(Map<String, dynamic> json) =
@@ -328,6 +368,10 @@ abstract class _NearbyTourPointDto implements NearbyTourPointDto {
   double? get avgRating;
   @override
   int? get ratingCount;
+  @override
+  int? get durationHours;
+  @override
+  int? get durationMinutes;
 
   /// Create a copy of NearbyTourPointDto
   /// with the given fields replaced by the non-null parameter values.

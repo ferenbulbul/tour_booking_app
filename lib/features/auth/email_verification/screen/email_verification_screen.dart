@@ -6,7 +6,9 @@ import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
-import 'package:tour_booking/features/auth/email_verification/widget/email_verification_view_model.dart';
+import 'package:tour_booking/core/widgets/pin_theme_helper.dart';
+import 'package:tour_booking/features/auth/email_verification/email_verification_viewmodel.dart';
+import 'package:tour_booking/features/auth/login/widget/login_bottom_sheet.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
@@ -46,34 +48,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       }
     });
 
-    // ⭐ PIN THEMES — Aynı VerifyPhoneScreen
-    final defaultPin = PinTheme(
-      width: 52,
-      height: 56,
-      textStyle: text.titleLarge?.copyWith(
-        fontWeight: FontWeight.w400, // İNCE yazı
-        fontSize: 20,
-        color: scheme.onSurface,
-      ),
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: scheme.outline.withOpacity(1)),
-      ),
-    );
-
-    final focusedPin = defaultPin.copyWith(
-      textStyle: text.titleLarge?.copyWith(
-        fontWeight: FontWeight.w400,
-        fontSize: 20,
-        color: scheme.primary,
-      ),
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: scheme.primary, width: 2),
-      ),
-    );
+    final defaultPin = PinThemeHelper.defaultTheme(context);
+    final focusedPin = PinThemeHelper.focusedTheme(context);
 
     return Scaffold(
       backgroundColor: scheme.surface,
@@ -103,7 +79,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               defaultPinTheme: defaultPin,
               focusedPinTheme: focusedPin,
               showCursor: true,
-              cursor: Container(width: 2, height: 20, color: scheme.primary),
+              cursor: PinThemeHelper.cursor(context, height: 20),
               keyboardType: TextInputType.number,
               onCompleted: (code) async {
                 final ok = await vm.verifyCode(code);
@@ -146,17 +122,11 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
             TextButton(
               onPressed: () async {
-                // 1. SplashViewModel üzerinden oturumu temizle
-                // Not: SplashViewModel'de signOut veya clearAuth gibi bir metodun olduğunu varsayıyorum
                 final splashVM = context.read<SplashViewModel>();
+                await splashVM.performFullSignOut();
 
-                // Auth verilerini temizle ki bekçi (isLoggedIn) artık false dönsün
-                await splashVM
-                    .signOut(); // veya tokenStorage.clearTokens() + notifyListeners()
-
-                // 2. Şimdi login'e gidebiliriz, bekçi artık engel olmaz
                 if (context.mounted) {
-                  context.go('/login');
+                  showLoginBottomSheet(context);
                 }
               },
               child: Text(

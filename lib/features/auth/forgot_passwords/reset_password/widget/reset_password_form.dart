@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
-import 'package:tour_booking/features/auth/forgot_passwords/forgot_password/widget/forgot_password_view_model.dart';
+import 'package:tour_booking/features/auth/forgot_passwords/forgot_password_viewmodel.dart';
+import 'package:tour_booking/utils/password_validator.dart';
 import 'package:flutter/material.dart' as ui;
 
 class ResetPasswordForm extends StatefulWidget {
@@ -24,24 +26,8 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
   bool _obscure1 = true;
   bool _obscure2 = true;
 
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) return tr("password_required");
-    if (value.length < 9) return tr("password_too_short");
-
-    final upper = RegExp(r'[A-Z]');
-    final lower = RegExp(r'[a-z]');
-    final digit = RegExp(r'\d');
-    final special = RegExp(r'[^A-Za-z0-9]');
-
-    final errors = <String>[];
-    if (!upper.hasMatch(value)) errors.add(tr("password_must_include_upper"));
-    if (!lower.hasMatch(value)) errors.add(tr("password_must_include_lower"));
-    if (!digit.hasMatch(value)) errors.add(tr("password_must_include_digit"));
-    if (!special.hasMatch(value))
-      errors.add(tr("password_must_include_special"));
-
-    return errors.isEmpty ? null : errors.join("\n");
-  }
+  String? _validatePassword(String? value) =>
+      PasswordValidator.validateTranslated(value);
 
   @override
   Widget build(BuildContext context) {
@@ -60,23 +46,17 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
               obscureText: _obscure1,
               validator: _validatePassword,
               keyboardType: TextInputType.visiblePassword,
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(
-                  RegExp(
-                    r'[A-Za-z0-9!@#\$%\^&\*\(\)_\+\-=\[\]{};:"\\|,.<>\/?]',
-                  ),
-                ),
-              ],
+              inputFormatters: [PasswordValidator.passwordInputFormatter],
               textAlign: TextAlign.left,
               decoration: InputDecoration(
                 labelText: tr("password"),
                 prefixIcon: Icon(
-                  Icons.lock_outline,
+                  SolarIconsOutline.lock,
                   color: scheme.onSurfaceVariant,
                 ),
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _obscure1 ? Icons.visibility_off : Icons.visibility,
+                    _obscure1 ? SolarIconsOutline.eyeClosed : SolarIconsOutline.eye,
                     color: scheme.onSurfaceVariant,
                   ),
                   onPressed: () => setState(() => _obscure1 = !_obscure1),
@@ -97,23 +77,17 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
                   ? null
                   : tr("passwords_do_not_match"),
               keyboardType: TextInputType.visiblePassword,
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(
-                  RegExp(
-                    r'[A-Za-z0-9!@#\$%\^&\*\(\)_\+\-=\[\]{};:"\\|,.<>\/?]',
-                  ),
-                ),
-              ],
+              inputFormatters: [PasswordValidator.passwordInputFormatter],
               textAlign: TextAlign.left,
               decoration: InputDecoration(
                 labelText: tr("confirm_password"),
                 prefixIcon: Icon(
-                  Icons.lock_outline,
+                  SolarIconsOutline.lock,
                   color: scheme.onSurfaceVariant,
                 ),
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _obscure2 ? Icons.visibility_off : Icons.visibility,
+                    _obscure2 ? SolarIconsOutline.eyeClosed : SolarIconsOutline.eye,
                     color: scheme.onSurfaceVariant,
                   ),
                   onPressed: () => setState(() => _obscure2 = !_obscure2),
@@ -141,7 +115,7 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
                         context,
                         tr("password_reset_success"),
                       );
-                      context.go("/login");
+                      context.go("/home");
                     } else {
                       UIHelper.showError(
                         context,
