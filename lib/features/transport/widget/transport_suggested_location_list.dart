@@ -1,7 +1,12 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/models/transport/suggested_location/suggested_location.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class TransportSuggestedLocationList extends StatelessWidget {
   final List<TransportSuggestedLocation> locations;
@@ -24,35 +29,38 @@ class TransportSuggestedLocationList extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: locations.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.s),
         itemBuilder: (context, index) {
           final loc = locations[index];
-          return GestureDetector(
-            onTap: () => _showOptions(context, loc),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          return Semantics(
+            button: true,
+            label: 'Select location ${loc.name}',
+            child: GestureDetector(
+              onTap: () => _showOptions(context, loc),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.ml, vertical: AppSpacing.ms),
               decoration: BoxDecoration(
-                color: AppColors.accent.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(22),
+                color: context.colors.secondary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(AppRadius.xlm),
                 border: Border.all(
-                  color: AppColors.accent.withOpacity(0.2),
+                  color: context.colors.secondary.withValues(alpha: 0.2),
                 ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(SolarIconsOutline.mapPoint, size: 16, color: AppColors.accent),
-                  const SizedBox(width: 6),
+                  Icon(SolarIconsOutline.mapPoint, size: AppIconSize.m, color: context.colors.secondary, semanticLabel: 'Location'),
+                  const SizedBox(width: AppSpacing.sm),
                   Text(
                     loc.name,
-                    style: TextStyle(
-                      fontSize: 13,
+                    style: AppTextStyles.bodySmall.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: AppColors.accent,
+                      color: context.colors.secondary,
                     ),
                   ),
                 ],
               ),
+            ),
             ),
           );
         },
@@ -64,47 +72,45 @@ class TransportSuggestedLocationList extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.large)),
       ),
       builder: (_) => SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.m),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l, vertical: AppSpacing.s),
                 child: Text(
                   loc.name,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: AppTextStyles.titleSmall.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
               if (loc.description != null && loc.description!.isNotEmpty)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
                   child: Text(
                     loc.description!,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey.shade600,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: context.colors.onSurfaceVariant,
                     ),
                   ),
                 ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.m),
               ListTile(
-                leading: const Icon(Icons.circle, color: Colors.green, size: 16),
-                title: const Text('Kalkış noktası olarak seç'),
+                leading: Icon(Icons.circle, color: context.ext.success, size: AppIconSize.m, semanticLabel: 'Pickup'),
+                title: Text(tr('transport_select_as_pickup')),
                 onTap: () {
                   Navigator.pop(context);
                   onPickup(loc);
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.circle, color: Colors.red, size: 16),
-                title: const Text('Varış noktası olarak seç'),
+                leading: Icon(Icons.circle, color: context.colors.error, size: AppIconSize.m, semanticLabel: 'Dropoff'),
+                title: Text(tr('transport_select_as_dropoff')),
                 onTap: () {
                   Navigator.pop(context);
                   onDropoff(loc);

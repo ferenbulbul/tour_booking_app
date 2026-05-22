@@ -1,13 +1,16 @@
-import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/core/network/handle_response.dart';
 import 'package:tour_booking/core/network/failure_model.dart';
 import 'package:tour_booking/core/network/result.dart';
 import 'package:tour_booking/models/login/login_request.dart';
 import 'package:tour_booking/models/login/login_response.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/auth/auth_service.dart';
 
-class LoginViewModel extends ChangeNotifier {
-  final AuthService _authService = AuthService();
+class LoginViewModel extends BaseViewModel {
+  final AuthService _authService = ServiceLocator.instance.authService;
 
   String? message;
   List<String> validationErrors = [];
@@ -36,7 +39,8 @@ class LoginViewModel extends ChangeNotifier {
       notifyListeners();
       return result;
     } catch (e) {
-      message = 'unexpected_error_occurred';
+      debugPrint('LoginViewModel.login: $e');
+      message = tr('error_generic');
       validationErrors = [];
       isLoading = false;
       notifyListeners();

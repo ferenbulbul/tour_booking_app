@@ -1,10 +1,24 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/models/place_section/place_section.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/google_places/google_place_service.dart';
 
-class TourBookingSelectionViewModel extends ChangeNotifier {
-  final GooglePlaceService _placeService = GooglePlaceService();
+class TourBookingSelectionViewModel extends BaseViewModel {
+  final GooglePlaceService _placeService = ServiceLocator.instance.googlePlaceService;
+
+  /// Available departure times (06:00 – 12:00 in 30-minute increments).
+  static final List<String> availableTimes = _generateTimes();
+
+  static List<String> _generateTimes() {
+    final out = <String>[];
+    for (int h = 6; h <= 12; h++) {
+      out.add("${h.toString().padLeft(2, '0')}:00");
+      if (h != 12) out.add("${h.toString().padLeft(2, '0')}:30");
+    }
+    return out;
+  }
 
   String? selectedPlaceDesc;
   double? selectedPlaceLat;

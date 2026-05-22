@@ -26,7 +26,7 @@ class NearbyTourPointsWidget extends StatelessWidget {
       (vm) => vm.nearbyPoints,
     );
 
-    // Konum izni yoksa gizle
+    // Hide if no location permission
     final hasPermission = permissionStatus == LocationPermissionStatus.grantedAlways ||
         permissionStatus == LocationPermissionStatus.grantedWhenInUse;
 
@@ -36,7 +36,7 @@ class NearbyTourPointsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Baslik
+        // Title
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
           child: SectionTitle(
@@ -46,7 +46,7 @@ class NearbyTourPointsWidget extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.m),
 
-        // Kartlar
+        // Cards
         if (isLoading)
           const _NearbyLoadingSkeleton()
         else

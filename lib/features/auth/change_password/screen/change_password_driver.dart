@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/auth/change_password/change_password_viewmodel.dart';
@@ -52,7 +53,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
             body: Form(
               key: _formKey,
               child: ListView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppSpacing.l),
                 children: [
                   TextFormField(
                     controller: _pwdCtrl,
@@ -61,9 +62,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
                       labelText: 'new_password'.tr(),
                       hintText: 'new_password'.tr(),
                       suffixIcon: IconButton(
+                        tooltip: 'Toggle password visibility',
                         onPressed: () => setState(() => _ob1 = !_ob1),
                         icon: Icon(
                           _ob1 ? SolarIconsOutline.eye : SolarIconsOutline.eyeClosed,
+                          semanticLabel: _ob1 ? 'Hide password' : 'Show password',
                         ),
                       ),
                     ),
@@ -71,16 +74,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.newPassword],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.m),
                   TextFormField(
                     controller: _pwd2Ctrl,
                     obscureText: _ob2,
                     decoration: InputDecoration(
                       labelText: 'confirm_password'.tr(),
                       suffixIcon: IconButton(
+                        tooltip: 'Toggle password visibility',
                         onPressed: () => setState(() => _ob2 = !_ob2),
                         icon: Icon(
                           _ob2 ? SolarIconsOutline.eye : SolarIconsOutline.eyeClosed,
+                          semanticLabel: _ob2 ? 'Hide password' : 'Show password',
                         ),
                       ),
                     ),
@@ -88,7 +93,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
                     textInputAction: TextInputAction.done,
                     onFieldSubmitted: (_) => _submit(context, vm),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.xl),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -97,14 +102,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
                           : () => _submit(context, vm),
                       child: vm.isLoading
                           ? const SizedBox(
-                              height: 20,
-                              width: 20,
+                              height: AppSpacing.xl,
+                              width: AppSpacing.xl,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : Text('update_password'.tr()),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.m),
                   const _RulesNote(),
                 ],
               ),
@@ -137,7 +142,7 @@ class _RulesNote extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(AppSpacing.m),
         child: Text(
           '${'password_rules_title'.tr()}\n'
           '${'password_rule_1'.tr()}\n'

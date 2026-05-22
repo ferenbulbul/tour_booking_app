@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/models/tour_detail_sub_items/tour_detail_sub_items.dart';
 
 class HighlightsSection extends StatelessWidget {
@@ -29,12 +29,12 @@ class HighlightsSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 4),
+                      padding: const EdgeInsets.only(top: AppSpacing.xs),
                       child: Container(
-                        width: 5,
-                        height: 5,
+                        width: AppSpacing.xsm,
+                        height: AppSpacing.xsm,
                         decoration: BoxDecoration(
-                          color: AppColors.textSecondary,
+                          color: context.colors.onSurfaceVariant,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -44,7 +44,7 @@ class HighlightsSection extends StatelessWidget {
                       child: Text(
                         h.text,
                         style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.textPrimary,
+                          color: context.colors.onSurface,
                           height: 1.4,
                         ),
                       ),

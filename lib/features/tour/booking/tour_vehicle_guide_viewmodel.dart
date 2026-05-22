@@ -1,6 +1,6 @@
 import 'package:decimal/decimal.dart';
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/models/create_booking_request/create_booking_command.dart';
 import 'package:tour_booking/models/guide/guide.dart';
 import 'package:tour_booking/models/tour_guide_request/tour_guide_request.dart';
@@ -8,10 +8,11 @@ import 'package:tour_booking/models/tour_vehicle_request/tour_vehicle_request.da
 import 'package:tour_booking/models/vehicle/vehicle.dart';
 import 'package:tour_booking/models/vehicle_detail/vehicle_detail.dart';
 import 'package:tour_booking/models/vehicle_detail_request/vehicle_detail_request.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
 
-class TourVehicleGuideViewModel extends ChangeNotifier {
-  final TourService _tourService = TourService();
+class TourVehicleGuideViewModel extends BaseViewModel {
+  final TourService _tourService = ServiceLocator.instance.tourService;
 
   // Vehicle state
   List<Vehicle> vehicles = [];
@@ -61,7 +62,7 @@ class TourVehicleGuideViewModel extends ChangeNotifier {
         vehicles = [];
       }
     } catch (e) {
-      errorMessage = 'Hata oluştu: $e';
+      errorMessage = tr('error_occurred', namedArgs: {'error': e.toString()});
       vehicles = [];
     } finally {
       isVehiclesLoading = false;
@@ -82,7 +83,7 @@ class TourVehicleGuideViewModel extends ChangeNotifier {
         errorMessage = result.message;
       }
     } catch (e) {
-      errorMessage = 'Hata oluştu: $e';
+      errorMessage = tr('error_occurred', namedArgs: {'error': e.toString()});
     } finally {
       isVehicleLoading = false;
       notifyListeners();
@@ -119,11 +120,11 @@ class TourVehicleGuideViewModel extends ChangeNotifier {
         errorMessage = resp.message;
       } else {
         guides = [];
-        errorMessage = resp.message ?? 'Bilinmeyen hata';
+        errorMessage = resp.message ?? tr('error_generic');
       }
     } catch (e) {
       guides = [];
-      errorMessage = 'Hata: $e';
+      errorMessage = tr('error_generic_short', namedArgs: {'error': e.toString()});
     } finally {
       isGuidesLoading = false;
       notifyListeners();
@@ -177,18 +178,18 @@ class TourVehicleGuideViewModel extends ChangeNotifier {
         buyerEmail: buyerEmail,
         buyerPhone: buyerPhone,
       );
-      final resp = await _tourService.ControlBooking(req);
+      final resp = await _tourService.controlBooking(req);
 
       if (resp.isSuccess == true && resp.data != null) {
         isValid = resp.data!.isValid;
         bookingId = resp.data!.bookingId;
         errorMessage = resp.message;
       } else {
-        errorMessage = resp.message ?? 'Bilinmeyen hata';
+        errorMessage = resp.message ?? tr('error_generic');
         isValid = false;
       }
     } catch (e) {
-      errorMessage = 'Hata: $e';
+      errorMessage = tr('error_generic_short', namedArgs: {'error': e.toString()});
     } finally {
       isLoading = false;
       notifyListeners();

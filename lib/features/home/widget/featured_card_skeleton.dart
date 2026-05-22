@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class FeaturedCardSkeleton extends StatelessWidget {
   const FeaturedCardSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(20);
+    final radius = BorderRadius.circular(AppRadius.xl);
 
     return SizedBox(
       width: 200,
       child: Shimmer.fromColors(
-        baseColor: Colors.grey.shade300,
-        highlightColor: Colors.grey.shade100,
+        baseColor: context.ext.shimmerBase,
+        highlightColor: context.ext.shimmerHighlight,
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.grey.shade300,
+            color: context.ext.shimmerBase,
             borderRadius: radius,
           ),
           child: ClipRRect(
@@ -23,9 +26,9 @@ class FeaturedCardSkeleton extends StatelessWidget {
             child: Stack(
               children: [
                 // IMAGE PLACEHOLDER
-                Positioned.fill(child: Container(color: Colors.grey.shade300)),
+                Positioned.fill(child: Container(color: context.ext.shimmerBase)),
 
-                // GRADIENT SIMULATION (çok hafif)
+                // GRADIENT SIMULATION
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
@@ -33,9 +36,9 @@ class FeaturedCardSkeleton extends StatelessWidget {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Colors.black.withOpacity(0.05),
-                          Colors.black.withOpacity(0.25),
-                          Colors.black.withOpacity(0.5),
+                          Colors.black.withValues(alpha: 0.05),
+                          Colors.black.withValues(alpha: 0.25),
+                          Colors.black.withValues(alpha: 0.5),
                         ],
                       ),
                     ),
@@ -50,8 +53,8 @@ class FeaturedCardSkeleton extends StatelessWidget {
                     height: 20,
                     width: 70,
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade400,
-                      borderRadius: BorderRadius.circular(8),
+                      color: context.ext.shimmerBase,
+                      borderRadius: BorderRadius.circular(AppRadius.small),
                     ),
                   ),
                 ),
@@ -68,17 +71,17 @@ class FeaturedCardSkeleton extends StatelessWidget {
                         height: 16,
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade400,
-                          borderRadius: BorderRadius.circular(8),
+                          color: context.ext.shimmerBase,
+                          borderRadius: BorderRadius.circular(AppRadius.small),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.s),
                       Container(
                         height: 14,
                         width: 120,
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade400,
-                          borderRadius: BorderRadius.circular(8),
+                          color: context.ext.shimmerBase,
+                          borderRadius: BorderRadius.circular(AppRadius.small),
                         ),
                       ),
                     ],

@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 
 class MiniLocationMap extends StatefulWidget {
   final double lat;
@@ -57,7 +58,7 @@ class _MiniLocationMapState extends State<MiniLocationMap> {
     final pos = LatLng(widget.lat, widget.lng);
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppRadius.large),
       child: SizedBox(
         height: 150,
         child: Stack(
@@ -79,7 +80,11 @@ class _MiniLocationMapState extends State<MiniLocationMap> {
             Positioned.fill(
               child: Material(
                 color: Colors.transparent,
-                child: InkWell(onTap: widget.onTap),
+                child: Semantics(
+                  button: true,
+                  label: 'Open map location',
+                  child: InkWell(onTap: widget.onTap),
+                ),
               ),
             ),
           ],

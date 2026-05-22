@@ -151,7 +151,7 @@ class TourService {
     return response;
   }
 
-  Future<BaseResponse<IsValidResponse>> ControlBooking(
+  Future<BaseResponse<IsValidResponse>> controlBooking(
     CreateBookingCommand request,
   ) async {
     var response = _apiClient.post<IsValidResponse>(
@@ -197,7 +197,7 @@ class TourService {
     UpdatePhoneRequestDto request,
   ) async {
     return _apiClient.post<void>(
-      path: "/Mobile/edit-phone-number", // senin endpointine göre
+      path: "/Mobile/edit-phone-number", // adjust endpoint as needed
       body: request.toJson(),
       fromJson: (json) =>
           UpdatePhoneRequestDto.fromJson(json as Map<String, dynamic>),
@@ -215,7 +215,7 @@ class TourService {
     );
   }
 
-  Future<BaseResponse<void>> ToggleFavorite(String tourPointId) async {
+  Future<BaseResponse<void>> toggleFavorite(String tourPointId) async {
     return _apiClient.post<void>(
       path: '/Mobile/toggle-favorite',
       body: {'tourPointId': tourPointId},
@@ -281,7 +281,7 @@ class TourService {
     required Map<String, dynamic> payload,
   }) async {
     final response = await _apiClient.post<void>(
-      path: "/rating/submit", // 🔥 backend endpoint
+      path: "/rating/submit", // Backend endpoint
       body: payload,
     );
 

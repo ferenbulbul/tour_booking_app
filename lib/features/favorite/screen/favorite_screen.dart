@@ -6,21 +6,23 @@ import 'package:go_router/go_router.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
 
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/widgets/empty_state.dart';
 import 'package:tour_booking/features/favorite/favorite_viewmodel.dart';
 import 'package:tour_booking/features/favorite/widget/favorite_card.dart';
 import 'package:tour_booking/features/favorite/widget/favorite_skeleton.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
-class FavoritePage extends StatefulWidget {
-  const FavoritePage({super.key});
+class FavoriteScreen extends StatefulWidget {
+  const FavoriteScreen({super.key});
 
   @override
-  State<FavoritePage> createState() => _FavoritePageState();
+  State<FavoriteScreen> createState() => _FavoriteScreenState();
 }
 
-class _FavoritePageState extends State<FavoritePage> with RouteAware {
+class _FavoriteScreenState extends State<FavoriteScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
@@ -40,19 +42,49 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
 
     if (vm.isLoading) {
       return Scaffold(
-        backgroundColor: AppColors.surface,
+        backgroundColor: context.colors.surface,
         body: const SafeArea(child: FavoriteSkeleton()),
       );
     }
 
     if (vm.favorites.isEmpty) {
       return Scaffold(
-        backgroundColor: AppColors.surface,
+        backgroundColor: context.colors.surface,
         body: SafeArea(
-          child: EmptyState(
-            icon: SolarIconsOutline.heart,
-            title: tr("no_favorites_title"),
-            subtitle: tr("no_favorites_subtitle"),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.screenPadding, 24, AppSpacing.screenPadding, 0,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      tr("my_favorites"),
+                      style: AppTextStyles.headlineSmall.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      tr("no_favorites_subtitle"),
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: context.colors.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: EmptyState(
+                  icon: SolarIconsOutline.heart,
+                  title: tr("no_favorites_title"),
+                  subtitle: tr("no_favorites_subtitle"),
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -64,7 +96,7 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
     final topPadding = media.padding.top;
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.colors.surface,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
@@ -75,7 +107,7 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
             elevation: 0,
             automaticallyImplyLeading: false,
             expandedHeight: expandedHeight,
-            backgroundColor: AppColors.surface,
+            backgroundColor: context.colors.surface,
             flexibleSpace: LayoutBuilder(
               builder: (context, constraints) {
                 final currentHeight = constraints.biggest.height;
@@ -95,23 +127,31 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
                   fit: StackFit.expand,
                   children: [
                     // Hero image
-                    GestureDetector(
-                      onTap: () => context.pushNamed(
-                        'searchDetail',
-                        extra: {"id": heroItem.id, "initialImage": heroItem.mainImage},
-                      ),
-                      child: CachedNetworkImage(
-                        cacheKey: "fav_hero_${heroItem.id}",
-                        imageUrl: heroItem.mainImage,
-                        fit: BoxFit.cover,
-                        memCacheWidth: 900,
-                        fadeInDuration: const Duration(milliseconds: 120),
-                        placeholder: (_, __) => Container(
-                          color: AppColors.border.withValues(alpha: 0.3),
+                    Semantics(
+                      button: true,
+                      label: 'Navigate to tour details',
+                      child: GestureDetector(
+                        onTap: () => context.pushNamed(
+                          'searchDetail',
+                          extra: {"id": heroItem.id, "initialImage": heroItem.mainImage},
                         ),
-                        errorWidget: (_, __, ___) => Container(
-                          color: AppColors.border.withValues(alpha: 0.3),
-                          child: const Icon(SolarIconsOutline.galleryRemove, color: AppColors.textLight, size: 32),
+                        child: Semantics(
+                          image: true,
+                          label: 'Tour photo',
+                          child: CachedNetworkImage(
+                            cacheKey: "fav_hero_${heroItem.id}",
+                            imageUrl: heroItem.mainImage,
+                            fit: BoxFit.cover,
+                            memCacheWidth: 900,
+                            fadeInDuration: const Duration(milliseconds: 120),
+                            placeholder: (_, __) => Container(
+                              color: context.colors.outline.withValues(alpha: 0.3),
+                            ),
+                            errorWidget: (_, __, ___) => Container(
+                              color: context.colors.outline.withValues(alpha: 0.3),
+                              child: Icon(SolarIconsOutline.galleryRemove, color: context.ext.textLight, size: AppIconSize.xxlm, semanticLabel: 'Image not available'),
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -138,14 +178,13 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
                       ),
                     ),
 
-                    // "Favorilerim" text on image
+                    // "My Favorites" text on image
                     Positioned(
-                      bottom: 16,
-                      left: 16,
+                      bottom: AppSpacing.l,
+                      left: AppSpacing.l,
                       child: Text(
                         tr("my_favorites"),
-                        style: const TextStyle(
-                          fontSize: 24,
+                        style: AppTextStyles.headlineMedium.copyWith(
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
                         ),
@@ -154,16 +193,16 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
 
                     // Heart icon top right
                     Positioned(
-                      top: topPadding + 10,
-                      right: 14,
+                      top: topPadding + AppSpacing.ms,
+                      right: AppSpacing.ml,
                       child: Container(
                         width: 38,
                         height: 38,
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.9),
+                          color: context.colors.surface.withValues(alpha: 0.9),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.favorite, color: Colors.red, size: 20),
+                        child: Icon(Icons.favorite, color: context.colors.error, size: AppIconSize.l, semanticLabel: 'Favorite'),
                       ),
                     ),
 
@@ -175,7 +214,7 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
                       height: topPadding + kToolbarHeight,
                       child: IgnorePointer(
                         child: Container(
-                          color: AppColors.surface.withValues(alpha: appBarBgOpacity),
+                          color: context.colors.surface.withValues(alpha: appBarBgOpacity),
                         ),
                       ),
                     ),
@@ -192,10 +231,8 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
                             opacity: ((collapseT - 0.75) / 0.25).clamp(0.0, 1.0),
                             child: Text(
                               tr("my_favorites"),
-                              style: TextStyle(
-                                fontSize: 17,
+                              style: AppTextStyles.bodyLargeEmphasis.copyWith(
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
                               ),
                             ),
                           ),
@@ -207,16 +244,16 @@ class _FavoritePageState extends State<FavoritePage> with RouteAware {
             ),
           ),
 
-          // GRID — tum favoriler
+          // GRID — all favorites
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(
-              AppSpacing.screenPadding, 16, AppSpacing.screenPadding, 16,
+              AppSpacing.screenPadding, AppSpacing.l, AppSpacing.screenPadding, AppSpacing.l,
             ),
             sliver: SliverGrid(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 14,
+                mainAxisSpacing: AppSpacing.l,
+                crossAxisSpacing: AppSpacing.ml,
                 childAspectRatio: 0.68,
               ),
               delegate: SliverChildBuilderDelegate(

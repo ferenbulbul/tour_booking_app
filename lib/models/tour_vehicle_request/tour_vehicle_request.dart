@@ -18,5 +18,5 @@ class TourVehicleRequest with _$TourVehicleRequest {
       _$TourVehicleRequestFromJson(json);
 }
 
-// DateTime → String (örn. "2025-08-19")
+// DateTime -> String (e.g. "2025-08-19")
 String _dateToString(DateTime date) => DateFormat('yyyy-MM-dd').format(date);

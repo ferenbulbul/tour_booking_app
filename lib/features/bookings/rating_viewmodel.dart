@@ -1,12 +1,16 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/models/pending_rating/pending_rating_dto.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
 
-class RatingsViewModel extends ChangeNotifier {
-  final TourService _service = TourService();
+class RatingsViewModel extends BaseViewModel {
+  final TourService _service = ServiceLocator.instance.tourService;
 
   bool isRatingLoading = false;
   bool isSubmitting = false;
+  String? errorMessage;
 
   PendingRatingDto? pendingRating;
 
@@ -20,10 +24,13 @@ class RatingsViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
+      errorMessage = null;
       final res = await _service.getPendingRating(token: token);
       pendingRating = res.data;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('RatingsViewModel.loadPendingRating: $e');
       pendingRating = null;
+      errorMessage = tr('error_data_load_failed');
     } finally {
       isRatingLoading = false;
       notifyListeners();
@@ -64,7 +71,8 @@ class RatingsViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      debugPrint("Submit rating error: $e");
+      debugPrint('RatingsViewModel.submitRating: $e');
+      errorMessage = tr('error_generic');
       isSubmitting = false;
       notifyListeners();
       return false;

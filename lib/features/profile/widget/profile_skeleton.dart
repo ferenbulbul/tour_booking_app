@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class ProfileSkeleton extends StatelessWidget {
   const ProfileSkeleton({super.key});
@@ -7,32 +10,32 @@ class ProfileSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: context.ext.surfaceLight,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(AppSpacing.xl),
           children: const [
             _ProfileHeaderSkeleton(),
-            SizedBox(height: 30),
+            SizedBox(height: AppSpacing.xxxl - 2),
 
             // HESAP AYARLARI
             _SectionTitleSkeleton(),
-            SizedBox(height: 10),
+            SizedBox(height: AppSpacing.ms),
             _TileSkeleton(),
             _TileSkeleton(),
 
-            SizedBox(height: 30),
+            SizedBox(height: AppSpacing.xxxl - 2),
 
-            // GÜVENLİK
+            // SECURITY
             _SectionTitleSkeleton(),
-            SizedBox(height: 10),
+            SizedBox(height: AppSpacing.ms),
             _TileSkeleton(),
 
-            SizedBox(height: 30),
+            SizedBox(height: AppSpacing.xxxl - 2),
 
-            // DİĞER
+            // OTHER
             _SectionTitleSkeleton(),
-            SizedBox(height: 10),
+            SizedBox(height: AppSpacing.ms),
             _TileSkeleton(),
             _TileSkeleton(),
           ],
@@ -52,8 +55,8 @@ class _ProfileHeaderSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
+      baseColor: context.ext.shimmerBase,
+      highlightColor: context.ext.shimmerHighlight,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -62,34 +65,34 @@ class _ProfileHeaderSkeleton extends StatelessWidget {
             child: Container(
               width: 72,
               height: 72,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.grey,
+                color: context.ext.shimmerBase,
               ),
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.l),
 
           // Name Placeholder
           Container(
             height: 18,
             width: 150,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(AppRadius.small),
+              color: context.ext.shimmerBase,
             ),
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.ms),
 
           // Email Placeholder
           Container(
             height: 14,
             width: 220,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(AppRadius.small),
+              color: context.ext.shimmerBase,
             ),
           ),
         ],
@@ -108,14 +111,14 @@ class _SectionTitleSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
+      baseColor: context.ext.shimmerBase,
+      highlightColor: context.ext.shimmerHighlight,
       child: Container(
         height: 18,
         width: 140,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: Colors.grey.shade300,
+          borderRadius: BorderRadius.circular(AppRadius.small),
+          color: context.ext.shimmerBase,
         ),
       ),
     );
@@ -132,44 +135,44 @@ class _TileSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsetsDirectional.only(bottom: 18),
+      padding: EdgeInsetsDirectional.only(bottom: AppSpacing.l + 2),
       child: Shimmer.fromColors(
-        baseColor: Colors.grey.shade300,
-        highlightColor: Colors.grey.shade100,
+        baseColor: context.ext.shimmerBase,
+        highlightColor: context.ext.shimmerHighlight,
         child: Row(
           children: [
             // Icon Placeholder
             Container(
-              width: 24,
-              height: 24,
+              width: AppSpacing.xxl,
+              height: AppSpacing.xxl,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
-                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(AppRadius.sm),
+                color: context.ext.shimmerBase,
               ),
             ),
 
-            const SizedBox(width: 16),
+            const SizedBox(width: AppSpacing.l),
 
             // Text Placeholder
             Expanded(
               child: Container(
-                height: 16,
+                height: AppSpacing.l,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(AppRadius.small),
+                  color: context.ext.shimmerBase,
                 ),
               ),
             ),
 
-            const SizedBox(width: 16),
+            const SizedBox(width: AppSpacing.l),
 
             // Arrow Placeholder
             Container(
-              width: 16,
-              height: 16,
+              width: AppSpacing.l,
+              height: AppSpacing.l,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(AppRadius.xs),
+                color: context.ext.shimmerBase,
               ),
             ),
           ],

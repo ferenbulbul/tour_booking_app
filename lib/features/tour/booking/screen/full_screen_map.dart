@@ -1,15 +1,18 @@
-import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
-import 'package:tour_booking/core/utils/location_validator.dart';
+import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_elevation.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
-import 'package:tour_booking/keys.dart';
+import 'package:tour_booking/features/tour/booking/full_screen_map_viewmodel.dart';
 import 'package:tour_booking/models/place_section/place_section.dart';
 
 class FullMapView extends StatefulWidget {
@@ -30,15 +33,11 @@ class FullMapView extends StatefulWidget {
   State<FullMapView> createState() => _FullMapViewState();
 }
 
-final _apiKey = Keys.places;
-
 class _FullMapViewState extends State<FullMapView> {
   GoogleMapController? _mapController;
   late LatLng selectedPos;
   Set<Marker> markers = {};
 
-  String? selectedAddress;
-  String? warningMessage;
   bool _locatingUser = false;
 
   @override
@@ -50,21 +49,10 @@ class _FullMapViewState extends State<FullMapView> {
     };
   }
 
-  Future<Map<String, dynamic>?> getAddressDetails(LatLng pos) async {
-    final url =
-        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${pos.latitude},${pos.longitude}&key=$_apiKey&language=tr";
-
-    final res = await http.get(Uri.parse(url));
-    if (res.statusCode != 200) return null;
-
-    final data = json.decode(res.body);
-    if (data["status"] != "OK") return null;
-
-    return data["results"][0];
-  }
-
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<FullScreenMapViewModel>();
+
     return Scaffold(
       appBar: CommonAppBar(title: tr("select_location_title"), showBack: true),
       body: Stack(
@@ -81,23 +69,17 @@ class _FullMapViewState extends State<FullMapView> {
             zoomControlsEnabled: false,
             onMapCreated: (ctrl) => _mapController = ctrl,
             onTap: (LatLng newPos) async {
-              final result = await getAddressDetails(newPos);
-              if (result == null) return;
-
-              final comps = result["address_components"];
-              final formatted = result["formatted_address"];
-
-              final validation = LocationValidator.validate(
-                components: comps,
-                formatted: formatted,
+              final result = await vm.validateTap(
+                lat: newPos.latitude,
+                lng: newPos.longitude,
                 expectedCity: widget.city,
                 expectedDistrict: widget.district,
               );
 
-              if (!validation.isValid) {
-                setState(() => warningMessage = validation.errorMessage);
+              if (result == null) return;
 
-                // Geçerli sınırlara geri dön
+              if (!result.isValid) {
+                // Return to valid bounds
                 Future.delayed(const Duration(milliseconds: 300), () {
                   if (!mounted || _mapController == null) return;
                   _mapController!.animateCamera(
@@ -108,18 +90,15 @@ class _FullMapViewState extends State<FullMapView> {
                   );
                 });
 
-                // Uyarıyı birkaç saniye sonra kaldır
+                // Remove warning after a few seconds
                 Future.delayed(const Duration(seconds: 3), () {
-                  if (mounted) setState(() => warningMessage = null);
+                  if (mounted) vm.clearWarning();
                 });
                 return;
               }
 
               setState(() {
-                warningMessage = null;
                 selectedPos = newPos;
-                selectedAddress = formatted;
-
                 markers = {
                   Marker(
                     markerId: const MarkerId("selected"),
@@ -132,81 +111,80 @@ class _FullMapViewState extends State<FullMapView> {
 
           // ---------------- WARNING (animasyon) ----------------
           Positioned(
-            top: 15,
-            left: 20,
-            right: 20,
+            top: AppSpacing.l,
+            left: AppSpacing.xl,
+            right: AppSpacing.xl,
             child: AnimatedOpacity(
               duration: const Duration(milliseconds: 250),
-              opacity: warningMessage != null ? 1 : 0,
+              opacity: vm.warningMessage != null ? 1 : 0,
               child: AnimatedSlide(
                 duration: const Duration(milliseconds: 250),
-                offset: warningMessage != null
+                offset: vm.warningMessage != null
                     ? Offset.zero
                     : const Offset(0, -0.3),
-                child: warningMessage == null
+                child: vm.warningMessage == null
                     ? const SizedBox.shrink()
-                    : _warningBanner(warningMessage!),
+                    : _warningBanner(vm.warningMessage!),
               ),
             ),
           ),
 
-          // ---------------- KONUM BUTONU ----------------
+          // ---------------- LOCATION BUTTON ----------------
           Positioned(
-            right: 16,
-            bottom: selectedAddress != null ? 160 : 90,
-            child: GestureDetector(
-              onTap: _goToMyLocation,
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.15),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: _locatingUser
-                    ? const Padding(
-                        padding: EdgeInsets.all(14),
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: AppColors.accent,
+            right: AppSpacing.l,
+            bottom: vm.selectedAddress != null ? 160 : 90,
+            child: Semantics(
+              button: true,
+              label: 'Go to my location',
+              child: GestureDetector(
+                onTap: _goToMyLocation,
+                child: Container(
+                  width: AppSpacing.xxxxxl,
+                  height: AppSpacing.xxxxxl,
+                  decoration: BoxDecoration(
+                    color: context.colors.surface,
+                    shape: BoxShape.circle,
+                    boxShadow: AppElevation.shadowSm,
+                  ),
+                  child: _locatingUser
+                      ? Padding(
+                          padding: const EdgeInsets.all(AppSpacing.ml),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: context.colors.secondary,
+                          ),
+                        )
+                      : Icon(
+                          Icons.my_location_rounded,
+                          color: context.colors.secondary,
+                          size: AppIconSize.xxl,
+                          semanticLabel: 'My location',
                         ),
-                      )
-                    : const Icon(
-                        Icons.my_location_rounded,
-                        color: AppColors.accent,
-                        size: 22,
-                      ),
+                ),
               ),
             ),
           ),
 
-          // ---------------- ALT BİLGİ / ALT BUTON ----------------
+          // ---------------- BOTTOM INFO / BOTTOM BUTTON ----------------
           Positioned(
-            left: 20,
-            right: 20,
-            bottom: 25,
+            left: AppSpacing.xl,
+            right: AppSpacing.xl,
+            bottom: AppSpacing.xxl,
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 250),
-              child: selectedAddress == null
-                  ? _bottomInfoMessage() // İlk açılış → bilgi
-                  : _confirmButton(), // Kullanıcı seçince → buton
+              child: vm.selectedAddress == null
+                  ? _bottomInfoMessage() // Initial state -> info
+                  : _confirmButton(vm), // After user selects -> button
             ),
           ),
 
-          // ---------------- ADRES KARTI ----------------
-          if (selectedAddress != null)
+          // ---------------- ADDRESS CARD ----------------
+          if (vm.selectedAddress != null)
             Positioned(
-              left: 20,
-              right: 20,
+              left: AppSpacing.xl,
+              right: AppSpacing.xl,
               bottom: 90,
-              child: _addressCard(selectedAddress!),
+              child: _addressCard(vm.selectedAddress!),
             ),
         ],
       ),
@@ -214,12 +192,12 @@ class _FullMapViewState extends State<FullMapView> {
   }
 
   // ----------------------------------------------------------
-  // 📌 KONUMUMA GİT
+  // GO TO MY LOCATION
   // ----------------------------------------------------------
   Future<void> _goToMyLocation() async {
     if (_locatingUser) return;
 
-    // İzin kontrolü
+    // Permission check
     var status = await Permission.locationWhenInUse.status;
 
     if (status.isDenied) {
@@ -250,50 +228,44 @@ class _FullMapViewState extends State<FullMapView> {
       _mapController?.animateCamera(
         CameraUpdate.newLatLngZoom(myLatLng, 16),
       );
-    } catch (_) {
-      // Timeout veya hata — sessizce geç
+    } catch (e) {
+      debugPrint('_FullMapViewState._goToMyLocation: $e');
+      // Timeout or error -- silently ignore
     } finally {
       if (mounted) setState(() => _locatingUser = false);
     }
   }
 
   // ----------------------------------------------------------
-  // 📌 ALTTA GÖRÜNEN BİLGİ
+  // BOTTOM INFO MESSAGE
   // ----------------------------------------------------------
   Widget _bottomInfoMessage() {
     return Container(
       key: const ValueKey("info"),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSpacing.ml),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.92),
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.10),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        color: context.colors.surface.withValues(alpha: 0.92),
+        borderRadius: BorderRadius.circular(AppRadius.ml),
+        boxShadow: AppElevation.shadowSm,
       ),
       child: Text(
         tr("map_tap_to_select"),
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        style: AppTextStyles.labelLarge,
       ),
     );
   }
 
   // ----------------------------------------------------------
-  // 📌 KONUMU KULLAN BUTONU
-
+  // USE LOCATION BUTTON
   // ----------------------------------------------------------
-  Widget _confirmButton() {
+  Widget _confirmButton(FullScreenMapViewModel vm) {
     return PrimaryButton(
       onPressed: () {
         Navigator.pop(
           context,
           PlaceSelection(
-            description: selectedAddress!,
+            description: vm.selectedAddress!,
             lat: selectedPos.latitude,
             lng: selectedPos.longitude,
           ),
@@ -304,38 +276,38 @@ class _FullMapViewState extends State<FullMapView> {
   }
 
   // ----------------------------------------------------------
-  // 📌 ADRES KARTI
+  // ADDRESS CARD
   // ----------------------------------------------------------
   Widget _addressCard(String text) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.l),
       decoration: _card(),
-      child: Text(text, style: const TextStyle(fontSize: 15)),
+      child: Text(text, style: AppTextStyles.bodyMedium),
     );
   }
 
   // ----------------------------------------------------------
-  // 📌 WARNING BANNER
+  // WARNING BANNER
   // ----------------------------------------------------------
   Widget _warningBanner(String text) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSpacing.ml),
       decoration: BoxDecoration(
-        color: Colors.red.shade600,
-        borderRadius: BorderRadius.circular(12),
+        color: context.colors.error,
+        borderRadius: BorderRadius.circular(AppRadius.medium),
       ),
       child: Text(
         text,
-        style: const TextStyle(color: Colors.white, fontSize: 14),
+        style: AppTextStyles.labelLarge.copyWith(color: Colors.white),
       ),
     );
   }
 
   BoxDecoration _card() {
     return BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 12)],
+      color: context.colors.surface,
+      borderRadius: BorderRadius.circular(AppRadius.large),
+      boxShadow: AppElevation.shadowMd,
     );
   }
 }

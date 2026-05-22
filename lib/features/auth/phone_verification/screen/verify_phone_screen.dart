@@ -4,11 +4,13 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/core/widgets/pin_theme_helper.dart';
 import 'package:tour_booking/features/auth/phone_verification/verify_phone_viewmodel.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class VerifyPhoneScreen extends StatefulWidget {
   const VerifyPhoneScreen({super.key});
@@ -29,8 +31,8 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<VerifyPhoneViewModel>();
-    final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
+    final scheme = context.colors;
+    final text = context.textStyles;
 
     final defaultPin = PinThemeHelper.defaultTheme(context);
     final focusedPin = PinThemeHelper.focusedTheme(context);
@@ -39,18 +41,18 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
       backgroundColor: scheme.surface,
       appBar: CommonAppBar(title: tr('phone_verification_title')),
       body: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.xxl),
         child: Column(
           children: [
             Text(
               tr('phone_verification_instruction'),
               style: text.bodyLarge?.copyWith(
-                color: scheme.onSurface.withOpacity(0.75),
+                color: scheme.onSurface.withValues(alpha: 0.75),
               ),
               textAlign: TextAlign.center,
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.xxxl),
 
             Pinput(
               length: 6,
@@ -63,7 +65,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
               onCompleted: (code) => _verify(vm, code),
             ),
 
-            const SizedBox(height: 28),
+            const SizedBox(height: AppSpacing.xxxl - 4),
 
             vm.canResend
                 ? TextButton(
@@ -81,7 +83,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                     "${vm.remainingSeconds ~/ 60}:"
                     "${(vm.remainingSeconds % 60).toString().padLeft(2, '0')}",
                     style: text.bodyMedium?.copyWith(
-                      color: scheme.onSurface.withOpacity(0.6),
+                      color: scheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
           ],
@@ -107,7 +109,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
         context,
         vm.message ?? tr('phone_verification_success'),
       );
-      // update-phone sayfasını da kapat
+      // Also close the update-phone page
       context.pop();
       context.pop();
     } else {

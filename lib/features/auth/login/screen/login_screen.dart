@@ -5,13 +5,17 @@ import 'package:go_router/go_router.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_elevation.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/auth/login/login_viewmodel.dart';
 import 'package:tour_booking/features/auth/login/widget/social_login_button.dart';
 import 'package:tour_booking/utils/password_validator.dart';
 import 'package:flutter/material.dart' as ui;
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -19,8 +23,8 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
+    final scheme = context.colors;
+    final text = context.textStyles;
     final topInset = MediaQuery.of(context).padding.top;
     return Scaffold(
       backgroundColor: scheme.surface,
@@ -31,21 +35,21 @@ class LoginScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
             child: Column(
               children: [
-                SizedBox(height: topInset + 16),
+                SizedBox(height: topInset + AppSpacing.l),
                 const _CleanHeader(),
-                const SizedBox(height: 40),
+                const SizedBox(height: AppSpacing.xxxxl),
 
                 // Social login (ust kisim)
                 const SocialLoginButtons(),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xxl),
 
                 // Ayirici
                 Row(
                   children: [
                     Expanded(child: Divider(color: scheme.outlineVariant)),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
                       child: Text(
                         tr('or_continue_with'),
                         style: text.bodySmall?.copyWith(
@@ -57,31 +61,25 @@ class LoginScreen extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xxl),
 
                 // Email + sifre form (kart icinde)
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.xl),
                   decoration: BoxDecoration(
                     color: scheme.surface,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: scheme.shadow.withValues(alpha: 0.06),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
+                    borderRadius: BorderRadius.circular(AppRadius.xxl),
+                    boxShadow: AppElevation.shadowLg,
                   ),
                   child: const _CleanLoginForm(),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.xl),
                 const _RegisterPrompt(),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.l),
                 _buildTermsText(context),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.xl),
               ],
             ),
           ),
@@ -91,10 +89,9 @@ class LoginScreen extends StatelessWidget {
   }
 
   Widget _buildTermsText(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final baseStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
+    final scheme = context.colors;
+    final baseStyle = AppTextStyles.caption.copyWith(
       color: scheme.onSurface.withValues(alpha: 0.5),
-      fontSize: 11,
       height: 1.4,
     );
     final linkStyle = baseStyle.copyWith(
@@ -142,8 +139,8 @@ class _CleanHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
+    final scheme = context.colors;
+    final text = context.textStyles;
     final width = MediaQuery.of(context).size.width;
 
     return Column(
@@ -151,15 +148,16 @@ class _CleanHeader extends StatelessWidget {
         Container(
           width: double.infinity,
           height: width * 0.20,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(24)),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(AppRadius.xxl)),
           clipBehavior: Clip.antiAlias,
           child: Image.asset(
             'assets/images/header.png',
             alignment: Alignment.center,
+            excludeFromSemantics: true,
           ),
         ),
 
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.s),
 
         Text(
           'welcome_subtitle'.tr(),
@@ -236,8 +234,8 @@ class _CleanLoginFormState extends State<_CleanLoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
+    final scheme = context.colors;
+    final text = context.textStyles;
     final isLoading = context.watch<LoginViewModel>().isLoading;
 
     return Column(
@@ -303,7 +301,7 @@ class _CleanLoginFormState extends State<_CleanLoginForm> {
                 ),
         ),
 
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.xxl),
 
         PrimaryButton(
           text: _showPasswordStep
@@ -325,7 +323,7 @@ class _CleanLoginFormState extends State<_CleanLoginForm> {
     VoidCallback? onVisibilityToggle,
     TextInputType? keyboardType,
   }) {
-    final scheme = Theme.of(context).colorScheme;
+    final scheme = context.colors;
 
     return Directionality(
       textDirection: ui.TextDirection.ltr,
@@ -345,11 +343,13 @@ class _CleanLoginFormState extends State<_CleanLoginForm> {
           prefixIcon: Icon(icon, color: scheme.onSurfaceVariant),
           suffixIcon: isPassword
               ? IconButton(
+                  tooltip: 'Toggle password visibility',
                   icon: Icon(
                     isObscure
                         ? SolarIconsOutline.eyeClosed
                         : SolarIconsOutline.eye,
                     color: scheme.onSurfaceVariant,
+                    semanticLabel: isObscure ? 'Show password' : 'Hide password',
                   ),
                   onPressed: onVisibilityToggle,
                 )
@@ -368,8 +368,8 @@ class _RegisterPrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    final scheme = Theme.of(context).colorScheme;
+    final text = context.textStyles;
+    final scheme = context.colors;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -380,14 +380,18 @@ class _RegisterPrompt extends StatelessWidget {
             color: scheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
-        const SizedBox(width: 6),
-        GestureDetector(
-          onTap: () => context.push('/register'),
-          child: Text(
-            'create_account'.tr(),
-            style: text.labelLarge?.copyWith(
-              color: scheme.primary,
-              fontWeight: FontWeight.bold,
+        const SizedBox(width: AppSpacing.sm),
+        Semantics(
+          button: true,
+          label: 'Navigate to create account',
+          child: GestureDetector(
+            onTap: () => context.push('/register'),
+            child: Text(
+              'create_account'.tr(),
+              style: text.labelLarge?.copyWith(
+                color: scheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),

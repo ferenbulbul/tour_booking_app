@@ -1,21 +1,23 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/core/network/handle_response.dart';
 import 'package:tour_booking/core/network/result.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/auth/auth_service.dart';
 
-class ForgotPasswordViewModel extends ChangeNotifier {
-  final AuthService _authService = AuthService();
+class ForgotPasswordViewModel extends BaseViewModel {
+  final AuthService _authService = ServiceLocator.instance.authService;
 
   String? message;
   String? errorMessage;
   bool isLoading = false;
 
-  // 🔁 Geri sayım için
+  // Countdown timer
   int resendCooldown = 0;
   Timer? _cooldownTimer;
 
-  // ✅ Kod gönderme (başlangıç)
+  // Send verification code (initial)
   Future<Result<void>> forgotPassword(String email) async {
     isLoading = true;
     notifyListeners();
@@ -35,7 +37,7 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     return result;
   }
 
-  // ✅ Kod doğrulama
+  // Code verification
   Future<Result<void>> verifyPasswordCode(String email, String code) async {
     isLoading = true;
     notifyListeners();
@@ -54,7 +56,7 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     return result;
   }
 
-  // ✅ Şifre sıfırlama
+  // Password reset
   Future<Result<void>> resetPassword(String email, String newPassword) async {
     isLoading = true;
     notifyListeners();
@@ -73,7 +75,7 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     return result;
   }
 
-  // ✅ Kod tekrar gönderme
+  // Resend code
   Future<void> resendResetCode(String email) async {
     if (resendCooldown > 0) return;
 
@@ -84,7 +86,7 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     final result = handleResponse<void>(response);
 
     if (result.isSuccess) {
-      message = 'Kod yeniden gönderildi';
+      message = tr('code_resent');
       startCooldown();
     } else {
       errorMessage = result.error?.message;
@@ -94,7 +96,7 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // 🔄 Sayaç başlat
+  // Start countdown timer
   void startCooldown() {
     _cooldownTimer?.cancel();
     resendCooldown = 180;
@@ -119,7 +121,7 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  // 🔄 Mesajları temizle
+  // Clear messages
   void clearMessages() {
     message = null;
     errorMessage = null;

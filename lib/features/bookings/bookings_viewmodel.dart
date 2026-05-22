@@ -1,11 +1,14 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/core/enum/booking_status.dart';
 import 'package:tour_booking/models/booking/booking_dto.dart';
 import 'package:tour_booking/models/pending_rating/pending_rating_dto.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
 
-class BookingsViewModel extends ChangeNotifier {
-  final TourService _service = TourService();
+class BookingsViewModel extends BaseViewModel {
+  final TourService _service = ServiceLocator.instance.tourService;
 
   bool isLoadingAll = false;
   bool isLoadingCompleted = false;
@@ -48,10 +51,11 @@ class BookingsViewModel extends ChangeNotifier {
             break;
         }
       } else if (resp.message != null) {
-        setMessage(resp.message); // 🔥 key gelir (error_generic vs)
+        setMessage(resp.message); // Key arrives (error_generic etc.)
       }
-    } catch (_) {
-      setMessage("error_generic"); // 🔥 backend yoksa buradan
+    } catch (e) {
+      debugPrint('BookingsViewModel.fetchBookingsByStatus: $e');
+      setMessage(tr('error_generic'));
     } finally {
       _setLoading(status, false);
     }
@@ -70,8 +74,9 @@ class BookingsViewModel extends ChangeNotifier {
         await fetchBookingsByStatus(BookingStatus.upcoming);
         await fetchBookingsByStatus(BookingStatus.cancelled);
       }
-    } catch (_) {
-      setMessage("error_generic");
+    } catch (e) {
+      debugPrint('BookingsViewModel.requestCancellation: $e');
+      setMessage(tr('error_generic'));
     }
   }
 
@@ -88,12 +93,12 @@ class BookingsViewModel extends ChangeNotifier {
         isLoadingCancelled = value;
         break;
     }
-    notifyListeners(); // 🔥 SADECE BURADA
+    notifyListeners(); // Only here
   }
 
   // ------------------------------------------------------------
   void setMessage(String? value) {
-    if (message == value) return; // 🔥 aynı mesajı tekrar basma
+    if (message == value) return; // Skip duplicate messages
     message = value;
     notifyListeners();
   }

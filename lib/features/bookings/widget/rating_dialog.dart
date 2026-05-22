@@ -2,11 +2,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/features/bookings/rating_viewmodel.dart';
 import 'package:tour_booking/models/pending_rating/pending_rating_dto.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class RatingDialog extends StatefulWidget {
   final String token;
@@ -33,22 +36,22 @@ class _RatingDialogState extends State<RatingDialog> {
         if (vm.isRatingLoading) {
           return Dialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(AppRadius.xl),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(32),
+              padding: const EdgeInsets.all(AppSpacing.xxxl),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const SizedBox(
+                  SizedBox(
                     height: 36,
                     width: 36,
                     child: CircularProgressIndicator(
                       strokeWidth: 3,
-                      color: AppColors.accent,
+                      color: context.colors.secondary,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.l),
                   Text(
                     'common_loading'.tr(),
                     style: AppTextStyles.bodyMedium.copyWith(
@@ -64,27 +67,28 @@ class _RatingDialogState extends State<RatingDialog> {
         if (vm.pendingRating == null) {
           return Dialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(AppRadius.xl),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppSpacing.xxl),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    width: 48,
-                    height: 48,
+                    width: AppSpacing.xxxxxl,
+                    height: AppSpacing.xxxxxl,
                     decoration: BoxDecoration(
-                      color: AppColors.warning.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(14),
+                      color: context.ext.warning.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppRadius.ml),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       SolarIconsOutline.infoCircle,
-                      color: AppColors.warning,
-                      size: 24,
+                      color: context.ext.warning,
+                      size: AppIconSize.xl,
+                      semanticLabel: 'Invalid rating link',
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.l),
                   Text(
                     'rating_invalid_link'.tr(),
                     textAlign: TextAlign.center,
@@ -92,17 +96,17 @@ class _RatingDialogState extends State<RatingDialog> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.xl),
                   SizedBox(
                     width: double.infinity,
                     height: 44,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
+                        backgroundColor: context.colors.primary,
+                        foregroundColor: context.colors.onSecondary,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.medium),
                         ),
                       ),
                       onPressed: () => Navigator.pop(context, false),
@@ -119,7 +123,7 @@ class _RatingDialogState extends State<RatingDialog> {
 
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
           ),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 520),
@@ -129,7 +133,7 @@ class _RatingDialogState extends State<RatingDialog> {
                 _header(context, vm),
                 Flexible(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                     child: Column(
                       children: vm.pendingRating!.targets
                           .map((t) => _ratingBlock(context, vm, t))
@@ -154,13 +158,13 @@ class _RatingDialogState extends State<RatingDialog> {
     final current = vm.ratings[t.targetId] ?? 0;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: AppSpacing.ml),
+      padding: const EdgeInsets.all(AppSpacing.l),
       decoration: BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.circular(14),
+        color: context.colors.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(AppRadius.ml),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.5),
+          color: context.colors.outline.withValues(alpha: 0.5),
         ),
       ),
       child: Column(
@@ -172,58 +176,63 @@ class _RatingDialogState extends State<RatingDialog> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.s),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(5, (i) {
               final isFilled = i < current;
-              return GestureDetector(
-                onTap: vm.isSubmitting
-                    ? null
-                    : () => vm.setRating(t.targetId, i + 1),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: Icon(
-                    Icons.star_rounded,
-                    size: 36,
-                    color: isFilled ? AppColors.accent : AppColors.border,
+              return Semantics(
+                button: true,
+                label: 'Rate ${i + 1} stars',
+                child: GestureDetector(
+                  onTap: vm.isSubmitting
+                      ? null
+                      : () => vm.setRating(t.targetId, i + 1),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+                    child: Icon(
+                      Icons.star_rounded,
+                      size: AppIconSize.xxxl,
+                      color: isFilled ? context.colors.secondary : context.colors.outline,
+                      semanticLabel: '${i + 1} stars',
+                    ),
                   ),
                 ),
               );
             }),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.m),
           TextField(
             minLines: 2,
             maxLines: 3,
             maxLength: 250,
             enabled: !vm.isSubmitting,
             style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.textPrimary,
+              color: context.colors.onSurface,
             ),
             decoration: InputDecoration(
               hintText: 'rating_optional_comment'.tr(),
               hintStyle: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textLight,
+                color: context.ext.textLight,
               ),
               filled: true,
-              fillColor: AppColors.surface,
-              contentPadding: const EdgeInsets.all(12),
+              fillColor: context.colors.surface,
+              contentPadding: const EdgeInsets.all(AppSpacing.m),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppSpacing.ms),
                 borderSide: BorderSide(
-                  color: AppColors.border.withValues(alpha: 0.5),
+                  color: context.colors.outline.withValues(alpha: 0.5),
                 ),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppSpacing.ms),
                 borderSide: BorderSide(
-                  color: AppColors.border.withValues(alpha: 0.5),
+                  color: context.colors.outline.withValues(alpha: 0.5),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: AppColors.accent),
+                borderRadius: BorderRadius.circular(AppSpacing.ms),
+                borderSide: BorderSide(color: context.colors.secondary),
               ),
             ),
             onChanged: (v) => vm.setComment(t.targetId, v),
@@ -235,19 +244,19 @@ class _RatingDialogState extends State<RatingDialog> {
 
   Widget _footer(BuildContext context, RatingsViewModel vm, bool canSubmit) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.s, AppSpacing.xl, AppSpacing.xl),
       child: SizedBox(
         width: double.infinity,
         height: 48,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             elevation: 0,
-            backgroundColor: AppColors.accent,
-            foregroundColor: Colors.white,
-            disabledBackgroundColor: AppColors.accent.withValues(alpha: 0.3),
-            disabledForegroundColor: Colors.white70,
+            backgroundColor: context.colors.secondary,
+            foregroundColor: context.colors.onSecondary,
+            disabledBackgroundColor: context.colors.secondary.withValues(alpha: 0.3),
+            disabledForegroundColor: context.colors.onSecondary.withValues(alpha: 0.7),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.medium),
             ),
             textStyle: AppTextStyles.labelLarge.copyWith(
               fontWeight: FontWeight.w600,
@@ -281,23 +290,24 @@ class _RatingDialogState extends State<RatingDialog> {
 
   Widget _header(BuildContext context, RatingsViewModel vm) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 12, 8),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.xl, AppSpacing.m, AppSpacing.s),
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: AppSpacing.xxxxl,
+            height: AppSpacing.xxxxl,
             decoration: BoxDecoration(
-              color: AppColors.accent.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              color: context.colors.secondary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppRadius.medium),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.star_rounded,
-              color: AppColors.accent,
-              size: 22,
+              color: context.colors.secondary,
+              size: AppIconSize.lm,
+              semanticLabel: 'Rating',
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.m),
           Expanded(
             child: Text(
               'rating_subtitle'.tr(),
@@ -307,9 +317,11 @@ class _RatingDialogState extends State<RatingDialog> {
             ),
           ),
           IconButton(
-            icon: const Icon(
+            tooltip: 'Close',
+            icon: Icon(
               SolarIconsOutline.closeCircle,
-              color: AppColors.textLight,
+              color: context.ext.textLight,
+              semanticLabel: 'Close',
             ),
             onPressed: vm.isSubmitting ? null : () => Navigator.pop(context),
           ),

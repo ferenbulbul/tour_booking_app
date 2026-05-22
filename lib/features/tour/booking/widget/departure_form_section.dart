@@ -1,9 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/core/widgets/picker_field.dart';
 import 'package:tour_booking/core/widgets/shake_widget.dart';
 import 'package:tour_booking/features/tour/booking/widget/mini_location_map.dart';
@@ -69,7 +70,7 @@ class DepartureFormSectionState extends State<DepartureFormSection> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.m),
 
         // City
         _pad(
@@ -125,7 +126,7 @@ class DepartureFormSectionState extends State<DepartureFormSection> {
                   key: const ValueKey("selected_location"),
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.l,
-                  ).copyWith(bottom: 12),
+                  ).copyWith(bottom: AppSpacing.m),
                   child: SelectedLocationCard(
                       description: widget.placeDescription!),
                 )
@@ -143,7 +144,7 @@ class DepartureFormSectionState extends State<DepartureFormSection> {
                   key: const ValueKey("mini_map"),
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.l,
-                  ).copyWith(bottom: 10),
+                  ).copyWith(bottom: AppSpacing.ms),
                   child: MiniLocationMap(
                     lat: widget.placeLat!,
                     lng: widget.placeLng!,
@@ -158,17 +159,17 @@ class DepartureFormSectionState extends State<DepartureFormSection> {
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.l,
-            ).copyWith(bottom: 12),
+            ).copyWith(bottom: AppSpacing.m),
             child: Row(
               children: [
                 Icon(SolarIconsOutline.infoCircle,
-                    size: 16, color: Colors.grey),
-                const SizedBox(width: 6),
+                    size: AppIconSize.m, color: context.ext.textLight, semanticLabel: 'Information'),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
                     tr("pickup_point_info"),
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textLight,
+                      color: context.ext.textLight,
                       height: 1.25,
                     ),
                   ),
@@ -181,7 +182,7 @@ class DepartureFormSectionState extends State<DepartureFormSection> {
         Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.l,
-          ).copyWith(top: 4),
+          ).copyWith(top: AppSpacing.xs),
           child: Row(
             children: [
               Expanded(
@@ -196,7 +197,7 @@ class DepartureFormSectionState extends State<DepartureFormSection> {
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: AppSpacing.ms),
               Expanded(
                 child: ShakeWidget(
                   key: _timeShakeKey,
@@ -213,7 +214,7 @@ class DepartureFormSectionState extends State<DepartureFormSection> {
           ),
         ),
 
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.ms),
       ],
     );
   }
@@ -222,7 +223,7 @@ class DepartureFormSectionState extends State<DepartureFormSection> {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.l,
-      ).copyWith(bottom: 10),
+      ).copyWith(bottom: AppSpacing.ms),
       child: child,
     );
   }

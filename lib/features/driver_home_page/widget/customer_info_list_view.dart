@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:tour_booking/core/enum/driver_booking_status.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/models/customer_info_for_driver/customer_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class CustomerInfoListView extends StatelessWidget {
   const CustomerInfoListView({
@@ -22,10 +26,9 @@ class CustomerInfoListView extends StatelessWidget {
   String _statusLabel(CustomerInfo item) {
     switch (item.status) {
       case DriverBookingStatus.today:
-        return 'Bugün';
+        return tr('today');
       case DriverBookingStatus.upcoming:
-      default:
-        return 'Yaklaşan';
+        return tr('booking_tab_upcoming');
     }
   }
 
@@ -42,19 +45,19 @@ class CustomerInfoListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 48),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxxxxl),
         child: Column(
           children: [
-            Icon(SolarIconsOutline.box, size: 72),
-            SizedBox(height: 12),
+            const Icon(SolarIconsOutline.box, size: AppIconSize.colossal, semanticLabel: 'No bookings'),
+            const SizedBox(height: AppSpacing.m),
             Text(
-              'Şu an aktif bir müşteri yok',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              tr('driver_no_active_customer'),
+              style: AppTextStyles.titleSmall,
             ),
-            SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.sm),
             Text(
-              'Yeni talepler geldiğinde burada görünecek.',
+              tr('driver_new_requests_will_appear'),
               textAlign: TextAlign.center,
             ),
           ],
@@ -66,7 +69,7 @@ class CustomerInfoListView extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: items.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.m),
       itemBuilder: (context, index) {
         final item = items[index];
 
@@ -75,7 +78,7 @@ class CustomerInfoListView extends StatelessWidget {
         return Card(
           elevation: 2,
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.l),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -88,16 +91,16 @@ class CustomerInfoListView extends StatelessWidget {
                         children: [
                           if (isTransport)
                             Padding(
-                              padding: const EdgeInsets.only(right: 8),
+                              padding: const EdgeInsets.only(right: AppSpacing.s),
                               child: Icon(SolarIconsOutline.routing,
-                                  size: 20, color: AppColors.primary),
+                                  size: AppIconSize.l, color: context.colors.primary, semanticLabel: 'Transport route'),
                             ),
                           Expanded(
                             child: Text(
                               isTransport
                                   ? (item.pickupAddress ?? item.departureDescription)
                                   : item.departureDescription,
-                              style: Theme.of(context).textTheme.titleMedium
+                              style: context.textStyles.titleMedium
                                   ?.copyWith(fontWeight: FontWeight.w700),
                             ),
                           ),
@@ -108,29 +111,31 @@ class CustomerInfoListView extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.m),
 
                 if (isTransport) ...[
                   // TRANSPORT: Pickup → Dropoff
                   _locationRow(
+                    context,
                     Icons.circle,
-                    Colors.green,
+                    context.ext.success,
                     'transport_pickup'.tr(),
                     item.pickupAddress ?? '-',
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.sm),
                   _locationRow(
+                    context,
                     Icons.circle,
-                    Colors.red,
+                    context.colors.error,
                     'transport_dropoff'.tr(),
                     item.dropoffAddress ?? '-',
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.s),
                   if (item.dropoffLatitude != null)
                     Align(
                       alignment: Alignment.centerLeft,
                       child: TextButton.icon(
-                        icon: const Icon(SolarIconsOutline.map),
+                        icon: const Icon(SolarIconsOutline.map, semanticLabel: 'Open map'),
                         label: Text('driver_open_dropoff_map'.tr()),
                         onPressed: () => _openMap(
                           item.dropoffLatitude!,
@@ -141,20 +146,20 @@ class CustomerInfoListView extends StatelessWidget {
                 ] else ...[
                   // TOUR
                   Text(
-                    'Kalkış Noktası',
-                    style: Theme.of(context).textTheme.labelMedium,
+                    tr('departure_point'),
+                    style: context.textStyles.labelMedium,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     item.tourPointName,
-                    style: const TextStyle(color: Colors.grey),
+                    style: AppTextStyles.bodyMedium.copyWith(color: context.colors.onSurfaceVariant),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.s),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton.icon(
-                      icon: const Icon(SolarIconsOutline.map),
-                      label: const Text('Haritada Aç'),
+                      icon: const Icon(SolarIconsOutline.map, semanticLabel: 'Open map'),
+                      label: Text(tr('open_on_map')),
                       onPressed: () => _openMap(
                         item.departureLatitude,
                         item.departureLongitude,
@@ -168,27 +173,27 @@ class CustomerInfoListView extends StatelessWidget {
                 // CUSTOMER INFO
                 Row(
                   children: [
-                    const Icon(SolarIconsOutline.user, size: 18),
-                    const SizedBox(width: 6),
+                    const Icon(SolarIconsOutline.user, size: AppIconSize.ml, semanticLabel: 'Customer'),
+                    const SizedBox(width: AppSpacing.sm),
                     Expanded(child: Text(item.cutomerFullName)),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.s),
                 Row(
                   children: [
-                    const Icon(SolarIconsOutline.phone, size: 18),
-                    const SizedBox(width: 6),
+                    const Icon(SolarIconsOutline.phone, size: AppIconSize.ml, semanticLabel: 'Phone number'),
+                    const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
                         item.customerPhoneNumber,
-                        style: const TextStyle(fontSize: 14),
+                        style: AppTextStyles.labelLarge,
                       ),
                     ),
                     IconButton(
-                      tooltip: 'WhatsApp ile yaz',
-                      icon: const FaIcon(
+                      tooltip: tr('contact_via_whatsapp'),
+                      icon: FaIcon(
                         FontAwesomeIcons.whatsapp,
-                        color: Colors.green,
+                        color: context.ext.success,
                       ),
                       onPressed: () =>
                           _openWhatsApp(context, item.customerPhoneNumber),
@@ -198,17 +203,17 @@ class CustomerInfoListView extends StatelessWidget {
 
                 // TRANSPORT: Dropoff button
                 if (isTransport && item.bookingId != null) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.m),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      icon: const Icon(SolarIconsOutline.checkCircle),
+                      icon: const Icon(SolarIconsOutline.checkCircle, semanticLabel: 'Complete dropoff'),
                       label: Text('driver_transport_dropoff'.tr()),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
+                        backgroundColor: context.ext.success,
+                        foregroundColor: context.colors.onSecondary,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.medium),
                         ),
                       ),
                       onPressed: () => _confirmDropoff(context, item),
@@ -223,14 +228,14 @@ class CustomerInfoListView extends StatelessWidget {
     );
   }
 
-  Widget _locationRow(IconData icon, Color color, String label, String value) {
+  Widget _locationRow(BuildContext context, IconData icon, Color color, String label, String value) {
     return Row(
       children: [
-        Icon(icon, size: 10, color: color),
-        const SizedBox(width: 8),
-        Text('$label: ', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+        Icon(icon, size: AppSpacing.ms, color: color, semanticLabel: label),
+        const SizedBox(width: AppSpacing.s),
+        Text('$label: ', style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w600)),
         Expanded(
-          child: Text(value, style: const TextStyle(fontSize: 13, color: Colors.grey)),
+          child: Text(value, style: AppTextStyles.bodySmall.copyWith(color: context.colors.onSurfaceVariant)),
         ),
       ],
     );
@@ -240,9 +245,9 @@ class CustomerInfoListView extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xl)),
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSpacing.xxl),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -250,33 +255,32 @@ class CustomerInfoListView extends StatelessWidget {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: AppColors.success.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(16),
+                  color: context.ext.success.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppRadius.large),
                 ),
-                child: const Icon(
+                child: Icon(
                   SolarIconsOutline.checkCircle,
-                  size: 28,
-                  color: AppColors.success,
+                  size: AppIconSize.xxl,
+                  color: context.ext.success,
+                  semanticLabel: 'Confirm dropoff',
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.l),
               Text(
                 'driver_transport_dropoff_confirm'.tr(),
-                style: const TextStyle(
-                  fontSize: 16,
+                style: AppTextStyles.titleSmall.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.s),
               Text(
                 'driver_transport_dropoff_confirm_message'.tr(),
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
+                style: AppTextStyles.labelLarge.copyWith(
+                  color: context.colors.onSurfaceVariant,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.xl),
               Row(
                 children: [
                   Expanded(
@@ -284,10 +288,10 @@ class CustomerInfoListView extends StatelessWidget {
                       height: 46,
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.textSecondary,
-                          side: const BorderSide(color: AppColors.border),
+                          foregroundColor: context.colors.onSurfaceVariant,
+                          side: BorderSide(color: context.colors.outline),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppRadius.medium),
                           ),
                         ),
                         onPressed: () => Navigator.pop(ctx),
@@ -295,17 +299,17 @@ class CustomerInfoListView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.m),
                   Expanded(
                     child: SizedBox(
                       height: 46,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           elevation: 0,
-                          backgroundColor: AppColors.success,
-                          foregroundColor: Colors.white,
+                          backgroundColor: context.ext.success,
+                          foregroundColor: context.colors.onSecondary,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppRadius.medium),
                           ),
                         ),
                         onPressed: () async {
@@ -333,12 +337,12 @@ Future<void> _openWhatsApp(BuildContext context, String phone) async {
   final cleanPhone = phone.replaceAll('+', '').replaceAll(' ', '');
 
   final uri = Uri.parse(
-    'https://wa.me/$cleanPhone?text=${Uri.encodeComponent('Merhaba, tur için yazıyorum')}',
+    'https://wa.me/$cleanPhone?text=${Uri.encodeComponent(tr('whatsapp_greeting_message'))}',
   );
 
   if (await canLaunchUrl(uri)) {
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   } else {
-    UIHelper.showError(context, 'WhatsApp yüklü değil veya açılamadı');
+    UIHelper.showError(context, tr('whatsapp_not_available'));
   }
 }

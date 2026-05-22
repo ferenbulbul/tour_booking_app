@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class TourResultsHeader extends StatelessWidget {
   final String title;
@@ -18,23 +19,24 @@ class TourResultsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 8, 16, 12),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.xs, AppSpacing.s, AppSpacing.l, AppSpacing.m),
       child: Row(
         children: [
           // BACK BUTTON
           IconButton(
+            tooltip: 'Back',
             onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-            color: AppColors.textPrimary,
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, semanticLabel: 'Go back'),
+            color: context.colors.onSurface,
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppSpacing.xs),
 
           // TITLE BAR
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l, vertical: AppSpacing.ms),
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: context.colors.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(AppRadius.large),
               ),
               child: Column(
@@ -45,18 +47,17 @@ class TourResultsHeader extends StatelessWidget {
                     title,
                     style: AppTextStyles.titleSmall.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: context.colors.onSurface,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   if (subtitle != null && subtitle!.isNotEmpty) ...[
-                    const SizedBox(height: 1),
+                    const SizedBox(height: AppSpacing.one),
                     Text(
                       subtitle!,
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
-                        fontSize: 11,
+                      style: AppTextStyles.caption.copyWith(
+                        color: context.colors.onSurfaceVariant,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

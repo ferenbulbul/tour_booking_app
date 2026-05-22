@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key});
@@ -10,17 +11,18 @@ class HomeHeader extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(
-        16,
-        12,
-        16, // 🔥 artık sağ da padding alıyor
-        8,
+        AppSpacing.l,
+        AppSpacing.m,
+        AppSpacing.l,
+        AppSpacing.s,
       ),
       child: Align(
-        alignment: AlignmentDirectional.centerStart, // 🔥 RTL → sağ, LTR → sol
+        alignment: AlignmentDirectional.centerStart, // RTL: right, LTR: left
         child: Image.asset(
           'assets/images/header.png',
           height: logoHeight,
           fit: BoxFit.contain,
+          excludeFromSemantics: true,
         ),
       ),
     );

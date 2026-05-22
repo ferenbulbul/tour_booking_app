@@ -2,7 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
@@ -10,6 +11,7 @@ import 'package:tour_booking/features/auth/login/google_viewmodel.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 import 'package:tour_booking/features/profile/widget/delete_account_dialog.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class PersonalInfoScreen extends StatelessWidget {
   const PersonalInfoScreen({super.key});
@@ -18,8 +20,8 @@ class PersonalInfoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<ProfileViewModel>();
     final profile = vm.profile;
-    final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
+    final scheme = context.colors;
+    final text = context.textStyles;
 
     if (profile == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -62,18 +64,18 @@ class PersonalInfoScreen extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => _handleDeleteAccount(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  backgroundColor: context.colors.error,
+                  foregroundColor: context.colors.onError,
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.ml),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.medium),
                   ),
                 ),
                 child: Text(
                   tr("delete_account"),
                   style: text.labelLarge?.copyWith(
-                    color: Colors.white,
+                    color: context.colors.onError,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -125,11 +127,14 @@ class _PhoneField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
+    final text = context.textStyles;
 
-    return InkWell(
+    return Semantics(
+      button: true,
+      label: 'Edit phone number',
+      child: InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppRadius.medium),
       child: AbsorbPointer(
         child: TextFormField(
           initialValue: value,
@@ -138,30 +143,32 @@ class _PhoneField extends StatelessWidget {
           decoration: InputDecoration(
             labelText: label,
             isDense: true,
-            contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+            contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.ml, horizontal: AppSpacing.l),
             labelStyle: text.bodySmall?.copyWith(
-              color: AppColors.textSecondary,
+              color: context.colors.onSurfaceVariant,
             ),
             suffixIcon: Icon(
               Icons.chevron_right,
-              size: 20,
-              color: AppColors.textLight,
+              size: AppIconSize.l,
+              color: context.ext.textLight,
+              semanticLabel: 'Navigate',
             ),
             disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.medium),
               borderSide: BorderSide(
                 color: isEmpty
-                    ? AppColors.warning.withValues(alpha: 0.5)
-                    : AppColors.accent.withValues(alpha: 0.35),
+                    ? context.ext.warning.withValues(alpha: 0.5)
+                    : context.colors.secondary.withValues(alpha: 0.35),
               ),
             ),
           ),
           style: text.bodyMedium?.copyWith(
-            color: isEmpty ? AppColors.warning : AppColors.textPrimary,
+            color: isEmpty ? context.ext.warning : context.colors.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),
       ),
+    ),
     );
   }
 }
@@ -177,7 +184,7 @@ class _ReadOnlyField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
+    final text = context.textStyles;
 
     return TextFormField(
       initialValue: value,
@@ -186,19 +193,19 @@ class _ReadOnlyField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         isDense: true,
-        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.ml, horizontal: AppSpacing.l),
         labelStyle: text.bodySmall?.copyWith(
-          color: AppColors.textSecondary,
+          color: context.colors.onSurfaceVariant,
         ),
         disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.medium),
           borderSide: BorderSide(
-            color: AppColors.accent.withValues(alpha: 0.35),
+            color: context.colors.secondary.withValues(alpha: 0.35),
           ),
         ),
       ),
       style: text.bodyMedium?.copyWith(
-        color: AppColors.textPrimary,
+        color: context.colors.onSurface,
         fontWeight: FontWeight.w500,
       ),
     );

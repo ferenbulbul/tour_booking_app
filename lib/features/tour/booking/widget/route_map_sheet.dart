@@ -3,20 +3,23 @@ import 'dart:ui' as ui;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/models/tour_detail_sub_items/tour_detail_sub_items.dart';
 
-class RouteMapPage extends StatefulWidget {
+class RouteMapSheet extends StatefulWidget {
   final List<RoutePointItem> points;
 
-  const RouteMapPage({super.key, required this.points});
+  const RouteMapSheet({super.key, required this.points});
 
   @override
-  State<RouteMapPage> createState() => _RouteMapPageState();
+  State<RouteMapSheet> createState() => _RouteMapSheetState();
 }
 
-class _RouteMapPageState extends State<RouteMapPage> {
+class _RouteMapSheetState extends State<RouteMapSheet> {
   GoogleMapController? _mapController;
   Set<Marker> _markers = {};
   int _selectedIndex = 0;
@@ -38,7 +41,9 @@ class _RouteMapPageState extends State<RouteMapPage> {
   void initState() {
     super.initState();
     _pageController = PageController(viewportFraction: 0.80);
-    _buildIcons();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _buildIcons();
+    });
   }
 
   @override
@@ -51,11 +56,11 @@ class _RouteMapPageState extends State<RouteMapPage> {
   Color _pointColor(int pointType) {
     switch (pointType) {
       case 0:
-        return AppColors.accent;
+        return context.colors.secondary;
       case 1:
-        return AppColors.info;
+        return context.ext.info;
       default:
-        return AppColors.textLight;
+        return context.ext.textLight;
     }
   }
 
@@ -70,7 +75,7 @@ class _RouteMapPageState extends State<RouteMapPage> {
     }
   }
 
-  // ── Icon üretimi ──────────────────────────────────────────────
+  // -- Icon generation --
 
   Future<void> _buildIcons() async {
     final pts = _validPoints;
@@ -113,12 +118,12 @@ class _RouteMapPageState extends State<RouteMapPage> {
     final circleR = w / 2 - 4 * scale;
     final circleY = w / 2;
 
-    // Üst daire
+    // Top circle
     pinPath.addOval(
       Rect.fromCircle(center: Offset(cx, circleY), radius: circleR),
     );
 
-    // Alt sivri uç
+    // Bottom pointed tip
     pinPath.moveTo(cx - circleR * 0.55, circleY + circleR * 0.75);
     pinPath.quadraticBezierTo(cx, h - 2 * scale, cx, h - 2 * scale);
     pinPath.quadraticBezierTo(
@@ -126,7 +131,7 @@ class _RouteMapPageState extends State<RouteMapPage> {
     );
     pinPath.close();
 
-    // Gölge
+    // Shadow
     final shadowPaint = Paint()
       ..color = Colors.black.withValues(alpha: isSelected ? 0.25 : 0.15)
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, isSelected ? 5 : 3);
@@ -135,10 +140,10 @@ class _RouteMapPageState extends State<RouteMapPage> {
     canvas.drawPath(pinPath, shadowPaint);
     canvas.restore();
 
-    // Pin dolgu
+    // Pin fill
     canvas.drawPath(pinPath, Paint()..color = color);
 
-    // Seçili → beyaz dış halka
+    // Selected -> white outer ring
     if (isSelected) {
       final ringPaint = Paint()
         ..color = Colors.white
@@ -147,11 +152,11 @@ class _RouteMapPageState extends State<RouteMapPage> {
       canvas.drawCircle(Offset(cx, circleY), circleR, ringPaint);
     }
 
-    // Beyaz iç daire
+    // White inner circle
     final innerR = circleR - 6 * scale;
     canvas.drawCircle(Offset(cx, circleY), innerR, Paint()..color = Colors.white);
 
-    // Numara
+    // Number
     final textPainter = TextPainter(
       text: TextSpan(
         text: '$number',
@@ -183,7 +188,7 @@ class _RouteMapPageState extends State<RouteMapPage> {
     return descriptor;
   }
 
-  // ── Marker yönetimi ───────────────────────────────────────────
+  // -- Marker management --
 
   void _rebuildMarkers() {
     final pts = _validPoints;
@@ -210,7 +215,7 @@ class _RouteMapPageState extends State<RouteMapPage> {
     setState(() => _markers = markers);
   }
 
-  // ── Seçim / navigasyon ────────────────────────────────────────
+  // -- Selection / navigation --
 
   void _onMarkerTap(int index) {
     if (_selectedIndex == index) return;
@@ -237,7 +242,7 @@ class _RouteMapPageState extends State<RouteMapPage> {
     _animateToPoint(index);
   }
 
-  /// Seçilen noktaya hafif fokus.
+  /// Gently focus on the selected point.
   void _animateToPoint(int index) {
     final ctrl = _mapController;
     if (ctrl == null || !mounted) return;
@@ -251,10 +256,12 @@ class _RouteMapPageState extends State<RouteMapPage> {
       ctrl.animateCamera(
         CameraUpdate.newLatLngZoom(target, 16),
       );
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('_RouteMapSheetState._animateToPoint: $e');
+    }
   }
 
-  // ── Build ─────────────────────────────────────────────────────
+  // -- Build --
 
   @override
   Widget build(BuildContext context) {
@@ -263,7 +270,7 @@ class _RouteMapPageState extends State<RouteMapPage> {
     if (pts.isEmpty) {
       return Scaffold(
         appBar: _buildAppBar(),
-        body: const Center(child: Text("Güzergah noktası bulunamadı")),
+        body: Center(child: Text(tr("route_point_not_found"))),
       );
     }
 
@@ -277,7 +284,7 @@ class _RouteMapPageState extends State<RouteMapPage> {
       appBar: _buildAppBar(),
       body: Stack(
         children: [
-          // HARİTA
+          // MAP
           GoogleMap(
             initialCameraPosition: CameraPosition(
               target: LatLng(firstPoint.latitude, firstPoint.longitude),
@@ -288,7 +295,7 @@ class _RouteMapPageState extends State<RouteMapPage> {
               Polyline(
                 polylineId: const PolylineId('route'),
                 points: polylinePoints,
-                color: AppColors.accent,
+                color: context.colors.secondary,
                 width: 3,
                 patterns: [
                   PatternItem.dash(12),
@@ -312,7 +319,7 @@ class _RouteMapPageState extends State<RouteMapPage> {
             padding: EdgeInsets.only(bottom: bottomPad + 130),
           ),
 
-          // ALT KART LİSTESİ — yatay kaydırmalı
+          // BOTTOM CARD LIST — horizontal scroll
           Positioned(
             left: 0,
             right: 0,
@@ -329,7 +336,7 @@ class _RouteMapPageState extends State<RouteMapPage> {
                 return AnimatedPadding(
                   duration: const Duration(milliseconds: 250),
                   curve: Curves.easeOut,
-                  padding: EdgeInsets.only(top: isActive ? 0 : 14),
+                  padding: EdgeInsets.only(top: isActive ? 0 : AppSpacing.ml),
                   child: AnimatedScale(
                     scale: isActive ? 1.0 : 0.95,
                     duration: const Duration(milliseconds: 250),
@@ -353,11 +360,11 @@ class _RouteMapPageState extends State<RouteMapPage> {
     final color = _pointColor(point.pointType);
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 6),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+      padding: const EdgeInsets.all(AppSpacing.ml),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
+        color: context.colors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.large),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.1),
@@ -368,24 +375,23 @@ class _RouteMapPageState extends State<RouteMapPage> {
       ),
       child: Row(
         children: [
-          // Numaralı daire
+          // Numbered circle
           Container(
-            width: 36,
-            height: 36,
+            width: AppIconSize.xxxl,
+            height: AppIconSize.xxxl,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             child: Center(
               child: Text(
                 '$number',
-                style: const TextStyle(
+                style: AppTextStyles.bodyMedium.copyWith(
                   color: Colors.white,
-                  fontSize: 15,
                   fontWeight: FontWeight.w700,
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
-          // İsim + tip + açıklama
+          const SizedBox(width: AppSpacing.m),
+          // Name + type + description
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -397,10 +403,10 @@ class _RouteMapPageState extends State<RouteMapPage> {
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color: context.colors.onSurface,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: AppSpacing.xxs),
                 Text(
                   _pointLabel(point.pointType),
                   style: AppTextStyles.bodySmall.copyWith(
@@ -410,13 +416,13 @@ class _RouteMapPageState extends State<RouteMapPage> {
                 ),
                 if (point.description != null &&
                     point.description!.isNotEmpty) ...[
-                  const SizedBox(height: 2),
+                  const SizedBox(height: AppSpacing.xxs),
                   Text(
                     point.description!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.colors.onSurfaceVariant,
                       height: 1.3,
                     ),
                   ),
@@ -431,19 +437,20 @@ class _RouteMapPageState extends State<RouteMapPage> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.colors.surface,
       elevation: 0,
       scrolledUnderElevation: 0,
       leading: IconButton(
+        tooltip: 'Back',
         onPressed: () => Navigator.pop(context),
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-        color: AppColors.textPrimary,
+        icon: Icon(Icons.arrow_back_ios_new_rounded, size: AppIconSize.l, semanticLabel: 'Go back'),
+        color: context.colors.onSurface,
       ),
       title: Text(
         tr("route_title"),
         style: AppTextStyles.titleSmall.copyWith(
           fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
+          color: context.colors.onSurface,
         ),
       ),
       centerTitle: true,

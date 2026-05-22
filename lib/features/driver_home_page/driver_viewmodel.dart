@@ -1,12 +1,15 @@
-import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/models/customer_info_for_driver/customer_info.dart';
 import 'package:tour_booking/models/transport/complete_dropoff_request/complete_dropoff_request.dart';
 import 'package:tour_booking/services/driver/driver_service.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/transport/transport_service.dart';
 
-class DriverHomeViewModel extends ChangeNotifier {
+class DriverHomeViewModel extends BaseViewModel {
   final DriverService _driverService;
-  final TransportService _transportService = TransportService();
+  final TransportService _transportService = ServiceLocator.instance.transportService;
 
   DriverHomeViewModel(this._driverService);
 
@@ -28,10 +31,11 @@ class DriverHomeViewModel extends ChangeNotifier {
       if (response.isSuccess == true && response.data != null) {
         customerList = response.data!.customerInfo;
       } else {
-        error = response.message ?? 'Veriler alınamadı';
+        error = response.message ?? tr('error_data_fetch_failed');
       }
     } catch (e) {
-      error = 'Bir şeyler ters gitti: $e';
+      debugPrint('DriverHomeViewModel.refresh: $e');
+      error = tr('error_something_went_wrong', namedArgs: {'error': e.toString()});
     } finally {
       isLoading = false;
       notifyListeners();
@@ -51,11 +55,12 @@ class DriverHomeViewModel extends ChangeNotifier {
         await refresh();
         return true;
       } else {
-        dropoffError = resp.message ?? 'error_generic';
+        dropoffError = resp.message ?? tr('error_generic');
         return false;
       }
     } catch (e) {
-      dropoffError = 'error_generic';
+      debugPrint('DriverHomeViewModel.completeDropoff: $e');
+      dropoffError = tr('error_generic');
       return false;
     } finally {
       isCompletingDropoff = false;

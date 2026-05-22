@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/core/network/handle_response.dart';
 import 'package:tour_booking/core/network/result.dart';
 import 'package:tour_booking/models/featured_tour_point/featured_tour_point_dto.dart';
@@ -9,17 +11,18 @@ import 'package:tour_booking/models/tour_point/tour_point.dart';
 import 'package:tour_booking/models/tour_search_detail_request/tour_search_detailed_request.dart';
 import 'package:tour_booking/models/tour_search_response/tour_search_response.dart';
 import 'package:tour_booking/models/tour_type/tour_type_dto.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/recent_search/recent_search_service.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
 
-class HomeViewModel extends ChangeNotifier {
-  final TourService _tourService = TourService();
+class HomeViewModel extends BaseViewModel {
+  final TourService _tourService = ServiceLocator.instance.tourService;
 
   // Featured
   bool isLoadingFeatured = false;
   List<FeaturedTourPointDto> featuredPoints = [];
 
-  // Tour Types (Kategoriler) — lazy loaded
+  // Tour Types (Categories) — lazy loaded
   bool isLoadingTourTypes = false;
   String? tourTypesMessage;
   List<TourTypeDto> tourTypes = [];
@@ -43,7 +46,7 @@ class HomeViewModel extends ChangeNotifier {
       featuredPoints = List.of(result.data?.tourPoints ?? [])..shuffle();
       featuredMessage = null;
     } else {
-      featuredMessage = result.error?.message ?? 'Veri alınamadı';
+      featuredMessage = result.error?.message ?? tr('error_data_load_failed');
     }
 
     isLoadingFeatured = false;
@@ -75,7 +78,7 @@ class HomeViewModel extends ChangeNotifier {
 
   Future<void> fetchTourPointsByType(String tourTypeId) async {
     if (tourTypeId.isEmpty) {
-      messageSearchByType = "Geçersiz kategori.";
+      messageSearchByType = tr('error_invalid_category');
       notifyListeners();
       return;
     }
@@ -91,16 +94,17 @@ class HomeViewModel extends ChangeNotifier {
       final result = handleResponse<TourSearchResponse>(resp);
 
       if (result.isSuccess && resp.data != null) {
-        // TourSearchResponse içindeki liste alanına göre güncelle
+        // Update from the list field inside TourSearchResponse
         searchItemsByType = resp.data?.tourPoints ?? [];
         messageSearchByType = null;
       } else {
         searchItemsByType = [];
-        messageSearchByType = resp.message ?? "Bir hata oluştu";
+        messageSearchByType = resp.message ?? tr('error_generic');
       }
     } catch (e) {
+      debugPrint('HomeViewModel.fetchTourPointsByType: $e');
       searchItemsByType = [];
-      messageSearchByType = e.toString();
+      messageSearchByType = tr('error_generic');
     } finally {
       isLoadingSearchByType = false;
       notifyListeners();
@@ -131,11 +135,12 @@ class HomeViewModel extends ChangeNotifier {
         messageNearby = null;
       } else {
         nearbyPoints = [];
-        messageNearby = resp.message ?? "Yakın yerler alınamadı";
+        messageNearby = resp.message ?? tr('error_nearby_failed');
       }
     } catch (e) {
+      debugPrint('HomeViewModel.fetchNearbyTourPoints: $e');
       nearbyPoints = [];
-      messageNearby = e.toString();
+      messageNearby = tr('error_generic');
     } finally {
       isLoadingNearby = false;
       notifyListeners();
@@ -143,14 +148,14 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   // ════════════════════════════════════════════════════════════════
-  // Keşfetmeye devam et — tıklanan turlar (2) + aramalar (2) = max 4
-  // Lazy loading: önce hedefler belirlenir, turlar bölüm görününce çekilir
+  // Continue exploring — clicked tours (2) + searches (2) = max 4
+  // Lazy loading: targets are set first, tours are fetched when section becomes visible
   // ════════════════════════════════════════════════════════════════
-  final RecentSearchService _recentSearchService = RecentSearchService();
+  final RecentSearchService _recentSearchService = ServiceLocator.instance.recentSearchService;
 
   List<CityToursSection> citySections = [];
 
-  /// Herhangi bir tur kartına tıklandığında çağrılır
+  /// Called when any tour card is tapped
   Future<void> onTourClicked({
     required String cityId,
     required String cityName,
@@ -163,14 +168,14 @@ class HomeViewModel extends ChangeNotifier {
     loadCityTargets();
   }
 
-  /// Sadece hedef şehirleri belirle — API çağrısı yapmaz.
-  /// Turlar, her bölüm ekranda görünür olduğunda [fetchCityTours] ile çekilir.
+  /// Only determines target cities — no API call.
+  /// Tours are fetched via [fetchCityTours] when each section becomes visible.
   Future<void> loadCityTargets() async {
     try {
       final seen = <String>{};
       final targets = <({String cityId, String cityName})>[];
 
-      // 1) Son tıklanan turlardan max 2 benzersiz şehir
+      // 1) Max 2 unique cities from recently clicked tours
       final clicks = await _recentSearchService.getRecentTourClicks();
       for (final click in clicks) {
         final cId = click['cityId']!;
@@ -182,7 +187,7 @@ class HomeViewModel extends ChangeNotifier {
         }
       }
 
-      // 2) Son aramalardan kalan slotları doldur (toplam max 4)
+      // 2) Fill remaining slots from recent searches (max 4 total)
       final recents = await _recentSearchService.getRecentSearches();
       for (final item in recents) {
         if (targets.length >= 4) break;
@@ -200,7 +205,7 @@ class HomeViewModel extends ChangeNotifier {
           continue;
         }
 
-        if (cId != null && cName != null && !seen.contains(cId)) {
+        if (cId != null && !seen.contains(cId)) {
           seen.add(cId);
           targets.add((cityId: cId, cityName: cName));
         }
@@ -214,7 +219,7 @@ class HomeViewModel extends ChangeNotifier {
         return;
       }
 
-      // Mevcut verileri koru — zaten yüklenmiş bölümler tekrar çekilmez
+      // Preserve existing data — already loaded sections won't be re-fetched
       final existingMap = {for (final s in citySections) s.cityId: s};
 
       final newSections = targets.map((t) {
@@ -223,7 +228,7 @@ class HomeViewModel extends ChangeNotifier {
         return CityToursSection(cityId: t.cityId, cityName: t.cityName);
       }).toList();
 
-      // Değişiklik yoksa rebuild yapma
+      // Skip rebuild if nothing changed
       final currentIds = citySections.map((s) => s.cityId).toList();
       final newIds = newSections.map((s) => s.cityId).toList();
       if (currentIds.length == newIds.length &&
@@ -234,11 +239,13 @@ class HomeViewModel extends ChangeNotifier {
       citySections = newSections;
       notifyListeners();
     } catch (e) {
-      debugPrint('[loadCityTargets] $e');
+      debugPrint('HomeViewModel.loadCityTargets: $e');
+      citySections = [];
+      notifyListeners();
     }
   }
 
-  /// Tek bir şehrin turlarını API'den çek — bölüm ekranda görünürse çağrılır
+  /// Fetch tours for a single city from API — called when section becomes visible
   Future<void> fetchCityTours(String cityId) async {
     final idx = citySections.indexWhere((s) => s.cityId == cityId);
     if (idx == -1) return;
@@ -282,7 +289,7 @@ class HomeViewModel extends ChangeNotifier {
             citySections[i],
       ];
     } catch (e) {
-      debugPrint('[fetchCityTours] $cityId → $e');
+      debugPrint('HomeViewModel.fetchCityTours: $e');
       final currentIdx = citySections.indexWhere((s) => s.cityId == cityId);
       if (currentIdx == -1) return;
 
@@ -292,6 +299,7 @@ class HomeViewModel extends ChangeNotifier {
             CityToursSection(
               cityId: cityId,
               cityName: citySections[currentIdx].cityName,
+              errorMessage: tr('error_generic'),
             )
           else
             citySections[i],
@@ -301,17 +309,19 @@ class HomeViewModel extends ChangeNotifier {
   }
 }
 
-/// Anasayfadaki şehir bazlı tur bölümü verisi
+/// City-based tour section data for the home page
 class CityToursSection {
   final String cityId;
   final String cityName;
   final List<TourPoint> tours;
   final bool isLoading;
+  final String? errorMessage;
 
   const CityToursSection({
     required this.cityId,
     required this.cityName,
     this.tours = const [],
     this.isLoading = false,
+    this.errorMessage,
   });
 }

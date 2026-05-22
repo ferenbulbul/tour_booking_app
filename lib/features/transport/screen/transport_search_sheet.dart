@@ -1,12 +1,15 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:solar_icons/solar_icons.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/features/transport/models/place_picker_models.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
+import 'package:tour_booking/features/transport/transport_search_viewmodel.dart';
 
 class TransportSearchSheet extends StatefulWidget {
   final String apiKey;
@@ -32,7 +35,6 @@ class TransportSearchSheet extends StatefulWidget {
 
 class _TransportSearchSheetState extends State<TransportSearchSheet> {
   final _ctrl = TextEditingController();
-  List<PlacePrediction> _predictions = [];
   Timer? _debounce;
 
   @override
@@ -45,105 +47,70 @@ class _TransportSearchSheetState extends State<TransportSearchSheet> {
   void _onChanged(String value) {
     _debounce?.cancel();
     if (value.trim().isEmpty) {
-      setState(() => _predictions = []);
+      context.read<TransportSearchViewModel>().clearPredictions();
       return;
     }
     _debounce = Timer(const Duration(milliseconds: 350), () {
-      _fetchPredictions(value.trim());
+      context.read<TransportSearchViewModel>().fetchPredictions(
+            input: value.trim(),
+            apiKey: widget.apiKey,
+            cityCenter: widget.cityCenter,
+          );
     });
   }
 
-  Future<void> _fetchPredictions(String input) async {
-    final base =
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json'
-        '?input=${Uri.encodeComponent(input)}'
-        '&key=${widget.apiKey}'
-        '&language=tr'
-        '&components=country:tr';
-
-    final location = widget.cityCenter;
-    final url = location != null
-        ? '$base&location=${location.latitude},${location.longitude}&radius=50000'
-        : base;
-
-    try {
-      final res = await http.get(Uri.parse(url));
-      if (res.statusCode != 200) return;
-      final data = json.decode(res.body);
-      if (data['status'] != 'OK') return;
-
-      final list = (data['predictions'] as List)
-          .map((e) => PlacePrediction.fromJson(e))
-          .toList();
-
-      if (mounted) setState(() => _predictions = list);
-    } catch (_) {}
-  }
-
   Future<void> _selectPlace(PlacePrediction prediction) async {
-    final url =
-        'https://maps.googleapis.com/maps/api/place/details/json'
-        '?place_id=${prediction.placeId}'
-        '&fields=geometry'
-        '&key=${widget.apiKey}';
+    final vm = context.read<TransportSearchViewModel>();
+    final result = await vm.selectPlace(prediction);
+    if (result == null || !mounted) return;
 
-    try {
-      final res = await http.get(Uri.parse(url));
-      if (res.statusCode != 200) return;
-      final data = json.decode(res.body);
-      if (data['status'] != 'OK') return;
-
-      final loc = data['result']['geometry']['location'];
-      if (!mounted) return;
-
-      Navigator.pop(
-        context,
-        PlaceResult(
-          lat: loc['lat'],
-          lng: loc['lng'],
-          address: prediction.description,
-        ),
-      );
-    } catch (_) {}
+    Navigator.pop(
+      context,
+      PlaceResult(
+        lat: result.lat,
+        lng: result.lng,
+        address: prediction.description,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-
     final screenH = MediaQuery.of(context).size.height;
+    final vm = context.watch<TransportSearchViewModel>();
 
     return Container(
       constraints: BoxConstraints(
         minHeight: screenH * 0.45,
         maxHeight: screenH * 0.85,
       ),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
       padding: EdgeInsets.only(bottom: bottomInset),
       child: Column(
         children: [
           // Handle
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.ms),
           Container(
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: AppColors.textLight.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(2),
+              color: context.ext.textLight.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(AppRadius.xxs),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.l),
 
           // Search field
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.circular(12),
+                color: context.colors.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(AppRadius.medium),
               ),
               child: TextField(
                 controller: _ctrl,
@@ -152,45 +119,47 @@ class _TransportSearchSheetState extends State<TransportSearchSheet> {
                 style: AppTextStyles.bodyMedium,
                 decoration: InputDecoration(
                   prefixIcon: Icon(SolarIconsOutline.magnifier,
-                      size: 22, color: widget.iconColor),
+                      size: AppIconSize.lm, color: widget.iconColor, semanticLabel: 'Search'),
                   suffixIcon: _ctrl.text.isNotEmpty
                       ? IconButton(
-                          icon: const Icon(SolarIconsOutline.closeCircle, size: 20),
+                          tooltip: 'Clear',
+                          icon: const Icon(SolarIconsOutline.closeCircle, size: AppIconSize.l, semanticLabel: 'Clear'),
                           onPressed: () {
                             _ctrl.clear();
-                            setState(() => _predictions = []);
+                            vm.clearPredictions();
                           },
                         )
                       : null,
                   hintText: widget.hintText,
                   hintStyle: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.textLight,
+                    color: context.ext.textLight,
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
+                    horizontal: AppSpacing.l,
+                    vertical: AppSpacing.ml,
                   ),
                 ),
               ),
             ),
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.s),
 
           // Results
           Flexible(
             child: ListView.builder(
               shrinkWrap: true,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              itemCount: _predictions.length,
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s),
+              itemCount: vm.predictions.length,
               itemBuilder: (context, index) {
-                final p = _predictions[index];
+                final p = vm.predictions[index];
                 return ListTile(
                   leading: Icon(
                     SolarIconsOutline.mapPoint,
-                    size: 20,
+                    size: AppIconSize.l,
                     color: widget.iconColor,
+                    semanticLabel: 'Location',
                   ),
                   title: Text(
                     p.mainText,
@@ -202,7 +171,7 @@ class _TransportSearchSheetState extends State<TransportSearchSheet> {
                       ? Text(
                           p.secondaryText!,
                           style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
+                            color: context.colors.onSurfaceVariant,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

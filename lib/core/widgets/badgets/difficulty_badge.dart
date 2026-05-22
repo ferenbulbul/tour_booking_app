@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class DifficultyBadge extends StatelessWidget {
   final String difficulty;
@@ -14,33 +17,32 @@ class DifficultyBadge extends StatelessWidget {
     Color baseBg;
     switch (difficulty.toLowerCase()) {
       case "kolay":
-        baseBg = const Color(0xFF4CAF50);
+        baseBg = context.ext.difficultyEasy;
         break;
       case "orta":
-        baseBg = const Color(0xFFFF9800);
+        baseBg = context.ext.difficultyMedium;
         break;
       case "zor":
-        baseBg = const Color(0xFFE53935);
+        baseBg = context.ext.difficultyHard;
         break;
       default:
-        baseBg = Colors.grey.shade600;
+        baseBg = context.colors.onSurfaceVariant;
     }
 
-    final bg = isDark ? baseBg.withOpacity(.22) : baseBg.withOpacity(.14);
+    final bg = isDark ? baseBg.withValues(alpha: 0.22) : baseBg.withValues(alpha: 0.14);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.ms, vertical: AppSpacing.xsm),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: baseBg.withOpacity(isDark ? .35 : .28)),
+        borderRadius: BorderRadius.circular(AppRadius.medium),
+        border: Border.all(color: baseBg.withValues(alpha: isDark ? 0.35 : 0.28)),
       ),
       child: Text(
         difficulty,
-        style: TextStyle(
-          fontSize: 12,
+        style: AppTextStyles.labelSmall.copyWith(
           fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
+          color: context.colors.onSurface,
           letterSpacing: -0.1,
         ),
       ),

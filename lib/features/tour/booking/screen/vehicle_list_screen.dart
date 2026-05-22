@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/tour/booking/tour_vehicle_guide_viewmodel.dart';
 import 'package:tour_booking/features/tour/booking/widget/vehicle_detail_sheet.dart';
@@ -22,12 +24,12 @@ class TourVehicleListScreen extends StatelessWidget {
     final vm = context.watch<TourVehicleGuideViewModel>();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.colors.surfaceContainerHighest,
       appBar: CommonAppBar(title: tr("available_vehicles")),
       body: vm.isVehiclesLoading
           ? const Center(child: VehicleCardSkeleton())
           : vm.vehicles.isEmpty
-              ? _buildEmptyState()
+              ? _buildEmptyState(context)
               : ListView.separated(
                   padding: const EdgeInsets.all(AppSpacing.l),
                   physics: const BouncingScrollPhysics(),
@@ -41,19 +43,19 @@ class TourVehicleListScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(SolarIconsOutline.routing, size: 48, color: AppColors.textLight),
+            Icon(SolarIconsOutline.routing, size: AppIconSize.huge, color: context.ext.textLight, semanticLabel: 'No vehicles'),
             const SizedBox(height: AppSpacing.l),
             Text(
               tr("vehicle_not_found"),
               style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
+                color: context.colors.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),
@@ -71,30 +73,37 @@ class _VehicleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => _openDetail(context),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
-        ),
+    return Semantics(
+      button: true,
+      label: 'View vehicle details',
+      child: GestureDetector(
+        onTap: () => _openDetail(context),
+        child: Container(
+          decoration: BoxDecoration(
+            color: context.colors.surface,
+            borderRadius: BorderRadius.circular(AppRadius.ml),
+            border: Border.all(color: context.colors.outline),
+          ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(13),
-              ),
-              child: CachedNetworkImage(
-                imageUrl: vehicle.image,
-                height: 160,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                placeholder: (_, __) => Container(
+            Semantics(
+              image: true,
+              label: 'Vehicle photo',
+              child: ClipRRect(
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(AppRadius.medium),
+                ),
+                child: CachedNetworkImage(
+                  imageUrl: vehicle.image,
                   height: 160,
-                  color: AppColors.border.withValues(alpha: 0.4),
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => Container(
+                    height: 160,
+                    color: context.colors.outline.withValues(alpha: 0.4),
+                  ),
                 ),
               ),
             ),
@@ -118,29 +127,29 @@ class _VehicleCard extends StatelessWidget {
                       Text(
                         _formatPrice(vehicle.price),
                         style: AppTextStyles.titleSmall.copyWith(
-                          color: AppColors.accent,
+                          color: context.colors.secondary,
                         ),
                       ),
                     ],
                   ),
 
-                  // Şirket adı
+                  // Company name
                   if (vehicle.companyName != null &&
                       vehicle.companyName!.isNotEmpty)
                     Padding(
-                      padding: const EdgeInsets.only(top: 4),
+                      padding: const EdgeInsets.only(top: AppSpacing.xs),
                       child: Row(
                         children: [
                           Icon(SolarIconsOutline.buildings,
-                              size: 14, color: AppColors.textSecondary),
-                          const SizedBox(width: 4),
+                              size: AppIconSize.s, color: context.colors.onSurfaceVariant, semanticLabel: 'Company'),
+                          const SizedBox(width: AppSpacing.xs),
                           Expanded(
                             child: Text(
                               vehicle.companyName!,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.textSecondary,
+                                color: context.colors.onSurfaceVariant,
                               ),
                             ),
                           ),
@@ -148,12 +157,12 @@ class _VehicleCard extends StatelessWidget {
                       ),
                     ),
 
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.sm),
 
                   // Rating
                   if (vehicle.avgRating != null && vehicle.avgRating! > 0)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
+                      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                       child: Row(
                         children: [
                           ...List.generate(5, (i) {
@@ -167,14 +176,13 @@ class _VehicleCard extends StatelessWidget {
                             } else {
                               icon = Icons.star_outline_rounded;
                             }
-                            return Icon(icon, size: 14, color: AppColors.warning);
+                            return Icon(icon, size: AppIconSize.s, color: context.ext.warning, semanticLabel: 'Rating star');
                           }),
-                          const SizedBox(width: 4),
+                          const SizedBox(width: AppSpacing.xs),
                           Text(
                             "${vehicle.avgRating!.toStringAsFixed(1)} (${vehicle.ratingCount ?? 0})",
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
-                              fontSize: 11,
+                            style: AppTextStyles.caption.copyWith(
+                              color: context.colors.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -184,30 +192,27 @@ class _VehicleCard extends StatelessWidget {
                   // Specs — inline
                   Row(
                     children: [
-                      Icon(SolarIconsOutline.usersGroupRounded, size: 14, color: AppColors.textLight),
-                      const SizedBox(width: 4),
+                      Icon(SolarIconsOutline.usersGroupRounded, size: AppIconSize.s, color: context.ext.textLight, semanticLabel: 'Seat count'),
+                      const SizedBox(width: AppSpacing.xs),
                       Text(
                         "${vehicle.seatCount} ${tr('seat_count')}",
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                          fontSize: 12,
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: context.colors.onSurfaceVariant,
                         ),
                       ),
-                      _dot(),
+                      _dot(context),
                       Text(
                         vehicle.vehicleType,
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                          fontSize: 12,
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: context.colors.onSurfaceVariant,
                         ),
                       ),
-                      _dot(),
+                      _dot(context),
                       Flexible(
                         child: Text(
                           vehicle.vehicleClass,
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
-                            fontSize: 12,
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: context.colors.onSurfaceVariant,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -221,18 +226,18 @@ class _VehicleCard extends StatelessWidget {
           ],
         ),
       ),
+      ),
     );
   }
 
-  Widget _dot() {
+  Widget _dot(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
       child: Text(
-        "·",
-        style: TextStyle(
-          color: AppColors.textLight,
+        "\u00B7",
+        style: AppTextStyles.labelSmall.copyWith(
+          color: context.ext.textLight,
           fontWeight: FontWeight.w900,
-          fontSize: 12,
         ),
       ),
     );
@@ -262,7 +267,7 @@ class _VehicleCard extends StatelessWidget {
   String _formatPrice(num value) {
     return NumberFormat.currency(
       locale: 'tr_TR',
-      symbol: '₺',
+      symbol: '\u20BA',
       decimalDigits: 2,
     ).format(value);
   }

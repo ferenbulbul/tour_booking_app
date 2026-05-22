@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
@@ -39,7 +40,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
     }
   }
 
-  /// Numara değişti mi?
+  /// Did the number change?
   bool get _isNumberChanged {
     if (_selectedPhoneNumber == null) return false;
     final newComplete = _selectedPhoneNumber.completeNumber;
@@ -47,7 +48,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
     return newComplete != oldCompleteNumber;
   }
 
-  /// Numara aynı + doğrulanmamış → doğrulama modu
+  /// Same number + not verified -> verification mode
   bool get _isVerifyMode {
     if (oldCompleteNumber.isEmpty) return false;
     if (_phoneVerified) return false;
@@ -55,9 +56,9 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
   }
 
   bool get isButtonEnabled {
-    // Doğrulama modu: numara var ama doğrulanmamış, numara değişmemiş
+    // Verification mode: number exists but not verified, number unchanged
     if (_isVerifyMode) return true;
-    // Kaydet modu: numara değişmiş
+    // Save mode: number has changed
     return _isNumberChanged;
   }
 
@@ -72,7 +73,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
             : tr("update_phone_number"),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.xxl),
         child: Column(
           children: [
             Directionality(
@@ -86,8 +87,8 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                 decoration: InputDecoration(
                   labelText: tr("phone_number"),
                 ),
-                style: const TextStyle(
-                  color: Colors.black87,
+                style: TextStyle(
+                  color: Colors.black.withValues(alpha: 0.87),
                   fontWeight: FontWeight.w500,
                 ),
                 onChanged: (phone) {
@@ -107,7 +108,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xxl),
 
             PrimaryButton(
               text: _isVerifyMode ? tr("verify") : tr("save"),
@@ -115,12 +116,12 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
               onPressed: isButtonEnabled
                   ? () async {
                       if (_isVerifyMode) {
-                        // Numara aynı, doğrulanmamış → direkt doğrulamaya git
+                        // Same number, not verified -> go directly to verification
                         context.push("/verify-phone");
                         return;
                       }
 
-                      // Numara değişmiş → kaydet, sonra doğrulamaya git
+                      // Number changed -> save, then go to verification
                       final complete = _selectedPhoneNumber.completeNumber;
                       final country = _selectedPhoneNumber.countryCode;
 

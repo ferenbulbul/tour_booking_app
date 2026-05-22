@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
 import 'package:tour_booking/features/driver_home_page/driver_viewmodel.dart';
 import 'package:tour_booking/features/driver_home_page/widget/customer_info_list_view.dart';
@@ -9,27 +11,28 @@ import 'package:tour_booking/features/home/widget/driver_location_status.dart';
 import 'package:tour_booking/features/auth/login/google_viewmodel.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
 import 'package:tour_booking/services/driver/driver_service.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
-class DriverHomePage extends StatelessWidget {
-  const DriverHomePage({super.key});
+class DriverHomeScreen extends StatelessWidget {
+  const DriverHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (ctx) => DriverHomeViewModel(ctx.read<DriverService>()),
-      child: const _DriverHomePageContent(),
+      child: const _DriverHomeScreenContent(),
     );
   }
 }
 
-class _DriverHomePageContent extends StatefulWidget {
-  const _DriverHomePageContent();
+class _DriverHomeScreenContent extends StatefulWidget {
+  const _DriverHomeScreenContent();
 
   @override
-  State<_DriverHomePageContent> createState() => _DriverHomePageState();
+  State<_DriverHomeScreenContent> createState() => _DriverHomeScreenState();
 }
 
-class _DriverHomePageState extends State<_DriverHomePageContent> {
+class _DriverHomeScreenState extends State<_DriverHomeScreenContent> {
   UserRole? _currentUserRole;
 
   @override
@@ -56,14 +59,16 @@ class _DriverHomePageState extends State<_DriverHomePageContent> {
 
         return Scaffold(
             appBar: AppBar(
-              title: const Text('Tourlio Sürücü'),
+              title: Text(tr('driver_app_title')),
               actions: [
                 IconButton(
-                  icon: const Icon(SolarIconsOutline.refresh),
+                  tooltip: 'Refresh',
+                  icon: const Icon(SolarIconsOutline.refresh, semanticLabel: 'Refresh'),
                   onPressed: vm.isLoading ? null : vm.refresh,
                 ),
                 IconButton(
-                  icon: const Icon(SolarIconsOutline.logout),
+                  tooltip: 'Log out',
+                  icon: const Icon(SolarIconsOutline.logout, semanticLabel: 'Log out'),
                   onPressed: () async {
                     final splashVm = context.read<SplashViewModel>();
                     final authVm = context.read<AuthViewModel>();
@@ -79,8 +84,8 @@ class _DriverHomePageState extends State<_DriverHomePageContent> {
               onRefresh: vm.refresh,
               child: ListView(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 24,
+                  horizontal: AppSpacing.l,
+                  vertical: AppSpacing.xxl,
                 ),
                 children: [
                   if (_currentUserRole == null)
@@ -88,20 +93,20 @@ class _DriverHomePageState extends State<_DriverHomePageContent> {
                   else ...[
                     if (isDriver) ...[
                       const DriverLocationStatus(),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.m),
                       LocationControlCard(role: _currentUserRole!),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.xxl),
                     ],
 
                     if (vm.isLoading)
                       const Center(child: CircularProgressIndicator())
                     else if (vm.error != null)
                       Padding(
-                        padding: const EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(AppSpacing.xxl),
                         child: Text(
                           vm.error!,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(color: Colors.red),
+                          style: TextStyle(color: context.colors.error),
                         ),
                       )
                     else

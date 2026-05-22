@@ -1,7 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/models/transport/transport_price_result/transport_price_result.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class TransportPriceBreakdown extends StatelessWidget {
   final TransportPriceResult price;
@@ -18,32 +21,34 @@ class TransportPriceBreakdown extends StatelessWidget {
     final distanceFee = price.totalPrice - price.baseFee;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.l),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.accent.withOpacity(0.08),
-            AppColors.accent.withOpacity(0.03),
+            context.colors.secondary.withValues(alpha: 0.08),
+            context.colors.secondary.withValues(alpha: 0.03),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.accent.withOpacity(0.15)),
+        borderRadius: BorderRadius.circular(AppRadius.large),
+        border: Border.all(color: context.colors.secondary.withValues(alpha: 0.15)),
       ),
       child: Column(
         children: [
-          _row('transport_base_fee'.tr(), _fmt(price.baseFee)),
-          const SizedBox(height: 8),
+          _row(context, 'transport_base_fee'.tr(), _fmt(price.baseFee)),
+          const SizedBox(height: AppSpacing.s),
           _row(
+            context,
             '${price.distanceKm.toStringAsFixed(1)} km × ${_fmt(price.pricePerKm)}',
             _fmt(distanceFee),
           ),
           const Padding(
-            padding: EdgeInsets.symmetric(vertical: 10),
+            padding: EdgeInsets.symmetric(vertical: AppSpacing.ms),
             child: Divider(height: 1),
           ),
           _row(
+            context,
             'transport_total'.tr(),
             _fmt(price.totalPrice),
             isBold: true,
@@ -54,25 +59,23 @@ class TransportPriceBreakdown extends StatelessWidget {
     );
   }
 
-  Widget _row(String label, String value,
+  Widget _row(BuildContext context, String label, String value,
       {bool isBold = false, bool isLarge = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: isLarge ? 16 : 14,
+          style: (isLarge ? AppTextStyles.titleSmall : AppTextStyles.labelLarge).copyWith(
             fontWeight: isBold ? FontWeight.w700 : FontWeight.w500,
-            color: isBold ? AppColors.textPrimary : AppColors.textSecondary,
+            color: isBold ? context.colors.onSurface : context.colors.onSurfaceVariant,
           ),
         ),
         Text(
           value,
-          style: TextStyle(
-            fontSize: isLarge ? 18 : 14,
+          style: (isLarge ? AppTextStyles.titleMedium : AppTextStyles.labelLarge).copyWith(
             fontWeight: isBold ? FontWeight.w800 : FontWeight.w600,
-            color: isBold ? AppColors.accent : AppColors.textPrimary,
+            color: isBold ? context.colors.secondary : context.colors.onSurface,
           ),
         ),
       ],

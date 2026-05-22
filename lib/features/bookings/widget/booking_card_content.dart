@@ -2,12 +2,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/features/bookings/utils/booking_utils.dart';
 import 'package:tour_booking/features/bookings/widget/cancel_booking_dialog.dart';
 import 'package:tour_booking/features/bookings/widget/rating_dialog.dart';
 import 'package:tour_booking/models/booking/booking_dto.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 /// Shows booking detail bottom sheet.
 Future<void> showBookingDetailSheet(
@@ -72,7 +75,7 @@ class _BookingDetailSheetState extends State<_BookingDetailSheet> {
     final departureDate = item.departureDate.isNotEmpty
         ? DateTime.parse(item.departureDate)
         : DateTime.now();
-    final statusColor = bookingStatusColor(item.status);
+    final statusColor = bookingStatusColor(context, item.status);
     final statusText = bookingStatusLabel(item.status, departureDate);
     final effectiveTime = isTransport
         ? (item.pickupTime ?? item.departureTime)
@@ -87,24 +90,24 @@ class _BookingDetailSheetState extends State<_BookingDetailSheet> {
     final isCompleted = item.status.toLowerCase() == "completed";
 
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xxl)),
       ),
       child: ListView(
         controller: widget.scrollController,
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+        padding: const EdgeInsets.fromLTRB(AppSpacing.xl, 0, AppSpacing.xl, AppSpacing.xxl),
         children: [
           // DRAG HANDLE
           Center(
             child: Padding(
-              padding: const EdgeInsets.only(top: 12, bottom: 12),
+              padding: const EdgeInsets.only(top: AppSpacing.m, bottom: AppSpacing.m),
               child: Container(
-                width: 40,
-                height: 4,
+                width: AppSpacing.xxxxl,
+                height: AppSpacing.xs,
                 decoration: BoxDecoration(
-                  color: AppColors.border,
-                  borderRadius: BorderRadius.circular(2),
+                  color: context.colors.outline,
+                  borderRadius: BorderRadius.circular(AppSpacing.xxs),
                 ),
               ),
             ),
@@ -113,7 +116,7 @@ class _BookingDetailSheetState extends State<_BookingDetailSheet> {
           // IMAGE (only tours with image)
           if (!isTransport && item.image.isNotEmpty) ...[
             _tourImageBanner(context),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.l),
           ],
 
           // TITLE + STATUS
@@ -122,40 +125,39 @@ class _BookingDetailSheetState extends State<_BookingDetailSheet> {
             children: [
               Expanded(
                 child: Text(
-                  isTransport ? 'Transfer' : item.tourPointName,
+                  isTransport ? tr('transport_title') : item.tourPointName,
                   style: AppTextStyles.titleMedium.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.m),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    const EdgeInsets.symmetric(horizontal: AppSpacing.ms, vertical: AppSpacing.xsm),
                 decoration: BoxDecoration(
                   color: statusColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppRadius.small),
                 ),
                 child: Text(
                   statusText,
                   style: AppTextStyles.labelSmall.copyWith(
                     fontWeight: FontWeight.w600,
                     color: statusColor,
-                    fontSize: 12,
                   ),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.xl),
 
           // DIVIDER
           Divider(
             height: 1,
-            color: AppColors.border.withValues(alpha: 0.5),
+            color: context.colors.outline.withValues(alpha: 0.5),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.l),
 
           // INFO ROWS
           if (isTransport) ...[
@@ -176,21 +178,21 @@ class _BookingDetailSheetState extends State<_BookingDetailSheet> {
             _infoRow(SolarIconsOutline.calendarDate, 'booking_label_time'.tr(),
                 '$formattedDate • ${item.departureTime}'),
             _infoRow(SolarIconsOutline.routing, 'booking_label_vehicle'.tr(),
-                '${item.vehicleBrand} • ${item.seatCount} kişilik'),
+                tr('booking_vehicle_seats', namedArgs: {'brand': item.vehicleBrand, 'seats': item.seatCount.toString()})),
             _infoRow(
                 SolarIconsOutline.user, 'booking_label_driver'.tr(), item.driverName),
           ],
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.l),
 
           // PRICE ROW
           Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(AppSpacing.ml),
             decoration: BoxDecoration(
-              color: AppColors.accent.withValues(alpha: 0.06),
-              borderRadius: BorderRadius.circular(12),
+              color: context.colors.secondary.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(AppRadius.medium),
               border: Border.all(
-                color: AppColors.accent.withValues(alpha: 0.15),
+                color: context.colors.secondary.withValues(alpha: 0.15),
               ),
             ),
             child: Row(
@@ -200,21 +202,21 @@ class _BookingDetailSheetState extends State<_BookingDetailSheet> {
                   'booking_total_price'.tr(),
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.w500,
-                    color: AppColors.textPrimary,
+                    color: context.colors.onSurface,
                   ),
                 ),
                 Text(
                   formatCurrency(item.totalPrice),
                   style: AppTextStyles.titleMedium.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: AppColors.accent,
+                    color: context.colors.secondary,
                   ),
                 ),
               ],
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.l),
 
           // ACTIONS
           if (isCompleted && _canRate) _rateButton(),
@@ -228,38 +230,35 @@ class _BookingDetailSheetState extends State<_BookingDetailSheet> {
 
   Widget _infoRow(IconData icon, String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.only(bottom: AppSpacing.ml),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 36,
-            height: 36,
+            width: AppIconSize.xxxl,
+            height: AppIconSize.xxxl,
             decoration: BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.circular(10),
+              color: context.colors.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(AppSpacing.ms),
             ),
-            child: Icon(icon, size: 18, color: AppColors.textSecondary),
+            child: Icon(icon, size: AppIconSize.ml, color: context.colors.onSurfaceVariant),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.m),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
-                  style: AppTextStyles.labelSmall.copyWith(
-                    fontSize: 11,
-                    color: AppColors.textLight,
-                    fontWeight: FontWeight.w500,
+                  style: AppTextStyles.caption.copyWith(
+                    color: context.ext.textLight,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: AppSpacing.xxs),
                 Text(
                   value,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    fontSize: 14,
-                    color: AppColors.textPrimary,
+                  style: AppTextStyles.labelLarge.copyWith(
+                    color: context.colors.onSurface,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -277,40 +276,44 @@ class _BookingDetailSheetState extends State<_BookingDetailSheet> {
         height: 180,
         width: double.infinity,
         decoration: BoxDecoration(
-          color: AppColors.background,
-          borderRadius: BorderRadius.circular(16),
+          color: context.colors.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(AppRadius.large),
         ),
-        child: const Center(
+        child: Center(
           child:
-              Icon(SolarIconsOutline.galleryRemove, size: 36, color: AppColors.textLight),
+              Icon(SolarIconsOutline.galleryRemove, size: AppIconSize.xxxl, color: context.ext.textLight, semanticLabel: 'Image not available'),
         ),
       );
     }
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: CachedNetworkImage(
-        imageUrl: widget.item.image,
-        height: 180,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        fadeInDuration: const Duration(milliseconds: 150),
-        placeholder: (_, __) => Container(
+    return Semantics(
+      image: true,
+      label: widget.item.tourPointName,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.large),
+        child: CachedNetworkImage(
+          imageUrl: widget.item.image,
           height: 180,
-          decoration: BoxDecoration(
-            color: AppColors.background,
-            borderRadius: BorderRadius.circular(16),
+          width: double.infinity,
+          fit: BoxFit.cover,
+          fadeInDuration: const Duration(milliseconds: 150),
+          placeholder: (_, __) => Container(
+            height: 180,
+            decoration: BoxDecoration(
+              color: context.colors.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(AppRadius.large),
+            ),
           ),
-        ),
-        errorWidget: (_, __, ___) => Container(
-          height: 180,
-          decoration: BoxDecoration(
-            color: AppColors.background,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: const Center(
-            child: Icon(SolarIconsOutline.galleryRemove,
-                size: 36, color: AppColors.textLight),
+          errorWidget: (_, __, ___) => Container(
+            height: 180,
+            decoration: BoxDecoration(
+              color: context.colors.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(AppRadius.large),
+            ),
+            child: Center(
+              child: Icon(SolarIconsOutline.galleryRemove,
+                  size: AppIconSize.xxxl, color: context.ext.textLight, semanticLabel: 'Image not available'),
+            ),
           ),
         ),
       ),
@@ -323,14 +326,14 @@ class _BookingDetailSheetState extends State<_BookingDetailSheet> {
       height: 48,
       child: ElevatedButton.icon(
         onPressed: _handleRate,
-        icon: const Icon(Icons.star_rounded, size: 20),
+        icon: const Icon(Icons.star_rounded, size: AppIconSize.l, semanticLabel: 'Rate'),
         label: Text('booking_rate'.tr()),
         style: ElevatedButton.styleFrom(
           elevation: 0,
-          backgroundColor: AppColors.accent,
-          foregroundColor: Colors.white,
+          backgroundColor: context.colors.secondary,
+          foregroundColor: context.colors.onSecondary,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.medium),
           ),
           textStyle: AppTextStyles.labelLarge.copyWith(
             fontWeight: FontWeight.w600,
@@ -343,22 +346,20 @@ class _BookingDetailSheetState extends State<_BookingDetailSheet> {
   Widget _ratedBadge() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.m),
       decoration: BoxDecoration(
-        color: AppColors.success.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
+        color: context.ext.success.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(AppRadius.medium),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(SolarIconsOutline.checkCircle, size: 18, color: AppColors.success),
-          const SizedBox(width: 6),
+          Icon(SolarIconsOutline.checkCircle, size: AppIconSize.ml, color: context.ext.success, semanticLabel: 'Rated'),
+          const SizedBox(width: AppSpacing.sm),
           Text(
             'booking_rated'.tr(),
             style: AppTextStyles.labelLarge.copyWith(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.success,
+              color: context.ext.success,
             ),
           ),
         ],
@@ -373,10 +374,10 @@ class _BookingDetailSheetState extends State<_BookingDetailSheet> {
       child: OutlinedButton(
         onPressed: _isCancelling ? null : _handleCancel,
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.error,
-          side: BorderSide(color: AppColors.error.withValues(alpha: 0.3)),
+          foregroundColor: context.colors.error,
+          side: BorderSide(color: context.colors.error.withValues(alpha: 0.3)),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.medium),
           ),
           textStyle: AppTextStyles.labelLarge.copyWith(
             fontWeight: FontWeight.w600,
@@ -388,7 +389,7 @@ class _BookingDetailSheetState extends State<_BookingDetailSheet> {
                 width: 18,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: AppColors.error,
+                  color: context.colors.error,
                 ),
               )
             : Text('booking_cancel_request'.tr()),
@@ -399,25 +400,23 @@ class _BookingDetailSheetState extends State<_BookingDetailSheet> {
   Widget _cancelNotAllowedInfo() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.m, horizontal: AppSpacing.ml),
       decoration: BoxDecoration(
-        color: AppColors.warning.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
+        color: context.ext.warning.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(AppRadius.medium),
         border: Border.all(
-          color: AppColors.warning.withValues(alpha: 0.2),
+          color: context.ext.warning.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
         children: [
-          Icon(SolarIconsOutline.infoCircle, size: 18, color: AppColors.warning),
-          const SizedBox(width: 8),
+          Icon(SolarIconsOutline.infoCircle, size: AppIconSize.ml, color: context.ext.warning, semanticLabel: 'Information'),
+          const SizedBox(width: AppSpacing.s),
           Expanded(
             child: Text(
               'booking_cancel_time_limit'.tr(),
-              style: AppTextStyles.bodySmall.copyWith(
-                fontSize: 13,
-                color: AppColors.warning,
-                fontWeight: FontWeight.w500,
+              style: AppTextStyles.labelMedium.copyWith(
+                color: context.ext.warning,
               ),
             ),
           ),

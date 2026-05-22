@@ -1,10 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_elevation.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
@@ -12,6 +14,7 @@ import 'package:tour_booking/features/auth/upgrade_account/upgrade_account_viewm
 import 'package:tour_booking/features/splash/splash_view_model.dart';
 import 'package:tour_booking/utils/password_validator.dart';
 import 'package:flutter/material.dart' as ui;
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class UpgradeAccountScreen extends StatefulWidget {
   const UpgradeAccountScreen({super.key});
@@ -91,8 +94,8 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<UpgradeAccountViewModel>();
-    final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
+    final scheme = context.colors;
+    final text = context.textStyles;
 
     return Scaffold(
       backgroundColor: scheme.surface,
@@ -100,35 +103,29 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl),
             child: Column(
               children: [
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.s),
                 Text(
                   tr("upgrade_account_subtitle"),
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: text.bodyMedium?.copyWith(
-                    color: scheme.onSurface.withOpacity(0.7),
+                    color: scheme.onSurface.withValues(alpha: 0.7),
                     height: 1.4,
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: AppSpacing.xxxl),
 
                 // --- FORM CARD ---
                 Container(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(AppSpacing.xxl),
                   decoration: BoxDecoration(
                     color: scheme.surface,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: scheme.shadow.withOpacity(0.05),
-                        blurRadius: 24,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
+                    borderRadius: BorderRadius.circular(AppRadius.xxl),
+                    boxShadow: AppElevation.shadowLg,
                   ),
                   child: Form(
                     key: _formKey,
@@ -145,7 +142,7 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
                                     v!.isEmpty ? tr("first_name_required") : null,
                               ),
                             ),
-                            const SizedBox(width: 16),
+                            const SizedBox(width: AppSpacing.l),
                             Expanded(
                               child: _input(
                                 controller: _lastName,
@@ -158,7 +155,7 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
                           ],
                         ),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppSpacing.l),
 
                         _input(
                           controller: _email,
@@ -173,7 +170,7 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
                           },
                         ),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppSpacing.l),
 
                         Directionality(
                           textDirection: ui.TextDirection.ltr,
@@ -187,7 +184,7 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
                           ),
                         ),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppSpacing.l),
 
                         // PASSWORD
                         _input(
@@ -212,11 +209,11 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
                           },
                         ),
 
-                        const SizedBox(height: 8),
+                        const SizedBox(height: AppSpacing.s),
 
                         if (_passwordTouched) ...[PasswordRules(password: _passwordValue)],
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppSpacing.l),
 
                         // CONFIRM PASSWORD
                         _input(
@@ -234,7 +231,7 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
                           },
                         ),
 
-                        const SizedBox(height: 24),
+                        const SizedBox(height: AppSpacing.xxl),
 
                         PrimaryButton(
                           text: tr("upgrade_account_button"),
@@ -246,7 +243,7 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: AppSpacing.xxxl - 2),
               ],
             ),
           ),
@@ -266,8 +263,8 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
     VoidCallback? onToggle,
     String? Function(String?)? validator,
   }) {
-    final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
+    final scheme = context.colors;
+    final text = context.textStyles;
 
     final isLatinField =
         keyboardType == TextInputType.emailAddress || isPassword;
@@ -295,11 +292,13 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
           prefixIcon: Icon(icon, color: scheme.onSurfaceVariant),
           suffixIcon: isPassword
               ? IconButton(
+                  tooltip: 'Toggle password visibility',
                   icon: Icon(
                     isObscure
                         ? SolarIconsOutline.eyeClosed
                         : SolarIconsOutline.eye,
                     color: scheme.onSurfaceVariant,
+                    semanticLabel: isObscure ? 'Show password' : 'Hide password',
                   ),
                   onPressed: onToggle,
                 )

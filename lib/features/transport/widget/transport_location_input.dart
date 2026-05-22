@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/widgets/shake_widget.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 // ─────────────────────────────────────────────────────────────
 // Single location input (used standalone or inside Connected)
@@ -37,11 +39,11 @@ class TransportLocationInput extends StatelessWidget {
 
     final Color borderColor;
     if (showError) {
-      borderColor = AppColors.error.withValues(alpha: 0.5);
+      borderColor = context.colors.error.withValues(alpha: 0.5);
     } else if (hasAddress) {
       borderColor = dotColor.withValues(alpha: 0.4);
     } else {
-      borderColor = AppColors.border;
+      borderColor = context.colors.outline;
     }
 
     // Subtle tinted background when filled
@@ -49,53 +51,57 @@ class TransportLocationInput extends StatelessWidget {
     if (hasAddress) {
       bgColor = dotColor.withValues(alpha: 0.04);
     } else {
-      bgColor = AppColors.surface;
+      bgColor = context.colors.surface;
     }
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        decoration: BoxDecoration(
-          color: showBorder ? bgColor : Colors.transparent,
-          borderRadius: borderRadius ?? BorderRadius.circular(AppRadius.medium),
-          border: showBorder ? Border.all(color: borderColor) : null,
-        ),
-        child: Row(
-          children: [
-            if (showDot) ...[
-              Container(
-                width: 14,
-                height: 14,
-                decoration: BoxDecoration(
-                  color: hasAddress ? dotColor : dotColor.withValues(alpha: 0.25),
-                  shape: BoxShape.circle,
-                  border: hasAddress
-                      ? null
-                      : Border.all(color: dotColor.withValues(alpha: 0.5), width: 1.5),
+    return Semantics(
+      button: true,
+      label: label,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m, vertical: AppSpacing.m),
+          decoration: BoxDecoration(
+            color: showBorder ? bgColor : Colors.transparent,
+            borderRadius: borderRadius ?? BorderRadius.circular(AppRadius.medium),
+            border: showBorder ? Border.all(color: borderColor) : null,
+          ),
+          child: Row(
+            children: [
+              if (showDot) ...[
+                Container(
+                  width: 14,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: hasAddress ? dotColor : dotColor.withValues(alpha: 0.25),
+                    shape: BoxShape.circle,
+                    border: hasAddress
+                        ? null
+                        : Border.all(color: dotColor.withValues(alpha: 0.5), width: 1.5),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.ms),
+              ],
+              Expanded(
+                child: Text(
+                  hasAddress ? address! : label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.labelLarge.copyWith(
+                    fontWeight: hasAddress ? FontWeight.w500 : FontWeight.w400,
+                    color: hasAddress ? context.colors.onSurface : context.ext.textLight,
+                  ),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: AppSpacing.s),
+              Icon(
+                SolarIconsOutline.gps,
+                size: AppIconSize.ml,
+                color: hasAddress ? context.colors.onSurfaceVariant : context.ext.textLight,
+                semanticLabel: 'Location',
+              ),
             ],
-            Expanded(
-              child: Text(
-                hasAddress ? address! : label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontSize: 14,
-                  fontWeight: hasAddress ? FontWeight.w500 : FontWeight.w400,
-                  color: hasAddress ? AppColors.textPrimary : AppColors.textLight,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Icon(
-              SolarIconsOutline.gps,
-              size: 18,
-              color: hasAddress ? AppColors.textSecondary : AppColors.textLight,
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -144,9 +150,9 @@ class ConnectedLocationInputs extends StatelessWidget {
         // Main container
         Container(
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: context.colors.surface,
             borderRadius: BorderRadius.circular(AppRadius.large),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: context.colors.outline),
           ),
           child: IntrinsicHeight(
             child: Row(
@@ -157,21 +163,21 @@ class ConnectedLocationInputs extends StatelessWidget {
                   width: 40,
                   child: Column(
                     children: [
-                      const SizedBox(height: 18),
+                      const SizedBox(height: AppSpacing.lm),
                       // Green dot (pickup)
-                      _dot(AppColors.success, _hasPickup),
+                      _dot(context.ext.success, _hasPickup),
                       // Dashed line
                       Expanded(
                         child: CustomPaint(
                           painter: _DashedVerticalLinePainter(
-                            color: AppColors.border,
+                            color: context.colors.outline,
                           ),
-                          child: const SizedBox(width: 2),
+                          child: const SizedBox(width: AppSpacing.xxs),
                         ),
                       ),
                       // Red dot (dropoff)
-                      _dot(AppColors.error, _hasDropoff),
-                      const SizedBox(height: 18),
+                      _dot(context.colors.error, _hasDropoff),
+                      const SizedBox(height: AppSpacing.lm),
                     ],
                   ),
                 ),
@@ -187,7 +193,7 @@ class ConnectedLocationInputs extends StatelessWidget {
                         child: TransportLocationInput(
                           label: pickupLabel,
                           address: pickupAddress,
-                          dotColor: AppColors.success,
+                          dotColor: context.ext.success,
                           onTap: onPickupTap,
                           showError: showPickupError,
                           showBorder: false,
@@ -196,12 +202,12 @@ class ConnectedLocationInputs extends StatelessWidget {
                       ),
                       // Dashed horizontal divider
                       Padding(
-                        padding: const EdgeInsets.only(right: 12),
+                        padding: const EdgeInsets.only(right: AppSpacing.m),
                         child: SizedBox(
                           height: 1,
                           child: CustomPaint(
                             painter: _DashedHorizontalLinePainter(
-                              color: AppColors.border,
+                              color: context.colors.outline,
                             ),
                             child: const SizedBox(width: double.infinity),
                           ),
@@ -213,7 +219,7 @@ class ConnectedLocationInputs extends StatelessWidget {
                         child: TransportLocationInput(
                           label: dropoffLabel,
                           address: dropoffAddress,
-                          dotColor: AppColors.error,
+                          dotColor: context.colors.error,
                           onTap: onDropoffTap,
                           showError: showDropoffError,
                           showBorder: false,
@@ -231,31 +237,36 @@ class ConnectedLocationInputs extends StatelessWidget {
         // ── Swap button (right-center) ──
         if (onSwap != null)
           Positioned(
-            right: 10,
+            right: AppSpacing.ms,
             top: 0,
             bottom: 0,
             child: Center(
-              child: GestureDetector(
-                onTap: onSwap,
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.border),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.06),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(
-                    SolarIconsOutline.sortVertical,
-                    size: 16,
-                    color: AppColors.textSecondary,
+              child: Semantics(
+                button: true,
+                label: 'Swap pickup and dropoff',
+                child: GestureDetector(
+                  onTap: onSwap,
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: context.colors.surface,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: context.colors.outline),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.06),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      SolarIconsOutline.sortVertical,
+                      size: AppIconSize.m,
+                      color: context.colors.onSurfaceVariant,
+                      semanticLabel: 'Swap locations',
+                    ),
                   ),
                 ),
               ),

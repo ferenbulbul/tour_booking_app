@@ -2,9 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
 
+import 'package:tour_booking/core/theme/app_elevation.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/core/widgets/badgets/app_badge.dart';
 import 'package:tour_booking/core/widgets/badgets/difficulty_badge.dart';
 import 'package:tour_booking/core/widgets/badgets/rating_badge.dart';
@@ -35,30 +37,27 @@ class TourTypeResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final scheme = context.colors;
 
     // District formatting
     final districtText = (district != null && district!.isNotEmpty)
         ? "$city, $district"
         : city;
 
-    return GestureDetector(
-      onTap: onTap,
+    return Semantics(
+      button: true,
+      label: title,
+      child: GestureDetector(
+        onTap: onTap,
       child: RepaintBoundary(
-        // ⚡ SCROLL JANK FIX
+        // Scroll jank fix via RepaintBoundary
         child: Container(
           decoration: BoxDecoration(
             color: scheme.surface,
             borderRadius: BorderRadius.circular(AppRadius.large),
 
-            // ⚡ OPTIMIZED SHADOW (16 → 8, çok büyük fark)
-            boxShadow: [
-              BoxShadow(
-                color: scheme.shadow.withOpacity(.05),
-                blurRadius: 8,
-                offset: const Offset(0, 3),
-              ),
-            ],
+            // Optimized shadow (16 to 8, significant difference)
+            boxShadow: AppElevation.shadowSm,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,29 +70,33 @@ class TourTypeResultCard extends StatelessWidget {
                   top: Radius.circular(AppRadius.large),
                 ),
                 child: Hero(
-                  // ⚡ HERO TAG FIX → Çakışma sorunlarını ortadan kaldırır
+                  // Hero tag fix — prevents hero tag conflicts
                   tag: "tourImage_${id}",
-                  child: CachedNetworkImage(
-                    imageUrl: image,
-                    height: 220,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-
-                    // ⚡ GPU LOAD OPTIMIZATION — resim çözünürlüğünü düşürür
-                    memCacheHeight: 900,
-
-                    fadeInDuration: const Duration(milliseconds: 120),
-
-                    placeholder: (_, __) => Container(
-                      height: 190,
+                  child: Semantics(
+                    image: true,
+                    label: title,
+                    child: CachedNetworkImage(
+                      imageUrl: image,
+                      height: 220,
                       width: double.infinity,
-                      color: scheme.surfaceVariant.withOpacity(.25),
-                    ),
+                      fit: BoxFit.cover,
 
-                    errorWidget: (_, __, ___) => Container(
-                      height: 190,
-                      color: Colors.grey.withOpacity(.3),
-                      child: const Icon(SolarIconsOutline.galleryRemove, size: 40),
+                      // GPU load optimization — reduces image resolution
+                      memCacheHeight: 900,
+
+                      fadeInDuration: const Duration(milliseconds: 120),
+
+                      placeholder: (_, __) => Container(
+                        height: 190,
+                        width: double.infinity,
+                        color: scheme.surfaceContainerHighest.withValues(alpha: 0.25),
+                      ),
+
+                      errorWidget: (_, __, ___) => Container(
+                        height: 190,
+                        color: context.ext.shimmerBase.withValues(alpha: 0.3),
+                        child: const Icon(SolarIconsOutline.galleryRemove, size: AppSpacing.xxxxl, semanticLabel: 'Image not available'),
+                      ),
                     ),
                   ),
                 ),
@@ -113,7 +116,6 @@ class TourTypeResultCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.titleMedium.copyWith(
-                        fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: scheme.onSurface,
                         height: 1.1,
@@ -124,8 +126,8 @@ class TourTypeResultCard extends StatelessWidget {
 
                     /// BADGES
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 6,
+                      spacing: AppSpacing.s,
+                      runSpacing: AppSpacing.sm,
                       children: [
                         RatingBadge(
                           avgRating: avgRating,
@@ -142,6 +144,7 @@ class TourTypeResultCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }

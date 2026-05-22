@@ -2,6 +2,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:solar_icons/solar_icons.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 /// Centralized password validation logic used across auth screens.
 class PasswordValidator {
@@ -72,18 +75,19 @@ class PasswordRules extends StatelessWidget {
   final String password;
   const PasswordRules({super.key, required this.password});
 
-  Widget _item(bool ok, String text) {
+  Widget _item(BuildContext context, bool ok, String text) {
+    final statusColor = ok ? context.ext.success : context.colors.error;
     return Row(
       children: [
         Icon(
           ok ? SolarIconsOutline.checkCircle : SolarIconsOutline.closeCircle,
           size: 16,
-          color: ok ? Colors.green : Colors.red,
+          color: statusColor,
         ),
-        const SizedBox(width: 6),
+        const SizedBox(width: AppSpacing.sm),
         Text(
           text,
-          style: TextStyle(fontSize: 12, color: ok ? Colors.green : Colors.red),
+          style: AppTextStyles.labelSmall.copyWith(color: statusColor),
         ),
       ],
     );
@@ -94,11 +98,12 @@ class PasswordRules extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _item(password.length >= 9, tr('password_too_short')),
-        _item(RegExp(r'[A-Z]').hasMatch(password), tr('password_must_include_upper')),
-        _item(RegExp(r'[a-z]').hasMatch(password), tr('password_must_include_lower')),
-        _item(RegExp(r'\d').hasMatch(password), tr('password_must_include_digit')),
+        _item(context, password.length >= 9, tr('password_too_short')),
+        _item(context, RegExp(r'[A-Z]').hasMatch(password), tr('password_must_include_upper')),
+        _item(context, RegExp(r'[a-z]').hasMatch(password), tr('password_must_include_lower')),
+        _item(context, RegExp(r'\d').hasMatch(password), tr('password_must_include_digit')),
         _item(
+          context,
           RegExp(r'[!@#\$%\^&\*\(\)_\+\-=\[\]{};:"\\|,.<>\/\?]').hasMatch(password),
           tr('password_must_include_special'),
         ),

@@ -13,7 +13,7 @@ class PaymentService {
   Future<BaseResponse<PaymentInitResponse>> initCheckoutForm(
     PaymentRequest req,
   ) async {
-    // http.post ile backend /cf-init çağır
+    // Call backend /cf-init via http.post
     // response -> PaymentInitResponse.fromJson(json)
     var response = _apiClient.post<PaymentInitResponse>(
       path: "/Payments/cf-init",
@@ -27,7 +27,7 @@ class PaymentService {
   Future<BaseResponse<PaymentResultResponse>> getPaymentResult(
     String token,
   ) async {
-    // http.get ile backend /result/{conversationId}
+    // GET backend /result/{conversationId}
     // response -> PaymentResultResponse.fromJson(json)
     var response = _apiClient.get<PaymentResultResponse>(
       path: "/Payments/result",

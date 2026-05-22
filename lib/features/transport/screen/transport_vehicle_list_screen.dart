@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/core/widgets/empty_state.dart';
 import 'package:tour_booking/features/transport/transport_vehicle_list_viewmodel.dart';
@@ -36,9 +37,9 @@ class TransportVehicleListScreen extends StatelessWidget {
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.l),
             itemCount: vm.vehicles.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 14),
+            separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.ml),
             itemBuilder: (_, index) {
               final vehicle = vm.vehicles[index];
               return TransportVehicleCard(

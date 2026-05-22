@@ -3,12 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/auth/forgot_passwords/forgot_password_viewmodel.dart';
 import 'package:tour_booking/utils/password_validator.dart';
 import 'package:flutter/material.dart' as ui;
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class ResetPasswordForm extends StatefulWidget {
   final String email;
@@ -32,7 +34,7 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ForgotPasswordViewModel>();
-    final scheme = Theme.of(context).colorScheme;
+    final scheme = context.colors;
 
     return Form(
       key: _formKey,
@@ -53,11 +55,14 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
                 prefixIcon: Icon(
                   SolarIconsOutline.lock,
                   color: scheme.onSurfaceVariant,
+                  semanticLabel: 'Password',
                 ),
                 suffixIcon: IconButton(
+                  tooltip: 'Toggle password visibility',
                   icon: Icon(
                     _obscure1 ? SolarIconsOutline.eyeClosed : SolarIconsOutline.eye,
                     color: scheme.onSurfaceVariant,
+                    semanticLabel: _obscure1 ? 'Show password' : 'Hide password',
                   ),
                   onPressed: () => setState(() => _obscure1 = !_obscure1),
                 ),
@@ -65,7 +70,7 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.l),
 
           // Confirm Password
           Directionality(
@@ -84,11 +89,14 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
                 prefixIcon: Icon(
                   SolarIconsOutline.lock,
                   color: scheme.onSurfaceVariant,
+                  semanticLabel: 'Confirm password',
                 ),
                 suffixIcon: IconButton(
+                  tooltip: 'Toggle password visibility',
                   icon: Icon(
                     _obscure2 ? SolarIconsOutline.eyeClosed : SolarIconsOutline.eye,
                     color: scheme.onSurfaceVariant,
+                    semanticLabel: _obscure2 ? 'Show password' : 'Hide password',
                   ),
                   onPressed: () => setState(() => _obscure2 = !_obscure2),
                 ),
@@ -96,7 +104,7 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xxl),
 
           vm.isLoading
               ? const CircularProgressIndicator()

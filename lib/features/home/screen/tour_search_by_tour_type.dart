@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
 
-import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/core/widgets/empty_state.dart';
 import 'package:tour_booking/core/widgets/tour_filter_chips.dart';
 import 'package:tour_booking/core/widgets/tour_results_header.dart';
@@ -60,7 +60,7 @@ class _TourSearchResultsByTourTypeScreenState
     final filteredItems = _applyFilters(items);
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.colors.surface,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,27 +73,27 @@ class _TourSearchResultsByTourTypeScreenState
 
             // FILTER CHIPS
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.l, 0, AppSpacing.l, AppSpacing.s),
               child: Row(
                 children: [
                   FilterChipButton(
-                    label: _selectedRating != null ? ratingFilters[_selectedRating]! : "Puan",
+                    label: _selectedRating != null ? ratingFilters[_selectedRating]! : tr('filter_rating'),
                     isActive: _selectedRating != null,
                     onTap: () => showFilterModal(
                       context: context,
-                      title: "Puan",
+                      title: tr('filter_rating'),
                       options: ratingFilters,
                       selected: _selectedRating,
                       onSelected: (v) => setState(() => _selectedRating = v),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.s),
                   FilterChipButton(
-                    label: _selectedDuration != null ? durationFilters[_selectedDuration]! : "Süre",
+                    label: _selectedDuration != null ? durationFilters[_selectedDuration]! : tr('filter_duration'),
                     isActive: _selectedDuration != null,
                     onTap: () => showFilterModal(
                       context: context,
-                      title: "Süre",
+                      title: tr('filter_duration'),
                       options: durationFilters,
                       selected: _selectedDuration,
                       onSelected: (v) => setState(() => _selectedDuration = v),
@@ -106,10 +106,10 @@ class _TourSearchResultsByTourTypeScreenState
             // RESULT COUNT
             if (!isLoading)
               Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.screenPadding, 4, AppSpacing.screenPadding, 8),
+                padding: const EdgeInsets.fromLTRB(AppSpacing.screenPadding, AppSpacing.xs, AppSpacing.screenPadding, AppSpacing.s),
                 child: Text(
-                  "${filteredItems.length} sonuç",
-                  style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary, fontWeight: FontWeight.w500),
+                  tr('filter_result_count', namedArgs: {'count': filteredItems.length.toString()}),
+                  style: AppTextStyles.bodySmall.copyWith(color: context.colors.onSurfaceVariant, fontWeight: FontWeight.w500),
                 ),
               ),
 
@@ -123,9 +123,9 @@ class _TourSearchResultsByTourTypeScreenState
   Widget _buildBody(bool isLoading, String? msg, List items) {
     if (isLoading) {
       return ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding, vertical: AppSpacing.m),
         itemCount: 3,
-        separatorBuilder: (_, __) => const SizedBox(height: 16),
+        separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.l),
         itemBuilder: (_, __) => const TourCardSkeleton(),
       );
     }

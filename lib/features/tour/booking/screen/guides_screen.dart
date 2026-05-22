@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/tour/booking/tour_detail_viewmodel.dart';
 import 'package:tour_booking/features/tour/booking/tour_booking_selection_viewmodel.dart';
@@ -47,7 +49,7 @@ class _GuidesScreenState extends State<GuidesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.colors.surfaceContainerHighest,
       appBar: CommonAppBar(title: tr("guide_selection_title")),
       body: Consumer<TourVehicleGuideViewModel>(
         builder: (context, vm, _) {
@@ -99,9 +101,9 @@ class _GuidesScreenState extends State<GuidesScreen> {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// -----
 // Guide Card
-// ─────────────────────────────────────────────────────────────────────────────
+// -----
 class _GuideCard extends StatelessWidget {
   final Guide guide;
   final VoidCallback? onTap;
@@ -110,50 +112,58 @@ class _GuideCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(14),
+    return Semantics(
+      button: true,
+      label: 'Select guide ${guide.firstName} ${guide.lastName}',
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.ml),
         decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
+          color: context.colors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.ml),
+          border: Border.all(color: context.colors.outline),
         ),
         child: Row(
           children: [
             // Avatar
-            ClipRRect(
-              borderRadius: BorderRadius.circular(26),
-              child: CachedNetworkImage(
-                imageUrl: guide.image ?? "",
-                width: 52,
-                height: 52,
-                fit: BoxFit.cover,
-                placeholder: (_, __) => Container(
+            Semantics(
+              image: true,
+              label: 'Profile photo',
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppRadius.xxl),
+                child: CachedNetworkImage(
+                  imageUrl: guide.image ?? "",
                   width: 52,
                   height: 52,
-                  decoration: const BoxDecoration(
-                    color: AppColors.border,
-                    shape: BoxShape.circle,
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: context.colors.outline,
+                      shape: BoxShape.circle,
+                    ),
                   ),
-                ),
-                errorWidget: (_, __, ___) => Container(
-                  width: 52,
-                  height: 52,
-                  decoration: const BoxDecoration(
-                    color: AppColors.border,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    SolarIconsOutline.user,
-                    color: AppColors.textLight,
-                    size: 24,
+                  errorWidget: (_, __, ___) => Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: context.colors.outline,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      SolarIconsOutline.user,
+                      color: context.ext.textLight,
+                      size: AppIconSize.xl,
+                      semanticLabel: 'Guide',
+                    ),
                   ),
                 ),
               ),
             ),
 
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.m),
 
             // Info
             Expanded(
@@ -174,18 +184,18 @@ class _GuideCard extends StatelessWidget {
                       Text(
                         _formatPrice(guide.price),
                         style: AppTextStyles.titleSmall.copyWith(
-                          color: AppColors.accent,
+                          color: context.colors.secondary,
                         ),
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs),
 
                   // Rating
                   if (guide.avgRating != null && guide.avgRating! > 0)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
+                      padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                       child: Row(
                         children: [
                           ...List.generate(5, (i) {
@@ -200,14 +210,13 @@ class _GuideCard extends StatelessWidget {
                               icon = Icons.star_outline_rounded;
                             }
                             return Icon(icon,
-                                size: 13, color: AppColors.warning);
+                                size: AppIconSize.xsm, color: context.ext.warning, semanticLabel: 'Rating star');
                           }),
-                          const SizedBox(width: 4),
+                          const SizedBox(width: AppSpacing.xs),
                           Text(
                             "${guide.avgRating!.toStringAsFixed(1)} (${guide.ratingCount ?? 0})",
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
-                              fontSize: 11,
+                            style: AppTextStyles.caption.copyWith(
+                              color: context.colors.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -219,14 +228,13 @@ class _GuideCard extends StatelessWidget {
                     Row(
                       children: [
                         Icon(SolarIconsOutline.globus,
-                            size: 13, color: AppColors.textLight),
-                        const SizedBox(width: 4),
+                            size: AppIconSize.xsm, color: context.ext.textLight, semanticLabel: 'Languages'),
+                        const SizedBox(width: AppSpacing.xs),
                         Expanded(
                           child: Text(
                             guide.languages.join(", "),
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
-                              fontSize: 12,
+                            style: AppTextStyles.labelSmall.copyWith(
+                              color: context.colors.onSurfaceVariant,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -238,15 +246,16 @@ class _GuideCard extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.s),
 
             Icon(
               SolarIconsOutline.arrowRight,
-              color: AppColors.textLight,
-              size: 18,
+              color: context.ext.textLight,
+              size: AppIconSize.ml,
             ),
           ],
         ),
+      ),
       ),
     );
   }
@@ -260,86 +269,91 @@ class _GuideCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// -----
 // Without Guide Card
-// ─────────────────────────────────────────────────────────────────────────────
+// -----
 class _WithoutGuideCard extends StatelessWidget {
   final VoidCallback? onTap;
   const _WithoutGuideCard({this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppColors.border.withValues(alpha: 0.4),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                SolarIconsOutline.userMinus,
-                size: 20,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                tr("continue_without_guide"),
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
+    return Semantics(
+      button: true,
+      label: 'Continue without guide',
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.ml, vertical: AppSpacing.ml),
+          decoration: BoxDecoration(
+            color: context.colors.surface,
+            borderRadius: BorderRadius.circular(AppRadius.ml),
+            border: Border.all(color: context.colors.outline),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: context.colors.outline.withValues(alpha: 0.4),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  SolarIconsOutline.userMinus,
+                  size: AppIconSize.l,
+                  color: context.colors.onSurfaceVariant,
+                  semanticLabel: 'No guide',
                 ),
               ),
-            ),
-            Icon(
-              SolarIconsOutline.arrowRight,
-              size: 16,
-              color: AppColors.textLight,
-            ),
-          ],
+              const SizedBox(width: AppSpacing.m),
+              Expanded(
+                child: Text(
+                  tr("continue_without_guide"),
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: context.colors.onSurface,
+                  ),
+                ),
+              ),
+              Icon(
+                SolarIconsOutline.arrowRight,
+                size: AppIconSize.m,
+                color: context.ext.textLight,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// -----
 // No Guide Found
-// ─────────────────────────────────────────────────────────────────────────────
+// -----
 class _NoGuideFoundCard extends StatelessWidget {
   const _NoGuideFoundCard();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSpacing.ml),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        color: context.colors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.ml),
+        border: Border.all(color: context.colors.outline),
       ),
       child: Row(
         children: [
           Icon(SolarIconsOutline.infoCircle,
-              size: 18, color: AppColors.textSecondary),
-          const SizedBox(width: 10),
+              size: AppIconSize.ml, color: context.colors.onSurfaceVariant, semanticLabel: 'Information'),
+          const SizedBox(width: AppSpacing.ms),
           Expanded(
             child: Text(
               tr("no_guide_available_message"),
               style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
+                color: context.colors.onSurfaceVariant,
               ),
             ),
           ),

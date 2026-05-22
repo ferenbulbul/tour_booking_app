@@ -1,10 +1,13 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/models/profile/profile_response.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
 import 'package:tour_booking/navigation/app_router.dart';
 
-class ContactInfoViewModel extends ChangeNotifier {
-  final TourService _tourService = TourService();
+class ContactInfoViewModel extends BaseViewModel {
+  final TourService _tourService = ServiceLocator.instance.tourService;
 
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
@@ -19,7 +22,7 @@ class ContactInfoViewModel extends ChangeNotifier {
   String get email => emailController.text.trim();
   String get phone => phoneController.text.trim();
 
-  /// Kayıtlı (non-guest) kullanıcı ise profilden doldur
+  /// Prefill from profile if user is registered (non-guest)
   Future<void> prefillFromProfile() async {
     if (splashViewModel.isGuest) return;
 
@@ -33,8 +36,9 @@ class ContactInfoViewModel extends ChangeNotifier {
         _prefillFromProfileResponse(profile);
         isPrefilled = true;
       }
-    } catch (_) {
-      // Prefill başarısız — kullanıcı manuel doldursun
+    } catch (e) {
+      debugPrint('ContactInfoViewModel.prefillFromProfile: $e');
+      // Prefill failed — user fills in manually
     } finally {
       isLoading = false;
       notifyListeners();
@@ -42,7 +46,7 @@ class ContactInfoViewModel extends ChangeNotifier {
   }
 
   void _prefillFromProfileResponse(ProfileResponse profile) {
-    // fullName "Ad Soyad" şeklinde gelebilir
+    // fullName may come as "FirstName LastName"
     final parts = profile.fullName.split(' ');
     if (parts.isNotEmpty) {
       firstNameController.text = parts.first;
@@ -55,26 +59,26 @@ class ContactInfoViewModel extends ChangeNotifier {
   }
 
   String? validateFirstName(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Ad zorunludur';
+    if (value == null || value.trim().isEmpty) return tr('validation_first_name_required');
     return null;
   }
 
   String? validateLastName(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Soyad zorunludur';
+    if (value == null || value.trim().isEmpty) return tr('validation_last_name_required');
     return null;
   }
 
   String? validateEmail(String? value) {
-    if (value == null || value.trim().isEmpty) return 'E-posta zorunludur';
+    if (value == null || value.trim().isEmpty) return tr('validation_email_required');
     final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-    if (!emailRegex.hasMatch(value.trim())) return 'Geçerli bir e-posta giriniz';
+    if (!emailRegex.hasMatch(value.trim())) return tr('validation_email_invalid');
     return null;
   }
 
   String? validatePhone(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Telefon zorunludur';
+    if (value == null || value.trim().isEmpty) return tr('validation_phone_required');
     final digits = value.replaceAll(RegExp(r'[^\d+]'), '');
-    if (digits.length < 10) return 'Geçerli bir telefon numarası giriniz';
+    if (digits.length < 10) return tr('validation_phone_invalid');
     return null;
   }
 

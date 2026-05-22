@@ -7,7 +7,7 @@ class LocationValidationResult {
 
 class LocationValidator {
   // ------------------------------------------------------------
-  // TEMİZLEME
+  // NORMALIZATION
   // ------------------------------------------------------------
   static String normalize(String s) {
     return s
@@ -26,7 +26,7 @@ class LocationValidator {
   }
 
   // ------------------------------------------------------------
-  // CENTER / DOWNTOWN EŞ KELİMELERİ GLOBAL
+  // CENTER / DOWNTOWN SYNONYMS (GLOBAL)
   // ------------------------------------------------------------
   static const centerWords = [
     "merkez",
@@ -42,7 +42,7 @@ class LocationValidator {
   ];
 
   // ------------------------------------------------------------
-  // API’den gelen DISTRICT → merkez eşleştirmesi
+  // API DISTRICT -> center matching
   // ------------------------------------------------------------
   static bool isGlobalCenterMatch(
     String apiDist,
@@ -53,18 +53,18 @@ class LocationValidator {
     apiCity = apiCity.toLowerCase().trim();
     wantDist = wantDist.toLowerCase().trim();
 
-    // 1) Sadece "merkez / center" türleri
+    // 1) Only "merkez / center" type matches
     for (final w in centerWords) {
       if (apiDist == w) return true;
       if (apiDist == "$apiCity $w") return true;
     }
 
-    // 2) Eğer API “{city} merkez” diyorsa
+    // 2) If API returns “{city} merkez”
     if (apiDist.contains(apiCity) && apiDist.contains("merkez")) {
       return true;
     }
 
-    // 3) Beklenen district şehir adı ise (= merkez)
+    // 3) If expected district is the city name itself (= center)
     if (wantDist == apiCity && apiDist.contains("merkez")) {
       return true;
     }
@@ -111,7 +111,7 @@ class LocationValidator {
   }
 
   // ------------------------------------------------------------
-  // 🔥 FINAL VALIDATION
+  // FINAL VALIDATION
   // ------------------------------------------------------------
   static LocationValidationResult validate({
     required List<dynamic> components,
@@ -134,7 +134,7 @@ class LocationValidator {
     final wantCity = normalize(expectedCity);
     final wantDist = normalize(expectedDistrict);
 
-    // 1) Şehir uyuşmazsa direkt fail
+    // 1) Fail immediately if city doesn't match
     if (apiCity != wantCity) {
       return LocationValidationResult(
         isValid: false,
@@ -143,10 +143,10 @@ class LocationValidator {
       );
     }
 
-    // 2) İlçe tam eşleşme
+    // 2) Exact district match
     bool match = apiDist == wantDist;
 
-    // 3) Global otomatik merkez eşleştirmesi
+    // 3) Global automatic center matching
     if (!match) {
       if (isGlobalCenterMatch(apiDistRaw, apiCityRaw, wantDist)) {
         match = true;

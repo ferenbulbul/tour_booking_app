@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// 📦 Model sınıfı
+/// Device info model class
 class DeviceInfoModel {
   final String deviceId;
   final String deviceModel;
@@ -16,12 +16,12 @@ class DeviceInfoModel {
       'DeviceInfo(deviceId: $deviceId, deviceModel: $deviceModel)';
 }
 
-/// 🧩 Yardımcı sınıf
+/// Device info helper class
 class DeviceInfoHelper {
   static final DeviceInfoPlugin _deviceInfo = DeviceInfoPlugin();
   static final _uuid = const Uuid();
 
-  /// 🔹 Platforma göre cihaz bilgilerini döndürür
+  /// Returns device information based on the platform
   static Future<DeviceInfoModel> getDevice() async {
     try {
       String deviceId = "unknown";
@@ -36,14 +36,14 @@ class DeviceInfoHelper {
         deviceId = info.identifierForVendor ?? await _getPersistentUUID();
         deviceModel = "${info.name} (${info.systemName} ${info.systemVersion})";
       } else {
-        // Web, Desktop veya diğer platformlar
+        // Web, Desktop, or other platforms
         deviceId = await _getPersistentUUID();
         deviceModel = "Unknown Platform";
       }
 
       return DeviceInfoModel(deviceId: deviceId, deviceModel: deviceModel);
     } catch (e) {
-      debugPrint("⚠️ Device info error: $e");
+      debugPrint("Device info error: $e");
       return DeviceInfoModel(
         deviceId: await _getPersistentUUID(),
         deviceModel: "Error",
@@ -51,7 +51,7 @@ class DeviceInfoHelper {
     }
   }
 
-  /// 🔹 Persistent UUID fallback (cihaz bazlı kimlik)
+  /// Persistent UUID fallback (device-based identity)
   static Future<String> _getPersistentUUID() async {
     final prefs = await SharedPreferences.getInstance();
     var id = prefs.getString('device_id');

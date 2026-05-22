@@ -10,7 +10,7 @@ class Guide with _$Guide {
     required num price,
     @Default(<String>[])
     List<String>
-    languages, // backend null dönerse map'lerken boş listeye düşebiliriz
+    languages, // Default to empty list if backend returns null
     required String firstName,
     required String lastName,
     String? image,

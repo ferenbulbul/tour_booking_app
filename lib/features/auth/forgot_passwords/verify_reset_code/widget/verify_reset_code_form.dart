@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/pin_theme_helper.dart';
 import 'package:tour_booking/features/auth/forgot_passwords/forgot_password_viewmodel.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class VerifyResetCodeForm extends StatefulWidget {
   final String email;
@@ -47,8 +49,8 @@ class _VerifyResetCodeFormState extends State<VerifyResetCodeForm> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ForgotPasswordViewModel>();
-    final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
+    final scheme = context.colors;
+    final text = context.textStyles;
 
     final defaultPin = PinThemeHelper.defaultTheme(context);
     final focusedPin = PinThemeHelper.focusedTheme(context);
@@ -59,12 +61,12 @@ class _VerifyResetCodeFormState extends State<VerifyResetCodeForm> {
         Text(
           tr("enter_code_instruction"),
           style: text.bodyLarge?.copyWith(
-            color: scheme.onSurface.withOpacity(0.7),
+            color: scheme.onSurface.withValues(alpha: 0.7),
           ),
           textAlign: TextAlign.center,
         ),
 
-        const SizedBox(height: 28),
+        const SizedBox(height: AppSpacing.xxxl - 4),
 
         Center(
           child: Pinput(
@@ -78,30 +80,34 @@ class _VerifyResetCodeFormState extends State<VerifyResetCodeForm> {
           ),
         ),
 
-        const SizedBox(height: 32),
+        const SizedBox(height: AppSpacing.xxxl),
 
         PrimaryButton(text: tr("verify"), onPressed: _verify),
 
-        const SizedBox(height: 28),
+        const SizedBox(height: AppSpacing.xxxl - 4),
 
-        // 🔥 TIMER & RESEND (TextButton gibi, underline yok)
+        // TIMER & RESEND (no underline, TextButton style)
         Center(
-          child: GestureDetector(
-            onTap: vm.resendCooldown == 0
-                ? () => vm.resendResetCode(widget.email)
-                : null,
-            child: Text(
-              vm.resendCooldown == 0
-                  ? tr("resend_code")
-                  : "${tr("resend_in_prefix")} "
-                        "${vm.resendCooldown ~/ 60}:"
-                        "${(vm.resendCooldown % 60).toString().padLeft(2, '0')}",
-              style: text.labelLarge?.copyWith(
-                color: vm.resendCooldown == 0
-                    ? scheme.primary
-                    : scheme.onSurface.withOpacity(0.35),
-                fontWeight: FontWeight.w600,
-                decoration: TextDecoration.none,
+          child: Semantics(
+            button: true,
+            label: 'Resend verification code',
+            child: GestureDetector(
+              onTap: vm.resendCooldown == 0
+                  ? () => vm.resendResetCode(widget.email)
+                  : null,
+              child: Text(
+                vm.resendCooldown == 0
+                    ? tr("resend_code")
+                    : "${tr("resend_in_prefix")} "
+                          "${vm.resendCooldown ~/ 60}:"
+                          "${(vm.resendCooldown % 60).toString().padLeft(2, '0')}",
+                style: text.labelLarge?.copyWith(
+                  color: vm.resendCooldown == 0
+                      ? scheme.primary
+                      : scheme.onSurface.withValues(alpha: 0.35),
+                  fontWeight: FontWeight.w600,
+                  decoration: TextDecoration.none,
+                ),
               ),
             ),
           ),

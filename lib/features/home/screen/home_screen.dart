@@ -9,8 +9,9 @@ import 'package:tour_booking/features/splash/splash_view_model.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/core/widgets/section_title.dart';
 import 'package:tour_booking/features/home/widget/featured_tour_points.dart';
 import 'package:tour_booking/features/home/widget/popular_cities.dart';
@@ -43,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    // Tüm başlangıç işlemlerini güvenli sırayla başlatıyoruz
+    // Initialize all startup tasks in safe order
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initialize();
     });
@@ -56,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   // ============================================================
-  // 🔥 INITIALIZE — Her şeyin doğru sırayla başlaması
+  // INITIALIZE — Ensure everything starts in correct order
   // ============================================================
   Future<void> _initialize() async {
     if (_initialized) return;
@@ -69,18 +70,30 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // ROLE LOAD
     _loadUserRole();
 
-    // CONTINUE IN CITY — sadece hedef şehirleri belirle (API çağrısı yok)
-    context.read<HomeViewModel>().loadCityTargets();
+    // HOME DATA — fetch featured tours + continue-in-city targets
+    final homeVm = context.read<HomeViewModel>();
+    homeVm.init();
+    homeVm.loadCityTargets();
 
     // LOCATION CHECK + NEARBY
     await _checkLocation();
+    if (!mounted) return;
     _fetchNearbyIfPermitted();
 
     // ASK PERMISSIONS ONLY WHEN NEEDED
     await _askMissingPermissions();
+    if (!mounted) return;
 
-    // Onboarding sonrasi login bottom sheet goster
+    // Show login bottom sheet after onboarding
     _maybeShowLoginSheet();
+  }
+
+  // Called when user transitions from guest to logged-in
+  void _refreshAfterAuth() {
+    context.read<HomeViewModel>().init();
+    context.read<HomeViewModel>().loadCityTargets();
+    context.read<ProfileViewModel>().fetchProfile();
+    _fetchNearbyIfPermitted();
   }
 
   void _maybeShowLoginSheet() {
@@ -96,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   // ============================================================
-  // 🔥 User Role Load
+  // User Role Load
   // ============================================================
   void _loadUserRole() {
     final role = context.read<SplashViewModel>().role ?? UserRole.customer;
@@ -104,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   // ============================================================
-  // 🔥 LOCATION CHECK
+  // LOCATION CHECK
   // ============================================================
   Future<void> _checkLocation() async {
     if (_currentRole == null) return;
@@ -115,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   // ============================================================
-  // 🔥 NEARBY — konum izni varsa yakın turları getir
+  // NEARBY — fetch nearby tours if location permission granted
   // ============================================================
   void _fetchNearbyIfPermitted() {
     final locVm = context.read<LocationViewModel>();
@@ -132,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   // ============================================================
-  // 🔥 Ask only missing permissions
+  // Ask only missing permissions
   // ============================================================
   Future<void> _askMissingPermissions() async {
     final accepted = await OneSignal.Notifications.requestPermission(false);
@@ -145,26 +158,39 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   // ============================================================
-  // 🔥 APP RESUME → izin + konum + profil yenile
+  // APP RESUME — refresh permissions + location + profile
   // ============================================================
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.resumed && mounted) {
       context.read<PermissionsViewModel>().loadPermissions();
       await _checkLocation();
+      if (!mounted) return;
       _fetchNearbyIfPermitted();
     }
   }
 
   // ============================================================
-  // 🔥 UI
+  // UI
   // ============================================================
   @override
   Widget build(BuildContext context) {
+    // Detect auth state changes (e.g., guest → customer after login)
+    final latestRole = context.select<SplashViewModel, UserRole?>((vm) => vm.role);
+    if (latestRole != null && latestRole != _currentRole) {
+      final wasGuest = _currentRole == UserRole.guest;
+      _currentRole = latestRole;
+      if (wasGuest) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _refreshAfterAuth();
+        });
+      }
+    }
+
     if (_currentRole == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    final scheme = Theme.of(context).colorScheme;
+    final scheme = context.colors;
     return Scaffold(
       backgroundColor: scheme.surface,
       body: SafeArea(
@@ -173,27 +199,32 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             // FIXED TOP BAR — notification icon + search bar
             Padding(
               padding: const EdgeInsets.fromLTRB(
-                AppSpacing.screenPadding, 12, AppSpacing.screenPadding, 16,
+                AppSpacing.screenPadding, AppSpacing.m, AppSpacing.screenPadding, AppSpacing.l,
               ),
               child: Row(
                 children: [
                   const Expanded(child: FakeSearchBar()),
                   const SizedBox(width: AppSpacing.m),
-                  GestureDetector(
-                    onTap: () {
-                      // TODO: bildirimler sayfası
-                    },
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: AppColors.background,
-                        borderRadius: BorderRadius.circular(AppRadius.medium),
-                      ),
-                      child: const Icon(
-                        SolarIconsOutline.bell,
-                        color: AppColors.textPrimary,
-                        size: 24,
+                  Semantics(
+                    button: true,
+                    label: 'Notifications',
+                    child: GestureDetector(
+                      onTap: () {
+                        // TODO: notifications page
+                      },
+                      child: Container(
+                        width: 44.0,
+                        height: 44.0,
+                        decoration: BoxDecoration(
+                          color: context.colors.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(AppRadius.medium),
+                        ),
+                        child: Icon(
+                          SolarIconsOutline.bell,
+                          color: context.colors.onSurface,
+                          size: AppIconSize.xl,
+                          semanticLabel: 'Notifications',
+                        ),
                       ),
                     ),
                   ),
@@ -229,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               child: SizedBox(height: AppSpacing.sectionSpacing),
             ),
 
-            // NEARBY TOURS (konum izni varsa)
+            // NEARBY TOURS (if location permission granted)
             const SliverToBoxAdapter(
               child: RepaintBoundary(child: NearbyTourPointsWidget()),
             ),
@@ -237,7 +268,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               child: SizedBox(height: AppSpacing.sectionSpacing),
             ),
 
-            // CONTINUE IN CITY — lazy loaded: her bölüm görünürse kendi turlarını çeker
+            // CONTINUE IN CITY — lazy loaded: each section fetches its own tours when visible
             ...context.select<HomeViewModel, List<CityToursSection>>(
               (vm) => vm.citySections,
             ).map((section) => SliverToBoxAdapter(

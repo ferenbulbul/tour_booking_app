@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:shimmer/shimmer.dart' as shimmer;
 
 import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class CategoryCardSkeleton extends StatelessWidget {
   const CategoryCardSkeleton({super.key});
@@ -11,7 +11,7 @@ class CategoryCardSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      padding: EdgeInsets.zero, // ❗ HomeScreen spacing'ine dokunma
+      padding: EdgeInsets.zero,
       primary: false,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -20,7 +20,7 @@ class CategoryCardSkeleton extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: AppSpacing.m,
         mainAxisSpacing: AppSpacing.m,
-        childAspectRatio: 0.95, // 🔥 GERÇEK KARTLA AYNI
+        childAspectRatio: 0.95, // Matches the actual card ratio
       ),
       itemBuilder: (_, __) => const _CategoryGridSkeletonItem(),
     );
@@ -32,11 +32,9 @@ class _CategoryGridSkeletonItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     return shimmer.Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
+      baseColor: context.ext.shimmerBase,
+      highlightColor: context.ext.shimmerHighlight,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -44,7 +42,7 @@ class _CategoryGridSkeletonItem extends StatelessWidget {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: context.ext.shimmerBase,
                 borderRadius: BorderRadius.circular(AppRadius.large),
               ),
             ),
@@ -52,22 +50,22 @@ class _CategoryGridSkeletonItem extends StatelessWidget {
 
           const SizedBox(height: AppSpacing.xs),
 
-          // TITLE PLACEHOLDER (2 satır hissi)
+          // TITLE PLACEHOLDER (2 line effect)
           Container(
             height: 14,
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(6),
+              color: context.ext.shimmerBase,
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.sm),
           Container(
             height: 14,
             width: 80,
-            margin: const EdgeInsets.symmetric(horizontal: 32),
+            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xxxl),
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(6),
+              color: context.ext.shimmerBase,
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
           ),
         ],

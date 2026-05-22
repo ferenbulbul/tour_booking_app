@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
 
-import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/core/widgets/empty_state.dart';
 import 'package:tour_booking/core/widgets/tour_filter_chips.dart';
 import 'package:tour_booking/core/widgets/tour_results_header.dart';
@@ -15,14 +15,14 @@ import 'package:tour_booking/features/home/widget/nearby_skeleton.dart';
 import 'package:tour_booking/features/tour/search_result/widget/tour_search_result_card.dart';
 import 'package:tour_booking/models/nearby_tourpoint/nearby_tour_point_dto.dart';
 
-class NearbyPointsPage extends StatefulWidget {
-  const NearbyPointsPage({super.key});
+class NearbyPointsScreen extends StatefulWidget {
+  const NearbyPointsScreen({super.key});
 
   @override
-  State<NearbyPointsPage> createState() => _NearbyPointsPageState();
+  State<NearbyPointsScreen> createState() => _NearbyPointsScreenState();
 }
 
-class _NearbyPointsPageState extends State<NearbyPointsPage> {
+class _NearbyPointsScreenState extends State<NearbyPointsScreen> {
   String? _selectedCategory;
   String? _selectedDuration;
   String? _selectedRating;
@@ -30,8 +30,14 @@ class _NearbyPointsPageState extends State<NearbyPointsPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final pos = context.read<LocationViewModel>().currentPosition;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final locVm = context.read<LocationViewModel>();
+
+      // Force send location to server when entering Nearby page
+      await locVm.sendLocationUpdate();
+
+      if (!mounted) return;
+      final pos = locVm.currentPosition;
       if (pos != null) {
         context.read<HomeViewModel>().fetchNearbyTourPoints(
               latitude: pos.latitude,
@@ -68,7 +74,7 @@ class _NearbyPointsPageState extends State<NearbyPointsPage> {
     final categories = _getCategoryOptions(vm.nearbyPoints);
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.colors.surface,
       body: SafeArea(
         child: Column(
           children: [
@@ -81,40 +87,40 @@ class _NearbyPointsPageState extends State<NearbyPointsPage> {
 
             // FILTER CHIPS
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.l, 0, AppSpacing.l, AppSpacing.s),
               child: Row(
                 children: [
                   FilterChipButton(
-                    label: _selectedRating != null ? ratingFilters[_selectedRating]! : "Puan",
+                    label: _selectedRating != null ? ratingFilters[_selectedRating]! : tr('filter_rating'),
                     isActive: _selectedRating != null,
                     onTap: () => showFilterModal(
                       context: context,
-                      title: "Puan",
+                      title: tr('filter_rating'),
                       options: ratingFilters,
                       selected: _selectedRating,
                       onSelected: (v) => setState(() => _selectedRating = v),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.s),
                   FilterChipButton(
-                    label: _selectedDuration != null ? durationFilters[_selectedDuration]! : "Süre",
+                    label: _selectedDuration != null ? durationFilters[_selectedDuration]! : tr('filter_duration'),
                     isActive: _selectedDuration != null,
                     onTap: () => showFilterModal(
                       context: context,
-                      title: "Süre",
+                      title: tr('filter_duration'),
                       options: durationFilters,
                       selected: _selectedDuration,
                       onSelected: (v) => setState(() => _selectedDuration = v),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.s),
                   if (categories.length > 1)
                     FilterChipButton(
-                      label: _selectedCategory ?? "Kategori",
+                      label: _selectedCategory ?? tr('category'),
                       isActive: _selectedCategory != null,
                       onTap: () => showFilterModal(
                         context: context,
-                        title: "Kategori",
+                        title: tr('category'),
                         options: {for (var c in categories) c: c},
                         selected: _selectedCategory,
                         onSelected: (v) => setState(() => _selectedCategory = v),
@@ -133,9 +139,9 @@ class _NearbyPointsPageState extends State<NearbyPointsPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "${filteredPoints.length} sonuç",
+                    tr('filter_result_count', namedArgs: {'count': filteredPoints.length.toString()}),
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.colors.onSurfaceVariant,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

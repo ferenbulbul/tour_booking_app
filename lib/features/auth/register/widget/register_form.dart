@@ -7,6 +7,9 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/auth/register/register_viewmodel.dart';
@@ -14,6 +17,7 @@ import 'package:tour_booking/features/splash/splash_view_model.dart';
 import 'package:tour_booking/models/register/register_request.dart';
 import 'package:tour_booking/utils/password_validator.dart';
 import 'package:flutter/material.dart' as ui;
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({super.key});
@@ -88,10 +92,8 @@ class _RegisterFormState extends State<RegisterForm> {
     if (result.isSuccess && result.data != null) {
       UIHelper.showSuccess(context, tr("register_success"));
 
-      // 🔥 ESKİ HALİ: await splashVM.initializeApp(); (İnternete gidiyordu)
-
-      // ✅ YENİ HALİ: Elimizdeki taze veriyi direkt modele basıyoruz.
-      // Bu metod notifyListeners() tetiklediği için GoRouter anında /email-confirmed sayfasına uçuracak.
+      // Push fresh data directly to the model instead of re-fetching from server.
+      // This triggers notifyListeners() so GoRouter will navigate to /email-confirmed instantly.
 
       await splashVM.saveAuthData(result.data!);
     } else {
@@ -107,8 +109,8 @@ class _RegisterFormState extends State<RegisterForm> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<RegisterViewModel>();
-    final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
+    final scheme = context.colors;
+    final text = context.textStyles;
 
     return Form(
       key: _formKey,
@@ -125,7 +127,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       v!.isEmpty ? tr("first_name_required") : null,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.l),
               Expanded(
                 child: _input(
                   controller: _lastName,
@@ -138,7 +140,7 @@ class _RegisterFormState extends State<RegisterForm> {
             ],
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.l),
 
           _input(
             controller: _email,
@@ -153,7 +155,7 @@ class _RegisterFormState extends State<RegisterForm> {
             },
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.l),
 
           Directionality(
             textDirection: ui.TextDirection.ltr,
@@ -173,7 +175,7 @@ class _RegisterFormState extends State<RegisterForm> {
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.l),
 
           // PASSWORD
           _input(
@@ -198,12 +200,12 @@ class _RegisterFormState extends State<RegisterForm> {
             },
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.s),
 
-          // 🔐 PASSWORD RULES (YENİ EKLENEN)
+          // PASSWORD RULES
           if (_passwordTouched) ...[PasswordRules(password: _passwordValue)],
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.l),
 
           // CONFIRM PASSWORD
           _input(
@@ -221,7 +223,7 @@ class _RegisterFormState extends State<RegisterForm> {
             },
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.l),
 
           _legalCheckbox(
             value: _kvkkAccepted,
@@ -230,7 +232,7 @@ class _RegisterFormState extends State<RegisterForm> {
             onTap: () => context.push('/legal/kvkk'),
           ),
 
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
 
           _legalCheckbox(
             value: _privacyAccepted,
@@ -239,7 +241,7 @@ class _RegisterFormState extends State<RegisterForm> {
             onTap: () => context.push('/legal/privacy-policy'),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.xl),
 
           PrimaryButton(
             text: tr("register"),
@@ -257,25 +259,28 @@ class _RegisterFormState extends State<RegisterForm> {
     required ValueChanged<bool?> onChanged,
     required VoidCallback onTap,
   }) {
-    final scheme = Theme.of(context).colorScheme;
+    final scheme = context.colors;
 
-    return InkWell(
+    return Semantics(
+      button: true,
+      label: label,
+      child: InkWell(
       onTap: () => onChanged(!value),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppRadius.small),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-              width: 22,
-              height: 22,
+              width: AppIconSize.xl - 2,
+              height: AppIconSize.xl - 2,
               child: Checkbox(
                 value: value,
                 onChanged: onChanged,
                 activeColor: scheme.primary,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(AppRadius.xs),
                 ),
                 side: BorderSide(
                   color: scheme.onSurfaceVariant,
@@ -285,16 +290,20 @@ class _RegisterFormState extends State<RegisterForm> {
                 visualDensity: VisualDensity.compact,
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: AppSpacing.ms),
             Expanded(
-              child: GestureDetector(
-                onTap: onTap,
-                child: Text(
-                  label,
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: scheme.primary,
-                    decoration: TextDecoration.underline,
-                    decorationColor: scheme.primary,
+              child: Semantics(
+                button: true,
+                label: 'View terms and conditions',
+                child: GestureDetector(
+                  onTap: onTap,
+                  child: Text(
+                    label,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: scheme.primary,
+                      decoration: TextDecoration.underline,
+                      decorationColor: scheme.primary,
+                    ),
                   ),
                 ),
               ),
@@ -302,6 +311,7 @@ class _RegisterFormState extends State<RegisterForm> {
           ],
         ),
       ),
+    ),
     );
   }
 
@@ -316,8 +326,8 @@ class _RegisterFormState extends State<RegisterForm> {
     VoidCallback? onToggle,
     String? Function(String?)? validator,
   }) {
-    final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
+    final scheme = context.colors;
+    final text = context.textStyles;
 
     final isLatinField =
         keyboardType == TextInputType.emailAddress || isPassword;
@@ -345,11 +355,13 @@ class _RegisterFormState extends State<RegisterForm> {
           prefixIcon: Icon(icon, color: scheme.onSurfaceVariant),
           suffixIcon: isPassword
               ? IconButton(
+                  tooltip: 'Toggle password visibility',
                   icon: Icon(
                     isObscure
                         ? SolarIconsOutline.eyeClosed
                         : SolarIconsOutline.eye,
                     color: scheme.onSurfaceVariant,
+                    semanticLabel: isObscure ? 'Show password' : 'Hide password',
                   ),
                   onPressed: onToggle,
                 )

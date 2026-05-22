@@ -1,29 +1,32 @@
-import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/core/network/handle_response.dart';
 import 'package:tour_booking/models/featured_tour_point/featured_tour_point_dto.dart';
 import 'package:tour_booking/models/featured_tour_point_list/featured_tour_point_list_dto.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
 
-class FavoriteViewModel extends ChangeNotifier {
-  final TourService _service = TourService();
+class FavoriteViewModel extends BaseViewModel {
+  final TourService _service = ServiceLocator.instance.tourService;
 
   bool isLoading = false;
   String? message;
 
-  /// Favoriler listesi (ekran için)
+  /// Favorites list (for the screen)
   List<FeaturedTourPointDto> favorites = [];
 
-  /// 🔥 GERÇEK SOURCE OF TRUTH
+  /// Actual source of truth
   final Set<String> _favoriteIds = {};
 
   Set<String> get favoriteIds => _favoriteIds;
 
-  /// ❤️ Favori mi?
+  /// Is this item a favorite?
   bool isFavorite(String id) {
     return _favoriteIds.contains(id);
   }
 
-  /// 📥 Favorileri API'den çek
+  /// Fetch favorites from API
   Future<void> fetchFavorites() async {
     try {
       isLoading = true;
@@ -43,23 +46,24 @@ class FavoriteViewModel extends ChangeNotifier {
       } else {
         favorites = [];
         _favoriteIds.clear();
-        message = resp.message ?? "Favoriler alınamadı";
+        message = resp.message ?? tr('error_favorites_failed');
       }
     } catch (e) {
+      debugPrint('FavoriteViewModel.fetchFavorites: $e');
       favorites = [];
       _favoriteIds.clear();
-      message = e.toString();
+      message = tr('error_generic');
     } finally {
       isLoading = false;
       notifyListeners();
     }
   }
 
-  /// 🔁 FAVORİ EKLE / ÇIKAR (HER YERDE AYNI)
+  /// Toggle favorite add/remove (universal)
   Future<void> toggleFavorite(String id) async {
     final wasFavorite = _favoriteIds.contains(id);
 
-    // 🔥 OPTIMISTIC UPDATE
+    // OPTIMISTIC UPDATE
     FeaturedTourPointDto? removedItem;
     if (wasFavorite) {
       _favoriteIds.remove(id);
@@ -75,9 +79,10 @@ class FavoriteViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _service.ToggleFavorite(id);
+      await _service.toggleFavorite(id);
     } catch (e) {
-      // 🔴 ROLLBACK
+      debugPrint('FavoriteViewModel.toggleFavorite: $e');
+      // ROLLBACK
       if (wasFavorite) {
         _favoriteIds.add(id);
         if (removedItem != null) {

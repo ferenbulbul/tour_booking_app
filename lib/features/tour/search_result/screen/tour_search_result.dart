@@ -3,9 +3,9 @@ import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/empty_state.dart';
 import 'package:tour_booking/core/widgets/tour_filter_chips.dart';
@@ -109,7 +109,7 @@ class _TourSearchResultsScreenState extends State<TourSearchResultsScreen> {
     final categories = _getCategoryOptions(vm.tourPoints);
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.colors.surface,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,40 +122,40 @@ class _TourSearchResultsScreenState extends State<TourSearchResultsScreen> {
 
             // FILTER CHIPS
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.l, 0, AppSpacing.l, AppSpacing.s),
               child: Row(
                 children: [
                   FilterChipButton(
-                    label: _selectedRating != null ? ratingFilters[_selectedRating]! : "Puan",
+                    label: _selectedRating != null ? ratingFilters[_selectedRating]! : tr('filter_rating'),
                     isActive: _selectedRating != null,
                     onTap: () => showFilterModal(
                       context: context,
-                      title: "Puan",
+                      title: tr('filter_rating'),
                       options: ratingFilters,
                       selected: _selectedRating,
                       onSelected: (v) => setState(() => _selectedRating = v),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.s),
                   FilterChipButton(
-                    label: _selectedDuration != null ? durationFilters[_selectedDuration]! : "Süre",
+                    label: _selectedDuration != null ? durationFilters[_selectedDuration]! : tr('filter_duration'),
                     isActive: _selectedDuration != null,
                     onTap: () => showFilterModal(
                       context: context,
-                      title: "Süre",
+                      title: tr('filter_duration'),
                       options: durationFilters,
                       selected: _selectedDuration,
                       onSelected: (v) => setState(() => _selectedDuration = v),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.s),
                   if (categories.length > 1)
                     FilterChipButton(
-                      label: _selectedCategory ?? "Kategori",
+                      label: _selectedCategory ?? tr('category'),
                       isActive: _selectedCategory != null,
                       onTap: () => showFilterModal(
                         context: context,
-                        title: "Kategori",
+                        title: tr('category'),
                         options: {for (var c in categories) c: c},
                         selected: _selectedCategory,
                         onSelected: (v) => setState(() => _selectedCategory = v),
@@ -168,10 +168,10 @@ class _TourSearchResultsScreenState extends State<TourSearchResultsScreen> {
             // RESULT COUNT
             if (!vm.isLoading)
               Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.screenPadding, 4, AppSpacing.screenPadding, 8),
+                padding: const EdgeInsets.fromLTRB(AppSpacing.screenPadding, AppSpacing.xs, AppSpacing.screenPadding, AppSpacing.s),
                 child: Text(
-                  "${filteredPoints.length} sonuç",
-                  style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary, fontWeight: FontWeight.w500),
+                  tr('filter_result_count', namedArgs: {'count': filteredPoints.length.toString()}),
+                  style: AppTextStyles.bodySmall.copyWith(color: context.colors.onSurfaceVariant, fontWeight: FontWeight.w500),
                 ),
               ),
 
@@ -185,9 +185,9 @@ class _TourSearchResultsScreenState extends State<TourSearchResultsScreen> {
   Widget _buildBody(TourSearchResultsViewModel vm, List filteredPoints) {
     if (vm.isLoading) {
       return ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l, vertical: AppSpacing.m),
         itemCount: 4,
-        separatorBuilder: (_, __) => const SizedBox(height: 16),
+        separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.l),
         itemBuilder: (_, __) => const TourCardSkeleton(),
       );
     }

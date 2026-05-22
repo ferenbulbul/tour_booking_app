@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class TourDetailSkeleton extends StatelessWidget {
   const TourDetailSkeleton({super.key});
@@ -8,8 +10,8 @@ class TourDetailSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
+      baseColor: context.ext.shimmerBase,
+      highlightColor: context.ext.shimmerHighlight,
       child: SingleChildScrollView(
         physics: const NeverScrollableScrollPhysics(),
         child: Padding(
@@ -17,20 +19,20 @@ class TourDetailSkeleton extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildBox(height: 330, radius: 22),
-              const SizedBox(height: 8),
-              _buildBox(height: 140, radius: 20),
-              const SizedBox(height: 24),
-              _buildBox(height: 20, radius: 6, widthRatio: .5),
-              const SizedBox(height: 14),
-              _buildBox(height: 56, radius: 16),
-              const SizedBox(height: 12),
-              _buildBox(height: 56, radius: 16),
-              const SizedBox(height: 12),
-              _buildBox(height: 56, radius: 16),
-              const SizedBox(height: 12),
-              _buildBox(height: 56, radius: 16),
-              const SizedBox(height: 50),
+              _buildBox(context, height: 330, radius: AppRadius.xlm),
+              const SizedBox(height: AppSpacing.s),
+              _buildBox(context, height: 140, radius: AppRadius.xl),
+              const SizedBox(height: AppSpacing.xxl),
+              _buildBox(context, height: 20, radius: AppRadius.sm, widthRatio: .5),
+              const SizedBox(height: AppSpacing.ml),
+              _buildBox(context, height: 56, radius: AppRadius.large),
+              const SizedBox(height: AppSpacing.m),
+              _buildBox(context, height: 56, radius: AppRadius.large),
+              const SizedBox(height: AppSpacing.m),
+              _buildBox(context, height: 56, radius: AppRadius.large),
+              const SizedBox(height: AppSpacing.m),
+              _buildBox(context, height: 56, radius: AppRadius.large),
+              const SizedBox(height: AppSpacing.xxxxxxl),
             ],
           ),
         ),
@@ -38,7 +40,8 @@ class TourDetailSkeleton extends StatelessWidget {
     );
   }
 
-  Widget _buildBox({
+  Widget _buildBox(
+    BuildContext context, {
     required double height,
     required double radius,
     double widthRatio = 1,
@@ -48,7 +51,7 @@ class TourDetailSkeleton extends StatelessWidget {
       child: Container(
         height: height,
         decoration: BoxDecoration(
-          color: Colors.grey.shade300,
+          color: context.ext.shimmerBase,
           borderRadius: BorderRadius.circular(radius),
         ),
       ),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class VehicleCardSkeleton extends StatelessWidget {
   const VehicleCardSkeleton({super.key});
@@ -9,19 +12,19 @@ class VehicleCardSkeleton extends StatelessWidget {
     return Container(
       height: 260,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
+        color: context.colors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.xlm),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Shimmer.fromColors(
-        baseColor: Colors.grey.shade300,
-        highlightColor: Colors.grey.shade100,
+        baseColor: context.ext.shimmerBase,
+        highlightColor: context.ext.shimmerHighlight,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -29,40 +32,40 @@ class VehicleCardSkeleton extends StatelessWidget {
             Container(
               height: 170,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: context.ext.shimmerBase,
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(22),
+                  top: Radius.circular(AppRadius.xlm),
                 ),
               ),
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: AppSpacing.ml),
 
             // --- TITLE ---
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
               child: Container(
                 height: 18,
                 width: 140,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(6),
+                  color: context.ext.shimmerBase,
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
               ),
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: AppSpacing.ml),
 
             // --- FEATURE CHIPS ---
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
               child: Row(
                 children: [
-                  _chipSkeleton(width: 80),
-                  const SizedBox(width: 10),
-                  _chipSkeleton(width: 70),
-                  const SizedBox(width: 10),
-                  _chipSkeleton(width: 60),
+                  _chipSkeleton(context, width: 80),
+                  const SizedBox(width: AppSpacing.ms),
+                  _chipSkeleton(context, width: 70),
+                  const SizedBox(width: AppSpacing.ms),
+                  _chipSkeleton(context, width: 60),
                 ],
               ),
             ),
@@ -72,13 +75,13 @@ class VehicleCardSkeleton extends StatelessWidget {
     );
   }
 
-  Widget _chipSkeleton({required double width}) {
+  Widget _chipSkeleton(BuildContext context, {required double width}) {
     return Container(
       height: 26,
       width: width,
       decoration: BoxDecoration(
-        color: Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(10),
+        color: context.ext.shimmerBase,
+        borderRadius: BorderRadius.circular(AppRadius.ms),
       ),
     );
   }

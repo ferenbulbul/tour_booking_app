@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/booking_status.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
@@ -14,6 +14,7 @@ import 'package:tour_booking/features/bookings/widget/booking_card_content.dart'
 import 'package:tour_booking/features/bookings/widget/booking_card_header.dart';
 import 'package:tour_booking/features/bookings/widget/booking_skeleton.dart';
 import 'package:tour_booking/models/booking/booking_dto.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class BookingsScreen extends StatefulWidget {
   const BookingsScreen({super.key});
@@ -64,7 +65,7 @@ class _BookingsScreenState extends State<BookingsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.colors.surface,
       body: SafeArea(
         child: Selector<BookingsViewModel, String?>(
           selector: (_, vm) => vm.message,
@@ -82,11 +83,11 @@ class _BookingsScreenState extends State<BookingsScreen>
               children: [
                 // HEADER
                 _buildHeader(),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.l),
 
                 // TAB BAR
                 _buildTabBar(),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
 
                 // TAB CONTENT
                 Expanded(
@@ -122,11 +123,11 @@ class _BookingsScreenState extends State<BookingsScreen>
               fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             tr("bookings_subtitle"),
             style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.textSecondary,
+              color: context.colors.onSurfaceVariant,
             ),
           ),
         ],
@@ -138,31 +139,27 @@ class _BookingsScreenState extends State<BookingsScreen>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
       child: Container(
-        height: 40,
+        height: AppSpacing.xxxxl,
         decoration: BoxDecoration(
-          color: AppColors.background,
-          borderRadius: BorderRadius.circular(12),
+          color: context.colors.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(AppRadius.medium),
         ),
         child: TabBar(
           controller: _tabController,
           indicator: BoxDecoration(
-            color: AppColors.primary,
-            borderRadius: BorderRadius.circular(10),
+            color: context.colors.primary,
+            borderRadius: BorderRadius.circular(AppSpacing.ms),
           ),
           indicatorSize: TabBarIndicatorSize.tab,
           dividerHeight: 0,
-          labelColor: Colors.white,
-          unselectedLabelColor: AppColors.textSecondary,
-          labelStyle: AppTextStyles.labelLarge.copyWith(
+          labelColor: context.colors.onPrimary,
+          unselectedLabelColor: context.colors.onSurfaceVariant,
+          labelStyle: AppTextStyles.labelMedium.copyWith(
             fontWeight: FontWeight.w600,
-            fontSize: 13,
           ),
-          unselectedLabelStyle: AppTextStyles.labelLarge.copyWith(
-            fontWeight: FontWeight.w500,
-            fontSize: 13,
-          ),
+          unselectedLabelStyle: AppTextStyles.labelMedium,
           labelPadding: EdgeInsets.zero,
-          padding: const EdgeInsets.all(3),
+          padding: const EdgeInsets.all(AppSpacing.xxxs),
           tabs: [
             Tab(text: tr('booking_tab_upcoming')),
             Tab(text: tr('booking_tab_completed')),
@@ -203,7 +200,7 @@ class _UpcomingTab extends StatelessWidget {
             AppSpacing.screenPadding, 12, AppSpacing.screenPadding, 24,
           ),
           itemCount: vm.allBookings.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 14),
+          separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.ml),
           itemBuilder: (_, i) => UpcomingBookingCard(
             item: vm.allBookings[i],
             onTap: () => onOpenDetail(vm.allBookings[i]),
@@ -243,7 +240,7 @@ class _CompletedTab extends StatelessWidget {
             AppSpacing.screenPadding, 12, AppSpacing.screenPadding, 24,
           ),
           itemCount: vm.completedBookings.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 10),
+          separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.ms),
           itemBuilder: (_, i) => PastBookingTile(
             item: vm.completedBookings[i],
             onTap: () => onOpenDetail(vm.completedBookings[i]),
@@ -283,7 +280,7 @@ class _CancelledTab extends StatelessWidget {
             AppSpacing.screenPadding, 12, AppSpacing.screenPadding, 24,
           ),
           itemCount: vm.cancelledBookings.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 10),
+          separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.ms),
           itemBuilder: (_, i) => PastBookingTile(
             item: vm.cancelledBookings[i],
             onTap: () => onOpenDetail(vm.cancelledBookings[i]),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class GuideCardSkeleton extends StatelessWidget {
   const GuideCardSkeleton({super.key});
@@ -7,14 +10,14 @@ class GuideCardSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
+      baseColor: context.ext.shimmerBase,
+      highlightColor: context.ext.shimmerHighlight,
       child: Container(
         height: 110,
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.l),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: context.colors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.large),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -24,65 +27,65 @@ class GuideCardSkeleton extends StatelessWidget {
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: context.ext.shimmerBase,
                 shape: BoxShape.circle,
               ),
             ),
 
-            const SizedBox(width: 16),
+            const SizedBox(width: AppSpacing.l),
 
-            // Sağ taraf info skeleton
+            // Sag taraf info skeleton
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // İsim skeleton
+                  // Isim skeleton
                   Container(
                     height: 16,
                     width: 140,
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(6),
+                      color: context.ext.shimmerBase,
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: AppSpacing.ms),
 
                   // Fiyat skeleton
                   Container(
                     height: 14,
                     width: 90,
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(6),
+                      color: context.ext.shimmerBase,
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                   ),
 
-                  const SizedBox(height: 14),
+                  const SizedBox(height: AppSpacing.ml),
 
-                  // Chip skeletonları
+                  // Chip skeletonlari
                   Row(
                     children: [
-                      _chip(),
-                      const SizedBox(width: 8),
-                      _chip(width: 60),
-                      const SizedBox(width: 8),
-                      _chip(width: 50),
+                      _chip(context),
+                      const SizedBox(width: AppSpacing.s),
+                      _chip(context, width: 60),
+                      const SizedBox(width: AppSpacing.s),
+                      _chip(context, width: 50),
                     ],
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.s),
 
             // arrow icon skeleton
             Container(
               width: 20,
               height: 20,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(4),
+                color: context.ext.shimmerBase,
+                borderRadius: BorderRadius.circular(AppRadius.xs),
               ),
             ),
           ],
@@ -91,13 +94,13 @@ class GuideCardSkeleton extends StatelessWidget {
     );
   }
 
-  Widget _chip({double width = 70}) {
+  Widget _chip(BuildContext context, {double width = 70}) {
     return Container(
       height: 20,
       width: width,
       decoration: BoxDecoration(
-        color: Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(20),
+        color: context.ext.shimmerBase,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
       ),
     );
   }

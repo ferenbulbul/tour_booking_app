@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 
 class NearbyPointsButton extends StatelessWidget {
@@ -47,27 +50,30 @@ class _MinimalNearbyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
+    return Semantics(
+      button: true,
+      label: tr("nearby_tours"),
+      child: InkWell(
+      borderRadius: BorderRadius.circular(AppRadius.large),
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lm, vertical: AppSpacing.xl),
         decoration: BoxDecoration(
-          color: AppColors.background,
-          borderRadius: BorderRadius.circular(16),
+          color: context.colors.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(AppRadius.large),
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(AppSpacing.m),
               decoration: BoxDecoration(
-                color: AppColors.accent.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(14),
+                color: context.colors.secondary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppRadius.ml),
               ),
-              child: const Icon(SolarIconsOutline.gps, color: AppColors.accent, size: 24),
+              child: Icon(SolarIconsOutline.gps, color: context.colors.secondary, size: AppIconSize.xl, semanticLabel: 'GPS'),
             ),
 
-            const SizedBox(width: 14),
+            const SizedBox(width: AppSpacing.ml),
 
             Expanded(
               child: Column(
@@ -76,29 +82,30 @@ class _MinimalNearbyCard extends StatelessWidget {
                   Text(
                     tr("nearby_tours"),
                     style: AppTextStyles.titleMedium.copyWith(
-                      color: AppColors.textPrimary,
+                      color: context.colors.onSurface,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     tr("find_tours_nearby"),
                     style: AppTextStyles.bodyMedium.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.colors.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
             ),
 
-            const Icon(
+            Icon(
               SolarIconsOutline.arrowRight,
-              size: 24,
-              color: AppColors.textLight,
+              size: AppIconSize.xl,
+              color: context.ext.textLight,
             ),
           ],
         ),
       ),
+    ),
     );
   }
 }

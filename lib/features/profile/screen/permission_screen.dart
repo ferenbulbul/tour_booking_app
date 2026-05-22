@@ -5,6 +5,8 @@ import 'package:solar_icons/solar_icons.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
+import 'package:tour_booking/core/theme/app_elevation.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
@@ -13,6 +15,7 @@ import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/profile/permission_viewmodel.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 import 'package:tour_booking/models/profile/profile_response.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class PermissionsScreen extends StatefulWidget {
   const PermissionsScreen({super.key});
@@ -50,7 +53,7 @@ class _PermissionsScreenState extends State<PermissionsScreen>
   Widget build(BuildContext context) {
     final profileVm = context.watch<ProfileViewModel>();
     final permVm = context.watch<PermissionsViewModel>();
-    final scheme = Theme.of(context).colorScheme;
+    final scheme = context.colors;
 
     final profile = profileVm.profile;
     if (profile == null) {
@@ -85,16 +88,16 @@ class _PhoneCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final scheme = context.colors;
 
     final hasPhone = profile.phoneNumber.isNotEmpty;
     final verified = profile.phoneNumberConfirmed;
 
     final badgeColor = !hasPhone
-        ? Colors.orange
+        ? context.ext.warning
         : verified
-        ? Colors.green
-        : Colors.orange;
+        ? context.ext.success
+        : context.ext.warning;
 
     final badgeText = !hasPhone
         ? tr("not_entered")
@@ -105,21 +108,15 @@ class _PhoneCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.l),
       decoration: BoxDecoration(
-        color: scheme.surfaceVariant.withOpacity(.4),
+        color: scheme.surfaceContainerHighest.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(AppRadius.large),
-        border: Border.all(color: scheme.outlineVariant.withOpacity(.25)),
-        boxShadow: [
-          BoxShadow(
-            color: scheme.shadow.withOpacity(.05),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
+        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.25)),
+        boxShadow: AppElevation.shadowMd,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(SolarIconsOutline.smartphone, size: 30, color: scheme.primary),
+          Icon(SolarIconsOutline.smartphone, size: AppIconSize.xxl + 2, color: scheme.primary, semanticLabel: 'Phone'),
           const SizedBox(width: AppSpacing.m),
 
           Expanded(
@@ -133,7 +130,7 @@ class _PhoneCard extends StatelessWidget {
                     color: scheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.sm),
 
                 Text(
                   hasPhone ? profile.phoneNumber : "—",
@@ -143,7 +140,7 @@ class _PhoneCard extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.sm),
 
                 Text(
                   hasPhone
@@ -157,22 +154,21 @@ class _PhoneCard extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 10),
+                const SizedBox(height: AppSpacing.ms),
 
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
+                    horizontal: AppSpacing.ms,
+                    vertical: AppSpacing.xs + 1,
                   ),
                   decoration: BoxDecoration(
-                    color: badgeColor.withOpacity(.15),
-                    borderRadius: BorderRadius.circular(50),
+                    color: badgeColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(AppRadius.circular),
                   ),
                   child: Text(
                     badgeText,
-                    style: TextStyle(
+                    style: AppTextStyles.labelSmall.copyWith(
                       color: badgeColor,
-                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -201,7 +197,7 @@ class _PhoneCard extends StatelessWidget {
 }
 
 // ------------------------------------------------------
-//  🔥 LOCATION PERMISSION ROW
+//  LOCATION PERMISSION ROW
 // ------------------------------------------------------
 
 class _LocationPermissionRow extends StatelessWidget {
@@ -211,8 +207,6 @@ class _LocationPermissionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     final allowed = vm.locationAllowed;
     final permanentlyDenied = vm.locationPermanentlyDenied;
 
@@ -234,7 +228,7 @@ class _LocationPermissionRow extends StatelessWidget {
 }
 
 // ------------------------------------------------------
-//  🔥 GENERIC PERMISSION ROW — THE PREMIUM ONE
+//  GENERIC PERMISSION ROW
 // ------------------------------------------------------
 
 class _PermissionRow extends StatelessWidget {
@@ -256,22 +250,22 @@ class _PermissionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final scheme = context.colors;
 
     String buttonText = permanentlyDenied ? tr("settings") : tr("allow");
-    Color buttonColor = permanentlyDenied ? Colors.orange : scheme.primary;
+    Color buttonColor = permanentlyDenied ? context.ext.warning : scheme.primary;
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.l),
       padding: const EdgeInsets.all(AppSpacing.m),
       decoration: BoxDecoration(
-        color: scheme.surfaceVariant.withOpacity(.35),
+        color: scheme.surfaceContainerHighest.withValues(alpha: 0.35),
         borderRadius: BorderRadius.circular(AppRadius.large),
-        border: Border.all(color: scheme.outlineVariant.withOpacity(.25)),
+        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.25)),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 28, color: scheme.primary),
+          Icon(icon, size: AppIconSize.xxl, color: scheme.primary, semanticLabel: title),
           const SizedBox(width: AppSpacing.m),
 
           Expanded(
@@ -285,7 +279,7 @@ class _PermissionRow extends StatelessWidget {
                     color: scheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   subtitle,
                   style: AppTextStyles.bodySmall.copyWith(

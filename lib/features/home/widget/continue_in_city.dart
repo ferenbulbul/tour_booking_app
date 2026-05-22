@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/core/widgets/section_title.dart';
 import 'package:tour_booking/features/favorite/favorite_viewmodel.dart';
 import 'package:tour_booking/features/home/home_viewmodel.dart';
 import 'package:tour_booking/features/home/widget/featured_tour_points.dart';
 
-/// Her bölüm ayrı sliver olarak kullanılır.
-/// Kullanıcı aşağı kaydırıp bölüm ekranda görünürse API çağrısı tetiklenir.
+/// Each section is used as a separate sliver.
+/// API call is triggered when the user scrolls down and the section becomes visible.
 class LazyCitySection extends StatefulWidget {
   final CityToursSection section;
   const LazyCitySection({super.key, required this.section});
@@ -47,7 +49,7 @@ class _LazyCitySectionState extends State<LazyCitySection> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Başlık + See All
+            // Title + See All
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
               child: SectionTitle(
@@ -64,11 +66,11 @@ class _LazyCitySectionState extends State<LazyCitySection> {
                 },
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.m),
 
-            // İçerik: skeleton veya kartlar
+            // Content: skeleton or cards
             if (section.isLoading || section.tours.isEmpty)
-              _buildSkeleton()
+              _buildSkeleton(context)
             else
               _buildTourList(context, section),
           ],
@@ -77,7 +79,7 @@ class _LazyCitySectionState extends State<LazyCitySection> {
     );
   }
 
-  Widget _buildSkeleton() {
+  Widget _buildSkeleton(BuildContext context) {
     return SizedBox(
       height: 220,
       child: ListView.separated(
@@ -90,13 +92,13 @@ class _LazyCitySectionState extends State<LazyCitySection> {
           final screenWidth = MediaQuery.of(context).size.width;
           final cardWidth = (screenWidth - AppSpacing.screenPadding * 2 - AppSpacing.m) / 2;
           return Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
+            baseColor: context.ext.shimmerBase,
+            highlightColor: context.ext.shimmerHighlight,
             child: Container(
               width: cardWidth,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(14),
+                color: context.ext.shimmerBase,
+                borderRadius: BorderRadius.circular(AppRadius.ml),
               ),
             ),
           );

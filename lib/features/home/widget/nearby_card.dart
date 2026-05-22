@@ -1,5 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class NearbyCard extends StatelessWidget {
   final String image;
@@ -35,43 +40,49 @@ class NearbyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final scheme = context.colors;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(18),
-      child: Container(
+    return Semantics(
+      label: '$title, $city',
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.lm),
+        child: Container(
         color: scheme.surface,
         child: Stack(
           children: [
             // ---------------- IMAGE ----------------
-            CachedNetworkImage(
-              imageUrl: image,
-              memCacheHeight: 350, // ⚡ PERF BOOST
-              width: double.infinity,
-              height: double.infinity,
-              fit: BoxFit.cover,
-              fadeInDuration: const Duration(milliseconds: 150),
-              placeholder: (_, __) =>
-                  Container(color: scheme.surfaceVariant.withOpacity(.30)),
+            Semantics(
+              image: true,
+              excludeSemantics: true,
+              label: title,
+              child: CachedNetworkImage(
+                imageUrl: image,
+                memCacheHeight: 350, // Performance optimization
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+                fadeInDuration: const Duration(milliseconds: 150),
+                placeholder: (_, __) =>
+                    Container(color: scheme.surfaceContainerHighest.withValues(alpha: 0.30)),
+              ),
             ),
 
             // ---------------- DISTANCE BADGE ----------------
             Positioned(
-              right: 10,
-              top: 10,
+              right: AppSpacing.ms,
+              top: AppSpacing.ms,
               child: Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
+                  horizontal: AppSpacing.ms,
+                  vertical: AppSpacing.sm,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.55),
-                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.black.withValues(alpha: 0.55),
+                  borderRadius: BorderRadius.circular(AppRadius.ms),
                 ),
                 child: Text(
                   "${distance.toStringAsFixed(1)} km",
-                  style: const TextStyle(
-                    fontSize: 12,
+                  style: AppTextStyles.labelSmall.copyWith(
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
                   ),
@@ -86,12 +97,12 @@ class NearbyCard extends StatelessWidget {
               bottom: 0,
               height: 110,
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
                       Colors.transparent,
-                      Colors.black38,
-                      Colors.black87,
+                      Colors.black.withValues(alpha: 0.38),
+                      Colors.black.withValues(alpha: 0.87),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -102,9 +113,9 @@ class NearbyCard extends StatelessWidget {
 
             // ---------------- TEXT ----------------
             Positioned(
-              left: 14,
-              right: 14,
-              bottom: 14,
+              left: AppSpacing.ml,
+              right: AppSpacing.ml,
+              bottom: AppSpacing.ml,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -114,22 +125,21 @@ class NearbyCard extends StatelessWidget {
                       ...List.generate(5, (i) {
                         final rating = (avgRating != null && ratingCount != null && ratingCount! > 0) ? avgRating! : 0.0;
                         if (i < rating.floor()) {
-                          return const Icon(Icons.star_rounded, size: 14, color: Colors.amber);
+                          return Icon(Icons.star_rounded, size: AppIconSize.s, color: context.ext.star, semanticLabel: 'Rating star');
                         } else if (i < rating.ceil() && rating % 1 >= 0.3) {
-                          return const Icon(Icons.star_half_rounded, size: 14, color: Colors.amber);
+                          return Icon(Icons.star_half_rounded, size: AppIconSize.s, color: context.ext.star, semanticLabel: 'Rating star half');
                         } else {
-                          return Icon(Icons.star_outline_rounded, size: 14, color: Colors.white.withOpacity(0.5));
+                          return Icon(Icons.star_outline_rounded, size: AppIconSize.s, color: Colors.white.withValues(alpha: 0.5), semanticLabel: 'Rating star empty');
                         }
                       }),
                       if (durationHours != null || durationMinutes != null) ...[
-                        const SizedBox(width: 6),
-                        Icon(Icons.schedule_rounded, size: 12, color: Colors.white.withOpacity(0.8)),
-                        const SizedBox(width: 3),
+                        const SizedBox(width: AppSpacing.sm),
+                        Icon(Icons.schedule_rounded, size: AppIconSize.xs, color: Colors.white.withValues(alpha: 0.8), semanticLabel: 'Duration'),
+                        const SizedBox(width: AppSpacing.xxxs),
                         Text(
                           _formatDuration(durationHours, durationMinutes),
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.white.withOpacity(0.85),
+                          style: AppTextStyles.caption.copyWith(
+                            color: Colors.white.withValues(alpha: 0.85),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -137,30 +147,28 @@ class NearbyCard extends StatelessWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs),
 
                   // TITLE
                   Text(
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 15,
+                    style: AppTextStyles.bodyMedium.copyWith(
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                     ),
                   ),
 
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs),
 
                   // CITY + TYPE
                   Text(
-                    "$city • $type",
+                    "$city \u2022 $type",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.white.withOpacity(0.85),
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: Colors.white.withValues(alpha: 0.85),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -169,6 +177,7 @@ class NearbyCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

@@ -1,11 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/core/network/handle_response.dart';
 import 'package:tour_booking/core/network/result.dart';
 import 'package:tour_booking/models/login/login_response.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/auth/auth_service.dart';
 
-class UpgradeAccountViewModel extends ChangeNotifier {
-  final AuthService _authService = AuthService();
+class UpgradeAccountViewModel extends BaseViewModel {
+  final AuthService _authService = ServiceLocator.instance.authService;
 
   bool isLoading = false;
   String? message;

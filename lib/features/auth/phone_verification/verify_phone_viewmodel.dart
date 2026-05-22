@@ -1,13 +1,12 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tour_booking/core/network/result.dart';
-import 'package:tour_booking/services/auth/auth_service.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
 
-class VerifyPhoneViewModel extends ChangeNotifier {
-  final TourService _tourService = TourService();
+class VerifyPhoneViewModel extends BaseViewModel {
+  final TourService _tourService = ServiceLocator.instance.tourService;
   bool isLoading = false;
   String? message;
 
@@ -24,10 +23,10 @@ class VerifyPhoneViewModel extends ChangeNotifier {
     final result = await _tourService.sendVerificationCode();
 
     if (result.isSuccess ?? false) {
-      message = result.message ?? "Doğrulama kodu gönderildi.";
+      message = result.message ?? tr('verification_code_sent');
       _startTimer();
     } else {
-      message = result.message ?? "Kod gönderilemedi.";
+      message = result.message ?? tr('verification_code_failed');
     }
 
     isLoading = false;
@@ -44,10 +43,10 @@ class VerifyPhoneViewModel extends ChangeNotifier {
     notifyListeners();
 
     if (result.isSuccess ?? false) {
-      message = result.message ?? "Kod başarıyla doğrulandı";
+      message = result.message ?? tr('verification_success');
       return true;
     } else {
-      message = result.message ?? "Kod doğrulama başarısız.";
+      message = result.message ?? tr('verification_failed');
       return false;
     }
   }

@@ -1,27 +1,18 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:tour_booking/models/city/city_dto.dart';
 import 'package:tour_booking/models/place_section/place_section.dart';
 import 'package:tour_booking/models/transport/suggested_location/suggested_location.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
 import 'package:tour_booking/services/transport/transport_service.dart';
 
-class TransportViewModel extends ChangeNotifier {
-  final TourService _tourService = TourService();
-  final TransportService _transportService = TransportService();
-  bool _disposed = false;
-
-  @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
-  }
-
-  @override
-  void notifyListeners() {
-    if (!_disposed) super.notifyListeners();
-  }
+class TransportViewModel extends BaseViewModel {
+  final TourService _tourService = ServiceLocator.instance.tourService;
+  final TransportService _transportService = ServiceLocator.instance.transportService;
 
   // --- City ---
   List<MobileCityDto> cities = [];
@@ -86,7 +77,10 @@ class TransportViewModel extends ChangeNotifier {
         }
         cities = allCities;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('TransportViewModel.fetchCities: $e');
+      errorMessage = tr('error_generic');
+    }
 
     isCitiesLoading = false;
     notifyListeners();
@@ -122,7 +116,11 @@ class TransportViewModel extends ChangeNotifier {
           setSelectedCity(match.first.id, match.first.name);
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('TransportViewModel.autoDetectCity: $e');
+      errorMessage = tr('error_generic');
+      notifyListeners();
+    }
   }
 
   void setSelectedCity(String cityId, String cityName) {
@@ -216,7 +214,10 @@ class TransportViewModel extends ChangeNotifier {
       if (resp.isSuccess == true && resp.data != null) {
         suggestedLocations = resp.data!.locations;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('TransportViewModel.fetchSuggestedLocations: $e');
+      errorMessage = tr('error_generic');
+    }
 
     isSuggestedLoading = false;
     notifyListeners();

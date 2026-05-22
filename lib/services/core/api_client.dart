@@ -22,7 +22,7 @@ class ApiClient {
   /// HTTP request timeout — prevents hanging indefinitely
   static const Duration _requestTimeout = Duration(seconds: 30);
 
-  /// Session expired callback — SplashVM tarafindan set edilir
+  /// Session expired callback — set by SplashVM
   static Future<void> Function()? onSessionExpired;
 
   /// In-memory token cache — avoids expensive secure storage reads on every request

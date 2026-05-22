@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart'; // `defaultTargetPlatform` için gerekli
+import 'package:flutter/foundation.dart'; // Required for `defaultTargetPlatform`
 import 'package:geolocator/geolocator.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
 
 class LocationService {
-  /// Belirtilen zaman ve mesafe koşullarına göre konum güncellemeleri sağlar.
+  /// Provides location updates based on specified time and distance thresholds.
   Stream<Position> getPositionStream({
     required UserRole role,
     int timeIntervalInSeconds = 60,
@@ -18,7 +18,7 @@ class LocationService {
         distanceFilter: distanceFilter,
         intervalDuration: Duration(seconds: timeIntervalInSeconds),
 
-        // 🔥 Sadece DRIVER için foreground notification
+        // Foreground notification for DRIVER role only
         foregroundNotificationConfig: role == UserRole.driver
             ? const ForegroundNotificationConfig(
                 notificationText:

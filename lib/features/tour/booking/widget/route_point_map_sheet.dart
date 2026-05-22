@@ -1,10 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/models/tour_detail_sub_items/tour_detail_sub_items.dart';
 
 class RoutePointMapSheet extends StatelessWidget {
@@ -12,14 +13,14 @@ class RoutePointMapSheet extends StatelessWidget {
 
   const RoutePointMapSheet({super.key, required this.point});
 
-  Color _dotColor(int pointType) {
+  Color _dotColor(BuildContext context, int pointType) {
     switch (pointType) {
       case 0:
-        return AppColors.accent;
+        return context.colors.secondary;
       case 1:
-        return AppColors.info;
+        return context.ext.info;
       default:
-        return AppColors.textLight;
+        return context.ext.textLight;
     }
   }
 
@@ -36,7 +37,7 @@ class RoutePointMapSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dotColor = _dotColor(point.pointType);
+    final dotColor = _dotColor(context, point.pointType);
     final position = LatLng(point.latitude, point.longitude);
 
     return DraggableScrollableSheet(
@@ -46,23 +47,23 @@ class RoutePointMapSheet extends StatelessWidget {
       expand: false,
       builder: (_, controller) {
         return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
+          decoration: BoxDecoration(
+            color: context.colors.surface,
             borderRadius: BorderRadius.vertical(
-              top: Radius.circular(24),
+              top: Radius.circular(AppRadius.xxl),
             ),
           ),
           child: Column(
             children: [
               // Drag handle
               Padding(
-                padding: const EdgeInsets.only(top: 12, bottom: 8),
+                padding: const EdgeInsets.only(top: AppSpacing.m, bottom: AppSpacing.s),
                 child: Container(
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: AppColors.border,
-                    borderRadius: BorderRadius.circular(2),
+                    color: context.colors.outline,
+                    borderRadius: BorderRadius.circular(AppRadius.xxs),
                   ),
                 ),
               ),
@@ -101,14 +102,15 @@ class RoutePointMapSheet extends StatelessWidget {
                       ),
                     ),
                     IconButton(
+                      tooltip: 'Close',
                       onPressed: () => Navigator.pop(context),
                       icon: Container(
-                        padding: const EdgeInsets.all(4),
+                        padding: const EdgeInsets.all(AppSpacing.xs),
                         decoration: BoxDecoration(
-                          color: AppColors.background,
+                          color: context.colors.surfaceContainerHighest,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.close, size: 18),
+                        child: Icon(Icons.close, size: AppIconSize.ml, semanticLabel: 'Close'),
                       ),
                     ),
                   ],
@@ -122,7 +124,7 @@ class RoutePointMapSheet extends StatelessWidget {
                   child: Text(
                     point.description!,
                     style: AppTextStyles.bodyMedium.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.colors.onSurfaceVariant,
                       height: 1.45,
                     ),
                   ),
@@ -131,7 +133,7 @@ class RoutePointMapSheet extends StatelessWidget {
               Expanded(
                 child: ClipRRect(
                   borderRadius: const BorderRadius.vertical(
-                    bottom: Radius.circular(24),
+                    bottom: Radius.circular(AppRadius.xxl),
                   ),
                   child: GoogleMap(
                     initialCameraPosition: CameraPosition(

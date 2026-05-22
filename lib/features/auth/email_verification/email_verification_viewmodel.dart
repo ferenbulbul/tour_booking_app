@@ -1,9 +1,10 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/auth/auth_service.dart';
 
-class EmailVerificationViewModel extends ChangeNotifier {
-  final AuthService _authService = AuthService();
+class EmailVerificationViewModel extends BaseViewModel {
+  final AuthService _authService = ServiceLocator.instance.authService;
 
   String? message;
   String? errorMessage;
@@ -61,7 +62,7 @@ class EmailVerificationViewModel extends ChangeNotifier {
     _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _resendCooldown--;
 
-      notifyListeners(); // 🔥 EKSİK OLAN KISIM
+      notifyListeners(); // Required for UI update
 
       if (_resendCooldown <= 0) {
         _resendTimer?.cancel();

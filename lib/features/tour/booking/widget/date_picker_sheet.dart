@@ -2,10 +2,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
-import 'dart:ui' as ui;
-
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
+import 'dart:ui' as ui;
 
 class DatePickerSheet extends StatefulWidget {
   final DateTime initialDate;
@@ -37,7 +39,7 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = AppColors.accent;
+    final primary = context.colors.secondary;
     final locale = context.locale;
     final isRtl = locale.languageCode == 'ar';
 
@@ -46,22 +48,22 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
       child: Container(
         decoration: BoxDecoration(
           color: isDark ? Colors.black : Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xxl)),
         ),
-        padding: const EdgeInsetsDirectional.only(top: 10, bottom: 20),
+        padding: const EdgeInsetsDirectional.only(top: AppSpacing.ms, bottom: AppSpacing.xl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             /// Handle Bar
             Container(
               width: 42,
-              height: 5,
-              margin: const EdgeInsetsDirectional.only(bottom: 14),
+              height: AppSpacing.xsm,
+              margin: const EdgeInsetsDirectional.only(bottom: AppSpacing.ml),
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withOpacity(.22)
-                    : Colors.black.withOpacity(.18),
-                borderRadius: BorderRadius.circular(40),
+                    ? Colors.white.withValues(alpha: 0.22)
+                    : Colors.black.withValues(alpha: 0.18),
+                borderRadius: BorderRadius.circular(AppRadius.circular),
               ),
             ),
 
@@ -98,68 +100,63 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
                   headerStyle: HeaderStyle(
                     titleCentered: true,
                     formatButtonVisible: false,
-                    titleTextStyle: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                    titleTextStyle: AppTextStyles.bodyLargeEmphasis.copyWith(
+                      color: context.colors.onSurface,
                     ),
                     leftChevronIcon: Icon(
                       isRtl ? SolarIconsOutline.arrowRight : SolarIconsOutline.altArrowLeft,
-                      color: isDark ? Colors.white70 : Colors.black54,
-                      size: 22,
+                      color: isDark ? Colors.white.withValues(alpha: 0.7) : Colors.black.withValues(alpha: 0.54),
+                      size: AppIconSize.xxl,
+                      semanticLabel: 'Previous month',
                     ),
                     rightChevronIcon: Icon(
                       isRtl ? SolarIconsOutline.altArrowLeft : SolarIconsOutline.arrowRight,
-                      color: isDark ? Colors.white70 : Colors.black54,
-                      size: 22,
+                      color: isDark ? Colors.white.withValues(alpha: 0.7) : Colors.black.withValues(alpha: 0.54),
+                      size: AppIconSize.xxl,
+                      semanticLabel: 'Next month',
                     ),
                   ),
 
                   daysOfWeekStyle: DaysOfWeekStyle(
-                    weekdayStyle: TextStyle(
-                      fontSize: 13,
+                    weekdayStyle: AppTextStyles.labelMedium.copyWith(
                       fontWeight: FontWeight.w600,
                       color: isDark
-                          ? Colors.white70
-                          : Colors.black.withOpacity(.65),
+                          ? Colors.white.withValues(alpha: 0.7)
+                          : Colors.black.withValues(alpha: 0.65),
                     ),
-                    weekendStyle: TextStyle(
-                      fontSize: 13,
+                    weekendStyle: AppTextStyles.labelMedium.copyWith(
                       fontWeight: FontWeight.w600,
                       color: isDark
-                          ? Colors.white70
-                          : Colors.black.withOpacity(.65),
+                          ? Colors.white.withValues(alpha: 0.7)
+                          : Colors.black.withValues(alpha: 0.65),
                     ),
                   ),
 
                   calendarStyle: CalendarStyle(
-                    defaultTextStyle: TextStyle(
-                      fontSize: 14,
+                    defaultTextStyle: AppTextStyles.labelLarge.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textPrimary,
+                      color: context.colors.onSurface,
                     ),
-                    weekendTextStyle: TextStyle(
-                      fontSize: 14,
+                    weekendTextStyle: AppTextStyles.labelLarge.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textPrimary,
+                      color: context.colors.onSurface,
                     ),
-                    outsideTextStyle: TextStyle(
-                      fontSize: 14,
-                      color: isDark ? Colors.white24 : Colors.grey.shade400,
+                    outsideTextStyle: AppTextStyles.labelLarge.copyWith(
+                      fontWeight: FontWeight.w400,
+                      color: isDark ? Colors.white.withValues(alpha: 0.24) : context.ext.textLight,
                     ),
 
-                    disabledTextStyle: TextStyle(
-                      fontSize: 14,
-                      color: isDark ? Colors.white24 : Colors.grey.shade300,
+                    disabledTextStyle: AppTextStyles.labelLarge.copyWith(
+                      fontWeight: FontWeight.w400,
+                      color: isDark ? Colors.white.withValues(alpha: 0.24) : context.ext.shimmerBase,
                     ),
 
                     selectedDecoration: BoxDecoration(
                       color: primary,
                       shape: BoxShape.circle,
                     ),
-                    selectedTextStyle: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
+                    selectedTextStyle: AppTextStyles.labelLarge.copyWith(
+                      color: context.colors.onSecondary,
                       fontWeight: FontWeight.w600,
                     ),
 
@@ -172,7 +169,7 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
                       fontWeight: FontWeight.w700,
                     ),
 
-                    cellMargin: const EdgeInsets.all(6),
+                    cellMargin: const EdgeInsets.all(AppSpacing.sm),
                   ),
                 ),
               ),

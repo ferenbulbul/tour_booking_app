@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/theme/app_theme.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
+import 'package:tour_booking/features/profile/theme_viewmodel.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
 
 class AppRoot extends StatefulWidget {
@@ -17,6 +19,8 @@ class AppRoot extends StatefulWidget {
 class _AppRootState extends State<AppRoot> {
   @override
   Widget build(BuildContext context) {
+    final themeMode = context.watch<ThemeViewModel>().themeMode;
+
     return MaterialApp.router(
       scaffoldMessengerKey: UIHelper.rootMessengerKey,
       locale: context.locale,
@@ -24,6 +28,8 @@ class _AppRootState extends State<AppRoot> {
       localizationsDelegates: context.localizationDelegates,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: themeMode,
       routerConfig: widget.router,
       builder: (context, child) {
         return _AuthTransitionOverlay(child: child);
@@ -48,7 +54,9 @@ class _AuthTransitionOverlay extends StatelessWidget {
           child: AnimatedOpacity(
             opacity: isTransitioning ? 1.0 : 0.0,
             duration: const Duration(milliseconds: 300),
-            child: Container(color: Colors.white),
+            child: Container(
+              color: context.colors.surface,
+            ),
           ),
         ),
       ],

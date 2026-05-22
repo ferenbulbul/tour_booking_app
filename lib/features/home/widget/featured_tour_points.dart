@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/features/favorite/favorite_viewmodel.dart';
 import 'package:tour_booking/features/home/home_viewmodel.dart';
 import 'package:tour_booking/features/home/widget/featured_card_skeleton.dart';
@@ -61,33 +62,40 @@ class FeaturedCard extends StatelessWidget {
 
     return SizedBox(
       width: resolvedWidth,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Column(
+      child: Semantics(
+        button: true,
+        label: 'View tour $title',
+        child: GestureDetector(
+          onTap: onTap,
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // IMAGE + FAVORITE
             Stack(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(AppRadius.small),
-                  child: SizedBox(
-                    height: resolvedImageH,
-                    width: double.infinity,
-                    child: Hero(
-                      tag: heroTag ?? "tourImage_$id",
-                      child: CachedNetworkImage(
-                        imageUrl: imageUrl,
-                        fit: BoxFit.cover,
-                        memCacheWidth: targetWidth,
-                        maxWidthDiskCache: targetWidth,
-                        fadeInDuration: const Duration(milliseconds: 180),
-                        placeholder: (_, __) => Container(
-                          color: AppColors.background,
-                        ),
-                        errorWidget: (_, __, ___) => Container(
-                          color: AppColors.background,
-                          child: const Icon(SolarIconsOutline.gallery, color: AppColors.textLight),
+                Semantics(
+                  image: true,
+                  label: title,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(AppRadius.small),
+                    child: SizedBox(
+                      height: resolvedImageH,
+                      width: double.infinity,
+                      child: Hero(
+                        tag: heroTag ?? "tourImage_$id",
+                        child: CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          fit: BoxFit.cover,
+                          memCacheWidth: targetWidth,
+                          maxWidthDiskCache: targetWidth,
+                          fadeInDuration: const Duration(milliseconds: 180),
+                          placeholder: (_, __) => Container(
+                            color: context.colors.surfaceContainerHighest,
+                          ),
+                          errorWidget: (_, __, ___) => Container(
+                            color: context.colors.surfaceContainerHighest,
+                            child: Icon(SolarIconsOutline.gallery, color: context.ext.textLight, semanticLabel: 'Image placeholder'),
+                          ),
                         ),
                       ),
                     ),
@@ -96,26 +104,32 @@ class FeaturedCard extends StatelessWidget {
                 // FAVORITE BUTTON
                 if (onFavoriteToggle != null)
                   Positioned(
-                    top: 8,
-                    right: 8,
-                    child: GestureDetector(
-                      onTap: onFavoriteToggle,
-                      child: Container(
-                        width: 34,
-                        height: 34,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.9),
-                          shape: BoxShape.circle,
-                        ),
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 220),
-                          transitionBuilder: (child, anim) =>
-                              ScaleTransition(scale: anim, child: child),
-                          child: Icon(
-                            isFavorite ? Icons.favorite : Icons.favorite_border,
-                            key: ValueKey(isFavorite),
-                            color: isFavorite ? Colors.red : AppColors.textLight,
-                            size: 20,
+                    top: AppSpacing.s,
+                    right: AppSpacing.s,
+                    child: Semantics(
+                      button: true,
+                      toggled: isFavorite,
+                      label: 'Toggle favorite',
+                      child: GestureDetector(
+                        onTap: onFavoriteToggle,
+                        child: Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: context.colors.surface.withValues(alpha: 0.9),
+                            shape: BoxShape.circle,
+                          ),
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 220),
+                            transitionBuilder: (child, anim) =>
+                                ScaleTransition(scale: anim, child: child),
+                            child: Icon(
+                              isFavorite ? Icons.favorite : Icons.favorite_border,
+                              key: ValueKey(isFavorite),
+                              color: isFavorite ? context.ext.favorite : context.ext.textLight,
+                              size: AppIconSize.l,
+                              semanticLabel: isFavorite ? 'Favorite' : 'Not favorite',
+                            ),
                           ),
                         ),
                       ),
@@ -124,7 +138,7 @@ class FeaturedCard extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.s),
 
             // CONTENT AREA
             Column(
@@ -132,37 +146,36 @@ class FeaturedCard extends StatelessWidget {
               children: [
                 // RATING + DURATION ROW (above title)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
+                  padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                   child: Row(
                     children: [
-                      const Icon(Icons.star_rounded, size: 22, color: AppColors.accent),
-                      const SizedBox(width: 3),
+                      Icon(Icons.star_rounded, size: AppIconSize.lm, color: context.colors.secondary, semanticLabel: 'Rating star'),
+                      const SizedBox(width: AppSpacing.xxxs),
                       Text(
                         hasRating ? avgRating!.toStringAsFixed(1) : "0",
                         style: AppTextStyles.bodySmall.copyWith(
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: context.colors.onSurface,
                         ),
                       ),
                       if (durationHours != null || durationMinutes != null) ...[
-                          const SizedBox(width: 6),
+                          const SizedBox(width: AppSpacing.sm),
                           Text(
                             "\u00B7",
-                            style: TextStyle(
-                              fontSize: 14,
+                            style: AppTextStyles.labelLarge.copyWith(
                               fontWeight: FontWeight.w700,
-                              color: AppColors.textLight,
+                              color: context.ext.textLight,
                             ),
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: AppSpacing.sm),
                         ],
                         if (durationHours != null || durationMinutes != null) ...[
-                          Icon(SolarIconsOutline.clockCircle, size: 14, color: AppColors.textLight),
-                          const SizedBox(width: 3),
+                          Icon(SolarIconsOutline.clockCircle, size: AppIconSize.s, color: context.ext.textLight, semanticLabel: 'Duration'),
+                          const SizedBox(width: AppSpacing.xxxs),
                           Text(
                             _formatDuration(durationHours, durationMinutes),
                             style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
+                              color: context.colors.onSurfaceVariant,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -179,13 +192,13 @@ class FeaturedCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.titleSmall.copyWith(
-                      color: AppColors.textPrimary,
+                      color: context.colors.onSurface,
                       height: 1.3,
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 3),
+                const SizedBox(height: AppSpacing.xxxs),
 
                 // SUBTITLE (city)
                 if (subtitle != null)
@@ -194,7 +207,7 @@ class FeaturedCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.colors.onSurfaceVariant,
                     ),
                   ),
               ],
@@ -202,15 +215,16 @@ class FeaturedCard extends StatelessWidget {
           ],
         ),
       ),
+      ),
     );
   }
 
   static String _formatDuration(int? hours, int? minutes) {
     final h = hours ?? 0;
     final m = minutes ?? 0;
-    if (h > 0 && m > 0) return "${h}s ${m}dk";
-    if (h > 0) return "${h} saat";
-    return "${m} dk";
+    if (h > 0 && m > 0) return "${h}h ${m}m";
+    if (h > 0) return "${h}h";
+    return "${m}m";
   }
 }
 
@@ -284,9 +298,9 @@ class FeaturedPointsSkeleton extends StatelessWidget {
       height: 240,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s),
         itemCount: 4,
-        separatorBuilder: (_, __) => const SizedBox(width: 16),
+        separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.l),
         itemBuilder: (_, __) => const FeaturedCardSkeleton(),
       ),
     );

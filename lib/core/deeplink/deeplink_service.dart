@@ -8,13 +8,13 @@ class DeepLinkService {
   StreamSubscription<Uri>? _sub;
 
   Future<void> init(BuildContext context) async {
-    // 1️⃣ App kapalıyken link ile açıldıysa
+    // App was opened via link while closed
     final initialUri = await _appLinks.getInitialLink();
     if (initialUri != null) {
       _handle(context, initialUri);
     }
 
-    // 2️⃣ App açıkken link gelirse
+    // Link received while app is open
     _sub = _appLinks.uriLinkStream.listen((uri) {
       _handle(context, uri);
     });
@@ -25,7 +25,7 @@ class DeepLinkService {
   }
 
   void _handle(BuildContext context, Uri uri) {
-    // Beklenen format:
+    // Expected format:
     // https://tourbooking.app/tour/123
     if (uri.pathSegments.isEmpty) return;
 

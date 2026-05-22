@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String text;
@@ -16,7 +19,7 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final textTheme = context.textStyles;
 
     return SizedBox(
       width: double.infinity,
@@ -32,14 +35,14 @@ class PrimaryButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, size: 18, color: Colors.white),
-                    const SizedBox(width: 8),
+                    Icon(icon, size: AppIconSize.ml, color: Colors.white),
+                    const SizedBox(width: AppSpacing.s),
                   ],
                   Text(
                     text,
                     style: textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: context.colors.onPrimary,
                     ),
                   ),
                 ],

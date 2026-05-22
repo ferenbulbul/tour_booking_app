@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class ProfileSection extends StatelessWidget {
   final String title;
@@ -19,13 +19,12 @@ class ProfileSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: AppSpacing.s),
+          padding: const EdgeInsets.only(left: AppSpacing.xs, bottom: AppSpacing.s),
           child: Text(
             title.toUpperCase(),
-            style: AppTextStyles.labelSmall.copyWith(
-              fontSize: 11,
+            style: AppTextStyles.caption.copyWith(
               fontWeight: FontWeight.w700,
-              color: AppColors.textLight,
+              color: context.ext.textLight,
               letterSpacing: 0.8,
             ),
           ),

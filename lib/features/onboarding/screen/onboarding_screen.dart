@@ -1,13 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/features/onboarding/widget/onboarding_dots.dart';
 import 'package:tour_booking/features/onboarding/widget/onboarding_page.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -85,7 +85,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final scheme = context.colors;
     final bottomPad = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
@@ -109,7 +109,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   Text(
                     '${_currentPage + 1}/${_pages.length}',
                     style: AppTextStyles.labelSmall.copyWith(
-                      color: AppColors.textLight,
+                      color: context.ext.textLight,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -120,7 +120,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     child: TextButton(
                       onPressed: _isLastPage ? null : _completeOnboarding,
                       style: TextButton.styleFrom(
-                        foregroundColor: AppColors.textSecondary,
+                        foregroundColor: context.colors.onSurfaceVariant,
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.m,
                           vertical: AppSpacing.xs,
@@ -129,7 +129,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       child: Text(
                         tr('onboarding_skip'),
                         style: AppTextStyles.labelLarge.copyWith(
-                          color: AppColors.textSecondary,
+                          color: context.colors.onSurfaceVariant,
                         ),
                       ),
                     ),
@@ -166,7 +166,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 AppSpacing.screenPadding,
                 0,
                 AppSpacing.screenPadding,
-                bottomPad + 24,
+                bottomPad + AppSpacing.xxl,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -175,7 +175,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     count: _pages.length,
                     currentIndex: _currentPage,
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: AppSpacing.xxlm),
 
                   // ── CTA Button ──
                   ScaleTransition(
@@ -185,15 +185,15 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       height: 54,
                       child: DecoratedBox(
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [AppColors.accent, AppColors.accentDark],
+                          gradient: LinearGradient(
+                            colors: [context.colors.secondary, context.colors.secondary],
                             begin: Alignment.centerLeft,
                             end: Alignment.centerRight,
                           ),
                           borderRadius: BorderRadius.circular(AppRadius.large),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.accent.withValues(alpha: 0.3),
+                              color: context.colors.secondary.withValues(alpha: 0.3),
                               blurRadius: 16,
                               offset: const Offset(0, 6),
                             ),
@@ -201,11 +201,14 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         ),
                         child: Material(
                           color: Colors.transparent,
-                          child: InkWell(
-                            onTap: _nextPage,
-                            borderRadius:
-                                BorderRadius.circular(AppRadius.large),
-                            child: Center(
+                          child: Semantics(
+                            button: true,
+                            label: 'Next page',
+                            child: InkWell(
+                              onTap: _nextPage,
+                              borderRadius:
+                                  BorderRadius.circular(AppRadius.large),
+                              child: Center(
                               child: AnimatedSwitcher(
                                 duration: const Duration(milliseconds: 250),
                                 child: Text(
@@ -214,12 +217,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                       : tr('onboarding_next'),
                                   key: ValueKey(_isLastPage),
                                   style: AppTextStyles.titleSmall.copyWith(
-                                    color: Colors.white,
+                                    color: context.colors.onSecondary,
                                     fontWeight: FontWeight.w600,
                                     letterSpacing: 0.3,
                                   ),
                                 ),
                               ),
+                            ),
                             ),
                           ),
                         ),

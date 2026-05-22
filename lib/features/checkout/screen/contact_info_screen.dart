@@ -2,11 +2,13 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/checkout/viewmodel/contact_info_viewmodel.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class ContactInfoScreen extends StatefulWidget {
   final void Function(
@@ -37,12 +39,12 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
     return Consumer<ContactInfoViewModel>(
       builder: (context, vm, _) {
         return Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: context.colors.surfaceContainerHighest,
           appBar: CommonAppBar(title: tr('contact_info_title')),
           body: vm.isLoading
-              ? const Center(
+              ? Center(
                   child: CircularProgressIndicator(
-                    color: AppColors.accent,
+                    color: context.colors.secondary,
                     strokeWidth: 2.5,
                   ),
                 )
@@ -51,24 +53,24 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
                   children: [
                     // Info banner
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(AppSpacing.m),
                       decoration: BoxDecoration(
-                        color: AppColors.accent.withValues(alpha: 0.06),
-                        borderRadius: BorderRadius.circular(12),
+                        color: context.colors.secondary.withValues(alpha: 0.06),
+                        borderRadius: BorderRadius.circular(AppRadius.medium),
                         border: Border.all(
-                          color: AppColors.accent.withValues(alpha: 0.12),
+                          color: context.colors.secondary.withValues(alpha: 0.12),
                         ),
                       ),
                       child: Row(
                         children: [
                           Icon(SolarIconsOutline.infoCircle,
-                              color: AppColors.accent, size: 18),
-                          const SizedBox(width: 10),
+                              color: context.colors.secondary, size: AppIconSize.ml, semanticLabel: 'Information'),
+                          const SizedBox(width: AppSpacing.ms),
                           Expanded(
                             child: Text(
                               tr('contact_info_description'),
                               style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.textSecondary,
+                                color: context.colors.onSurfaceVariant,
                                 height: 1.3,
                               ),
                             ),
@@ -77,15 +79,15 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppSpacing.xl),
 
                     // Form inside bordered card
                     Container(
-                      padding: const EdgeInsets.all(14),
+                      padding: const EdgeInsets.all(AppSpacing.ml),
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: AppColors.border),
+                        color: context.colors.surface,
+                        borderRadius: BorderRadius.circular(AppRadius.ml),
+                        border: Border.all(color: context.colors.outline),
                       ),
                       child: Form(
                         key: _formKey,
@@ -98,7 +100,7 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
                               validator: vm.validateFirstName,
                               textInputAction: TextInputAction.next,
                             ),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: AppSpacing.m),
                             _buildField(
                               controller: vm.lastNameController,
                               label: tr('contact_last_name'),
@@ -106,7 +108,7 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
                               validator: vm.validateLastName,
                               textInputAction: TextInputAction.next,
                             ),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: AppSpacing.m),
                             _buildField(
                               controller: vm.emailController,
                               label: tr('contact_email'),
@@ -115,7 +117,7 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
                               keyboardType: TextInputType.emailAddress,
                               textInputAction: TextInputAction.next,
                             ),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: AppSpacing.m),
                             _buildField(
                               controller: vm.phoneController,
                               label: tr('contact_phone'),
@@ -134,41 +136,44 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
           bottomNavigationBar: vm.isLoading
               ? null
               : Container(
-                  decoration: const BoxDecoration(
-                    color: AppColors.background,
+                  decoration: BoxDecoration(
+                    color: context.colors.surfaceContainerHighest,
                     border: Border(
-                      top: BorderSide(color: AppColors.border, width: 0.5),
+                      top: BorderSide(color: context.colors.outline, width: 0.5),
                     ),
                   ),
                   padding: EdgeInsets.fromLTRB(
                     AppSpacing.l,
-                    10,
+                    AppSpacing.ms,
                     AppSpacing.l,
-                    bottomPad > 0 ? bottomPad : 12,
+                    bottomPad > 0 ? bottomPad : AppSpacing.m,
                   ),
-                  child: GestureDetector(
-                    onTap: () {
-                      if (_formKey.currentState!.validate()) {
-                        widget.onContinue(
-                          vm.firstName,
-                          vm.lastName,
-                          vm.email,
-                          vm.phone,
-                        );
-                      }
-                    },
-                    child: Container(
-                      height: 46,
-                      decoration: BoxDecoration(
-                        color: AppColors.accent,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        tr('contact_continue_to_payment'),
-                        style: AppTextStyles.labelLarge.copyWith(
-                          color: Colors.white,
-                          fontSize: 14,
+                  child: Semantics(
+                    button: true,
+                    label: 'Continue to payment',
+                    child: GestureDetector(
+                      onTap: () {
+                        if (_formKey.currentState!.validate()) {
+                          widget.onContinue(
+                            vm.firstName,
+                            vm.lastName,
+                            vm.email,
+                            vm.phone,
+                          );
+                        }
+                      },
+                      child: Container(
+                        height: 46,
+                        decoration: BoxDecoration(
+                          color: context.colors.secondary,
+                          borderRadius: BorderRadius.circular(AppRadius.medium),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          tr('contact_continue_to_payment'),
+                          style: AppTextStyles.labelLarge.copyWith(
+                            color: context.colors.onSecondary,
+                          ),
                         ),
                       ),
                     ),
@@ -192,47 +197,46 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
       validator: validator,
       keyboardType: keyboardType,
       textInputAction: textInputAction,
-      style: AppTextStyles.bodyMedium.copyWith(
-        color: AppColors.textPrimary,
-        fontSize: 14,
+      style: AppTextStyles.labelLarge.copyWith(
+        color: context.colors.onSurface,
+        fontWeight: FontWeight.w400,
       ),
       decoration: InputDecoration(
         hintText: label,
-        hintStyle: AppTextStyles.bodyMedium.copyWith(
-          color: AppColors.textLight,
-          fontSize: 14,
+        hintStyle: AppTextStyles.labelLarge.copyWith(
+          color: context.ext.textLight,
+          fontWeight: FontWeight.w400,
         ),
-        prefixIcon: Icon(icon, size: 18, color: AppColors.textLight),
+        prefixIcon: Icon(icon, size: AppIconSize.ml, color: context.ext.textLight),
         filled: false,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderRadius: BorderRadius.circular(AppRadius.medium),
+          borderSide: BorderSide(color: context.colors.outline),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderRadius: BorderRadius.circular(AppRadius.medium),
+          borderSide: BorderSide(color: context.colors.outline),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.medium),
           borderSide: BorderSide(
-            color: AppColors.accent.withValues(alpha: 0.5),
+            color: context.colors.secondary.withValues(alpha: 0.5),
             width: 1.5,
           ),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.error),
+          borderRadius: BorderRadius.circular(AppRadius.medium),
+          borderSide: BorderSide(color: context.colors.error),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+          borderRadius: BorderRadius.circular(AppRadius.medium),
+          borderSide: BorderSide(color: context.colors.error, width: 1.5),
         ),
-        errorStyle: AppTextStyles.bodySmall.copyWith(
-          color: AppColors.error,
-          fontSize: 11,
+        errorStyle: AppTextStyles.caption.copyWith(
+          color: context.colors.error,
         ),
         contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            const EdgeInsets.symmetric(horizontal: AppSpacing.ml, vertical: AppSpacing.m),
       ),
     );
   }

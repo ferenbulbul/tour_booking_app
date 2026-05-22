@@ -1,10 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/features/auth/login/google_viewmodel.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class SocialLoginButtons extends StatelessWidget {
   final VoidCallback? onSuccess;
@@ -16,21 +20,21 @@ class SocialLoginButtons extends StatelessWidget {
     final authVM = Provider.of<AuthViewModel>(context, listen: false);
     final splashVM = Provider.of<SplashViewModel>(context, listen: false);
 
-    final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
+    final scheme = context.colors;
+    final text = context.textStyles;
 
     final googleButtonStyle = OutlinedButton.styleFrom(
-      minimumSize: const Size.fromHeight(48),
+      minimumSize: const Size.fromHeight(AppSpacing.xxxxxl),
       side: BorderSide(color: scheme.primary),
       backgroundColor: scheme.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.medium)),
     );
 
     final appleButtonStyle = ElevatedButton.styleFrom(
       backgroundColor: Colors.black,
-      foregroundColor: Colors.white,
-      minimumSize: const Size.fromHeight(48),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      foregroundColor: scheme.onInverseSurface,
+      minimumSize: const Size.fromHeight(AppSpacing.xxxxxl),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.medium)),
     );
 
     return Column(
@@ -48,10 +52,11 @@ class SocialLoginButtons extends StatelessWidget {
               children: [
                 Image.asset(
                   'assets/images/google_logo.png',
-                  width: 22,
-                  height: 22,
+                  width: AppIconSize.xl - 2,
+                  height: AppIconSize.xl - 2,
+                  semanticLabel: 'Google',
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.m),
                 Text(
                   'login_with_google'.tr(),
                   style: text.labelLarge?.copyWith(color: scheme.primary),
@@ -74,11 +79,11 @@ class SocialLoginButtons extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.apple, color: Colors.white, size: 26),
-                const SizedBox(width: 12),
+                Icon(Icons.apple, color: scheme.onInverseSurface, size: AppIconSize.xxl - 2, semanticLabel: 'Apple'),
+                const SizedBox(width: AppSpacing.m),
                 Text(
                   tr('sign_in_with_apple'),
-                  style: text.labelLarge?.copyWith(color: Colors.white),
+                  style: text.labelLarge?.copyWith(color: scheme.onInverseSurface),
                 ),
               ],
             ),
@@ -118,22 +123,21 @@ class SocialLoginButtons extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xl)),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl, vertical: AppSpacing.xxxl - 4),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(
-                height: 36,
-                width: 36,
-                child: CircularProgressIndicator(strokeWidth: 3),
+              SizedBox(
+                height: AppIconSize.xxxl,
+                width: AppIconSize.xxxl,
+                child: const CircularProgressIndicator(strokeWidth: 3),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.l),
               Text(
                 'common_loading'.tr(),
-                style: const TextStyle(
-                  fontSize: 14,
+                style: AppTextStyles.labelLarge.copyWith(
                   fontWeight: FontWeight.w500,
                 ),
               ),

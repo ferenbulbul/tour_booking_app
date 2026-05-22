@@ -2,8 +2,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solar_icons/solar_icons.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class RootScaffold extends StatelessWidget {
   final Widget child;
@@ -73,9 +75,9 @@ class _PremiumNavBar extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: const Border(
-          top: BorderSide(color: Colors.black12, width: 0.3),
+        color: context.colors.surface,
+        border: Border(
+          top: BorderSide(color: Colors.black.withValues(alpha: 0.12), width: 0.3),
         ),
         boxShadow: [
           BoxShadow(
@@ -94,34 +96,39 @@ class _PremiumNavBar extends StatelessWidget {
               final active = i == currentIndex;
 
               return Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () => onTap(i),
-                  child: Column(
+                child: Semantics(
+                  button: true,
+                  selected: active,
+                  label: items[i]['label']!.toString().tr(),
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () => onTap(i),
+                    child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         items[i]['icon'] as IconData,
-                        size: 24,
+                        size: AppIconSize.xl,
                         color: active
-                            ? AppColors.accent
-                            : AppColors.textLight,
+                            ? context.colors.secondary
+                            : context.ext.textLight,
+                        semanticLabel: items[i]['label']!.toString().tr(),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.xs),
                       Text(
                         items[i]['label']!.toString().tr(),
-                        style: AppTextStyles.bodySmall.copyWith(
-                          fontSize: 11,
+                        style: AppTextStyles.caption.copyWith(
                           fontWeight: active
                               ? FontWeight.w600
                               : FontWeight.w400,
                           color: active
-                              ? AppColors.accent
-                              : AppColors.textLight,
+                              ? context.colors.secondary
+                              : context.ext.textLight,
                         ),
                       ),
                     ],
                   ),
+                ),
                 ),
               );
             }),

@@ -1,8 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class PremiumToggle extends StatelessWidget {
   final int index;
@@ -18,38 +21,41 @@ class PremiumToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _tab(tr("departure_point"), SolarIconsOutline.route, 0),
-        const SizedBox(width: 8),
-        _tab(tr("tour_point"), SolarIconsOutline.mapPoint, 1),
+        _tab(context, tr("departure_point"), SolarIconsOutline.route, 0),
+        const SizedBox(width: AppSpacing.s),
+        _tab(context, tr("tour_point"), SolarIconsOutline.mapPoint, 1),
       ],
     );
   }
 
-  Widget _tab(String text, IconData icon, int value) {
+  Widget _tab(BuildContext context, String text, IconData icon, int value) {
     final selected = index == value;
 
     return Expanded(
-      child: GestureDetector(
-        onTap: () => onChanged(value),
-        child: Column(
+      child: Semantics(
+        button: true,
+        label: text,
+        child: GestureDetector(
+          onTap: () => onChanged(value),
+          child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.ms),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     icon,
-                    size: 18,
-                    color: selected ? AppColors.accent : AppColors.textLight,
+                    size: AppIconSize.ml,
+                    color: selected ? context.colors.secondary : context.ext.textLight,
+                    semanticLabel: text,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.s),
                   Text(
                     text,
                     style: AppTextStyles.labelLarge.copyWith(
-                      color: selected ? AppColors.accent : AppColors.textLight,
+                      color: selected ? context.colors.secondary : context.ext.textLight,
                       fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-                      fontSize: 14,
                     ),
                   ),
                 ],
@@ -59,12 +65,13 @@ class PremiumToggle extends StatelessWidget {
               duration: const Duration(milliseconds: 200),
               height: 2.5,
               decoration: BoxDecoration(
-                color: selected ? AppColors.accent : AppColors.border,
-                borderRadius: BorderRadius.circular(2),
+                color: selected ? context.colors.secondary : context.colors.outline,
+                borderRadius: BorderRadius.circular(AppRadius.xs),
               ),
             ),
           ],
         ),
+      ),
       ),
     );
   }

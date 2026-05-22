@@ -1,12 +1,15 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
 import 'package:tour_booking/features/location/location_viewmodel.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
-/// Driver için konum izni/akışı butonla yönetilen kart.
-/// ⚠️ Mantık AYNI – dokunulmadı
+/// Location permission/tracking control card for Driver.
+/// Logic unchanged
 class LocationControlCard extends StatelessWidget {
   const LocationControlCard({super.key, required this.role});
 
@@ -19,40 +22,40 @@ class LocationControlCard extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Konum Paylaşımı',
-              style: Theme.of(context).textTheme.titleMedium,
+              tr('driver_location_sharing_title'),
+              style: context.textStyles.titleMedium,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.s),
             Text(
               tracking
-                  ? 'Konum paylaşımı AKTİF.'
-                  : 'Konum paylaşımı PASİF. Başlatmak için butona bas.',
+                  ? tr('driver_location_active')
+                  : tr('driver_location_inactive'),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.m),
             Row(
               children: [
                 OutlinedButton.icon(
-                  icon: Icon(tracking ? SolarIconsOutline.stop : SolarIconsOutline.play),
-                  label: Text(tracking ? 'Konumu Durdur' : 'Konumu Başlat'),
+                  icon: Icon(tracking ? SolarIconsOutline.stop : SolarIconsOutline.play, semanticLabel: tracking ? 'Stop tracking' : 'Start tracking'),
+                  label: Text(tracking ? tr('driver_stop_location') : tr('driver_start_location')),
                   onPressed: () async {
                     if (tracking) {
-                      // ❌ DOKUNMADIM
+                      // Stop tracking
                       locationVm.stopTracking();
                     } else {
-                      // ❌ DOKUNMADIM
+                      // Start tracking
                       await locationVm.checkAndHandleLocation(role);
                     }
                   },
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.m),
                 OutlinedButton.icon(
-                  icon: const Icon(SolarIconsOutline.settings),
-                  label: const Text('Ayarlar'),
+                  icon: const Icon(SolarIconsOutline.settings, semanticLabel: 'Settings'),
+                  label: Text(tr('settings')),
                   onPressed: () {
                     openAppSettings();
                   },

@@ -1,23 +1,23 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
-Color bookingStatusColor(String status) {
+Color bookingStatusColor(BuildContext context, String status) {
   final s = status.toLowerCase();
 
   if (s == "completed") {
-    return AppColors.success;
+    return context.ext.success;
   }
 
   if (s == "cancelled") {
-    return AppColors.error;
+    return context.colors.error;
   }
 
   if (s == "cancellationpending") {
-    return const Color(0xFF8B5CF6);
+    return context.ext.purple;
   }
 
-  return AppColors.primary;
+  return context.colors.primary;
 }
 
 String bookingStatusLabel(String status, DateTime departureDate) {
@@ -81,7 +81,7 @@ DateTime parseDepartureDateTime(String date, String time) {
   return DateTime(d.year, d.month, d.day, hour, minute);
 }
 
-/// Returns a countdown text like "Bugün", "Yarın", "3 gün sonra"
+/// Returns a countdown text like "Today", "Tomorrow", "3 days later"
 String getCountdownText(DateTime departureDate) {
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
@@ -91,7 +91,7 @@ String getCountdownText(DateTime departureDate) {
 
   if (days < 0) return '';
   if (days == 0) return 'today'.tr();
-  if (days == 1) return 'Yarın';
-  if (days <= 7) return '$days gün sonra';
-  return '$days gün sonra';
+  if (days == 1) return tr('booking_tomorrow');
+  if (days <= 7) return tr('booking_days_later', namedArgs: {'days': days.toString()});
+  return tr('booking_days_later', namedArgs: {'days': days.toString()});
 }

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 enum DriverBookingStatus { upcoming, today }
@@ -16,9 +17,9 @@ extension DriverBookingStatusX on DriverBookingStatus {
   String get label {
     switch (this) {
       case DriverBookingStatus.today:
-        return 'Bugün';
+        return tr('driver_status_today');
       case DriverBookingStatus.upcoming:
-        return 'Yaklaşan';
+        return tr('driver_status_upcoming');
     }
   }
 }

@@ -1,9 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class AboutSection extends StatelessWidget {
   const AboutSection({super.key});
@@ -31,16 +33,17 @@ class AboutSection extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                width: 36,
-                height: 36,
+                width: AppIconSize.xxxl,
+                height: AppIconSize.xxxl,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(10),
+                  color: context.colors.primary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(AppRadius.ms),
                 ),
                 child: Icon(
                   item['icon'] as IconData,
-                  color: AppColors.primary,
-                  size: 20,
+                  color: context.colors.primary,
+                  size: AppIconSize.l,
+                  semanticLabel: item['text'] as String,
                 ),
               ),
               const SizedBox(width: AppSpacing.m),
@@ -48,7 +51,7 @@ class AboutSection extends StatelessWidget {
                 child: Text(
                   item['text'] as String,
                   style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.colors.onSurfaceVariant,
                     height: 1.3,
                   ),
                 ),

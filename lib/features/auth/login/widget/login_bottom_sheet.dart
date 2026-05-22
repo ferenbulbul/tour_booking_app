@@ -5,16 +5,21 @@ import 'package:go_router/go_router.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/auth/login/login_viewmodel.dart';
 import 'package:tour_booking/features/auth/login/widget/social_login_button.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
+import 'package:tour_booking/navigation/app_router.dart';
 import 'package:tour_booking/utils/password_validator.dart';
 import 'package:flutter/material.dart' as ui;
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
-/// Login bottom sheet'i gosterir.
-/// Basarili giris yapilirsa `true`, kapatilirsa `null` doner.
+/// Shows the login bottom sheet.
+/// Returns `true` if login succeeds, `null` if dismissed.
 Future<bool?> showLoginBottomSheet(BuildContext context) {
   return showModalBottomSheet<bool>(
     context: context,
@@ -23,7 +28,7 @@ Future<bool?> showLoginBottomSheet(BuildContext context) {
     isDismissible: true,
     enableDrag: true,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xxl)),
     ),
     builder: (ctx) {
       return ChangeNotifierProvider(
@@ -79,12 +84,15 @@ class _LoginBottomSheetContentState extends State<_LoginBottomSheetContent> {
 
     if (result.isSuccess && result.data != null) {
       final user = result.data!;
-      navigator.pop(true);
       await splashVM.saveAuthData(user);
+      // Pop sheet and navigate — use global router (context may be stale)
+      try { navigator.pop(true); } catch (e) { debugPrint('_LoginBottomSheetContentState._login: $e'); }
 
       if (user.role.toLowerCase() == UserRole.driver.name &&
           user.isFirstLogin) {
-        if (mounted) context.go('/change-password-driver');
+        router.go('/change-password-driver');
+      } else {
+        router.go('/home');
       }
     } else {
       if (vm.message != null) {
@@ -99,8 +107,8 @@ class _LoginBottomSheetContentState extends State<_LoginBottomSheetContent> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
+    final scheme = context.colors;
+    final text = context.textStyles;
     final isLoading = context.watch<LoginViewModel>().isLoading;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
@@ -109,39 +117,40 @@ class _LoginBottomSheetContentState extends State<_LoginBottomSheetContent> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // ── SABİT HEADER ──
+          // ── FIXED HEADER ──
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+            padding: const EdgeInsets.fromLTRB(AppSpacing.xxl, AppSpacing.m, AppSpacing.xxl, 0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Drag handle
                 Container(
-                  width: 40,
-                  height: 4,
+                  width: AppSpacing.xxxxl,
+                  height: AppSpacing.xs,
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
+                    color: context.colors.outline,
+                    borderRadius: BorderRadius.circular(AppRadius.xxs),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.s),
 
-                // Kapat butonu
+                // Close button
                 Align(
                   alignment: AlignmentDirectional.centerEnd,
                   child: IconButton(
+                    tooltip: 'Close',
                     onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close),
+                    icon: const Icon(Icons.close, semanticLabel: 'Close'),
                   ),
                 ),
               ],
             ),
           ),
 
-          // ── SCROLLABLE İÇERİK ──
+          // ── SCROLLABLE CONTENT ──
           Flexible(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.xxl, 0, AppSpacing.xxl, AppSpacing.xxl),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -154,7 +163,7 @@ class _LoginBottomSheetContentState extends State<_LoginBottomSheetContent> {
                 textAlign: TextAlign.center,
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xxl),
 
               // Social login (ust kisim)
               SocialLoginButtons(
@@ -163,14 +172,14 @@ class _LoginBottomSheetContentState extends State<_LoginBottomSheetContent> {
                 },
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.xl),
 
               // Ayirici
               Row(
                 children: [
                   Expanded(child: Divider(color: scheme.outlineVariant)),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
                     child: Text(
                       tr('or_continue_with'),
                       style: text.bodySmall?.copyWith(
@@ -182,7 +191,7 @@ class _LoginBottomSheetContentState extends State<_LoginBottomSheetContent> {
                 ],
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.xl),
 
               // Email / Sifre gecisi (yana kayma animasyonu)
               AnimatedSwitcher(
@@ -245,9 +254,9 @@ class _LoginBottomSheetContentState extends State<_LoginBottomSheetContent> {
                       ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.l),
 
-              // Buton: email adimi veya giris
+              // Button: email step or login
               PrimaryButton(
                 text: _showPasswordStep
                     ? 'login'.tr()
@@ -256,7 +265,7 @@ class _LoginBottomSheetContentState extends State<_LoginBottomSheetContent> {
                 isLoading: isLoading,
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.l),
 
               // Kayit ol
               Row(
@@ -268,24 +277,28 @@ class _LoginBottomSheetContentState extends State<_LoginBottomSheetContent> {
                       color: scheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      context.push('/register');
-                    },
-                    child: Text(
-                      'create_account'.tr(),
-                      style: text.labelLarge?.copyWith(
-                        color: scheme.primary,
-                        fontWeight: FontWeight.bold,
+                  const SizedBox(width: AppSpacing.sm),
+                  Semantics(
+                    button: true,
+                    label: 'Navigate to create account',
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        context.push('/register');
+                      },
+                      child: Text(
+                        'create_account'.tr(),
+                        style: text.labelLarge?.copyWith(
+                          color: scheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.l),
 
               // Yasal kabul metni
               _buildTermsText(context),
@@ -299,10 +312,9 @@ class _LoginBottomSheetContentState extends State<_LoginBottomSheetContent> {
   }
 
   Widget _buildTermsText(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final baseStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
+    final scheme = context.colors;
+    final baseStyle = AppTextStyles.caption.copyWith(
       color: scheme.onSurface.withValues(alpha: 0.5),
-      fontSize: 11,
       height: 1.4,
     );
     final linkStyle = baseStyle.copyWith(
@@ -350,7 +362,7 @@ class _LoginBottomSheetContentState extends State<_LoginBottomSheetContent> {
     VoidCallback? onVisibilityToggle,
     TextInputType? keyboardType,
   }) {
-    final scheme = Theme.of(context).colorScheme;
+    final scheme = context.colors;
 
     return Directionality(
       textDirection: ui.TextDirection.ltr,
@@ -368,11 +380,13 @@ class _LoginBottomSheetContentState extends State<_LoginBottomSheetContent> {
           prefixIcon: Icon(icon, color: scheme.onSurfaceVariant),
           suffixIcon: isPassword
               ? IconButton(
+                  tooltip: 'Toggle password visibility',
                   icon: Icon(
                     isObscure
                         ? SolarIconsOutline.eyeClosed
                         : SolarIconsOutline.eye,
                     color: scheme.onSurfaceVariant,
+                    semanticLabel: isObscure ? 'Show password' : 'Hide password',
                   ),
                   onPressed: onVisibilityToggle,
                 )

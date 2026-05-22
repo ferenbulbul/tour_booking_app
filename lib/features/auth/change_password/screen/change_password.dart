@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/auth/change_password/change_password_viewmodel.dart';
 import 'package:tour_booking/utils/password_validator.dart';
 import 'package:flutter/material.dart' as ui;
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -47,12 +51,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     final vm = context.watch<ChangePasswordViewModel>();
     final primaryColor = Theme.of(context).primaryColor;
-    final scheme = Theme.of(context).colorScheme;
+    final scheme = context.colors;
     return Scaffold(
       backgroundColor: scheme.surface,
       appBar: CommonAppBar(title: 'reset_password'.tr()),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Form(
           key: _formKey,
           child: Column(
@@ -71,7 +75,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 primaryColor: primaryColor,
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.l),
 
               _buildPasswordField(
                 label: 'confirm_password'.tr(),
@@ -83,7 +87,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 primaryColor: primaryColor,
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xxl),
 
               PrimaryButton(
                 text: 'update_password'.tr(),
@@ -112,7 +116,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 },
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.m),
             ],
           ),
         ),
@@ -135,43 +139,46 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         obscureText: obscure,
         validator: validator,
 
-        // 🔒 ASCII zorunluluğu (çok önemli)
+        // ASCII-only enforcement (important)
         keyboardType: TextInputType.visiblePassword,
         inputFormatters: [PasswordValidator.passwordInputFormatter],
-        style: const TextStyle(
-          color: Colors.black87,
+        style: TextStyle(
+          color: context.colors.onSurface,
           fontWeight: FontWeight.w500,
         ),
         cursorColor: primaryColor,
         decoration: InputDecoration(
           labelText: label,
           filled: true,
-          fillColor: const Color(0xFFF3F4F6),
-          labelStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
+          fillColor: context.ext.surfaceDark,
+          labelStyle: AppTextStyles.labelLarge.copyWith(color: context.ext.textLight),
           prefixIcon: Icon(
             SolarIconsOutline.lock,
-            color: Colors.grey[400],
-            size: 22,
+            color: context.ext.textLight,
+            size: AppSpacing.xxl - 2,
+            semanticLabel: 'Password',
           ),
           suffixIcon: IconButton(
+            tooltip: 'Toggle password visibility',
             icon: Icon(
               obscure
                   ? SolarIconsOutline.eyeClosed
                   : SolarIconsOutline.eye,
-              color: Colors.grey[400],
+              color: context.ext.textLight,
+              semanticLabel: obscure ? 'Show password' : 'Hide password',
             ),
             onPressed: toggle,
           ),
           contentPadding: const EdgeInsets.symmetric(
-            vertical: 18,
-            horizontal: 20,
+            vertical: AppSpacing.l + 2,
+            horizontal: AppSpacing.xl,
           ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadius.large),
             borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadius.large),
             borderSide: BorderSide(color: primaryColor, width: 1.5),
           ),
         ),

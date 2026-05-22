@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class AccordionSection extends StatefulWidget {
   final String title;
@@ -36,12 +37,17 @@ class _AccordionSectionState extends State<AccordionSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Header
-        GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: widget.collapsible
-              ? () => setState(() => _isExpanded = !_isExpanded)
-              : null,
-          child: Padding(
+        Semantics(
+          button: widget.collapsible,
+          label: widget.collapsible
+              ? (_isExpanded ? 'Collapse ${widget.title}' : 'Expand ${widget.title}')
+              : widget.title,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: widget.collapsible
+                ? () => setState(() => _isExpanded = !_isExpanded)
+                : null,
+            child: Padding(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.l),
             child: Row(
               children: [
@@ -49,7 +55,7 @@ class _AccordionSectionState extends State<AccordionSection> {
                   child: Text(
                     widget.title,
                     style: AppTextStyles.titleSmall.copyWith(
-                      color: AppColors.textPrimary,
+                      color: context.colors.onSurface,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -60,13 +66,15 @@ class _AccordionSectionState extends State<AccordionSection> {
                     duration: const Duration(milliseconds: 200),
                     child: Icon(
                       Icons.keyboard_arrow_down,
-                      color: AppColors.textSecondary,
-                      size: 24,
+                      color: context.colors.onSurfaceVariant,
+                      size: AppIconSize.xl,
+                      semanticLabel: _isExpanded ? 'Collapse' : 'Expand',
                     ),
                   ),
               ],
             ),
           ),
+        ),
         ),
         // Content — only built when expanded (saves CPU for collapsed sections)
         AnimatedSize(
@@ -82,7 +90,7 @@ class _AccordionSectionState extends State<AccordionSection> {
         ),
         // Divider
         Divider(
-          color: AppColors.border,
+          color: context.colors.outline,
           height: 1,
           thickness: 1,
         ),

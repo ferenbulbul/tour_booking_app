@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class OnboardingDots extends StatelessWidget {
   final int count;
@@ -20,14 +22,14 @@ class OnboardingDots extends StatelessWidget {
         return AnimatedContainer(
           duration: const Duration(milliseconds: 350),
           curve: Curves.easeOutCubic,
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          height: 8,
-          width: isActive ? 28 : 8,
+          margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+          height: AppSpacing.s,
+          width: isActive ? 28 : AppSpacing.s,
           decoration: BoxDecoration(
             color: isActive
-                ? AppColors.accent
-                : AppColors.textLight.withValues(alpha: 0.25),
-            borderRadius: BorderRadius.circular(4),
+                ? context.colors.secondary
+                : context.ext.textLight.withValues(alpha: 0.25),
+            borderRadius: BorderRadius.circular(AppRadius.xs),
           ),
         );
       }),

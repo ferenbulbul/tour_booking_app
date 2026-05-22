@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class BookingsSkeleton extends StatelessWidget {
   const BookingsSkeleton({super.key});
@@ -9,12 +10,12 @@ class BookingsSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey.shade200,
-      highlightColor: Colors.grey.shade50,
+      baseColor: context.ext.shimmerBase,
+      highlightColor: context.ext.shimmerHighlight,
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.screenPadding,
-          vertical: 16,
+          vertical: AppSpacing.l,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,46 +27,46 @@ class BookingsSkeleton extends StatelessWidget {
                   width: 140,
                   height: 16,
                   decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(6),
+                    color: context.colors.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(AppSpacing.sm),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.s),
                 Container(
                   width: 24,
                   height: 18,
                   decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(10),
+                    color: context.colors.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(AppSpacing.ms),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: AppSpacing.ml),
 
             // UPCOMING CARD SKELETON (large)
             const _LargeCardSkeleton(),
-            const SizedBox(height: 14),
+            const SizedBox(height: AppSpacing.ml),
             const _LargeCardSkeleton(),
 
-            const SizedBox(height: 28),
+            const SizedBox(height: AppSpacing.xxlm),
 
             // PAST SECTION TITLE
             Container(
               width: 80,
               height: 16,
               decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.circular(6),
+                color: context.colors.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: AppSpacing.ml),
 
             // PAST TILE SKELETONS
             const _CompactTileSkeleton(),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.ms),
             const _CompactTileSkeleton(),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.ms),
             const _CompactTileSkeleton(),
           ],
         ),
@@ -81,8 +82,8 @@ class _LargeCardSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: context.colors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.large),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,13 +92,13 @@ class _LargeCardSkeleton extends StatelessWidget {
           Container(
             height: 160,
             decoration: BoxDecoration(
-              color: AppColors.background,
+              color: context.colors.surfaceContainerHighest,
               borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(16)),
+                  const BorderRadius.vertical(top: Radius.circular(AppRadius.large)),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.l),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -105,20 +106,20 @@ class _LargeCardSkeleton extends StatelessWidget {
                   width: double.infinity,
                   height: 16,
                   decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(6),
+                    color: context.colors.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(AppSpacing.sm),
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: AppSpacing.ms),
                 Container(
                   width: 180,
                   height: 12,
                   decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(6),
+                    color: context.colors.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(AppSpacing.sm),
                   ),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: AppSpacing.ml),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -126,16 +127,16 @@ class _LargeCardSkeleton extends StatelessWidget {
                       width: 80,
                       height: 16,
                       decoration: BoxDecoration(
-                        color: AppColors.background,
-                        borderRadius: BorderRadius.circular(6),
+                        color: context.colors.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(AppSpacing.sm),
                       ),
                     ),
                     Container(
                       width: 60,
                       height: 14,
                       decoration: BoxDecoration(
-                        color: AppColors.background,
-                        borderRadius: BorderRadius.circular(6),
+                        color: context.colors.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(AppSpacing.sm),
                       ),
                     ),
                   ],
@@ -155,10 +156,10 @@ class _CompactTileSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSpacing.ml),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        color: context.colors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.ml),
       ),
       child: Row(
         children: [
@@ -166,11 +167,11 @@ class _CompactTileSkeleton extends StatelessWidget {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.circular(12),
+              color: context.colors.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(AppRadius.medium),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.m),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,26 +180,26 @@ class _CompactTileSkeleton extends StatelessWidget {
                   width: double.infinity,
                   height: 14,
                   decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(6),
+                    color: context.colors.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(AppSpacing.sm),
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.sm),
                 Container(
                   width: 100,
                   height: 12,
                   decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(6),
+                    color: context.colors.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(AppSpacing.sm),
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.sm),
                 Container(
                   width: 60,
                   height: 14,
                   decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(6),
+                    color: context.colors.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(AppSpacing.sm),
                   ),
                 ),
               ],

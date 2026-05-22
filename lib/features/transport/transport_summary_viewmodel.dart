@@ -1,12 +1,15 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/models/transport/calculate_price_request/calculate_price_request.dart';
 import 'package:tour_booking/models/transport/create_transport_booking_request/create_transport_booking_request.dart';
 import 'package:tour_booking/models/transport/transport_price_result/transport_price_result.dart';
 import 'package:tour_booking/models/transport/transport_vehicle/transport_vehicle.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/transport/transport_service.dart';
 
-class TransportSummaryViewModel extends ChangeNotifier {
-  final TransportService _service = TransportService();
+class TransportSummaryViewModel extends BaseViewModel {
+  final TransportService _service = ServiceLocator.instance.transportService;
 
   bool isLoading = false;
   bool isBooking = false;
@@ -82,10 +85,11 @@ class TransportSummaryViewModel extends ChangeNotifier {
       if (resp.isSuccess == true && resp.data != null) {
         priceResult = resp.data;
       } else {
-        errorMessage = resp.message ?? 'error_generic';
+        errorMessage = resp.message ?? tr('error_generic');
       }
     } catch (e) {
-      errorMessage = 'error_generic';
+      debugPrint('TransportSummaryViewModel.calculatePrice: $e');
+      errorMessage = tr('error_generic');
     } finally {
       isLoading = false;
       notifyListeners();
@@ -131,10 +135,11 @@ class TransportSummaryViewModel extends ChangeNotifier {
       if (resp.isSuccess == true && resp.data != null) {
         bookingId = resp.data!.bookingId;
       } else {
-        errorMessage = resp.message ?? 'error_generic';
+        errorMessage = resp.message ?? tr('error_generic');
       }
     } catch (e) {
-      errorMessage = 'error_generic';
+      debugPrint('TransportSummaryViewModel.createBooking: $e');
+      errorMessage = tr('error_generic');
     } finally {
       isBooking = false;
       notifyListeners();

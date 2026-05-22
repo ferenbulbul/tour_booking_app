@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/auth/forgot_passwords/forgot_password_viewmodel.dart';
@@ -64,7 +65,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xxl),
 
           PrimaryButton(
             text: tr("send_code"),

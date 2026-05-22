@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class UIHelper {
-  /// MaterialApp.router'a verilecek global key.
+  /// Global key to be provided to MaterialApp.router.
   static final rootMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
   static String? _lastMessage;
@@ -25,28 +26,28 @@ class UIHelper {
   }
 
   static void showSuccess(BuildContext context, String message) {
-    _showSnack(context, message, AppColors.success, SolarIconsOutline.checkCircle);
+    _showSnack(context, message, context.ext.success, SolarIconsOutline.checkCircle);
   }
 
   static void showError(BuildContext context, String message) {
-    _showSnack(context, message, AppColors.error, SolarIconsOutline.closeCircle);
+    _showSnack(context, message, context.colors.error, SolarIconsOutline.closeCircle);
   }
 
   static void showWarning(BuildContext context, String message) {
-    _showSnack(context, message, AppColors.warning, SolarIconsOutline.infoCircle);
+    _showSnack(context, message, context.ext.warning, SolarIconsOutline.infoCircle);
   }
 
   static void showValidationErrors(BuildContext context, List<String> errors) {
     final fullText = errors.join("\n");
-    _showSnack(context, fullText, AppColors.error, SolarIconsOutline.dangerCircle);
+    _showSnack(context, fullText, context.colors.error, SolarIconsOutline.dangerCircle);
   }
 
-  // ─── Ana gösterim metodu ───────────────────────────────────
+  // ─── Main display method ───────────────────────────────────
   static void _showSnack(BuildContext context, String text, Color bg, IconData icon) {
     if (_isDuplicate(text)) return;
 
-    // Bottom sheet veya dialog içindeyken ScaffoldMessenger snackbar'ı
-    // modalın altında gösterir. Bu durumda Overlay'e direkt ekliyoruz.
+    // When inside a bottom sheet or dialog, ScaffoldMessenger shows the
+    // snackbar beneath the modal. In that case we add directly to Overlay.
     final route = ModalRoute.of(context);
     if (route is PopupRoute) {
       _showOverlaySnack(context, text, bg, icon);
@@ -60,8 +61,8 @@ class UIHelper {
         backgroundColor: bg,
         behavior: SnackBarBehavior.floating,
         elevation: 6,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        margin: const EdgeInsets.symmetric(horizontal: AppSpacing.l, vertical: AppSpacing.m),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l, vertical: AppSpacing.m),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.medium),
         ),
@@ -69,7 +70,7 @@ class UIHelper {
         content: Row(
           children: [
             Icon(icon, color: Colors.white, size: 20),
-            const SizedBox(width: 10),
+            const SizedBox(width: AppSpacing.ms),
             Expanded(
               child: Text(
                 text,
@@ -84,7 +85,7 @@ class UIHelper {
       ));
   }
 
-  // ─── Modal içi overlay snackbar ────────────────────────────
+  // ─── In-modal overlay snackbar ─────────────────────────────
   static OverlayEntry? _currentOverlayEntry;
 
   static void _showOverlaySnack(BuildContext context, String text, Color bg, IconData icon) {
@@ -114,7 +115,7 @@ class UIHelper {
   }
 }
 
-// ─── Animasyonlu overlay snackbar widget ──────────────────────
+// ─── Animated overlay snackbar widget ─────────────────────────
 class _AnimatedOverlaySnack extends StatefulWidget {
   final String text;
   final Color bg;
@@ -185,7 +186,7 @@ class _AnimatedOverlaySnackState extends State<_AnimatedOverlaySnack>
           child: Material(
             color: Colors.transparent,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l, vertical: AppSpacing.m),
               decoration: BoxDecoration(
                 color: widget.bg,
                 borderRadius: BorderRadius.circular(AppRadius.medium),
@@ -200,7 +201,7 @@ class _AnimatedOverlaySnackState extends State<_AnimatedOverlaySnack>
               child: Row(
                 children: [
                   Icon(widget.icon, color: Colors.white, size: 20),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: AppSpacing.ms),
                   Expanded(
                     child: Text(
                       widget.text,

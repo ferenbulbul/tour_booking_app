@@ -4,20 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:confetti/confetti.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
-class PaymentSuccessPage extends StatefulWidget {
-  final String conversitationId;
+class PaymentSuccessScreen extends StatefulWidget {
+  final String conversationId;
 
-  const PaymentSuccessPage({super.key, required this.conversitationId});
+  const PaymentSuccessScreen({super.key, required this.conversationId});
 
   @override
-  State<PaymentSuccessPage> createState() => _PaymentSuccessPageState();
+  State<PaymentSuccessScreen> createState() => _PaymentSuccessScreenState();
 }
 
-class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
+class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
   late final ConfettiController _confettiController;
 
   @override
@@ -42,7 +44,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
     final bottomPad = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.colors.surfaceContainerHighest,
       body: Stack(
         alignment: Alignment.topCenter,
         children: [
@@ -54,11 +56,11 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
             numberOfParticles: 25,
             gravity: 0.25,
             shouldLoop: false,
-            colors: const [
-              AppColors.success,
-              Color(0xffA5D6A7),
-              Color(0xffFFD54F),
-              AppColors.accent,
+            colors: [
+              context.ext.success,
+              context.ext.confettiGreen,
+              context.ext.confettiGold,
+              context.colors.secondary,
             ],
           ),
 
@@ -67,9 +69,9 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
             child: Padding(
               padding: EdgeInsets.fromLTRB(
                 AppSpacing.l,
-                40,
+                AppSpacing.xxxxl,
                 AppSpacing.l,
-                bottomPad > 0 ? bottomPad : 16,
+                bottomPad > 0 ? bottomPad : AppSpacing.l,
               ),
               child: Column(
                 children: [
@@ -81,19 +83,20 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                     height: 80,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppColors.success.withValues(alpha: 0.08),
+                      color: context.ext.success.withValues(alpha: 0.08),
                       border: Border.all(
-                        color: AppColors.success.withValues(alpha: 0.15),
+                        color: context.ext.success.withValues(alpha: 0.15),
                       ),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       SolarIconsOutline.checkCircle,
-                      size: 40,
-                      color: AppColors.success,
+                      size: AppIconSize.xxxxl,
+                      color: context.ext.success,
+                      semanticLabel: 'Payment successful',
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.xxl),
 
                   // Title
                   Text(
@@ -101,43 +104,43 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                     style: AppTextStyles.titleLarge,
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.s),
 
                   // Description
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                     child: Text(
                       tr("payment_success_description"),
                       textAlign: TextAlign.center,
                       style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
+                        color: context.colors.onSurfaceVariant,
                         height: 1.4,
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 28),
+                  const SizedBox(height: AppSpacing.xxxl),
 
                   // Reservation code card
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(14),
+                    padding: const EdgeInsets.all(AppSpacing.ml),
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: AppColors.border),
+                      color: context.colors.surface,
+                      borderRadius: BorderRadius.circular(AppRadius.ml),
+                      border: Border.all(color: context.colors.outline),
                     ),
                     child: Column(
                       children: [
                         Text(
                           tr("reservation_number_title"),
                           style: AppTextStyles.labelSmall.copyWith(
-                            color: AppColors.textLight,
+                            color: context.ext.textLight,
                           ),
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: AppSpacing.sm),
                         Text(
-                          widget.conversitationId,
+                          widget.conversationId,
                           textAlign: TextAlign.center,
                           style: AppTextStyles.titleSmall.copyWith(
                             letterSpacing: 0.5,
@@ -150,21 +153,24 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                   const Spacer(),
 
                   // Home button
-                  GestureDetector(
-                    onTap: () => context.go('/home'),
-                    child: Container(
-                      width: double.infinity,
-                      height: 46,
-                      decoration: BoxDecoration(
-                        color: AppColors.accent,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        tr("back_to_home"),
-                        style: AppTextStyles.labelLarge.copyWith(
-                          color: Colors.white,
-                          fontSize: 14,
+                  Semantics(
+                    button: true,
+                    label: tr("back_to_home"),
+                    child: GestureDetector(
+                      onTap: () => context.go('/home'),
+                      child: Container(
+                        width: double.infinity,
+                        height: 46,
+                        decoration: BoxDecoration(
+                          color: context.colors.secondary,
+                          borderRadius: BorderRadius.circular(AppRadius.medium),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          tr("back_to_home"),
+                          style: AppTextStyles.labelLarge.copyWith(
+                            color: context.colors.onSecondary,
+                          ),
                         ),
                       ),
                     ),

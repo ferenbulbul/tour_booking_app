@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class AppBadge extends StatelessWidget {
   final String text;
@@ -12,24 +15,23 @@ class AppBadge extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.ms, vertical: AppSpacing.xsm),
       decoration: BoxDecoration(
         color: isDark
-            ? Colors.white.withOpacity(.06)
-            : Colors.black.withOpacity(.05),
-        borderRadius: BorderRadius.circular(12),
+            ? Colors.white.withValues(alpha: 0.06)
+            : Colors.black.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(AppRadius.medium),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(.12)
-              : Colors.black.withOpacity(.08),
+              ? Colors.white.withValues(alpha: 0.12)
+              : Colors.black.withValues(alpha: 0.08),
         ),
       ),
       child: Text(
         text,
-        style: TextStyle(
-          fontSize: 12,
+        style: AppTextStyles.labelSmall.copyWith(
           fontWeight: FontWeight.w500,
-          color: AppColors.textPrimary,
+          color: context.colors.onSurface,
           letterSpacing: -0.1,
         ),
       ),

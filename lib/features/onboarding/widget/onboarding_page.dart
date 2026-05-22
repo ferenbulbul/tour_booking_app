@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class OnboardingPage extends StatelessWidget {
   final String imagePath;
@@ -40,8 +41,8 @@ class OnboardingPage extends StatelessWidget {
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          AppColors.accent.withValues(alpha: 0.06),
-                          AppColors.accent.withValues(alpha: 0.0),
+                          context.colors.secondary.withValues(alpha: 0.06),
+                          context.colors.secondary.withValues(alpha: 0.0),
                         ],
                       ),
                     ),
@@ -53,17 +54,19 @@ class OnboardingPage extends StatelessWidget {
                   child: Image.asset(
                     imagePath,
                     fit: BoxFit.contain,
+                    semanticLabel: title,
                     errorBuilder: (_, __, ___) => Container(
                       width: 140,
                       height: 140,
                       decoration: BoxDecoration(
-                        color: AppColors.accent.withValues(alpha: 0.08),
+                        color: context.colors.secondary.withValues(alpha: 0.08),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.image_outlined,
-                        size: 64,
-                        color: AppColors.textLight,
+                        size: AppIconSize.massive,
+                        color: context.ext.textLight,
+                        semanticLabel: 'Image placeholder',
                       ),
                     ),
                   ),
@@ -77,9 +80,7 @@ class OnboardingPage extends StatelessWidget {
           // ── Title ──
           Text(
             title,
-            style: AppTextStyles.headlineSmall.copyWith(
-              fontWeight: FontWeight.w700,
-              fontSize: 24,
+            style: AppTextStyles.headlineMedium.copyWith(
               height: 1.2,
             ),
             textAlign: TextAlign.center,
@@ -93,9 +94,8 @@ class OnboardingPage extends StatelessWidget {
             child: Text(
               description,
               style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
+                color: context.colors.onSurfaceVariant,
                 height: 1.6,
-                fontSize: 15,
               ),
               textAlign: TextAlign.center,
             ),

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_elevation.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
@@ -12,8 +13,8 @@ import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/transport/transport_summary_viewmodel.dart';
 import 'package:tour_booking/features/transport/widget/transport_price_breakdown.dart';
 import 'package:tour_booking/features/transport/widget/transport_route_map.dart';
-import 'package:tour_booking/features/auth/login/widget/login_bottom_sheet.dart';
-import 'package:tour_booking/navigation/app_router.dart';
+import 'package:tour_booking/features/transport/transport_route_map_viewmodel.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class TransportSummaryScreen extends StatefulWidget {
   const TransportSummaryScreen({super.key});
@@ -32,11 +33,6 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
   }
 
   Future<void> _handleBooking(TransportSummaryViewModel vm) async {
-    if (splashViewModel.isGuest) {
-      showLoginBottomSheet(context);
-      return;
-    }
-
     context.push('/checkout/contact-info', extra: {
       'bookingType': 'transport',
       'transportVm': vm,
@@ -54,19 +50,19 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
               : vm.priceResult == null
                   ? Center(
                       child: Padding(
-                        padding: const EdgeInsets.all(32),
+                        padding: const EdgeInsets.all(AppSpacing.xxxl),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
                               vm.errorMessage ?? 'error_generic'.tr(),
                               textAlign: TextAlign.center,
-                              style: const TextStyle(color: Colors.red),
+                              style: TextStyle(color: context.colors.error),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: AppSpacing.l),
                             TextButton.icon(
                               onPressed: () => vm.calculatePrice(),
-                              icon: const Icon(SolarIconsOutline.refresh),
+                              icon: const Icon(SolarIconsOutline.refresh, semanticLabel: 'Retry'),
                               label: Text('retry'.tr()),
                             ),
                           ],
@@ -82,13 +78,16 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
                           // Static route map (read-only)
                           if (vm.pickupLat != null &&
                               vm.dropoffLat != null)
-                            TransportRouteMap(
-                              pickupLat: vm.pickupLat!,
-                              pickupLng: vm.pickupLng!,
-                              dropoffLat: vm.dropoffLat!,
-                              dropoffLng: vm.dropoffLng!,
-                              height: 180,
-                              fetchRoute: false,
+                            ChangeNotifierProvider(
+                              create: (_) => TransportRouteMapViewModel(),
+                              child: TransportRouteMap(
+                                pickupLat: vm.pickupLat!,
+                                pickupLng: vm.pickupLng!,
+                                dropoffLat: vm.dropoffLat!,
+                                dropoffLng: vm.dropoffLng!,
+                                height: 180,
+                                fetchRoute: false,
+                              ),
                             ),
 
                           const SizedBox(height: AppSpacing.l),
@@ -101,33 +100,33 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
                                 pickupText: vm.pickupAddress ?? '-',
                                 dropoffText: vm.dropoffAddress ?? '-',
                               ),
-                              const Divider(height: 24),
+                              const Divider(height: AppSpacing.xxl),
                               // Trip stats
                               _infoRow(
                                 SolarIconsOutline.ruler,
-                                AppColors.primary,
+                                context.colors.primary,
                                 '${vm.priceResult!.distanceKm.toStringAsFixed(1)} km',
                               ),
-                              const SizedBox(height: 6),
+                              const SizedBox(height: AppSpacing.sm),
                               _infoRow(
                                 SolarIconsOutline.stopwatch,
-                                AppColors.primary,
+                                context.colors.primary,
                                 '${vm.priceResult!.estimatedDurationMinutes} ${'transport_minutes'.tr()}',
                               ),
                               if (vm.selectedDate != null) ...[
-                                const SizedBox(height: 6),
+                                const SizedBox(height: AppSpacing.sm),
                                 _infoRow(
                                   SolarIconsOutline.calendarDate,
-                                  AppColors.primary,
+                                  context.colors.primary,
                                   DateFormat('dd MMMM yyyy', 'tr_TR')
                                       .format(vm.selectedDate!),
                                 ),
                               ],
                               if (vm.selectedTime != null) ...[
-                                const SizedBox(height: 6),
+                                const SizedBox(height: AppSpacing.sm),
                                 _infoRow(
                                   SolarIconsOutline.clockCircle,
-                                  AppColors.primary,
+                                  context.colors.primary,
                                   vm.selectedTime!,
                                 ),
                               ],
@@ -144,18 +143,18 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
                                   '${vm.selectedVehicle!.brandName} ${vm.selectedVehicle!.className}',
                                   style: AppTextStyles.titleSmall,
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: AppSpacing.s),
                                 _infoRow(
                                     SolarIconsOutline.user,
-                                    AppColors.textSecondary,
+                                    context.colors.onSurfaceVariant,
                                     '${vm.selectedVehicle!.seatCount} ${'transport_seats'.tr()}'),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: AppSpacing.xs),
                                 _infoRow(SolarIconsOutline.user,
-                                    AppColors.textSecondary,
+                                    context.colors.onSurfaceVariant,
                                     vm.selectedVehicle!.driverName),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: AppSpacing.xs),
                                 _infoRow(SolarIconsOutline.buildings,
-                                    AppColors.textSecondary,
+                                    context.colors.onSurfaceVariant,
                                     vm.selectedVehicle!.agencyName),
                               ],
                             ),
@@ -166,7 +165,7 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
                           TransportPriceBreakdown(
                               price: vm.priceResult!),
 
-                          const SizedBox(height: 100),
+                          const SizedBox(height: AppSpacing.massive),
                         ],
                       ),
                     ),
@@ -201,13 +200,13 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
             width: 20,
             child: Column(
               children: [
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 // Green dot (pickup)
                 Container(
-                  width: 12,
-                  height: 12,
-                  decoration: const BoxDecoration(
-                    color: AppColors.success,
+                  width: AppSpacing.m,
+                  height: AppSpacing.m,
+                  decoration: BoxDecoration(
+                    color: context.ext.success,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -215,25 +214,25 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
                 Expanded(
                   child: CustomPaint(
                     painter: _DashedVerticalLinePainter(
-                      color: AppColors.border,
+                      color: context.colors.outline,
                     ),
-                    child: const SizedBox(width: 2),
+                    child: const SizedBox(width: AppSpacing.xxs),
                   ),
                 ),
                 // Red dot (dropoff)
                 Container(
-                  width: 12,
-                  height: 12,
-                  decoration: const BoxDecoration(
-                    color: AppColors.error,
+                  width: AppSpacing.m,
+                  height: AppSpacing.m,
+                  decoration: BoxDecoration(
+                    color: context.colors.error,
                     shape: BoxShape.circle,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
               ],
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.m),
           // Right: addresses
           Expanded(
             child: Column(
@@ -246,7 +245,7 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.l),
                 Text(
                   dropoffText,
                   style: AppTextStyles.bodyMedium.copyWith(
@@ -268,15 +267,9 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.l),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.colors.surface,
         borderRadius: BorderRadius.circular(AppRadius.large),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: AppElevation.shadowMd,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -288,8 +281,8 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
   Widget _infoRow(IconData icon, Color color, String text) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: color),
-        const SizedBox(width: 10),
+        Icon(icon, size: AppIconSize.m, color: color),
+        const SizedBox(width: AppSpacing.ms),
         Expanded(
           child: Text(
             text,

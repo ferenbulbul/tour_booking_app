@@ -5,10 +5,10 @@ import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/features/home/home_viewmodel.dart';
 import 'package:tour_booking/features/home/widget/tour_type_skeleton.dart';
 import 'package:tour_booking/models/tour_type/tour_type_dto.dart';
@@ -79,7 +79,7 @@ class _TourTypeWidgetState extends State<TourTypeWidget> {
             description: item.description,
             imageUrl: item.thumbImageUrl,
             onTap: () => context.pushNamed(
-              'tour-search-by-type',
+              'tourSearchByType',
               queryParameters: {
                 'tourTypeId': item.id,
                 'tourTypeName': item.title,
@@ -113,33 +113,40 @@ class _CategoryCard extends StatelessWidget {
 
     return SizedBox(
       width: cardWidth,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Column(
+      child: Semantics(
+        button: true,
+        label: title,
+        child: GestureDetector(
+          onTap: onTap,
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // IMAGE
-            ClipRRect(
-              borderRadius: BorderRadius.circular(AppRadius.small),
-              child: SizedBox(
-                height: 200,
-                width: double.infinity,
-                child: CachedNetworkImage(
-                  imageUrl: imageUrl,
-                  fit: BoxFit.cover,
-                  memCacheWidth: targetWidth,
-                  maxWidthDiskCache: targetWidth,
-                  fadeInDuration: const Duration(milliseconds: 180),
-                  placeholder: (_, __) => Container(color: AppColors.background),
-                  errorWidget: (_, __, ___) => Container(
-                    color: AppColors.background,
-                    child: const Icon(SolarIconsOutline.gallery, color: AppColors.textLight),
+            Semantics(
+              image: true,
+              label: title,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppRadius.small),
+                child: SizedBox(
+                  height: 200,
+                  width: double.infinity,
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    fit: BoxFit.cover,
+                    memCacheWidth: targetWidth,
+                    maxWidthDiskCache: targetWidth,
+                    fadeInDuration: const Duration(milliseconds: 180),
+                    placeholder: (_, __) => Container(color: context.colors.surfaceContainerHighest),
+                    errorWidget: (_, __, ___) => Container(
+                      color: context.colors.surfaceContainerHighest,
+                      child: Icon(SolarIconsOutline.gallery, color: context.ext.textLight, semanticLabel: 'Image placeholder'),
+                    ),
                   ),
                 ),
               ),
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.s),
 
             // TITLE
             Text(
@@ -147,24 +154,25 @@ class _CategoryCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.titleSmall.copyWith(
-                color: AppColors.textPrimary,
+                color: context.colors.onSurface,
               ),
             ),
 
             // DESCRIPTION
             if (description.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.only(top: 2),
+                padding: const EdgeInsets.only(top: AppSpacing.xxs),
                 child: Text(
                   description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.colors.onSurfaceVariant,
                   ),
                 ),
               ),
           ],
+        ),
         ),
       ),
     );

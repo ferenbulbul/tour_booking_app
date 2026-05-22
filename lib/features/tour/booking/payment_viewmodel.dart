@@ -1,12 +1,14 @@
-import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/models/base/base_response.dart';
 import 'package:tour_booking/models/payment_request/payment_request.dart';
 import 'package:tour_booking/models/payment_init_response/payment_init_response.dart';
 import 'package:tour_booking/models/payment_result_response/payment_result_response.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/payment/payment_service.dart';
 
-class PaymentViewModel extends ChangeNotifier {
-  final PaymentService _service = PaymentService();
+class PaymentViewModel extends BaseViewModel {
+  final PaymentService _service = ServiceLocator.instance.paymentService;
 
   bool isLoading = false;
   String? errorMessage;
@@ -29,7 +31,7 @@ class PaymentViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Checkout form başlat
+  /// Initialize checkout form
   Future<void> initPayment(String bookingId) async {
     isLoading = true;
     errorMessage = null;
@@ -43,17 +45,17 @@ class PaymentViewModel extends ChangeNotifier {
       if (resp.isSuccess == true && resp.data != null) {
         initData = resp.data;
       } else {
-        errorMessage = resp.message ?? "Ödeme başlatılamadı";
+        errorMessage = resp.message ?? tr('error_generic');
       }
     } catch (e) {
-      errorMessage = "InitPayment hata: $e";
+      errorMessage = tr('error_occurred', namedArgs: {'error': e.toString()});
     } finally {
       isLoading = false;
       notifyListeners();
     }
   }
 
-  /// Ödeme sonucunu kontrol et
+  /// Check payment result
   Future<void> checkPaymentResult(String token) async {
     isLoading = true;
     errorMessage = null;
@@ -66,10 +68,10 @@ class PaymentViewModel extends ChangeNotifier {
       if (resp.isSuccess == true && resp.data != null) {
         resultData = resp.data;
       } else {
-        errorMessage = resp.message ?? "Ödeme sonucu alınamadı";
+        errorMessage = resp.message ?? tr('error_payment_result_failed');
       }
     } catch (e) {
-      errorMessage = "Sonuç hatası: $e";
+      errorMessage = tr('error_result', namedArgs: {'error': e.toString()});
     } finally {
       isLoading = false;
       notifyListeners();

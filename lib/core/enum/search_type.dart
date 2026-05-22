@@ -16,15 +16,15 @@
 //   }
 
 //   int get indexValue {
-//     return index; // istersen bunu açık da yazabilirsin
+//     return index; // can also write this explicitly
 //   }
 
 //   String get label {
 //     switch (this) {
 //       case SearchType.departure:
-//         return "Kalkış Noktası";
+//         return "Departure Point";
 //       case SearchType.destination:
-//         return "Tur Noktası";
+//         return "Tour Point";
 //     }
 //   }
 // }

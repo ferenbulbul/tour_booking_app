@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:tour_booking/core/theme/app_elevation.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class LegalDetailScreen extends StatelessWidget {
   final String title;
@@ -16,7 +18,7 @@ class LegalDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final scheme = context.colors;
 
     return Scaffold(
       backgroundColor: scheme.surface,
@@ -32,13 +34,7 @@ class LegalDetailScreen extends StatelessWidget {
             border: Border.all(
               color: scheme.outlineVariant.withValues(alpha: 0.25),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: scheme.shadow.withValues(alpha: 0.04),
-                blurRadius: 24,
-                offset: const Offset(0, 6),
-              ),
-            ],
+            boxShadow: AppElevation.shadowSm,
           ),
           child: SelectableText(
             content,

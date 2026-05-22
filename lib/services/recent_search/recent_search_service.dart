@@ -9,7 +9,7 @@ class RecentSearchService {
   static const int _maxItems = 10;
 
   // ════════════════════════════════════════════════════════════════
-  // Son Aramalar
+  // Recent Searches
   // ════════════════════════════════════════════════════════════════
   Future<List<RecentSearchItem>> getRecentSearches() async {
     final prefs = await SharedPreferences.getInstance();
@@ -49,7 +49,7 @@ class RecentSearchService {
   }
 
   // ════════════════════════════════════════════════════════════════
-  // Son Tıklanan Turlar (şehir bazlı)
+  // Recently Clicked Tours (by city)
   // ════════════════════════════════════════════════════════════════
   Future<List<Map<String, String>>> getRecentTourClicks() async {
     final prefs = await SharedPreferences.getInstance();
@@ -71,13 +71,13 @@ class RecentSearchService {
     final prefs = await SharedPreferences.getInstance();
     final clicks = await getRecentTourClicks();
 
-    // Aynı şehri kaldır (en üste taşıyacağız)
+    // Remove same city (will be moved to the top)
     clicks.removeWhere((e) => e['cityId'] == cityId);
 
-    // Başa ekle
+    // Insert at the beginning
     clicks.insert(0, {'cityId': cityId, 'cityName': cityName});
 
-    // Max 10 tut
+    // Keep max 10
     if (clicks.length > _maxItems) {
       clicks.removeRange(_maxItems, clicks.length);
     }

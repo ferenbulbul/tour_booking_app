@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class VehicleDetailSkeleton extends StatelessWidget {
   const VehicleDetailSkeleton({super.key});
@@ -7,10 +10,9 @@ class VehicleDetailSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
+      baseColor: context.ext.shimmerBase,
+      highlightColor: context.ext.shimmerHighlight,
       child: SingleChildScrollView(
-        // 🔥 Overflow'u tamamen çözen scroll
         padding: const EdgeInsetsDirectional.only(bottom: 40),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -19,53 +21,53 @@ class VehicleDetailSkeleton extends StatelessWidget {
             Container(
               height: MediaQuery.of(context).size.height * 0.42,
               width: double.infinity,
-              color: Colors.grey.shade300,
+              color: context.ext.shimmerBase,
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xxl),
 
             // ------------------ SECTION TITLE ------------------
-            _titleSkeleton(),
+            _titleSkeleton(context),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.l),
 
             // ------------------ SPEC GRID ------------------
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
               child: Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: List.generate(6, (_) => _specSkeleton()),
+                spacing: AppSpacing.m,
+                runSpacing: AppSpacing.m,
+                children: List.generate(6, (_) => _specSkeleton(context)),
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: AppSpacing.xxxl),
 
             // ------------------ FEATURE TITLE ------------------
-            _titleSkeleton(),
-            const SizedBox(height: 16),
+            _titleSkeleton(context),
+            const SizedBox(height: AppSpacing.l),
 
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
               child: Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: List.generate(4, (_) => _featureSkeleton()),
+                spacing: AppSpacing.m,
+                runSpacing: AppSpacing.m,
+                children: List.generate(4, (_) => _featureSkeleton(context)),
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: AppSpacing.xxxl),
 
             // ------------------ DRIVER SECTION ------------------
-            _titleSkeleton(),
-            const SizedBox(height: 16),
+            _titleSkeleton(context),
+            const SizedBox(height: AppSpacing.l),
 
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: _driverSkeleton(),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+              child: _driverSkeleton(context),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.xl),
           ],
         ),
       ),
@@ -73,51 +75,51 @@ class VehicleDetailSkeleton extends StatelessWidget {
   }
 
   // ---------------- SMALL TITLE ----------------
-  Widget _titleSkeleton() {
+  Widget _titleSkeleton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       child: Container(
         height: 22,
         width: 160,
         decoration: BoxDecoration(
-          color: Colors.grey.shade300,
-          borderRadius: BorderRadius.circular(6),
+          color: context.ext.shimmerBase,
+          borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
       ),
     );
   }
 
   // ---------------- SPEC ITEM ------------------
-  Widget _specSkeleton() {
+  Widget _specSkeleton(BuildContext context) {
     return Container(
       width: 160,
       height: 85,
       decoration: BoxDecoration(
-        color: Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(14),
+        color: context.ext.shimmerBase,
+        borderRadius: BorderRadius.circular(AppRadius.ml),
       ),
     );
   }
 
   // ---------------- FEATURE ITEM ------------------
-  Widget _featureSkeleton() {
+  Widget _featureSkeleton(BuildContext context) {
     return Container(
       width: 160,
       height: 40,
       decoration: BoxDecoration(
-        color: Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(12),
+        color: context.ext.shimmerBase,
+        borderRadius: BorderRadius.circular(AppRadius.medium),
       ),
     );
   }
 
   // ---------------- DRIVER BOX ------------------
-  Widget _driverSkeleton() {
+  Widget _driverSkeleton(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.l),
       decoration: BoxDecoration(
-        color: Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(18),
+        color: context.ext.shimmerBase,
+        borderRadius: BorderRadius.circular(AppRadius.lm),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,12 +131,12 @@ class VehicleDetailSkeleton extends StatelessWidget {
               Container(
                 width: 60,
                 height: 60,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                decoration: BoxDecoration(
+                  color: context.colors.surface,
                   shape: BoxShape.circle,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.l),
 
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,17 +145,17 @@ class VehicleDetailSkeleton extends StatelessWidget {
                     height: 18,
                     width: 120,
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(6),
+                      color: context.colors.surface,
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.s),
                   Container(
                     height: 14,
                     width: 100,
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(6),
+                      color: context.colors.surface,
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                   ),
                 ],
@@ -161,20 +163,20 @@ class VehicleDetailSkeleton extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.xl),
 
           // Languages chips
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: AppSpacing.s,
+            runSpacing: AppSpacing.s,
             children: List.generate(
               3,
               (_) => Container(
                 height: 28,
                 width: 70,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
+                  color: context.colors.surface,
+                  borderRadius: BorderRadius.circular(AppRadius.ms),
                 ),
               ),
             ),

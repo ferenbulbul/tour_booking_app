@@ -1,10 +1,13 @@
-import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/models/transport/search_vehicles_request/search_vehicles_request.dart';
 import 'package:tour_booking/models/transport/transport_vehicle/transport_vehicle.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/transport/transport_service.dart';
 
-class TransportVehicleListViewModel extends ChangeNotifier {
-  final TransportService _service = TransportService();
+class TransportVehicleListViewModel extends BaseViewModel {
+  final TransportService _service = ServiceLocator.instance.transportService;
 
   bool isLoading = false;
   String? errorMessage;
@@ -21,11 +24,12 @@ class TransportVehicleListViewModel extends ChangeNotifier {
         vehicles = resp.data!.vehicles;
       } else {
         vehicles = [];
-        errorMessage = resp.message ?? 'error_generic';
+        errorMessage = resp.message ?? tr('error_generic');
       }
     } catch (e) {
+      debugPrint('TransportVehicleListViewModel.searchVehicles: $e');
       vehicles = [];
-      errorMessage = 'error_generic';
+      errorMessage = tr('error_generic');
     } finally {
       isLoading = false;
       notifyListeners();

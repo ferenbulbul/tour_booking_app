@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'app_colors.dart';
 
 class AppTextStyles {
   static String? _fontFamily;
@@ -15,7 +14,6 @@ class AppTextStyles {
     fontFamily: fontFamily,
     fontSize: 32,
     fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
   );
 
   // HEADLINE
@@ -23,7 +21,6 @@ class AppTextStyles {
     fontFamily: fontFamily,
     fontSize: 22,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
   );
 
   // TITLE
@@ -31,21 +28,18 @@ class AppTextStyles {
     fontFamily: fontFamily,
     fontSize: 20,
     fontWeight: FontWeight.w700,
-    color: AppColors.textPrimary,
   );
 
   static TextStyle get titleMedium => TextStyle(
     fontFamily: fontFamily,
     fontSize: 18,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
   );
 
   static TextStyle get titleSmall => TextStyle(
     fontFamily: fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
   );
 
   // BODY
@@ -53,21 +47,18 @@ class AppTextStyles {
     fontFamily: fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.normal,
-    color: AppColors.textPrimary,
   );
 
   static TextStyle get bodyMedium => TextStyle(
     fontFamily: fontFamily,
     fontSize: 15,
     fontWeight: FontWeight.normal,
-    color: AppColors.textSecondary,
   );
 
   static TextStyle get bodySmall => TextStyle(
     fontFamily: fontFamily,
     fontSize: 13,
     fontWeight: FontWeight.normal,
-    color: AppColors.textSecondary,
   );
 
   // LABEL
@@ -75,14 +66,46 @@ class AppTextStyles {
     fontFamily: fontFamily,
     fontSize: 14,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+  );
+
+  static TextStyle get labelMedium => TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
   );
 
   static TextStyle get labelSmall => TextStyle(
     fontFamily: fontFamily,
     fontSize: 12,
     fontWeight: FontWeight.w500,
-    color: AppColors.textSecondary,
+  );
+
+  // CAPTION
+  static TextStyle get caption => TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 11,
+    fontWeight: FontWeight.w500,
+  );
+
+  // SPECIAL - bodyLarge variant (17px for emphasis)
+  static TextStyle get bodyLargeEmphasis => TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+
+  // MICRO - 10px for very small text
+  static TextStyle get micro => TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 10,
+    fontWeight: FontWeight.w500,
+  );
+
+  // HEADLINE MEDIUM - 24px
+  static TextStyle get headlineMedium => TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 24,
+    fontWeight: FontWeight.w700,
   );
 
   static TextTheme get textTheme => TextTheme(

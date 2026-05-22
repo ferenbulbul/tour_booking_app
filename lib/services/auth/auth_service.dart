@@ -46,7 +46,7 @@ class AuthService {
     );
   }
 
-  /// Google veya Apple login (Firebase token uzerinden)
+  /// Google or Apple login (via Firebase token)
   Future<BaseResponse<LoginResponse>> verifyGoogleUser(
     FirebaseTokenRequest req,
   ) async {
@@ -64,7 +64,7 @@ class AuthService {
     );
   }
 
-  /// Guest sign-in (anonim giris)
+  /// Guest sign-in (anonymous login)
   Future<BaseResponse<LoginResponse>> guestSignIn() async {
     final device = await DeviceInfoHelper.getDevice();
 

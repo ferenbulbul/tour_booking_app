@@ -1,6 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
@@ -56,7 +59,7 @@ class _PremiumFullScreenGalleryState extends State<PremiumFullScreenGallery> {
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
-    if (_isZoomed) return; // zoom açıkken dismiss kapalı
+    if (_isZoomed) return; // Dismiss disabled while zoomed
 
     setState(() {
       _dragOffset += details.delta.dy;
@@ -105,7 +108,10 @@ class _PremiumFullScreenGalleryState extends State<PremiumFullScreenGallery> {
             child: Stack(
               children: [
                 // ---- GALLERY ----
-                PhotoViewGallery.builder(
+                Semantics(
+                  image: true,
+                  label: 'Tour photo gallery',
+                  child: PhotoViewGallery.builder(
                   itemCount: widget.images.length,
                   pageController: _pageController,
                   backgroundDecoration: const BoxDecoration(
@@ -118,7 +124,7 @@ class _PremiumFullScreenGalleryState extends State<PremiumFullScreenGallery> {
                         widget.images[index],
                       ),
 
-                      // 🔥 TAŞMA YOK — CROP YOK → contain davranışı
+                      // No overflow, no crop — contained behavior
                       initialScale: PhotoViewComputedScale.contained,
                       minScale: PhotoViewComputedScale.contained,
                       maxScale: PhotoViewComputedScale.contained * 4,
@@ -127,28 +133,34 @@ class _PremiumFullScreenGalleryState extends State<PremiumFullScreenGallery> {
                         tag: "img-${widget.images[index]}",
                       ),
 
-                      // Fotoğraf daha net
+                      // Sharper photo rendering
                       filterQuality: FilterQuality.high,
                     );
                   },
                 ),
+                ),
 
                 // ---- CLOSE BUTTON ----
                 Positioned(
-                  top: MediaQuery.of(context).padding.top + 12,
-                  right: 16,
-                  child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        SolarIconsOutline.closeCircle,
-                        color: Colors.white,
-                        size: 22,
+                  top: MediaQuery.of(context).padding.top + AppSpacing.m,
+                  right: AppSpacing.l,
+                  child: Semantics(
+                    button: true,
+                    label: 'Close gallery',
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(AppSpacing.ms),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.6),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          SolarIconsOutline.closeCircle,
+                          color: Colors.white,
+                          size: AppIconSize.xxl,
+                          semanticLabel: 'Close gallery',
+                        ),
                       ),
                     ),
                   ),
@@ -156,7 +168,7 @@ class _PremiumFullScreenGalleryState extends State<PremiumFullScreenGallery> {
 
                 // ---- DOT INDICATOR ----
                 Positioned(
-                  bottom: 28,
+                  bottom: AppSpacing.xxxl,
                   left: 0,
                   right: 0,
                   child: Row(
@@ -165,14 +177,14 @@ class _PremiumFullScreenGalleryState extends State<PremiumFullScreenGallery> {
                       final active = i == _currentIndex;
                       return AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        height: 8,
-                        width: active ? 20 : 8,
+                        margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+                        height: AppSpacing.s,
+                        width: active ? AppSpacing.xl : AppSpacing.s,
                         decoration: BoxDecoration(
                           color: active
                               ? Colors.white
-                              : Colors.white.withOpacity(0.4),
-                          borderRadius: BorderRadius.circular(8),
+                              : Colors.white.withValues(alpha: 0.4),
+                          borderRadius: BorderRadius.circular(AppRadius.small),
                         ),
                       );
                     }),

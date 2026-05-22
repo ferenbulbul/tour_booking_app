@@ -1,10 +1,13 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/models/tour_point_detail/tour_point_detail.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
 
-class TourDetailViewModel extends ChangeNotifier {
-  final TourService _tourService = TourService();
+class TourDetailViewModel extends BaseViewModel {
+  final TourService _tourService = ServiceLocator.instance.tourService;
 
   /// In-memory cache for tour point details (survives navigation)
   static final Map<String, TourPointDetail> _detailCache = {};
@@ -13,11 +16,16 @@ class TourDetailViewModel extends ChangeNotifier {
   String? errorMessage;
   TourPointDetail? detail;
   String? tourPointDetailId;
-  String? tourpointImage;
+  String? tourPointImage;
   String? selectedCityId;
   String? selectedDistrictId;
   String? selectedTourPointId;
   bool _isFavorite = false;
+
+  // Gallery image cache — recomputed only when detail changes
+  String? _galleryDetailId;
+  String _galleryHeroImage = '';
+  List<String> _galleryImages = [];
 
   bool get isFavorite => _isFavorite;
 
@@ -54,10 +62,10 @@ class TourDetailViewModel extends ChangeNotifier {
         _detailCache[id] = fetched; // Cache for future visits
         _applyDetail(id, fetched);
       } else {
-        errorMessage = result.message ?? 'Bilinmeyen hata';
+        errorMessage = result.message ?? tr('error_generic');
       }
     } catch (e) {
-      errorMessage = 'Hata oluştu: $e';
+      errorMessage = tr('error_occurred', namedArgs: {'error': e.toString()});
     } finally {
       isLoading = false;
       notifyListeners();
@@ -69,12 +77,42 @@ class TourDetailViewModel extends ChangeNotifier {
     detail = d;
     errorMessage = null;
     _isFavorite = d.isFavorites;
-    tourpointImage = d.mainImage;
+    tourPointImage = d.mainImage;
     selectedCityId = d.cities.firstOrNull?.id;
     selectedDistrictId = d.districts
             .firstWhereOrNull((dd) => dd.cityId == selectedCityId)
             ?.id ??
         d.districts.firstOrNull?.id;
+  }
+
+  /// Build a deduplicated gallery image list from [heroImage] and the current
+  /// [detail]. The result is cached internally and only recomputed when the
+  /// detail or heroImage changes.
+  List<String> buildGalleryImages(String heroImage) {
+    if (_galleryDetailId == detail?.id && _galleryHeroImage == heroImage) {
+      return _galleryImages;
+    }
+    _galleryDetailId = detail?.id;
+    _galleryHeroImage = heroImage;
+
+    final images = <String>[];
+    if (heroImage.isNotEmpty) {
+      images.add(heroImage);
+    }
+    if (detail != null) {
+      if (detail!.mainImage.isNotEmpty &&
+          detail!.mainImage != heroImage &&
+          !images.contains(detail!.mainImage)) {
+        images.add(detail!.mainImage);
+      }
+      for (final img in detail!.otherImages) {
+        if (img.isNotEmpty && !images.contains(img)) {
+          images.add(img);
+        }
+      }
+    }
+    _galleryImages = images;
+    return _galleryImages;
   }
 
   void setSelectedCity(String? cityId) {
@@ -117,11 +155,14 @@ class TourDetailViewModel extends ChangeNotifier {
     selectedDistrictId = null;
     selectedTourPointId = null;
     tourPointDetailId = null;
-    tourpointImage = null;
+    tourPointImage = null;
     detail = null;
     _isFavorite = false;
     isLoading = false;
     errorMessage = null;
+    _galleryDetailId = null;
+    _galleryHeroImage = '';
+    _galleryImages = [];
   }
 }
 

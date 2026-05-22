@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_colors_extension.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/theme/component_themes.dart';
@@ -26,13 +27,10 @@ class AppTheme {
       error: AppColors.error,
       onError: Colors.white,
 
-      background: AppColors.background,
-      onBackground: AppColors.textPrimary,
-
       surface: AppColors.surface,
       onSurface: AppColors.textPrimary,
 
-      surfaceVariant: AppColors.background,
+      surfaceContainerHighest: AppColors.background,
       onSurfaceVariant: AppColors.textSecondary,
 
       outline: AppColors.border,
@@ -61,6 +59,7 @@ class AppTheme {
     chipTheme: ComponentThemes.chipTheme,
     snackBarTheme: ComponentThemes.snackBarTheme,
     bottomNavigationBarTheme: ComponentThemes.bottomNavTheme,
+    extensions: const [AppColorsExtension.light],
   );
 
   // -------------------------------------------------------------
@@ -75,22 +74,19 @@ class AppTheme {
     colorScheme: const ColorScheme(
       brightness: Brightness.dark,
 
-      primary: AppColors.accent,
+      primary: AppColors.primaryLight,
       onPrimary: Colors.white,
 
-      secondary: AppColors.primaryLight,
+      secondary: AppColors.accent,
       onSecondary: Colors.white,
 
       error: AppColors.error,
       onError: Colors.white,
 
-      background: Color(0xFF0F0F0F),
-      onBackground: Colors.white,
-
       surface: Color(0xFF1A1A1A),
       onSurface: Colors.white,
 
-      surfaceVariant: Color(0xFF242424),
+      surfaceContainerHighest: Color(0xFF242424),
       onSurfaceVariant: Color(0xFFBBBBBB),
 
       outline: Color(0xFF3A3A3A),
@@ -113,6 +109,7 @@ class AppTheme {
       scrim: Colors.black,
     ),
 
+    elevatedButtonTheme: ComponentThemes.elevatedButtonTheme,
     textTheme: AppTextStyles.textTheme,
 
     inputDecorationTheme: ComponentThemes.inputTheme.copyWith(
@@ -130,5 +127,6 @@ class AppTheme {
     cardTheme: ComponentThemes.cardTheme,
     chipTheme: ComponentThemes.chipTheme,
     bottomNavigationBarTheme: ComponentThemes.bottomNavTheme,
+    extensions: const [AppColorsExtension.dark],
   );
 }

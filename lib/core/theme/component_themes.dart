@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 
 class ComponentThemes {
   // -------------------------------------------------------------
-  // ELEVATED BUTTON — CTA turuncu
+  // ELEVATED BUTTON — CTA orange
   // -------------------------------------------------------------
   static final elevatedButtonTheme = ElevatedButtonThemeData(
     style: ButtonStyle(
       backgroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.disabled)) {
-          return AppColors.accent.withOpacity(0.4);
+          return AppColors.accent.withValues(alpha: 0.4);
         }
         return AppColors.accent;
       }),
-      foregroundColor: WidgetStateProperty.all(Colors.white),
+      foregroundColor: WidgetStateProperty.all(AppColors.white),
       overlayColor: WidgetStateProperty.all(
-        AppColors.accentDark.withOpacity(0.15),
+        AppColors.accentDark.withValues(alpha: 0.15),
       ),
       padding: WidgetStateProperty.all(
-        const EdgeInsets.symmetric(vertical: 16),
+        const EdgeInsets.symmetric(vertical: AppSpacing.l),
       ),
       shape: WidgetStateProperty.all(
         RoundedRectangleBorder(
@@ -31,7 +32,7 @@ class ComponentThemes {
       textStyle: WidgetStateProperty.all(
         AppTextStyles.labelLarge.copyWith(
           fontWeight: FontWeight.w700,
-          color: Colors.white,
+          color: AppColors.white,
         ),
       ),
     ),
@@ -42,8 +43,8 @@ class ComponentThemes {
   // -------------------------------------------------------------
   static final inputTheme = InputDecorationTheme(
     filled: true,
-    fillColor: const Color(0xFFF1F3F7),
-    contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+    fillColor: AppColors.surfaceDark,
+    contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.lm, horizontal: AppSpacing.xl),
 
     labelStyle: AppTextStyles.bodyMedium.copyWith(
       color: AppColors.textSecondary,
@@ -75,7 +76,7 @@ class ComponentThemes {
     color: AppColors.surface,
     elevation: 0,
     margin: EdgeInsets.zero,
-    shadowColor: Color(0x11000000),
+    shadowColor: Color.fromRGBO(0, 0, 0, 0.067),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(AppRadius.large)),
     ),
@@ -85,10 +86,10 @@ class ComponentThemes {
   // CHIP
   // -------------------------------------------------------------
   static final chipTheme = ChipThemeData(
-    backgroundColor: Colors.black12,
+    backgroundColor: AppColors.black.withValues(alpha: 0.12),
     selectedColor: AppColors.primary,
     labelStyle: AppTextStyles.labelLarge,
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m, vertical: AppSpacing.sm),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(AppRadius.small),
     ),

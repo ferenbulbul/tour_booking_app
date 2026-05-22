@@ -2,11 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:intl/intl.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/models/transport/transport_vehicle/transport_vehicle.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class TransportVehicleCard extends StatelessWidget {
   final TransportVehicle vehicle;
@@ -20,20 +21,23 @@ class TransportVehicleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.large),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+    return Semantics(
+      button: true,
+      label: '${vehicle.brandName} ${vehicle.className}',
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            color: context.colors.surface,
+            borderRadius: BorderRadius.circular(AppRadius.large),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -47,22 +51,26 @@ class TransportVehicleCard extends StatelessWidget {
                   // Image
                   (vehicle.vehicleImage != null &&
                           vehicle.vehicleImage!.isNotEmpty)
-                      ? CachedNetworkImage(
-                          imageUrl: vehicle.vehicleImage!,
-                          height: 160,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                          placeholder: (_, __) => Container(
+                      ? Semantics(
+                          image: true,
+                          label: 'Vehicle photo',
+                          child: CachedNetworkImage(
+                            imageUrl: vehicle.vehicleImage!,
                             height: 160,
-                            color: AppColors.border.withValues(alpha: 0.4),
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            placeholder: (_, __) => Container(
+                              height: 160,
+                              color: context.colors.outline.withValues(alpha: 0.4),
+                            ),
                           ),
                         )
                       : Container(
                           height: 160,
-                          color: AppColors.border.withValues(alpha: 0.4),
-                          child: const Center(
+                          color: context.colors.outline.withValues(alpha: 0.4),
+                          child: Center(
                             child: Icon(SolarIconsOutline.routing,
-                                size: 48, color: Colors.grey),
+                                size: AppIconSize.huge, color: context.ext.textLight, semanticLabel: 'Vehicle'),
                           ),
                         ),
 
@@ -89,24 +97,23 @@ class TransportVehicleCard extends StatelessWidget {
                   // Class badge (top-left)
                   if (vehicle.className.isNotEmpty)
                     Positioned(
-                      left: 10,
-                      top: 10,
+                      left: AppSpacing.ms,
+                      top: AppSpacing.ms,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
+                          horizontal: AppSpacing.ms,
+                          vertical: AppSpacing.xs,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.85),
+                          color: context.colors.primary.withValues(alpha: 0.85),
                           borderRadius:
                               BorderRadius.circular(AppRadius.small),
                         ),
                         child: Text(
                           vehicle.className,
-                          style: AppTextStyles.labelSmall.copyWith(
+                          style: AppTextStyles.caption.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
-                            fontSize: 11,
                           ),
                         ),
                       ),
@@ -134,7 +141,7 @@ class TransportVehicleCard extends StatelessWidget {
                       Text(
                         _formatPrice(vehicle.baseFee),
                         style: AppTextStyles.titleSmall.copyWith(
-                          color: AppColors.accent,
+                          color: context.colors.secondary,
                         ),
                       ),
                     ],
@@ -142,19 +149,19 @@ class TransportVehicleCard extends StatelessWidget {
 
                   // Agency name
                   Padding(
-                    padding: const EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.only(top: AppSpacing.xs),
                     child: Row(
                       children: [
                         Icon(SolarIconsOutline.buildings,
-                            size: 14, color: AppColors.textSecondary),
-                        const SizedBox(width: 4),
+                            size: AppIconSize.s, color: context.colors.onSurfaceVariant, semanticLabel: 'Agency'),
+                        const SizedBox(width: AppSpacing.xs),
                         Expanded(
                           child: Text(
                             vehicle.agencyName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
+                              color: context.colors.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -162,12 +169,12 @@ class TransportVehicleCard extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.sm),
 
                   // Rating
                   if (vehicle.avgRating > 0 && vehicle.ratingCount > 0)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
+                      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                       child: Row(
                         children: [
                           ...List.generate(5, (i) {
@@ -182,14 +189,13 @@ class TransportVehicleCard extends StatelessWidget {
                               icon = Icons.star_outline_rounded;
                             }
                             return Icon(icon,
-                                size: 14, color: AppColors.warning);
+                                size: AppIconSize.s, color: context.ext.warning, semanticLabel: 'Rating star');
                           }),
-                          const SizedBox(width: 4),
+                          const SizedBox(width: AppSpacing.xs),
                           Text(
                             "${vehicle.avgRating.toStringAsFixed(1)} (${vehicle.ratingCount})",
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
-                              fontSize: 11,
+                            style: AppTextStyles.caption.copyWith(
+                              color: context.colors.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -200,28 +206,26 @@ class TransportVehicleCard extends StatelessWidget {
                   Row(
                     children: [
                       Icon(SolarIconsOutline.usersGroupRounded,
-                          size: 14, color: AppColors.textLight),
-                      const SizedBox(width: 4),
+                          size: AppIconSize.s, color: context.ext.textLight, semanticLabel: 'Seat count'),
+                      const SizedBox(width: AppSpacing.xs),
                       Text(
                         "${vehicle.seatCount} Koltuk",
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                          fontSize: 12,
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: context.colors.onSurfaceVariant,
                         ),
                       ),
-                      _dot(),
+                      _dot(context),
                       Text(
                         '${_formatPrice(vehicle.pricePerKm)}/km',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                          fontSize: 12,
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: context.colors.onSurfaceVariant,
                         ),
                       ),
                       const Spacer(),
                       Icon(
                         SolarIconsOutline.altArrowRight,
-                        size: 16,
-                        color: AppColors.textLight,
+                        size: AppIconSize.m,
+                        color: context.ext.textLight,
                       ),
                     ],
                   ),
@@ -231,18 +235,18 @@ class TransportVehicleCard extends StatelessWidget {
           ],
         ),
       ),
+      ),
     );
   }
 
-  Widget _dot() {
+  Widget _dot(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
       child: Text(
         "\u00B7",
-        style: TextStyle(
-          color: AppColors.textLight,
+        style: AppTextStyles.labelSmall.copyWith(
+          color: context.ext.textLight,
           fontWeight: FontWeight.w900,
-          fontSize: 12,
         ),
       ),
     );

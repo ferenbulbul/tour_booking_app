@@ -1,12 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/models/city/city_dto.dart';
-import 'package:tour_booking/models/city_list/city_list_response.dart';
 import 'package:tour_booking/models/district/district_dto.dart';
 import 'package:tour_booking/models/region/region_dto.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
 
-class SearchViewmodel extends ChangeNotifier {
-  final TourService _tourService = TourService();
+class SearchViewModel extends BaseViewModel {
+  final TourService _tourService = ServiceLocator.instance.tourService;
 
   bool isLoading = false;
   String? message;
@@ -24,7 +24,7 @@ class SearchViewmodel extends ChangeNotifier {
   bool isCityLoading = false;
   bool isDistrictLoading = false;
 
-  /// ✅ Bölge çekme
+  /// Fetch regions
   Future<void> fetchRegions() async {
     isRegionLoading = true;
     notifyListeners();
@@ -44,7 +44,7 @@ class SearchViewmodel extends ChangeNotifier {
     }
   }
 
-  /// ✅ Bölge seçilince şehirler çekilir, diğer seçimler sıfırlanır
+  /// Fetch cities when a region is selected, reset other selections
   Future<void> fetchCities(String regionId) async {
     selectedRegionId = regionId;
     selectedCityId = null;
@@ -70,7 +70,7 @@ class SearchViewmodel extends ChangeNotifier {
     }
   }
 
-  /// ✅ İl seçilince ilçeler çekilir, ilçe sıfırlanır
+  /// Fetch districts when a city is selected, reset district
   Future<void> fetchDistricts(String cityId) async {
     selectedCityId = cityId;
     selectedDistrictId = null;
@@ -94,19 +94,19 @@ class SearchViewmodel extends ChangeNotifier {
     }
   }
 
-  /// İlçeyi seç
+  /// Select a district
   void selectDistrict(String? districtId) {
     selectedDistrictId = districtId?.isEmpty ?? true ? null : districtId;
     notifyListeners();
   }
 
-  /// (Gerekirse kullanırsın)
+  /// Select a city (use if needed)
   void selectCity(String cityId) {
     selectedCityId = cityId;
     notifyListeners();
   }
 
-  /// Şehir seçimini sıfırla (bölge seçiliyken "Tüm şehirler" seçildiğinde)
+  /// Clear city selection (when "All cities" is selected while a region is active)
   void clearCitySelection() {
     selectedCityId = null;
     selectedDistrictId = null;

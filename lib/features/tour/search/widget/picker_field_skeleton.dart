@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class PickerFieldSkeleton extends StatelessWidget {
   const PickerFieldSkeleton({super.key});
@@ -10,12 +12,12 @@ class PickerFieldSkeleton extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final base = isDark
-        ? Colors.white.withOpacity(.08)
-        : Colors.black.withOpacity(.07);
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.07);
 
     final highlight = isDark
-        ? Colors.white.withOpacity(.20)
-        : Colors.black.withOpacity(.13);
+        ? Colors.white.withValues(alpha: 0.20)
+        : Colors.black.withValues(alpha: 0.13);
 
     return Shimmer.fromColors(
       baseColor: base,
@@ -23,13 +25,13 @@ class PickerFieldSkeleton extends StatelessWidget {
       period: const Duration(milliseconds: 1100),
       child: Container(
         height: 56,
-        padding: const EdgeInsets.symmetric(horizontal: 14),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.ml),
         decoration: BoxDecoration(
           color: isDark
-              ? Colors.white.withOpacity(0.04)
-              : Colors.black.withOpacity(0.03),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border.withOpacity(.5)),
+              ? Colors.white.withValues(alpha: 0.04)
+              : Colors.black.withValues(alpha: 0.03),
+          borderRadius: BorderRadius.circular(AppRadius.ml),
+          border: Border.all(color: context.colors.outline.withValues(alpha: 0.5)),
         ),
         child: Row(
           children: [
@@ -39,11 +41,11 @@ class PickerFieldSkeleton extends StatelessWidget {
               height: 20,
               decoration: BoxDecoration(
                 color: base,
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
             ),
 
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.m),
 
             // Label placeholder
             Expanded(
@@ -51,12 +53,12 @@ class PickerFieldSkeleton extends StatelessWidget {
                 height: 16,
                 decoration: BoxDecoration(
                   color: base,
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
               ),
             ),
 
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.m),
 
             // Arrow placeholder
             Container(
@@ -64,7 +66,7 @@ class PickerFieldSkeleton extends StatelessWidget {
               height: 16,
               decoration: BoxDecoration(
                 color: base,
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(AppRadius.xs),
               ),
             ),
           ],

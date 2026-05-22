@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 const durationFilters = {
   '1_az': '1 saatten az',
@@ -69,36 +72,36 @@ void showFilterModal({
 }) {
   showModalBottomSheet(
     context: context,
-    backgroundColor: AppColors.surface,
+    backgroundColor: context.colors.surface,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
     ),
     builder: (ctx) {
       return SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+          padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.l, AppSpacing.xl, AppSpacing.xl),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
                 child: Container(
-                  width: 40,
-                  height: 4,
+                  width: AppSpacing.xxxxl,
+                  height: AppSpacing.xs,
                   decoration: BoxDecoration(
-                    color: AppColors.border,
-                    borderRadius: BorderRadius.circular(2),
+                    color: context.colors.outline,
+                    borderRadius: BorderRadius.circular(AppSpacing.xxs),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.l),
               Text(
                 title,
                 style: AppTextStyles.titleMedium.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.l),
               FilterOption(
                 label: "Tümü",
                 isSelected: selected == null,
@@ -137,33 +140,37 @@ class FilterChipButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isActive ? AppColors.accent : AppColors.background,
-          borderRadius: BorderRadius.circular(20),
-          border: isActive ? null : Border.all(color: AppColors.border, width: 1),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: AppTextStyles.bodySmall.copyWith(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: isActive ? Colors.white : AppColors.textSecondary,
+    return Semantics(
+      button: true,
+      label: 'Filter by $label',
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m, vertical: AppSpacing.s),
+          decoration: BoxDecoration(
+            color: isActive ? context.colors.secondary : context.colors.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            border: isActive ? null : Border.all(color: context.colors.outline, width: 1),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: AppTextStyles.labelMedium.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: isActive ? context.colors.onSecondary : context.colors.onSurfaceVariant,
+                ),
               ),
-            ),
-            const SizedBox(width: 4),
-            Icon(
-              Icons.keyboard_arrow_down_rounded,
-              size: 16,
-              color: isActive ? Colors.white : AppColors.textSecondary,
-            ),
-          ],
+              const SizedBox(width: AppSpacing.xs),
+              Icon(
+                Icons.keyboard_arrow_down_rounded,
+                size: AppIconSize.m,
+                color: isActive ? context.colors.onSecondary : context.colors.onSurfaceVariant,
+                semanticLabel: 'Expand filter',
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -184,25 +191,29 @@ class FilterOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                label,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
-                  color: isSelected ? AppColors.accent : AppColors.textPrimary,
+    return Semantics(
+      button: true,
+      label: 'Filter option $label',
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.medium),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.m, horizontal: AppSpacing.xs),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                    color: isSelected ? context.colors.secondary : context.colors.onSurface,
+                  ),
                 ),
               ),
-            ),
-            if (isSelected)
-              Icon(Icons.check_rounded, size: 20, color: AppColors.accent),
-          ],
+              if (isSelected)
+                Icon(Icons.check_rounded, size: AppIconSize.l, color: context.colors.secondary, semanticLabel: 'Selected'),
+            ],
+          ),
         ),
       ),
     );

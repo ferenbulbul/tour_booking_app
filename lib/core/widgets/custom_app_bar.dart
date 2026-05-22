@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tour_booking/core/theme/app_bar_styles.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool showBack;
 
-  /// 🔥 Yakın Yerler butonu artık tamamen dışarıdan geliyor
+  /// Action button is fully provided from outside
   final IconData? actionIcon;
   final VoidCallback? onActionPressed;
 
-  /// Ekstra actions da ekleyebilirsin
+  /// Additional actions
   final List<Widget>? actions;
 
   final bool centerTitle;
@@ -20,7 +22,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.title,
     this.showBack = true,
 
-    // Yakın yerler veya başka bir özel action
+    // Nearby places or another custom action
     this.actionIcon,
     this.onActionPressed,
 
@@ -30,8 +32,8 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
+    final scheme = context.colors;
+    final text = context.textStyles;
 
     return AppBar(
       automaticallyImplyLeading: false,
@@ -42,31 +44,33 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
       // 🔙 Back Button
       leading: showBack
           ? IconButton(
-              icon: Icon(Icons.arrow_back_ios_new, color: scheme.onBackground),
+              tooltip: 'Back',
+              icon: Icon(Icons.arrow_back_ios_new, color: scheme.onSurface, semanticLabel: 'Go back'),
               onPressed: () => context.pop(),
             )
           : null,
 
-      // 🔥 Title
+      // Title
       title: Text(
         title,
         style: text.titleLarge?.copyWith(
           fontWeight: FontWeight.w500,
-          color: scheme.onBackground,
+          color: scheme.onSurface,
         ),
       ),
 
-      // 🔥 Actions
+      // Actions
       actions: [
-        /// Eğer actionIcon verilmişse button oluştur
+        /// If actionIcon is provided, create a button
         if (actionIcon != null)
           IconButton(
-            icon: Icon(actionIcon, color: scheme.primary),
+            tooltip: 'Action',
+            icon: Icon(actionIcon, color: scheme.primary, semanticLabel: 'Action'),
             onPressed: onActionPressed,
           ),
 
         ...?actions,
-        const SizedBox(width: 8),
+        const SizedBox(width: AppSpacing.s),
       ],
     );
   }

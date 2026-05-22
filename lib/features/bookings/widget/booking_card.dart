@@ -2,10 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
+import 'package:tour_booking/core/theme/app_elevation.dart';
+import 'package:tour_booking/core/theme/app_icon_size.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/features/bookings/utils/booking_utils.dart';
 import 'package:tour_booking/models/booking/booking_dto.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 /// Large, prominent card for upcoming bookings.
 /// Shows image banner, countdown badge, title, date, price.
@@ -28,7 +32,7 @@ class UpcomingBookingCard extends StatelessWidget {
         ? DateTime.parse(item.departureDate)
         : DateTime.now();
     final countdown = getCountdownText(departureDate);
-    final statusColor = bookingStatusColor(item.status);
+    final statusColor = bookingStatusColor(context, item.status);
     final statusText = bookingStatusLabel(item.status, departureDate);
     final effectiveTime = _isTransport
         ? (item.pickupTime ?? item.departureTime)
@@ -36,24 +40,20 @@ class UpcomingBookingCard extends StatelessWidget {
     final formattedDate =
         DateFormat('dd MMM yyyy', 'tr_TR').format(departureDate);
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: AppColors.border.withValues(alpha: 0.4),
-            width: 0.5,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
+    return Semantics(
+      label: 'View booking details',
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            color: context.colors.surface,
+            borderRadius: BorderRadius.circular(AppRadius.large),
+            border: Border.all(
+              color: context.colors.outline.withValues(alpha: 0.4),
+              width: 0.5,
             ),
-          ],
-        ),
+            boxShadow: AppElevation.shadowMd,
+          ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -63,18 +63,18 @@ class UpcomingBookingCard extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(16)),
+                        const BorderRadius.vertical(top: Radius.circular(AppRadius.large)),
                     child: _tourImage(context),
                   ),
                   if (countdown.isNotEmpty)
                     Positioned(
-                      bottom: 10,
-                      left: 12,
-                      child: _countdownBadge(countdown),
+                      bottom: AppSpacing.ms,
+                      left: AppSpacing.m,
+                      child: _countdownBadge(context, countdown),
                     ),
                   Positioned(
-                    bottom: 10,
-                    right: 12,
+                    bottom: AppSpacing.ms,
+                    right: AppSpacing.m,
                     child: _statusBadge(statusText, statusColor),
                   ),
                 ],
@@ -82,34 +82,35 @@ class UpcomingBookingCard extends StatelessWidget {
 
             // CONTENT
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.l),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // BADGES (compact layout — no image)
                   if (!_hasImage)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.only(bottom: AppSpacing.ms),
                       child: Row(
                         children: [
                           // TRANSPORT / TOUR ICON
                           Container(
-                            width: 40,
-                            height: 40,
+                            width: AppSpacing.xxxxl,
+                            height: AppSpacing.xxxxl,
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.08),
-                              borderRadius: BorderRadius.circular(12),
+                              color: context.colors.primary.withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(AppRadius.medium),
                             ),
                             child: Icon(
                               _isTransport ? SolarIconsOutline.routing : SolarIconsOutline.map,
-                              color: AppColors.primary,
-                              size: 20,
+                              color: context.colors.primary,
+                              size: AppIconSize.l,
+                              semanticLabel: _isTransport ? 'Transport' : 'Tour',
                             ),
                           ),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: AppSpacing.ms),
                           if (countdown.isNotEmpty) ...[
-                            _countdownBadge(countdown),
-                            const SizedBox(width: 8),
+                            _countdownBadge(context, countdown),
+                            const SizedBox(width: AppSpacing.s),
                           ],
                           _statusBadge(statusText, statusColor),
                         ],
@@ -118,7 +119,7 @@ class UpcomingBookingCard extends StatelessWidget {
 
                   // TITLE
                   Text(
-                    _isTransport ? 'Transfer' : item.tourPointName,
+                    _isTransport ? tr('transport_title') : item.tourPointName,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.titleSmall.copyWith(
@@ -128,20 +129,19 @@ class UpcomingBookingCard extends StatelessWidget {
 
                   // ROUTE (transport only)
                   if (_isTransport) ...[
-                    const SizedBox(height: 6),
+                    const SizedBox(height: AppSpacing.sm),
                     Row(
                       children: [
-                        const Icon(SolarIconsOutline.route,
-                            size: 14, color: AppColors.textLight),
-                        const SizedBox(width: 5),
+                        Icon(SolarIconsOutline.route,
+                            size: AppIconSize.s, color: context.ext.textLight, semanticLabel: 'Route'),
+                        const SizedBox(width: AppSpacing.xsm),
                         Flexible(
                           child: Text(
                             '${item.pickupAddress ?? ''} → ${item.dropoffAddress ?? ''}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: AppTextStyles.bodySmall.copyWith(
-                              fontSize: 13,
-                              color: AppColors.textSecondary,
+                            style: AppTextStyles.labelMedium.copyWith(
+                              color: context.colors.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -149,39 +149,37 @@ class UpcomingBookingCard extends StatelessWidget {
                     ),
                   ],
 
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.s),
 
                   // DATE + TIME
                   Row(
                     children: [
-                      const Icon(SolarIconsOutline.calendarDate,
-                          size: 14, color: AppColors.textLight),
-                      const SizedBox(width: 5),
+                      Icon(SolarIconsOutline.calendarDate,
+                          size: AppIconSize.s, color: context.ext.textLight, semanticLabel: 'Date'),
+                      const SizedBox(width: AppSpacing.xsm),
                       Text(
                         formattedDate,
-                        style: AppTextStyles.bodySmall.copyWith(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
+                        style: AppTextStyles.labelMedium.copyWith(
+                          color: context.colors.onSurfaceVariant,
                         ),
                       ),
                       if (effectiveTime.isNotEmpty) ...[
                         Container(
                           width: 3,
                           height: 3,
-                          margin: const EdgeInsets.symmetric(horizontal: 8),
-                          decoration: const BoxDecoration(
-                            color: AppColors.textLight,
+                          margin: const EdgeInsets.symmetric(horizontal: AppSpacing.s),
+                          decoration: BoxDecoration(
+                            color: context.ext.textLight,
                             shape: BoxShape.circle,
                           ),
                         ),
-                        const Icon(SolarIconsOutline.clockCircle,
-                            size: 14, color: AppColors.textLight),
-                        const SizedBox(width: 5),
+                        Icon(SolarIconsOutline.clockCircle,
+                            size: AppIconSize.s, color: context.ext.textLight, semanticLabel: 'Time'),
+                        const SizedBox(width: AppSpacing.xsm),
                         Text(
                           effectiveTime,
-                          style: AppTextStyles.bodySmall.copyWith(
-                            fontSize: 13,
-                            color: AppColors.textSecondary,
+                          style: AppTextStyles.labelMedium.copyWith(
+                            color: context.colors.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -190,20 +188,19 @@ class UpcomingBookingCard extends StatelessWidget {
 
                   // LOCATION (tour only)
                   if (!_isTransport && item.tourPointCity.isNotEmpty) ...[
-                    const SizedBox(height: 6),
+                    const SizedBox(height: AppSpacing.sm),
                     Row(
                       children: [
-                        const Icon(SolarIconsOutline.mapPoint,
-                            size: 14, color: AppColors.textLight),
-                        const SizedBox(width: 5),
+                        Icon(SolarIconsOutline.mapPoint,
+                            size: AppIconSize.s, color: context.ext.textLight, semanticLabel: 'Location'),
+                        const SizedBox(width: AppSpacing.xsm),
                         Flexible(
                           child: Text(
                             item.tourPointCity,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: AppTextStyles.bodySmall.copyWith(
-                              fontSize: 13,
-                              color: AppColors.textSecondary,
+                            style: AppTextStyles.labelMedium.copyWith(
+                              color: context.colors.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -211,7 +208,7 @@ class UpcomingBookingCard extends StatelessWidget {
                     ),
                   ],
 
-                  const SizedBox(height: 14),
+                  const SizedBox(height: AppSpacing.ml),
 
                   // PRICE + DETAILS
                   Row(
@@ -221,21 +218,20 @@ class UpcomingBookingCard extends StatelessWidget {
                         formatCurrency(item.totalPrice),
                         style: AppTextStyles.titleMedium.copyWith(
                           fontWeight: FontWeight.w700,
-                          color: AppColors.accent,
+                          color: context.colors.secondary,
                         ),
                       ),
                       Row(
                         children: [
                           Text(
                             'booking_details'.tr(),
-                            style: AppTextStyles.labelLarge.copyWith(
-                              color: AppColors.primary,
-                              fontSize: 13,
+                            style: AppTextStyles.labelMedium.copyWith(
+                              color: context.colors.primary,
                             ),
                           ),
-                          const SizedBox(width: 4),
-                          const Icon(SolarIconsOutline.arrowRight,
-                              size: 16, color: AppColors.primary),
+                          const SizedBox(width: AppSpacing.xs),
+                          Icon(SolarIconsOutline.arrowRight,
+                              size: AppIconSize.m, color: context.colors.primary),
                         ],
                       ),
                     ],
@@ -246,28 +242,23 @@ class UpcomingBookingCard extends StatelessWidget {
           ],
         ),
       ),
+      ),
     );
   }
 
-  Widget _countdownBadge(String text) {
+  Widget _countdownBadge(BuildContext context, String text) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.ms, vertical: AppSpacing.xsm),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 6,
-          ),
-        ],
+        color: context.colors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.small),
+        boxShadow: AppElevation.shadowSm,
       ),
       child: Text(
         text,
         style: AppTextStyles.labelSmall.copyWith(
           fontWeight: FontWeight.w700,
-          color: AppColors.accent,
-          fontSize: 12,
+          color: context.colors.secondary,
         ),
       ),
     );
@@ -275,17 +266,16 @@ class UpcomingBookingCard extends StatelessWidget {
 
   Widget _statusBadge(String text, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.ms, vertical: AppSpacing.xsm),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.9),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.small),
       ),
       child: Text(
         text,
-        style: AppTextStyles.labelSmall.copyWith(
+        style: AppTextStyles.caption.copyWith(
           fontWeight: FontWeight.w600,
           color: Colors.white,
-          fontSize: 11,
         ),
       ),
     );
@@ -296,23 +286,27 @@ class UpcomingBookingCard extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final targetWidth = ((screenWidth - 40) * dpr).round();
 
-    return CachedNetworkImage(
-      imageUrl: item.image,
-      height: 160,
-      width: double.infinity,
-      fit: BoxFit.cover,
-      memCacheWidth: targetWidth,
-      fadeInDuration: const Duration(milliseconds: 150),
-      placeholder: (_, __) => Container(
+    return Semantics(
+      image: true,
+      label: item.tourPointName,
+      child: CachedNetworkImage(
+        imageUrl: item.image,
         height: 160,
-        color: AppColors.background,
-      ),
-      errorWidget: (_, __, ___) => Container(
-        height: 160,
-        color: AppColors.background,
-        child: const Center(
-          child: Icon(SolarIconsOutline.galleryRemove,
-              size: 32, color: AppColors.textLight),
+        width: double.infinity,
+        fit: BoxFit.cover,
+        memCacheWidth: targetWidth,
+        fadeInDuration: const Duration(milliseconds: 150),
+        placeholder: (_, __) => Container(
+          height: 160,
+          color: context.colors.surfaceContainerHighest,
+        ),
+        errorWidget: (_, __, ___) => Container(
+          height: 160,
+          color: context.colors.surfaceContainerHighest,
+          child: Center(
+            child: Icon(SolarIconsOutline.galleryRemove,
+                size: AppIconSize.xxlm, color: context.ext.textLight, semanticLabel: 'Image not available'),
+          ),
         ),
       ),
     );

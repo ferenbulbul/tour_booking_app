@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -25,6 +26,8 @@ import 'package:tour_booking/firebase_options.dart';
 import 'package:tour_booking/navigation/app_router.dart';
 import 'package:tour_booking/services/driver/driver_service.dart';
 import 'package:tour_booking/features/location/location_viewmodel.dart';
+import 'package:tour_booking/core/di/service_locator.dart';
+import 'package:tour_booking/features/profile/theme_viewmodel.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -38,17 +41,30 @@ void main() async {
   await dotenv.load(fileName: envFile);
   await LocalizationSetup.init();
 
-  // Firebase'i burada başlatarak, Provider'lar oluşturulmadan önce hazır olmasını garantiliyoruz.
+  // Initialize Firebase here to ensure it is ready before Providers are created.
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   debugPaintBaselinesEnabled = false;
   debugPaintSizeEnabled = false;
   debugPaintPointersEnabled = false;
   debugPaintLayerBordersEnabled = false;
 
+  ServiceLocator.instance.init();
+
+  // Global error handlers for uncaught exceptions
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    debugPrint('FlutterError: ${details.exception}');
+  };
+
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint('PlatformError: $error\n$stack');
+    return true;
+  };
+
   runApp(const AppProviders());
 }
 
-// AppProviders ve MyApp sınıfları aynı kalabilir.
+// AppProviders and MyApp classes can remain as-is.
 class AppProviders extends StatefulWidget {
   const AppProviders({super.key});
 
@@ -62,7 +78,7 @@ class _AppProvidersState extends State<AppProviders> {
   @override
   void initState() {
     super.initState();
-    splashViewModel.initializeApp(); // 🔥 KRİTİK SATIR
+    splashViewModel.initializeApp(); // Critical initialization line
     _initOneSignal();
   }
 
@@ -84,17 +100,18 @@ class _AppProvidersState extends State<AppProviders> {
           ChangeNotifierProvider(create: (_) => AuthViewModel()),
           ChangeNotifierProvider(create: (_) => LocationViewModel()),
           ChangeNotifierProvider(create: (_) => HomeViewModel()..init()),
-          ChangeNotifierProvider(create: (_) => SearchViewmodel()),
+          ChangeNotifierProvider(create: (_) => SearchViewModel()),
           ChangeNotifierProvider(create: (_) => TourSearchResultsViewModel()),
           ChangeNotifierProvider(create: (_) => TourDetailViewModel()),
           ChangeNotifierProvider(create: (_) => TourBookingSelectionViewModel()),
           ChangeNotifierProvider(create: (_) => TourVehicleGuideViewModel()),
-          Provider<DriverService>(create: (_) => DriverService()),
+          Provider<DriverService>(create: (_) => ServiceLocator.instance.driverService),
           ChangeNotifierProvider(create: (_) => ProfileViewModel()),
           ChangeNotifierProvider(create: (_) => FavoriteViewModel()),
           ChangeNotifierProvider(create: (_) => BookingsViewModel()),
           ChangeNotifierProvider(create: (_) => PermissionsViewModel()),
           ChangeNotifierProvider(create: (_) => RatingsViewModel()),
+          ChangeNotifierProvider(create: (_) => ThemeViewModel()),
         ],
         child: const MyApp(),
       ),

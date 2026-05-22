@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/features/auth/login/google_viewmodel.dart';
@@ -11,11 +10,12 @@ import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 import 'package:tour_booking/features/profile/widget/profile_section.dart';
 import 'package:tour_booking/features/profile/widget/profile_skeleton.dart';
 import 'package:tour_booking/features/profile/widget/guest_profile_view.dart';
+import 'package:tour_booking/features/profile/screen/language_screen.dart';
+import 'package:tour_booking/features/profile/theme_viewmodel.dart';
 import 'package:tour_booking/features/profile/widget/notification_preferences_sheet.dart';
 import 'package:tour_booking/features/profile/widget/profile_menu_tile.dart';
-import 'package:tour_booking/features/auth/login/widget/login_bottom_sheet.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
-import 'package:tour_booking/navigation/app_router.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -29,9 +29,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      if (splashViewModel.isGuest) {
-        showLoginBottomSheet(context);
-      } else {
+      if (!mounted) return;
+      final splash = context.read<SplashViewModel>();
+      if (!splash.isGuest) {
         context.read<ProfileViewModel>().fetchProfile();
       }
     });
@@ -39,23 +39,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final scheme = context.colors;
+    final splash = context.watch<SplashViewModel>();
 
-    if (splashViewModel.isGuest) {
+    if (splash.isGuest) {
       return const GuestProfileView();
     }
 
     final vm = context.watch<ProfileViewModel>();
     final authVm = context.watch<AuthViewModel>();
 
-    if (vm.isLoading && vm.profile == null) {
+    // Trigger profile fetch after login (profile was never loaded as guest)
+    if (vm.profile == null && !vm.isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) context.read<ProfileViewModel>().fetchProfile();
+      });
+    }
+
+    if (vm.profile == null) {
       return const ProfileSkeleton();
     }
 
-    final p = vm.profile;
-    if (p == null) {
-      return Scaffold(body: Center(child: Text(tr("profile_not_found"))));
-    }
+    final p = vm.profile!;
 
     const expandedHeight = 90.0;
     const collapsedHeight = 66.0;
@@ -103,10 +108,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           width: avatarSize,
                           height: avatarSize,
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
+                            gradient: LinearGradient(
                               colors: [
-                                AppColors.primary,
-                                AppColors.primaryLight,
+                                context.colors.primary,
+                                context.colors.primaryContainer,
                               ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
@@ -117,7 +122,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Icon(
                             SolarIconsOutline.user,
                             size: iconSize,
-                            color: Colors.white,
+                            color: context.colors.onPrimary,
+                            semanticLabel: 'Profile',
                           ),
                         ),
                         const SizedBox(width: AppSpacing.m),
@@ -135,13 +141,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                               if (emailOpacity > 0.05) ...[
-                                const SizedBox(height: 2),
+                                const SizedBox(height: AppSpacing.xxs),
                                 Opacity(
                                   opacity: emailOpacity,
                                   child: Text(
                                     p.email,
                                     style: AppTextStyles.bodySmall.copyWith(
-                                      color: AppColors.textSecondary,
+                                      color: context.colors.onSurfaceVariant,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -158,7 +164,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
 
-          // İÇERİK
+          // CONTENT
           SliverPadding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.screenPadding,
@@ -189,7 +195,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       icon: SolarIconsOutline.globus,
                       title: tr("language"),
                       trailingText: getLanguageName(context),
-                      onTap: () => context.push("/settings/language"),
+                      onTap: () => showLanguageSheet(context),
                     ),
                     ProfileTile(
                       icon: SolarIconsOutline.lock,
@@ -200,8 +206,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       icon: SolarIconsOutline.notificationUnread,
                       title: tr("notifications"),
                       onTap: () => showNotificationPreferencesSheet(context),
-                      showDivider: false,
                     ),
+                    _AppearanceTile(),
                   ],
                 ),
 
@@ -237,8 +243,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ProfileTile(
                       icon: SolarIconsOutline.logout,
                       title: tr("logout"),
-                      titleColor: AppColors.error,
-                      iconColor: AppColors.error,
+                      titleColor: context.colors.error,
+                      iconColor: context.colors.error,
                       showDivider: false,
                       onTap: () async {
                         final splashVm = context.read<SplashViewModel>();
@@ -262,14 +268,119 @@ class _ProfileScreenState extends State<ProfileScreen> {
 }
 
 String getLanguageName(BuildContext context) {
-  switch (context.locale.languageCode) {
-    case 'tr':
-      return 'Türkçe';
-    case 'en':
-      return 'English';
-    case 'ar':
-      return 'العربية';
-    default:
-      return 'English';
+  return tr('language_name');
+}
+
+class _AppearanceTile extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final themeVM = context.watch<ThemeViewModel>();
+    final scheme = context.colors;
+
+    String label;
+    switch (themeVM.themeMode) {
+      case ThemeMode.system:
+        label = tr('theme_system');
+      case ThemeMode.light:
+        label = tr('theme_light');
+      case ThemeMode.dark:
+        label = tr('theme_dark');
+    }
+
+    return ProfileTile(
+      icon: SolarIconsOutline.sun,
+      title: tr('appearance'),
+      trailingText: label,
+      showDivider: false,
+      onTap: () => _showThemePicker(context, themeVM, scheme),
+    );
+  }
+
+  void _showThemePicker(
+    BuildContext context,
+    ThemeViewModel themeVM,
+    ColorScheme scheme,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: scheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSpacing.l),
+        ),
+      ),
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: AppSpacing.l,
+            horizontal: AppSpacing.screenPadding,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: scheme.onSurfaceVariant.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.l),
+              Text(
+                tr('appearance'),
+                style: AppTextStyles.titleSmall.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.m),
+              _themeOption(context, themeVM, ThemeMode.system,
+                  SolarIconsOutline.smartphone, tr('theme_system')),
+              _themeOption(context, themeVM, ThemeMode.light,
+                  SolarIconsOutline.sun, tr('theme_light')),
+              _themeOption(context, themeVM, ThemeMode.dark,
+                  SolarIconsOutline.moon, tr('theme_dark')),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _themeOption(
+    BuildContext context,
+    ThemeViewModel themeVM,
+    ThemeMode mode,
+    IconData icon,
+    String label,
+  ) {
+    final isSelected = themeVM.themeMode == mode;
+    final scheme = Theme.of(context).colorScheme;
+
+    return ListTile(
+      leading: Icon(icon,
+          color: isSelected ? scheme.primary : scheme.onSurfaceVariant),
+      title: Text(
+        label,
+        style: AppTextStyles.labelLarge.copyWith(
+          color: isSelected ? scheme.primary : scheme.onSurface,
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+        ),
+      ),
+      trailing: isSelected
+          ? Icon(SolarIconsOutline.checkCircle,
+              color: scheme.primary, size: 22)
+          : null,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.s),
+      ),
+      onTap: () {
+        themeVM.setThemeMode(mode);
+        Navigator.pop(context);
+      },
+    );
   }
 }

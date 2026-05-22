@@ -1,10 +1,14 @@
-import 'dart:convert';
 import 'dart:math';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
-import 'package:tour_booking/core/theme/app_colors.dart';
-import 'package:tour_booking/keys.dart';
+import 'package:provider/provider.dart';
+import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
+import 'package:tour_booking/core/theme/app_text_styles.dart';
+import 'package:tour_booking/core/theme/app_theme_context.dart';
+import 'package:tour_booking/features/transport/transport_route_map_viewmodel.dart';
+import 'package:tour_booking/services/google_places/google_place_service.dart';
 
 /// Route info passed to parent via [onRouteSelected].
 class RouteInfo {
@@ -54,11 +58,6 @@ class TransportRouteMap extends StatefulWidget {
 class _TransportRouteMapState extends State<TransportRouteMap> {
   GoogleMapController? _controller;
   final Set<Marker> _markers = {};
-  Set<Polyline> _polylines = {};
-  bool _routeLoaded = false;
-
-  List<_ParsedRoute> _routes = [];
-  int _selectedIndex = 0;
 
   LatLng get _pickup => LatLng(widget.pickupLat, widget.pickupLng);
   LatLng get _dropoff => LatLng(widget.dropoffLat, widget.dropoffLng);
@@ -67,7 +66,11 @@ class _TransportRouteMapState extends State<TransportRouteMap> {
   void initState() {
     super.initState();
     _setupMarkers();
-    if (widget.fetchRoute) _fetchRoutes();
+    if (widget.fetchRoute) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _fetchRoutes();
+      });
+    }
   }
 
   void _setupMarkers() {
@@ -88,168 +91,71 @@ class _TransportRouteMapState extends State<TransportRouteMap> {
   }
 
   Future<void> _fetchRoutes() async {
-    try {
-      final origin = '${widget.pickupLat},${widget.pickupLng}';
-      final dest = '${widget.dropoffLat},${widget.dropoffLng}';
-      final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/directions/json'
-        '?origin=$origin'
-        '&destination=$dest'
-        '&mode=driving'
-        '&alternatives=true'
-        '&key=${Keys.places}',
-      );
+    final vm = context.read<TransportRouteMapViewModel>();
+    await vm.fetchRoutes(
+      pickup: _pickup,
+      dropoff: _dropoff,
+      initialDistanceKm: widget.initialDistanceKm,
+    );
 
-      final response = await http.get(url);
-      if (response.statusCode != 200) {
-        widget.onRouteFetchFailed?.call();
-        return;
-      }
+    if (!mounted) return;
 
-      final data = json.decode(response.body) as Map<String, dynamic>;
-      if (data['status'] != 'OK') {
-        widget.onRouteFetchFailed?.call();
-        return;
-      }
-
-      final routesJson = data['routes'] as List<dynamic>;
-      final parsed = <_ParsedRoute>[];
-
-      for (final route in routesJson) {
-        final leg = (route['legs'] as List<dynamic>)[0];
-        final distanceValue = (leg['distance']['value'] as num).toDouble();
-        final durationValue = (leg['duration']['value'] as num).toInt();
-        final distanceText = leg['distance']['text'] as String;
-        final durationText = leg['duration']['text'] as String;
-        final summary = (route['summary'] as String?) ?? '';
-
-        final encodedPolyline =
-            route['overview_polyline']['points'] as String;
-        final points = _decodePolyline(encodedPolyline);
-
-        parsed.add(_ParsedRoute(
-          points: points,
-          distanceKm: distanceValue / 1000.0,
-          durationMinutes: (durationValue / 60.0).round(),
-          distanceText: distanceText,
-          durationText: durationText,
-          summary: summary,
-        ));
-      }
-
-      if (parsed.isEmpty || !mounted) {
-        widget.onRouteFetchFailed?.call();
-        return;
-      }
-
-      // Find the route closest to initialDistanceKm if provided
-      int bestIndex = 0;
-      if (widget.initialDistanceKm != null && parsed.length > 1) {
-        double minDiff = double.infinity;
-        for (int i = 0; i < parsed.length; i++) {
-          final diff = (parsed[i].distanceKm - widget.initialDistanceKm!).abs();
-          if (diff < minDiff) {
-            minDiff = diff;
-            bestIndex = i;
-          }
-        }
-      }
-
-      setState(() {
-        _routes = parsed;
-        _selectedIndex = bestIndex;
-        _routeLoaded = true;
-        _buildPolylines();
-      });
-
-      _notifyRouteSelected();
+    if (vm.fetchFailed) {
+      widget.onRouteFetchFailed?.call();
       _fitBounds();
-    } catch (_) {
-      if (mounted) {
-        _fitBounds();
-        widget.onRouteFetchFailed?.call();
-      }
+      return;
     }
+
+    _notifyRouteSelected(vm);
+    _fitBounds();
   }
 
-  void _selectRoute(int index) {
-    if (index == _selectedIndex || index < 0 || index >= _routes.length) return;
-    setState(() {
-      _selectedIndex = index;
-      _buildPolylines();
-    });
-    _notifyRouteSelected();
-  }
-
-  void _notifyRouteSelected() {
-    if (_routes.isEmpty || widget.onRouteSelected == null) return;
-    final r = _routes[_selectedIndex];
+  void _notifyRouteSelected(TransportRouteMapViewModel vm) {
+    final route = vm.selectedRoute;
+    if (route == null || widget.onRouteSelected == null) return;
     widget.onRouteSelected!(RouteInfo(
-      distanceKm: r.distanceKm,
-      durationMinutes: r.durationMinutes,
-      distanceText: r.distanceText,
-      durationText: r.durationText,
-      summary: r.summary,
+      distanceKm: route.distanceKm,
+      durationMinutes: route.durationMinutes,
+      distanceText: route.distanceText,
+      durationText: route.durationText,
+      summary: route.summary,
     ));
   }
 
-  void _buildPolylines() {
+  void _selectRoute(TransportRouteMapViewModel vm, int index) {
+    vm.selectRoute(index);
+    _notifyRouteSelected(vm);
+  }
+
+  Set<Polyline> _buildPolylines(TransportRouteMapViewModel vm) {
+    if (!vm.routeLoaded) return {};
+
     final polylines = <Polyline>{};
 
     // Unselected routes (behind, grey, dashed)
-    for (int i = 0; i < _routes.length; i++) {
-      if (i == _selectedIndex) continue;
+    for (int i = 0; i < vm.routes.length; i++) {
+      if (i == vm.selectedIndex) continue;
+      final capturedIndex = i;
       polylines.add(Polyline(
         polylineId: PolylineId('route_$i'),
-        points: _routes[i].points,
-        color: Colors.grey.shade400,
+        points: vm.routes[i].points,
+        color: context.ext.shimmerBase,
         width: 3,
         patterns: [PatternItem.dash(20), PatternItem.gap(10)],
         consumeTapEvents: true,
-        onTap: () => _selectRoute(i),
+        onTap: () => _selectRoute(vm, capturedIndex),
       ));
     }
 
     // Selected route (on top, blue, solid)
     polylines.add(Polyline(
-      polylineId: PolylineId('route_selected_$_selectedIndex'),
-      points: _routes[_selectedIndex].points,
-      color: AppColors.accent,
+      polylineId: PolylineId('route_selected_${vm.selectedIndex}'),
+      points: vm.routes[vm.selectedIndex].points,
+      color: context.colors.secondary,
       width: 5,
     ));
 
-    _polylines = polylines;
-  }
-
-  List<LatLng> _decodePolyline(String encoded) {
-    final points = <LatLng>[];
-    int index = 0;
-    int lat = 0;
-    int lng = 0;
-
-    while (index < encoded.length) {
-      int shift = 0;
-      int result = 0;
-      int b;
-      do {
-        b = encoded.codeUnitAt(index++) - 63;
-        result |= (b & 0x1F) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      lat += (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
-
-      shift = 0;
-      result = 0;
-      do {
-        b = encoded.codeUnitAt(index++) - 63;
-        result |= (b & 0x1F) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      lng += (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
-
-      points.add(LatLng(lat / 1E5, lng / 1E5));
-    }
-    return points;
+    return polylines;
   }
 
   void _fitBounds() {
@@ -275,12 +181,13 @@ class _TransportRouteMapState extends State<TransportRouteMap> {
   Widget build(BuildContext context) {
     final midLat = (_pickup.latitude + _dropoff.latitude) / 2;
     final midLng = (_pickup.longitude + _dropoff.longitude) / 2;
+    final vm = context.watch<TransportRouteMapViewModel>();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.large),
           child: SizedBox(
             height: widget.height,
             child: GoogleMap(
@@ -289,10 +196,10 @@ class _TransportRouteMapState extends State<TransportRouteMap> {
                 zoom: 10,
               ),
               markers: _markers,
-              polylines: _polylines,
+              polylines: _buildPolylines(vm),
               onMapCreated: (controller) {
                 _controller = controller;
-                if (_routeLoaded) _fitBounds();
+                if (vm.routeLoaded) _fitBounds();
               },
               zoomControlsEnabled: false,
               myLocationButtonEnabled: false,
@@ -303,18 +210,18 @@ class _TransportRouteMapState extends State<TransportRouteMap> {
             ),
           ),
         ),
-        if (_routes.length > 1) ...[
-          const SizedBox(height: 12),
+        if (vm.routes.length > 1) ...[
+          const SizedBox(height: AppSpacing.m),
           SizedBox(
             height: 72,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              itemCount: _routes.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemCount: vm.routes.length,
+              separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.s),
               itemBuilder: (context, index) {
-                final route = _routes[index];
-                final isSelected = index == _selectedIndex;
-                return _routeCard(route, index, isSelected);
+                final route = vm.routes[index];
+                final isSelected = index == vm.selectedIndex;
+                return _routeCard(vm, route, index, isSelected);
               },
             ),
           ),
@@ -323,23 +230,26 @@ class _TransportRouteMapState extends State<TransportRouteMap> {
     );
   }
 
-  Widget _routeCard(_ParsedRoute route, int index, bool isSelected) {
-    return GestureDetector(
-      onTap: () => _selectRoute(index),
-      child: AnimatedContainer(
+  Widget _routeCard(TransportRouteMapViewModel vm, DirectionsRoute route, int index, bool isSelected) {
+    return Semantics(
+      button: true,
+      label: 'Select route ${index + 1}',
+      child: GestureDetector(
+        onTap: () => _selectRoute(vm, index),
+        child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l, vertical: AppSpacing.ms),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.accent : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          color: isSelected ? context.colors.secondary : context.colors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.medium),
           border: Border.all(
-            color: isSelected ? AppColors.accent : AppColors.border,
+            color: isSelected ? context.colors.secondary : context.colors.outline,
             width: isSelected ? 2 : 1,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.accent.withValues(alpha: 0.2),
+                    color: context.colors.secondary.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   )
@@ -351,44 +261,25 @@ class _TransportRouteMapState extends State<TransportRouteMap> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              route.summary.isNotEmpty ? route.summary : 'Rota ${index + 1}',
-              style: TextStyle(
-                fontSize: 12,
+              route.summary.isNotEmpty ? route.summary : tr('transport_route_number', namedArgs: {'number': '${index + 1}'}),
+              style: AppTextStyles.labelSmall.copyWith(
                 fontWeight: FontWeight.w600,
-                color: isSelected ? Colors.white : AppColors.textPrimary,
+                color: isSelected ? context.colors.onSecondary : context.colors.onSurface,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               '${route.distanceText} \u2022 ${route.durationText}',
-              style: TextStyle(
-                fontSize: 11,
-                color: isSelected ? Colors.white70 : AppColors.textSecondary,
+              style: AppTextStyles.caption.copyWith(
+                color: isSelected ? context.colors.onSecondary.withValues(alpha: 0.7) : context.colors.onSurfaceVariant,
               ),
             ),
           ],
         ),
       ),
+      ),
     );
   }
-}
-
-class _ParsedRoute {
-  final List<LatLng> points;
-  final double distanceKm;
-  final int durationMinutes;
-  final String distanceText;
-  final String durationText;
-  final String summary;
-
-  const _ParsedRoute({
-    required this.points,
-    required this.distanceKm,
-    required this.durationMinutes,
-    required this.distanceText,
-    required this.durationText,
-    required this.summary,
-  });
 }
