@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
 import 'package:tour_booking/features/bookings/screen/bookings_screen.dart';
 import 'package:tour_booking/features/driver_home_page/screen/driver_home_page.dart';
+import 'package:tour_booking/features/driver_home_page/screen/driver_profile_screen.dart';
 import 'package:tour_booking/features/favorite/screen/favorite_screen.dart';
 import 'package:tour_booking/features/home/screen/home_screen.dart';
 import 'package:tour_booking/features/onboarding/screen/onboarding_screen.dart';
@@ -115,6 +116,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/driver',
       builder: (context, state) => const DriverHomeScreen(),
+    ),
+    GoRoute(
+      path: '/driver-profile',
+      builder: (context, state) => const DriverProfileScreen(),
     ),
     GoRoute(
       path: '/past-bookings',

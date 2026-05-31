@@ -118,7 +118,7 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
                                 _infoRow(
                                   SolarIconsOutline.calendarDate,
                                   context.colors.primary,
-                                  DateFormat('dd MMMM yyyy', 'tr_TR')
+                                  DateFormat('dd MMMM yyyy', context.locale.toString())
                                       .format(vm.selectedDate!),
                                 ),
                               ],
@@ -165,19 +165,15 @@ class _TransportSummaryScreenState extends State<TransportSummaryScreen> {
                           TransportPriceBreakdown(
                               price: vm.priceResult!),
 
-                          const SizedBox(height: AppSpacing.massive),
+                          const SizedBox(height: AppSpacing.l),
                         ],
                       ),
                     ),
           bottomNavigationBar: vm.priceResult != null
               ? BottomActionBar(
                   price: vm.priceResult!.totalPrice,
-                  buttonText: vm.isBooking
-                      ? 'loading'.tr()
-                      : 'transport_book_now'.tr(),
-                  onPressed: vm.isBooking
-                      ? () {}
-                      : () => _handleBooking(vm),
+                  buttonText: 'transport_book_now'.tr(),
+                  onPressed: () => _handleBooking(vm),
                 )
               : null,
         );

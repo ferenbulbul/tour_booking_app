@@ -33,8 +33,8 @@ class DriverHomeViewModel extends BaseViewModel {
       } else {
         error = response.message ?? tr('error_data_fetch_failed');
       }
-    } catch (e) {
-      debugPrint('DriverHomeViewModel.refresh: $e');
+    } catch (e, st) {
+      debugPrint('DriverHomeViewModel.refresh: $e\n$st');
       error = tr('error_something_went_wrong', namedArgs: {'error': e.toString()});
     } finally {
       isLoading = false;

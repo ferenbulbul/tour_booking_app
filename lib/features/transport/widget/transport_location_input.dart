@@ -19,6 +19,7 @@ class TransportLocationInput extends StatelessWidget {
   final bool showError;
   final bool showBorder;
   final bool showDot;
+  final bool enabled;
   final BorderRadius? borderRadius;
 
   const TransportLocationInput({
@@ -30,6 +31,7 @@ class TransportLocationInput extends StatelessWidget {
     this.showError = false,
     this.showBorder = true,
     this.showDot = true,
+    this.enabled = true,
     this.borderRadius,
   });
 
@@ -38,7 +40,9 @@ class TransportLocationInput extends StatelessWidget {
     final hasAddress = address != null && address!.isNotEmpty;
 
     final Color borderColor;
-    if (showError) {
+    if (!enabled) {
+      borderColor = context.colors.outline.withValues(alpha: 0.3);
+    } else if (showError) {
       borderColor = context.colors.error.withValues(alpha: 0.5);
     } else if (hasAddress) {
       borderColor = dotColor.withValues(alpha: 0.4);
@@ -48,21 +52,25 @@ class TransportLocationInput extends StatelessWidget {
 
     // Subtle tinted background when filled
     final Color bgColor;
-    if (hasAddress) {
+    if (!enabled) {
+      bgColor = context.colors.surfaceContainerHighest.withValues(alpha: 0.3);
+    } else if (hasAddress) {
       bgColor = dotColor.withValues(alpha: 0.04);
     } else {
       bgColor = context.colors.surface;
     }
 
+    final disabledTextColor = context.colors.onSurface.withValues(alpha: 0.3);
+
     return Semantics(
       button: true,
       label: label,
       child: GestureDetector(
-        onTap: onTap,
+        onTap: enabled ? onTap : null,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m, vertical: AppSpacing.m),
           decoration: BoxDecoration(
-            color: showBorder ? bgColor : Colors.transparent,
+            color: showBorder ? bgColor : (enabled ? Colors.transparent : bgColor),
             borderRadius: borderRadius ?? BorderRadius.circular(AppRadius.medium),
             border: showBorder ? Border.all(color: borderColor) : null,
           ),
@@ -73,9 +81,11 @@ class TransportLocationInput extends StatelessWidget {
                   width: 14,
                   height: 14,
                   decoration: BoxDecoration(
-                    color: hasAddress ? dotColor : dotColor.withValues(alpha: 0.25),
+                    color: enabled
+                        ? (hasAddress ? dotColor : dotColor.withValues(alpha: 0.25))
+                        : disabledTextColor,
                     shape: BoxShape.circle,
-                    border: hasAddress
+                    border: (hasAddress || !enabled)
                         ? null
                         : Border.all(color: dotColor.withValues(alpha: 0.5), width: 1.5),
                   ),
@@ -89,7 +99,11 @@ class TransportLocationInput extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.labelLarge.copyWith(
                     fontWeight: hasAddress ? FontWeight.w500 : FontWeight.w400,
-                    color: hasAddress ? context.colors.onSurface : context.ext.textLight,
+                    color: !enabled
+                        ? disabledTextColor
+                        : hasAddress
+                            ? context.colors.onSurface
+                            : context.colors.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -97,7 +111,11 @@ class TransportLocationInput extends StatelessWidget {
               Icon(
                 SolarIconsOutline.gps,
                 size: AppIconSize.ml,
-                color: hasAddress ? context.colors.onSurfaceVariant : context.ext.textLight,
+                color: !enabled
+                    ? disabledTextColor
+                    : hasAddress
+                        ? context.colors.onSurfaceVariant
+                        : dotColor.withValues(alpha: 0.6),
                 semanticLabel: 'Location',
               ),
             ],
@@ -122,6 +140,7 @@ class ConnectedLocationInputs extends StatelessWidget {
   final VoidCallback? onSwap;
   final bool showPickupError;
   final bool showDropoffError;
+  final bool enabled;
   final GlobalKey<ShakeWidgetState>? pickupShakeKey;
   final GlobalKey<ShakeWidgetState>? dropoffShakeKey;
 
@@ -136,23 +155,39 @@ class ConnectedLocationInputs extends StatelessWidget {
     this.onSwap,
     this.showPickupError = false,
     this.showDropoffError = false,
+    this.enabled = true,
     this.pickupShakeKey,
     this.dropoffShakeKey,
   });
 
   bool get _hasPickup => pickupAddress != null && pickupAddress!.isNotEmpty;
   bool get _hasDropoff => dropoffAddress != null && dropoffAddress!.isNotEmpty;
+  bool get _isEmpty => !_hasPickup && !_hasDropoff;
 
   @override
   Widget build(BuildContext context) {
+    // Enabled + empty → highlighted state to invite tapping
+    final bool highlighted = enabled && _isEmpty;
+
     return Stack(
       children: [
         // Main container
         Container(
           decoration: BoxDecoration(
-            color: context.colors.surface,
+            color: !enabled
+                ? context.colors.surfaceContainerHighest.withValues(alpha: 0.3)
+                : highlighted
+                    ? context.colors.primary.withValues(alpha: 0.04)
+                    : context.colors.surface,
             borderRadius: BorderRadius.circular(AppRadius.large),
-            border: Border.all(color: context.colors.outline),
+            border: Border.all(
+              color: !enabled
+                  ? context.colors.outline.withValues(alpha: 0.3)
+                  : highlighted
+                      ? context.colors.primary.withValues(alpha: 0.4)
+                      : context.colors.outline,
+              width: highlighted ? 1.5 : 1.0,
+            ),
           ),
           child: IntrinsicHeight(
             child: Row(
@@ -165,18 +200,22 @@ class ConnectedLocationInputs extends StatelessWidget {
                     children: [
                       const SizedBox(height: AppSpacing.lm),
                       // Green dot (pickup)
-                      _dot(context.ext.success, _hasPickup),
+                      _dot(context.ext.success, _hasPickup, enabled),
                       // Dashed line
                       Expanded(
                         child: CustomPaint(
                           painter: _DashedVerticalLinePainter(
-                            color: context.colors.outline,
+                            color: !enabled
+                                ? context.colors.outline.withValues(alpha: 0.3)
+                                : highlighted
+                                    ? context.colors.primary.withValues(alpha: 0.3)
+                                    : context.colors.outline,
                           ),
                           child: const SizedBox(width: AppSpacing.xxs),
                         ),
                       ),
                       // Red dot (dropoff)
-                      _dot(context.colors.error, _hasDropoff),
+                      _dot(context.colors.error, _hasDropoff, enabled),
                       const SizedBox(height: AppSpacing.lm),
                     ],
                   ),
@@ -198,6 +237,7 @@ class ConnectedLocationInputs extends StatelessWidget {
                           showError: showPickupError,
                           showBorder: false,
                           showDot: false,
+                          enabled: enabled,
                         ),
                       ),
                       // Dashed horizontal divider
@@ -207,7 +247,10 @@ class ConnectedLocationInputs extends StatelessWidget {
                           height: 1,
                           child: CustomPaint(
                             painter: _DashedHorizontalLinePainter(
-                              color: context.colors.outline,
+                              color: enabled
+                                  ? context.colors.outline
+                                  : context.colors.outline
+                                      .withValues(alpha: 0.3),
                             ),
                             child: const SizedBox(width: double.infinity),
                           ),
@@ -224,6 +267,7 @@ class ConnectedLocationInputs extends StatelessWidget {
                           showError: showDropoffError,
                           showBorder: false,
                           showDot: false,
+                          enabled: enabled,
                         ),
                       ),
                     ],
@@ -276,16 +320,20 @@ class ConnectedLocationInputs extends StatelessWidget {
     );
   }
 
-  Widget _dot(Color color, bool filled) {
+  Widget _dot(Color color, bool filled, bool enabled) {
+    final effectiveColor = enabled ? color : color.withValues(alpha: 0.3);
     return Container(
       width: 12,
       height: 12,
       decoration: BoxDecoration(
-        color: filled ? color : color.withValues(alpha: 0.25),
+        color: filled ? effectiveColor : effectiveColor.withValues(alpha: 0.15),
         shape: BoxShape.circle,
         border: filled
             ? null
-            : Border.all(color: color.withValues(alpha: 0.5), width: 1.5),
+            : Border.all(
+                color: effectiveColor.withValues(alpha: enabled ? 0.7 : 0.5),
+                width: 1.5,
+              ),
       ),
     );
   }

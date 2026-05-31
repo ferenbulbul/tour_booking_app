@@ -1,5 +1,7 @@
+import 'dart:ui' as ui;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/theme/app_icon_size.dart';
@@ -11,7 +13,7 @@ import 'package:tour_booking/features/checkout/viewmodel/contact_info_viewmodel.
 import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class ContactInfoScreen extends StatefulWidget {
-  final void Function(
+  final Future<void> Function(
       String firstName, String lastName, String email, String phone)
       onContinue;
 
@@ -23,6 +25,7 @@ class ContactInfoScreen extends StatefulWidget {
 
 class _ContactInfoScreenState extends State<ContactInfoScreen> {
   final _formKey = GlobalKey<FormState>();
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -30,6 +33,23 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ContactInfoViewModel>().prefillFromProfile();
     });
+  }
+
+  Future<void> _submit() async {
+    if (_isSubmitting) return;
+    FocusScope.of(context).unfocus();
+    if (!_formKey.currentState!.validate()) return;
+
+    final vm = context.read<ContactInfoViewModel>();
+    final phoneError = vm.validatePhone();
+    if (phoneError != null) return;
+
+    setState(() => _isSubmitting = true);
+    try {
+      await widget.onContinue(vm.firstName, vm.lastName, vm.email, vm.phone);
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
   }
 
   @override
@@ -41,7 +61,10 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
         return Scaffold(
           backgroundColor: context.colors.surfaceContainerHighest,
           appBar: CommonAppBar(title: tr('contact_info_title')),
-          body: vm.isLoading
+          body: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            behavior: HitTestBehavior.translucent,
+            child: vm.isLoading
               ? Center(
                   child: CircularProgressIndicator(
                     color: context.colors.secondary,
@@ -49,6 +72,7 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
                   ),
                 )
               : ListView(
+                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                   padding: const EdgeInsets.all(AppSpacing.l),
                   children: [
                     // Info banner
@@ -118,13 +142,60 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
                               textInputAction: TextInputAction.next,
                             ),
                             const SizedBox(height: AppSpacing.m),
-                            _buildField(
-                              controller: vm.phoneController,
-                              label: tr('contact_phone'),
-                              icon: SolarIconsOutline.phone,
-                              validator: vm.validatePhone,
-                              keyboardType: TextInputType.phone,
-                              textInputAction: TextInputAction.done,
+                            Directionality(
+                              textDirection: ui.TextDirection.ltr,
+                              child: IntlPhoneField(
+                                invalidNumberMessage: tr('validation_phone_invalid'),
+                                decoration: InputDecoration(
+                                  hintText: tr('contact_phone'),
+                                  hintStyle: AppTextStyles.labelLarge.copyWith(
+                                    color: context.ext.textLight,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  filled: false,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(AppRadius.medium),
+                                    borderSide: BorderSide(color: context.colors.outline),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(AppRadius.medium),
+                                    borderSide: BorderSide(color: context.colors.outline),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(AppRadius.medium),
+                                    borderSide: BorderSide(
+                                      color: context.colors.secondary.withValues(alpha: 0.5),
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(AppRadius.medium),
+                                    borderSide: BorderSide(color: context.colors.error),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(AppRadius.medium),
+                                    borderSide: BorderSide(color: context.colors.error, width: 1.5),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: AppSpacing.ml,
+                                    vertical: AppSpacing.m,
+                                  ),
+                                ),
+                                initialCountryCode: 'TR',
+                                initialValue: vm.initialPhone.isNotEmpty ? vm.initialPhone : null,
+                                style: AppTextStyles.labelLarge.copyWith(
+                                  color: context.colors.onSurface,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                cursorColor: context.colors.secondary,
+                                onChanged: (p) => vm.setPhone(p.completeNumber),
+                                validator: (value) {
+                                  if (value == null || value.number.isEmpty) {
+                                    return tr('validation_phone_required');
+                                  }
+                                  return null;
+                                },
+                              ),
                             ),
                           ],
                         ),
@@ -132,6 +203,7 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
                     ),
                   ],
                 ),
+          ),
           // Sticky bottom button
           bottomNavigationBar: vm.isLoading
               ? null
@@ -148,35 +220,31 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
                     AppSpacing.l,
                     bottomPad > 0 ? bottomPad : AppSpacing.m,
                   ),
-                  child: Semantics(
-                    button: true,
-                    label: 'Continue to payment',
-                    child: GestureDetector(
-                      onTap: () {
-                        if (_formKey.currentState!.validate()) {
-                          widget.onContinue(
-                            vm.firstName,
-                            vm.lastName,
-                            vm.email,
-                            vm.phone,
-                          );
-                        }
-                      },
-                      child: Container(
-                        height: 46,
-                        decoration: BoxDecoration(
-                          color: context.colors.secondary,
-                          borderRadius: BorderRadius.circular(AppRadius.medium),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          tr('contact_continue_to_payment'),
-                          style: AppTextStyles.labelLarge.copyWith(
-                            color: context.colors.onSecondary,
-                          ),
-                        ),
+                  child: FilledButton(
+                    onPressed: _isSubmitting ? null : _submit,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: context.colors.secondary,
+                      foregroundColor: context.colors.onSecondary,
+                      minimumSize: const Size.fromHeight(46),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.medium),
                       ),
                     ),
+                    child: _isSubmitting
+                        ? SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: context.colors.onSecondary,
+                            ),
+                          )
+                        : Text(
+                            tr('contact_continue_to_payment'),
+                            style: AppTextStyles.labelLarge.copyWith(
+                              color: context.colors.onSecondary,
+                            ),
+                          ),
                   ),
                 ),
         );
@@ -191,12 +259,14 @@ class _ContactInfoScreenState extends State<ContactInfoScreen> {
     required String? Function(String?) validator,
     TextInputType keyboardType = TextInputType.text,
     TextInputAction textInputAction = TextInputAction.next,
+    ValueChanged<String>? onFieldSubmitted,
   }) {
     return TextFormField(
       controller: controller,
       validator: validator,
       keyboardType: keyboardType,
       textInputAction: textInputAction,
+      onFieldSubmitted: onFieldSubmitted,
       style: AppTextStyles.labelLarge.copyWith(
         color: context.colors.onSurface,
         fontWeight: FontWeight.w400,

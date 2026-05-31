@@ -20,6 +20,7 @@ class CreateTransportBookingRequest with _$CreateTransportBookingRequest {
     required String buyerLastName,
     required String buyerEmail,
     required String buyerPhone,
+    String? routePolyline,
   }) = _CreateTransportBookingRequest;
 
   factory CreateTransportBookingRequest.fromJson(

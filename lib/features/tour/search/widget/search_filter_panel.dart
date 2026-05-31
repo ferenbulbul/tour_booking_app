@@ -284,7 +284,7 @@ class _TourSearchSheetContentState extends State<TourSearchSheetContent> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.colors.primary,
-                  foregroundColor: context.colors.onSecondary,
+                  foregroundColor: context.colors.onPrimary,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppRadius.medium),
@@ -298,7 +298,7 @@ class _TourSearchSheetContentState extends State<TourSearchSheetContent> {
                     Text(
                       tr("search"),
                       style: AppTextStyles.titleSmall.copyWith(
-                        color: context.colors.onSecondary,
+                        color: context.colors.onPrimary,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

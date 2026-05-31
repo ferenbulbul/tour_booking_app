@@ -9,79 +9,189 @@ class VehicleCardSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 260,
-      decoration: BoxDecoration(
-        color: context.colors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.xlm),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Shimmer.fromColors(
-        baseColor: context.ext.shimmerBase,
-        highlightColor: context.ext.shimmerHighlight,
+    return Shimmer.fromColors(
+      baseColor: context.ext.shimmerBase,
+      highlightColor: context.ext.shimmerHighlight,
+      child: Container(
+        decoration: BoxDecoration(
+          color: context.colors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.ml),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- IMAGE SKELETON ---
+            // IMAGE (160h, matching actual)
             Container(
-              height: 170,
+              height: 160,
               decoration: BoxDecoration(
                 color: context.ext.shimmerBase,
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(AppRadius.xlm),
+                  top: Radius.circular(AppRadius.medium),
                 ),
               ),
             ),
 
-            const SizedBox(height: AppSpacing.ml),
-
-            // --- TITLE ---
+            // CONTENT
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
-              child: Container(
-                height: 18,
-                width: 140,
-                decoration: BoxDecoration(
-                  color: context.ext.shimmerBase,
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: AppSpacing.ml),
-
-            // --- FEATURE CHIPS ---
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
-              child: Row(
+              padding: const EdgeInsets.all(AppSpacing.m),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _chipSkeleton(context, width: 80),
-                  const SizedBox(width: AppSpacing.ms),
-                  _chipSkeleton(context, width: 70),
-                  const SizedBox(width: AppSpacing.ms),
-                  _chipSkeleton(context, width: 60),
+                  // BRAND + PRICE ROW
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        height: 16,
+                        width: 120,
+                        decoration: BoxDecoration(
+                          color: context.ext.shimmerBase,
+                          borderRadius:
+                              BorderRadius.circular(AppRadius.xxs),
+                        ),
+                      ),
+                      Container(
+                        height: 16,
+                        width: 70,
+                        decoration: BoxDecoration(
+                          color: context.ext.shimmerBase,
+                          borderRadius:
+                              BorderRadius.circular(AppRadius.xxs),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: AppSpacing.xs),
+
+                  // COMPANY ROW (icon + text)
+                  Row(
+                    children: [
+                      Container(
+                        width: 14,
+                        height: 14,
+                        decoration: BoxDecoration(
+                          color: context.ext.shimmerBase,
+                          borderRadius:
+                              BorderRadius.circular(AppRadius.xxs),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Container(
+                        height: 12,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: context.ext.shimmerBase,
+                          borderRadius:
+                              BorderRadius.circular(AppRadius.xxs),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: AppSpacing.sm),
+
+                  // RATING (5 stars + text)
+                  Row(
+                    children: [
+                      ...List.generate(
+                        5,
+                        (_) => Padding(
+                          padding:
+                              const EdgeInsets.only(right: AppSpacing.xxs),
+                          child: Container(
+                            width: 14,
+                            height: 14,
+                            decoration: BoxDecoration(
+                              color: context.ext.shimmerBase,
+                              borderRadius:
+                                  BorderRadius.circular(AppRadius.xxs),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Container(
+                        height: 10,
+                        width: 45,
+                        decoration: BoxDecoration(
+                          color: context.ext.shimmerBase,
+                          borderRadius:
+                              BorderRadius.circular(AppRadius.xxs),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: AppSpacing.sm),
+
+                  // SPECS ROW (seat + dot + type + dot + class)
+                  Row(
+                    children: [
+                      Container(
+                        width: 14,
+                        height: 14,
+                        decoration: BoxDecoration(
+                          color: context.ext.shimmerBase,
+                          borderRadius:
+                              BorderRadius.circular(AppRadius.xxs),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Container(
+                        height: 12,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: context.ext.shimmerBase,
+                          borderRadius:
+                              BorderRadius.circular(AppRadius.xxs),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Container(
+                        width: 3,
+                        height: 3,
+                        decoration: BoxDecoration(
+                          color: context.ext.shimmerBase,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Container(
+                        height: 12,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: context.ext.shimmerBase,
+                          borderRadius:
+                              BorderRadius.circular(AppRadius.xxs),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Container(
+                        width: 3,
+                        height: 3,
+                        decoration: BoxDecoration(
+                          color: context.ext.shimmerBase,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Container(
+                        height: 12,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: context.ext.shimmerBase,
+                          borderRadius:
+                              BorderRadius.circular(AppRadius.xxs),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _chipSkeleton(BuildContext context, {required double width}) {
-    return Container(
-      height: 26,
-      width: width,
-      decoration: BoxDecoration(
-        color: context.ext.shimmerBase,
-        borderRadius: BorderRadius.circular(AppRadius.ms),
       ),
     );
   }

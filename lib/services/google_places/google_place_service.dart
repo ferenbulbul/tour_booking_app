@@ -140,6 +140,7 @@ class GooglePlaceService {
     String? components,
     LatLng? location,
     int? radiusMeters,
+    bool strictBounds = false,
   }) async {
     try {
       final params = <String, String>{
@@ -151,6 +152,7 @@ class GooglePlaceService {
       if (location != null) {
         params['location'] = '${location.latitude},${location.longitude}';
         params['radius'] = '${radiusMeters ?? 50000}';
+        if (strictBounds) params['strictbounds'] = 'true';
       }
 
       final uri = Uri.https(
@@ -328,7 +330,8 @@ class GooglePlaceService {
 
         final encodedPolyline =
             route['overview_polyline']['points'] as String;
-        final points = _decodePolyline(encodedPolyline);
+        final rawPoints = _decodePolyline(encodedPolyline);
+        final points = _simplifyPolyline(rawPoints, 0.0005);
 
         parsed.add(DirectionsRoute(
           points: points,
@@ -345,6 +348,48 @@ class GooglePlaceService {
       debugPrint('GooglePlaceService.fetchDirections: $e');
       return [];
     }
+  }
+
+  /// Simplifies a polyline using the Ramer-Douglas-Peucker algorithm.
+  /// [tolerance] is in degrees (~0.0005 ≈ 55m).
+  static List<LatLng> _simplifyPolyline(List<LatLng> points, double tolerance) {
+    if (points.length <= 2) return points;
+
+    double maxDist = 0;
+    int maxIndex = 0;
+    final start = points.first;
+    final end = points.last;
+
+    for (int i = 1; i < points.length - 1; i++) {
+      final d = _perpendicularDist(points[i], start, end);
+      if (d > maxDist) {
+        maxDist = d;
+        maxIndex = i;
+      }
+    }
+
+    if (maxDist > tolerance * tolerance) {
+      final left = _simplifyPolyline(points.sublist(0, maxIndex + 1), tolerance);
+      final right = _simplifyPolyline(points.sublist(maxIndex), tolerance);
+      return [...left.sublist(0, left.length - 1), ...right];
+    }
+    return [start, end];
+  }
+
+  static double _perpendicularDist(LatLng p, LatLng a, LatLng b) {
+    final dx = b.longitude - a.longitude;
+    final dy = b.latitude - a.latitude;
+    if (dx == 0 && dy == 0) {
+      final px = p.longitude - a.longitude;
+      final py = p.latitude - a.latitude;
+      return (px * px + py * py);
+    }
+    final t = ((p.longitude - a.longitude) * dx + (p.latitude - a.latitude) * dy) /
+        (dx * dx + dy * dy);
+    final ct = t.clamp(0.0, 1.0);
+    final px = p.longitude - (a.longitude + ct * dx);
+    final py = p.latitude - (a.latitude + ct * dy);
+    return (px * px + py * py);
   }
 
   /// Decodes a Google encoded polyline string into a list of [LatLng].

@@ -44,6 +44,10 @@
 		<key>ClientId</key>
 		<string>423047904244-ls89sh0e3mnp1vb01c91gg3kosogrtnm.apps.googleusercontent.com</string>
 	</dict>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>comgooglemaps</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocalNetworkUsageDescription</key>

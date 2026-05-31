@@ -55,26 +55,42 @@ class PaymentViewModel extends BaseViewModel {
     }
   }
 
-  /// Check payment result
+  /// Check payment result with retry.
+  /// The backend may not have processed the iyzico callback yet when we first
+  /// query, so we retry a few times with increasing delays.
   Future<void> checkPaymentResult(String token) async {
-    isLoading = true;
     errorMessage = null;
-    notifyListeners();
 
-    try {
-      final BaseResponse<PaymentResultResponse> resp = await _service
-          .getPaymentResult(token);
+    const maxRetries = 5;
+    const baseDelay = Duration(seconds: 2);
 
-      if (resp.isSuccess == true && resp.data != null) {
-        resultData = resp.data;
-      } else {
-        errorMessage = resp.message ?? tr('error_payment_result_failed');
+    for (int attempt = 0; attempt < maxRetries; attempt++) {
+      // Wait before each attempt (including the first) to give the backend
+      // time to process the iyzico callback.
+      await Future.delayed(baseDelay * (attempt + 1));
+
+      try {
+        final BaseResponse<PaymentResultResponse> resp =
+            await _service.getPaymentResult(token);
+
+        if (resp.isSuccess == true && resp.data != null) {
+          resultData = resp.data;
+          notifyListeners();
+          return; // Success — stop retrying.
+        }
+
+        // Last attempt — report the error.
+        if (attempt == maxRetries - 1) {
+          errorMessage = resp.message ?? tr('error_payment_result_failed');
+        }
+      } catch (e) {
+        if (attempt == maxRetries - 1) {
+          errorMessage =
+              tr('error_result', namedArgs: {'error': e.toString()});
+        }
       }
-    } catch (e) {
-      errorMessage = tr('error_result', namedArgs: {'error': e.toString()});
-    } finally {
-      isLoading = false;
-      notifyListeners();
     }
+
+    notifyListeners();
   }
 }

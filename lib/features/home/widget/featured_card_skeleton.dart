@@ -9,88 +9,109 @@ class FeaturedCardSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(AppRadius.xl);
-
-    return SizedBox(
-      width: 200,
-      child: Shimmer.fromColors(
-        baseColor: context.ext.shimmerBase,
-        highlightColor: context.ext.shimmerHighlight,
-        child: Container(
-          decoration: BoxDecoration(
-            color: context.ext.shimmerBase,
-            borderRadius: radius,
+    return Shimmer.fromColors(
+      baseColor: context.ext.shimmerBase,
+      highlightColor: context.ext.shimmerHighlight,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // IMAGE PLACEHOLDER — expands to fill remaining space
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: context.ext.shimmerBase,
+                borderRadius: BorderRadius.circular(AppRadius.small),
+              ),
+            ),
           ),
-          child: ClipRRect(
-            borderRadius: radius,
-            child: Stack(
+
+          const SizedBox(height: AppSpacing.s),
+
+          // RATING + DURATION ROW
+          Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+            child: Row(
               children: [
-                // IMAGE PLACEHOLDER
-                Positioned.fill(child: Container(color: context.ext.shimmerBase)),
-
-                // GRADIENT SIMULATION
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.black.withValues(alpha: 0.05),
-                          Colors.black.withValues(alpha: 0.25),
-                          Colors.black.withValues(alpha: 0.5),
-                        ],
-                      ),
-                    ),
+                Container(
+                  width: 14,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: context.ext.shimmerBase,
+                    borderRadius: BorderRadius.circular(AppRadius.xxs),
                   ),
                 ),
-
-                // CATEGORY BADGE PLACEHOLDER
-                Positioned(
-                  top: 12,
-                  left: 12,
-                  child: Container(
-                    height: 20,
-                    width: 70,
-                    decoration: BoxDecoration(
-                      color: context.ext.shimmerBase,
-                      borderRadius: BorderRadius.circular(AppRadius.small),
-                    ),
+                const SizedBox(width: AppSpacing.xxxs),
+                Container(
+                  width: 24,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color: context.ext.shimmerBase,
+                    borderRadius: BorderRadius.circular(AppRadius.xxs),
                   ),
                 ),
-
-                // TITLE + SUBTITLE PLACEHOLDER
-                Positioned(
-                  left: 16,
-                  right: 16,
-                  bottom: 20,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: 16,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: context.ext.shimmerBase,
-                          borderRadius: BorderRadius.circular(AppRadius.small),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.s),
-                      Container(
-                        height: 14,
-                        width: 120,
-                        decoration: BoxDecoration(
-                          color: context.ext.shimmerBase,
-                          borderRadius: BorderRadius.circular(AppRadius.small),
-                        ),
-                      ),
-                    ],
+                const SizedBox(width: AppSpacing.sm),
+                Container(
+                  width: 4,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: context.ext.shimmerBase,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color: context.ext.shimmerBase,
+                    borderRadius: BorderRadius.circular(AppRadius.xxs),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.xxxs),
+                Container(
+                  width: 32,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color: context.ext.shimmerBase,
+                    borderRadius: BorderRadius.circular(AppRadius.xxs),
                   ),
                 ),
               ],
             ),
           ),
-        ),
+
+          // TITLE PLACEHOLDER
+          Container(
+            height: 16,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: context.ext.shimmerBase,
+              borderRadius: BorderRadius.circular(AppRadius.xxs),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Container(
+            height: 16,
+            width: 140,
+            decoration: BoxDecoration(
+              color: context.ext.shimmerBase,
+              borderRadius: BorderRadius.circular(AppRadius.xxs),
+            ),
+          ),
+
+          const SizedBox(height: AppSpacing.sm),
+
+          // SUBTITLE PLACEHOLDER
+          Container(
+            height: 12,
+            width: 80,
+            decoration: BoxDecoration(
+              color: context.ext.shimmerBase,
+              borderRadius: BorderRadius.circular(AppRadius.xxs),
+            ),
+          ),
+        ],
       ),
     );
   }

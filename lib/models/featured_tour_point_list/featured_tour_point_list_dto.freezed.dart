@@ -184,8 +184,7 @@ class _$FeaturedTourPointListDtoImpl implements _FeaturedTourPointListDto {
 
 abstract class _FeaturedTourPointListDto implements FeaturedTourPointListDto {
   const factory _FeaturedTourPointListDto({
-    @JsonKey(name: 'tourPoints')
-    final List<FeaturedTourPointDto> tourPoints,
+    @JsonKey(name: 'tourPoints') final List<FeaturedTourPointDto> tourPoints,
   }) = _$FeaturedTourPointListDtoImpl;
 
   factory _FeaturedTourPointListDto.fromJson(Map<String, dynamic> json) =

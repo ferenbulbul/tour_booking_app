@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:tour_booking/features/transport/models/place_picker_models.dart';
 import 'package:tour_booking/keys.dart';
 import 'package:tour_booking/models/place_section/place_section.dart';
+import 'package:tour_booking/models/transport/suggested_location/suggested_location.dart';
 
 /// Callback signatures the screen can provide so the ViewModel can request
 /// UI-only actions (camera animation, error display) without holding
@@ -26,6 +27,7 @@ class TransportPlacePickerViewModel extends BaseViewModel {
     String? dropoffAddress,
     bool initialModePickup = true,
     this.cityName,
+    this.suggestedLocations = const [],
   }) {
     _isPickupMode = initialModePickup;
 
@@ -46,9 +48,10 @@ class TransportPlacePickerViewModel extends BaseViewModel {
   String get apiKey => _apiKey;
 
   // ---------------------------------------------------------------
-  // CITY NAME (constructor parameter, immutable)
+  // CITY NAME & SUGGESTED LOCATIONS (constructor parameters, immutable)
   // ---------------------------------------------------------------
   final String? cityName;
+  final List<TransportSuggestedLocation> suggestedLocations;
 
   // ---------------------------------------------------------------
   // CALLBACKS – set by the screen after construction
@@ -167,6 +170,7 @@ class TransportPlacePickerViewModel extends BaseViewModel {
           : null,
       distanceKm: selectedRoute?.distanceKm,
       durationMinutes: selectedRoute?.durationMinutes,
+      routePolyline: selectedRoute?.encodedPolyline,
     );
   }
 
@@ -245,15 +249,16 @@ class TransportPlacePickerViewModel extends BaseViewModel {
 
       for (final route in routesJson) {
         final leg = (route['legs'] as List<dynamic>)[0];
+        final encodedPoly = route['overview_polyline']['points'] as String;
         parsed.add(ParsedRoute(
-          points:
-              decodePolyline(route['overview_polyline']['points'] as String),
+          points: simplifyPolyline(decodePolyline(encodedPoly), 0.0005),
           distanceKm: (leg['distance']['value'] as num).toDouble() / 1000.0,
           durationMinutes:
               ((leg['duration']['value'] as num).toInt() / 60.0).round(),
           distanceText: leg['distance']['text'] as String,
           durationText: leg['duration']['text'] as String,
           summary: (route['summary'] as String?) ?? '',
+          encodedPolyline: encodedPoly,
         ));
       }
 
@@ -425,7 +430,7 @@ class TransportPlacePickerViewModel extends BaseViewModel {
   }
 
   // ---------------------------------------------------------------
-  // DECODE POLYLINE (pure function)
+  // DECODE + SIMPLIFY POLYLINE
   // ---------------------------------------------------------------
   static List<LatLng> decodePolyline(String encoded) {
     final points = <LatLng>[];
@@ -449,5 +454,45 @@ class TransportPlacePickerViewModel extends BaseViewModel {
       points.add(LatLng(lat / 1E5, lng / 1E5));
     }
     return points;
+  }
+
+  /// Ramer-Douglas-Peucker polyline simplification.
+  static List<LatLng> simplifyPolyline(List<LatLng> points, double tolerance) {
+    if (points.length <= 2) return points;
+
+    double maxDist = 0;
+    int maxIndex = 0;
+    final start = points.first;
+    final end = points.last;
+
+    for (int i = 1; i < points.length - 1; i++) {
+      final dx = end.longitude - start.longitude;
+      final dy = end.latitude - start.latitude;
+      double d;
+      if (dx == 0 && dy == 0) {
+        final px = points[i].longitude - start.longitude;
+        final py = points[i].latitude - start.latitude;
+        d = px * px + py * py;
+      } else {
+        final t = ((points[i].longitude - start.longitude) * dx +
+                    (points[i].latitude - start.latitude) * dy) /
+                (dx * dx + dy * dy);
+        final ct = t.clamp(0.0, 1.0);
+        final px = points[i].longitude - (start.longitude + ct * dx);
+        final py = points[i].latitude - (start.latitude + ct * dy);
+        d = px * px + py * py;
+      }
+      if (d > maxDist) {
+        maxDist = d;
+        maxIndex = i;
+      }
+    }
+
+    if (maxDist > tolerance * tolerance) {
+      final left = simplifyPolyline(points.sublist(0, maxIndex + 1), tolerance);
+      final right = simplifyPolyline(points.sublist(maxIndex), tolerance);
+      return [...left.sublist(0, left.length - 1), ...right];
+    }
+    return [start, end];
   }
 }

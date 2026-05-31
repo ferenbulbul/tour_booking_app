@@ -17,7 +17,7 @@ class ApiClient {
   final String _baseUrl = dotenv.env['baseUrl'] ?? '';
   final String _mobileUrl = dotenv.env['mobileAndroid'] ?? '';
   final String _cloudUrl = dotenv.env['cloud'] ?? '';
-  late String _url = _baseUrl;
+  late String _url = _cloudUrl;
 
   /// HTTP request timeout — prevents hanging indefinitely
   static const Duration _requestTimeout = Duration(seconds: 30);
@@ -62,6 +62,12 @@ class ApiClient {
     _cachedRefreshToken = null;
   }
 
+  /// Update token cache with new tokens (called after login/register)
+  static void updateTokenCache(String accessToken, String refreshToken) {
+    _cachedAccessToken = accessToken;
+    _cachedRefreshToken = refreshToken;
+  }
+
   Future<BaseResponse<T>> _handle<T>({
     required Future<http.Response> Function(String token) send,
     T Function(Object?)? fromJson,
@@ -96,7 +102,7 @@ class ApiClient {
       if (response.body.isEmpty) {
         return BaseResponse<T>(
           isSuccess: false,
-          message: 'error_generic',
+          message: tr('error_generic'),
           validationErrors: const [],
           data: null,
         );

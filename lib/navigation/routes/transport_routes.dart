@@ -46,6 +46,7 @@ List<RouteBase> transportRoutes() => [
                 time: args['time'] as String?,
                 distanceKm: args['clientDistanceKm'] as double?,
                 durationMinutes: args['clientDurationMinutes'] as int?,
+                routePolyline: args['routePolyline'] as String?,
               ),
             child: const TransportSummaryScreen(),
           );

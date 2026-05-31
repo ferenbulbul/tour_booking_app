@@ -41,6 +41,7 @@ class TransportViewModel extends BaseViewModel {
   // --- Selected Route Info ---
   double? selectedRouteDistanceKm;
   int? selectedRouteDurationMinutes;
+  String? selectedRoutePolyline;
 
   // --- General ---
   bool isLoading = false;
@@ -133,10 +134,17 @@ class TransportViewModel extends BaseViewModel {
   // -------------------------------------------------------
   // Locations
   // -------------------------------------------------------
+  void _clearRouteData() {
+    selectedRouteDistanceKm = null;
+    selectedRouteDurationMinutes = null;
+    selectedRoutePolyline = null;
+  }
+
   void setPickupLocation(PlaceSelection selection) {
     pickupAddress = selection.description;
     pickupLat = selection.lat;
     pickupLng = selection.lng;
+    _clearRouteData();
     notifyListeners();
   }
 
@@ -144,10 +152,12 @@ class TransportViewModel extends BaseViewModel {
     dropoffAddress = selection.description;
     dropoffLat = selection.lat;
     dropoffLng = selection.lng;
+    _clearRouteData();
     notifyListeners();
   }
 
   void setLocationsFromPicker(TransportLocationsResult result) {
+    _clearRouteData();
     if (result.pickup != null) {
       pickupAddress = result.pickup!.description;
       pickupLat = result.pickup!.lat;
@@ -161,6 +171,7 @@ class TransportViewModel extends BaseViewModel {
     if (result.distanceKm != null) {
       selectedRouteDistanceKm = result.distanceKm;
       selectedRouteDurationMinutes = result.durationMinutes;
+      selectedRoutePolyline = result.routePolyline;
     }
     notifyListeners();
   }
@@ -192,8 +203,7 @@ class TransportViewModel extends BaseViewModel {
     dropoffLat = tempLat;
     dropoffLng = tempLng;
 
-    selectedRouteDistanceKm = null;
-    selectedRouteDurationMinutes = null;
+    _clearRouteData();
 
     notifyListeners();
   }

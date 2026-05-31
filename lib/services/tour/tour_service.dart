@@ -5,6 +5,7 @@ import 'package:tour_booking/models/city_list/city_list_response.dart';
 import 'package:tour_booking/models/create_booking_request/create_booking_command.dart';
 import 'package:tour_booking/models/district_list/district_list_response.dart';
 import 'package:tour_booking/models/featured_tour_point_list/featured_tour_point_list_dto.dart';
+import 'package:tour_booking/models/popular_destination_list/popular_destination_list_dto.dart';
 import 'package:tour_booking/models/is_valid_response/is_valid_response.dart';
 import 'package:tour_booking/models/location_update/location_dto.dart';
 import 'package:tour_booking/models/nearby_list/nearby_list_response.dart';
@@ -43,6 +44,14 @@ class TourService {
       path: '/Mobile/highlightedTourPoints',
       fromJson: (json) =>
           FeaturedTourPointListDto.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  Future<BaseResponse<PopularDestinationListDto>> getPopularDestinations() {
+    return _apiClient.get<PopularDestinationListDto>(
+      path: '/Mobile/popular-destinations',
+      fromJson: (json) =>
+          PopularDestinationListDto.fromJson(json as Map<String, dynamic>),
     );
   }
 

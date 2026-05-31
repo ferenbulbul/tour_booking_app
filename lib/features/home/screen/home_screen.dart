@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:solar_icons/solar_icons.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
@@ -9,13 +8,11 @@ import 'package:tour_booking/features/splash/splash_view_model.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 
-import 'package:tour_booking/core/theme/app_icon_size.dart';
-import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/core/widgets/section_title.dart';
 import 'package:tour_booking/features/home/widget/featured_tour_points.dart';
+import 'package:tour_booking/features/home/widget/home_sliver_app_bar.dart';
 import 'package:tour_booking/features/home/widget/popular_cities.dart';
-import 'package:tour_booking/features/home/widget/search_section.dart';
 import 'package:tour_booking/features/home/widget/tour_type.dart';
 import 'package:tour_booking/features/home/home_viewmodel.dart';
 import 'package:tour_booking/features/home/widget/continue_in_city.dart';
@@ -38,6 +35,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   UserRole? _currentRole;
   bool _initialized = false;
+  SplashViewModel? _splashVm;
 
   @override
   void initState() {
@@ -47,13 +45,28 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // Initialize all startup tasks in safe order
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initialize();
+
+      // Listen for auth state changes (e.g., guest → customer after Google login)
+      _splashVm = context.read<SplashViewModel>();
+      _splashVm!.addListener(_onAuthStateChanged);
     });
   }
 
   @override
   void dispose() {
+    _splashVm?.removeListener(_onAuthStateChanged);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  void _onAuthStateChanged() {
+    final newRole = _splashVm?.role;
+    if (newRole != null && newRole != _currentRole) {
+      setState(() => _currentRole = newRole);
+      if (mounted) {
+        _refreshAfterAuth();
+      }
+    }
   }
 
   // ============================================================
@@ -175,71 +188,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   // ============================================================
   @override
   Widget build(BuildContext context) {
-    // Detect auth state changes (e.g., guest → customer after login)
-    final latestRole = context.select<SplashViewModel, UserRole?>((vm) => vm.role);
-    if (latestRole != null && latestRole != _currentRole) {
-      final wasGuest = _currentRole == UserRole.guest;
-      _currentRole = latestRole;
-      if (wasGuest) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) _refreshAfterAuth();
-        });
-      }
-    }
-
     if (_currentRole == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final scheme = context.colors;
+    final profileVm = context.watch<ProfileViewModel>();
+    final splashVm = context.watch<SplashViewModel>();
+
     return Scaffold(
       backgroundColor: scheme.surface,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // FIXED TOP BAR — notification icon + search bar
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.screenPadding, AppSpacing.m, AppSpacing.screenPadding, AppSpacing.l,
-              ),
-              child: Row(
-                children: [
-                  const Expanded(child: FakeSearchBar()),
-                  const SizedBox(width: AppSpacing.m),
-                  Semantics(
-                    button: true,
-                    label: 'Notifications',
-                    child: GestureDetector(
-                      onTap: () {
-                        // TODO: notifications page
-                      },
-                      child: Container(
-                        width: 44.0,
-                        height: 44.0,
-                        decoration: BoxDecoration(
-                          color: context.colors.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(AppRadius.medium),
-                        ),
-                        child: Icon(
-                          SolarIconsOutline.bell,
-                          color: context.colors.onSurface,
-                          size: AppIconSize.xl,
-                          semanticLabel: 'Notifications',
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+            // COLLAPSIBLE DARK HEADER
+            HomeSliverAppBar(
+              fullName: profileVm.profile?.fullName,
+              isGuest: splashVm.isGuest,
             ),
 
-            // SCROLLABLE CONTENT
-            Expanded(
-              child: CustomScrollView(
-                physics: const BouncingScrollPhysics(),
-                slivers: [
             // FEATURED (edge-to-edge horizontal scroll)
             const SliverToBoxAdapter(
-              child: SizedBox(height: AppSpacing.s),
+              child: SizedBox(height: AppSpacing.sectionSpacing),
             ),
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
@@ -256,19 +225,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 child: RepaintBoundary(child: FeaturedPointsWidget()),
               ),
             ),
-            const SliverToBoxAdapter(
-              child: SizedBox(height: AppSpacing.sectionSpacing),
-            ),
 
-            // NEARBY TOURS (if location permission granted)
+            // NEARBY TOURS (includes own top spacing, hidden = no spacing)
             const SliverToBoxAdapter(
               child: RepaintBoundary(child: NearbyTourPointsWidget()),
             ),
-            const SliverToBoxAdapter(
-              child: SizedBox(height: AppSpacing.sectionSpacing),
-            ),
 
-            // CONTINUE IN CITY — lazy loaded: each section fetches its own tours when visible
+            // CONTINUE IN CITY (each includes own top spacing)
             ...context.select<HomeViewModel, List<CityToursSection>>(
               (vm) => vm.citySections,
             ).map((section) => SliverToBoxAdapter(
@@ -281,6 +244,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             )),
 
             // POPULAR CITIES
+            const SliverToBoxAdapter(
+              child: SizedBox(height: AppSpacing.sectionSpacing),
+            ),
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
               sliver: SliverToBoxAdapter(
@@ -293,22 +259,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 child: RepaintBoundary(child: PopularCitiesWidget()),
               ),
             ),
+
+            // CATEGORIES
             const SliverToBoxAdapter(
               child: SizedBox(height: AppSpacing.sectionSpacing),
             ),
-
-            // CATEGORIES
             _sliverSection(
               title: tr("categories"),
               body: const TourTypeWidget(),
-              bottomSpace: AppSpacing.m,
             ),
           ],
         ),
-      ), // Expanded
-    ], // Column
-      ),
-    ),
     );
   }
 

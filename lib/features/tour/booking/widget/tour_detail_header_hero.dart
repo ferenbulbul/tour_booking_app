@@ -90,7 +90,8 @@ class _TourDetailHeaderHeroState extends State<TourDetailHeaderHero> {
 
             // gradient
             Positioned.fill(
-              child: IgnorePointer(
+              child: RepaintBoundary(
+                child: IgnorePointer(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -104,6 +105,7 @@ class _TourDetailHeaderHeroState extends State<TourDetailHeaderHero> {
                     ),
                   ),
                 ),
+              ),
               ),
             ),
 

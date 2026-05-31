@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solar_icons/solar_icons.dart';
@@ -222,9 +223,9 @@ class FeaturedCard extends StatelessWidget {
   static String _formatDuration(int? hours, int? minutes) {
     final h = hours ?? 0;
     final m = minutes ?? 0;
-    if (h > 0 && m > 0) return "${h}h ${m}m";
-    if (h > 0) return "${h}h";
-    return "${m}m";
+    if (h > 0 && m > 0) return tr('duration_short', namedArgs: {'hours': '$h', 'minutes': '$m'});
+    if (h > 0) return tr('duration_short_hours_only', namedArgs: {'hours': '$h'});
+    return tr('duration_short_minutes_only', namedArgs: {'minutes': '$m'});
   }
 }
 
@@ -248,7 +249,7 @@ class FeaturedPointsWidget extends StatelessWidget {
     }
 
     return SizedBox(
-      height: 320,
+      height: 300,
       child: ListView.separated(
         key: const PageStorageKey("featured_list"),
         scrollDirection: Axis.horizontal,
@@ -295,13 +296,16 @@ class FeaturedPointsSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 240,
+      height: 300,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
         itemCount: 4,
-        separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.l),
-        itemBuilder: (_, __) => const FeaturedCardSkeleton(),
+        separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.m),
+        itemBuilder: (_, __) => const SizedBox(
+          width: 220,
+          child: FeaturedCardSkeleton(),
+        ),
       ),
     );
   }

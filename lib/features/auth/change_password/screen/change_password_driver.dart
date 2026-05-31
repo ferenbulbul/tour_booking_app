@@ -128,7 +128,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordDriverScreen> {
 
     if (result.isSuccess) {
       UIHelper.showSuccess(context, 'password_updated_success'.tr());
-      context.go('/home');
+      context.go('/driver');
     } else {
       UIHelper.showError(context, vm.message?.tr() ?? 'operation_failed'.tr());
     }

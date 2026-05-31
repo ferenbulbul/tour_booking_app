@@ -131,10 +131,9 @@ class _RouteMapSheetState extends State<RouteMapSheet> {
     );
     pinPath.close();
 
-    // Shadow
+    // Shadow (simple offset, no blur filter)
     final shadowPaint = Paint()
-      ..color = Colors.black.withValues(alpha: isSelected ? 0.25 : 0.15)
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, isSelected ? 5 : 3);
+      ..color = Colors.black.withValues(alpha: isSelected ? 0.20 : 0.12);
     canvas.save();
     canvas.translate(0, 2 * scale);
     canvas.drawPath(pinPath, shadowPaint);
@@ -295,12 +294,8 @@ class _RouteMapSheetState extends State<RouteMapSheet> {
               Polyline(
                 polylineId: const PolylineId('route'),
                 points: polylinePoints,
-                color: context.colors.secondary,
+                color: context.colors.secondary.withValues(alpha: 0.7),
                 width: 3,
-                patterns: [
-                  PatternItem.dash(12),
-                  PatternItem.gap(8),
-                ],
               ),
             },
             onMapCreated: (ctrl) {
@@ -333,19 +328,12 @@ class _RouteMapSheetState extends State<RouteMapSheet> {
               itemBuilder: (context, index) {
                 final isActive = index == _selectedIndex;
 
-                return AnimatedPadding(
+                return AnimatedOpacity(
+                  opacity: isActive ? 1.0 : 0.6,
                   duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeOut,
-                  padding: EdgeInsets.only(top: isActive ? 0 : AppSpacing.ml),
-                  child: AnimatedScale(
-                    scale: isActive ? 1.0 : 0.95,
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeOut,
-                    child: AnimatedOpacity(
-                      opacity: isActive ? 1.0 : 0.6,
-                      duration: const Duration(milliseconds: 250),
-                      child: _buildPointCard(pts[index], index + 1),
-                    ),
+                  child: Padding(
+                    padding: EdgeInsets.only(top: isActive ? 0 : AppSpacing.ml),
+                    child: _buildPointCard(pts[index], index + 1),
                   ),
                 );
               },
@@ -367,9 +355,9 @@ class _RouteMapSheetState extends State<RouteMapSheet> {
         borderRadius: BorderRadius.circular(AppRadius.large),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),

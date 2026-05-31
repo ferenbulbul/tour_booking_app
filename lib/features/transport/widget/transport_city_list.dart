@@ -148,24 +148,23 @@ class _TransportTimePickerState extends State<TransportTimePicker> {
             child: SizedBox(
               width: double.infinity,
               height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  widget.onConfirm(_hour, _minute);
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: context.colors.secondary,
-                  foregroundColor: context.colors.onSecondary,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.medium),
-                  ),
-                ),
-                child: Text(
-                  tr('confirm'),
-                  style: AppTextStyles.titleSmall.copyWith(
-                    color: context.colors.onSecondary,
-                    fontWeight: FontWeight.w700,
+              child: Material(
+                color: context.colors.secondary,
+                borderRadius: BorderRadius.circular(AppRadius.medium),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(AppRadius.medium),
+                  onTap: () {
+                    widget.onConfirm(_hour, _minute);
+                    Navigator.pop(context);
+                  },
+                  child: Center(
+                    child: Text(
+                      tr('confirm'),
+                      style: AppTextStyles.titleSmall.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
                 ),
               ),

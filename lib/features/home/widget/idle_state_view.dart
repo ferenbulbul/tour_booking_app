@@ -353,7 +353,7 @@ class PopularTourTile extends StatelessWidget {
                           Text(point.cityName, style: AppTextStyles.caption.copyWith(color: context.ext.textLight)),
                           if (point.avgRating != null && point.avgRating! > 0) ...[
                             const SizedBox(width: AppSpacing.s),
-                            Icon(SolarIconsOutline.star, size: AppIconSize.xs, color: context.ext.warning, semanticLabel: 'Rating'),
+                            Icon(Icons.star_rounded, size: AppIconSize.xs, color: context.ext.star, semanticLabel: 'Rating'),
                             const SizedBox(width: AppSpacing.xxs),
                             Text(
                               point.avgRating!.toStringAsFixed(1),

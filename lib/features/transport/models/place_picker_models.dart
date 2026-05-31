@@ -39,6 +39,7 @@ class ParsedRoute {
   final String distanceText;
   final String durationText;
   final String summary;
+  final String encodedPolyline;
 
   const ParsedRoute({
     required this.points,
@@ -47,5 +48,6 @@ class ParsedRoute {
     required this.distanceText,
     required this.durationText,
     required this.summary,
+    required this.encodedPolyline,
   });
 }

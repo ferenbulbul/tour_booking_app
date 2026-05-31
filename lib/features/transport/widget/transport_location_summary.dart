@@ -86,30 +86,25 @@ class TransportLocationSummary extends StatelessWidget {
                 showDropoffError: showErrors && vm.dropoffLat == null,
                 pickupShakeKey: pickupShakeKey,
                 dropoffShakeKey: dropoffShakeKey,
+                enabled: vm.selectedCityId != null,
               ),
 
               // Route map (conditional)
               if (hasRoute) ...[
                 const SizedBox(height: AppSpacing.m),
-                Semantics(
-                  button: true,
-                  label: 'Edit route on map',
-                  child: GestureDetector(
+                ChangeNotifierProvider(
+                  key: ValueKey(
+                      'route_${vm.pickupLat}_${vm.pickupLng}_${vm.dropoffLat}_${vm.dropoffLng}'),
+                  create: (_) => TransportRouteMapViewModel(),
+                  child: TransportRouteMap(
+                    pickupLat: vm.pickupLat!,
+                    pickupLng: vm.pickupLng!,
+                    dropoffLat: vm.dropoffLat!,
+                    dropoffLng: vm.dropoffLng!,
+                    height: 160,
+                    initialDistanceKm: vm.selectedRouteDistanceKm,
+                    onRouteSelected: onRouteSelected,
                     onTap: onPickupTap,
-                    child: ChangeNotifierProvider(
-                      create: (_) => TransportRouteMapViewModel(),
-                      child: TransportRouteMap(
-                        key: ValueKey(
-                            '${vm.pickupLat}_${vm.pickupLng}_${vm.dropoffLat}_${vm.dropoffLng}'),
-                        pickupLat: vm.pickupLat!,
-                        pickupLng: vm.pickupLng!,
-                        dropoffLat: vm.dropoffLat!,
-                        dropoffLng: vm.dropoffLng!,
-                        height: 160,
-                        initialDistanceKm: vm.selectedRouteDistanceKm,
-                        onRouteSelected: onRouteSelected,
-                      ),
-                    ),
                   ),
                 ),
               ],

@@ -12,48 +12,209 @@ class TourDetailSkeleton extends StatelessWidget {
     return Shimmer.fromColors(
       baseColor: context.ext.shimmerBase,
       highlightColor: context.ext.shimmerHighlight,
-      child: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.l),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // TITLE
+          Container(
+            height: 22,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: context.ext.shimmerBase,
+              borderRadius: BorderRadius.circular(AppRadius.xxs),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Container(
+            height: 22,
+            width: 180,
+            decoration: BoxDecoration(
+              color: context.ext.shimmerBase,
+              borderRadius: BorderRadius.circular(AppRadius.xxs),
+            ),
+          ),
+
+          const SizedBox(height: AppSpacing.xs),
+
+          // RATING ROW (5 stars + text)
+          Row(
             children: [
-              _buildBox(context, height: 330, radius: AppRadius.xlm),
-              const SizedBox(height: AppSpacing.s),
-              _buildBox(context, height: 140, radius: AppRadius.xl),
-              const SizedBox(height: AppSpacing.xxl),
-              _buildBox(context, height: 20, radius: AppRadius.sm, widthRatio: .5),
-              const SizedBox(height: AppSpacing.ml),
-              _buildBox(context, height: 56, radius: AppRadius.large),
-              const SizedBox(height: AppSpacing.m),
-              _buildBox(context, height: 56, radius: AppRadius.large),
-              const SizedBox(height: AppSpacing.m),
-              _buildBox(context, height: 56, radius: AppRadius.large),
-              const SizedBox(height: AppSpacing.m),
-              _buildBox(context, height: 56, radius: AppRadius.large),
-              const SizedBox(height: AppSpacing.xxxxxxl),
+              ...List.generate(
+                5,
+                (_) => Padding(
+                  padding: const EdgeInsets.only(right: AppSpacing.xxs),
+                  child: Container(
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: context.ext.shimmerBase,
+                      borderRadius: BorderRadius.circular(AppRadius.xxs),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Container(
+                height: 12,
+                width: 50,
+                decoration: BoxDecoration(
+                  color: context.ext.shimmerBase,
+                  borderRadius: BorderRadius.circular(AppRadius.xxs),
+                ),
+              ),
             ],
           ),
-        ),
+
+          const SizedBox(height: AppSpacing.xs),
+
+          // SHORT DESCRIPTION (3 lines)
+          Container(
+            height: 12,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: context.ext.shimmerBase,
+              borderRadius: BorderRadius.circular(AppRadius.xxs),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Container(
+            height: 12,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: context.ext.shimmerBase,
+              borderRadius: BorderRadius.circular(AppRadius.xxs),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Container(
+            height: 12,
+            width: 160,
+            decoration: BoxDecoration(
+              color: context.ext.shimmerBase,
+              borderRadius: BorderRadius.circular(AppRadius.xxs),
+            ),
+          ),
+
+          const SizedBox(height: AppSpacing.l),
+
+          // GENERAL INFO ACCORDION (non-collapsible)
+          _accordionSkeleton(context, width: 130),
+
+          const SizedBox(height: AppSpacing.xs),
+
+          // INFO BANNER (3 info items)
+          Container(
+            height: 70,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: context.ext.shimmerBase,
+              borderRadius: BorderRadius.circular(AppRadius.ml),
+            ),
+          ),
+
+          const SizedBox(height: AppSpacing.m),
+
+          // ACCORDION 2 - Route
+          _accordionSkeleton(context, width: 80),
+
+          const SizedBox(height: AppSpacing.m),
+
+          // ACCORDION 3 - Highlights
+          _accordionSkeleton(context, width: 100),
+
+          const SizedBox(height: AppSpacing.m),
+
+          // ACCORDION 4 - Full Description
+          _accordionSkeleton(context, width: 140),
+
+          const SizedBox(height: AppSpacing.m),
+
+          // ACCORDION 5 - Inclusions
+          _accordionSkeleton(context, width: 90),
+
+          const SizedBox(height: AppSpacing.xxl),
+
+          // DEPARTURE FORM CARD
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.l),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppRadius.large),
+              color: context.ext.shimmerBase,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Section title
+                Container(
+                  height: 16,
+                  width: 160,
+                  decoration: BoxDecoration(
+                    color: context.colors.surface,
+                    borderRadius: BorderRadius.circular(AppRadius.xxs),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Container(
+                  height: 12,
+                  width: 200,
+                  decoration: BoxDecoration(
+                    color: context.colors.surface,
+                    borderRadius: BorderRadius.circular(AppRadius.xxs),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.l),
+                // Picker fields
+                _pickerSkeleton(context),
+                const SizedBox(height: AppSpacing.ms),
+                _pickerSkeleton(context),
+                const SizedBox(height: AppSpacing.ms),
+                _pickerSkeleton(context),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildBox(
-    BuildContext context, {
-    required double height,
-    required double radius,
-    double widthRatio = 1,
-  }) {
-    return FractionallySizedBox(
-      widthFactor: widthRatio,
-      child: Container(
-        height: height,
-        decoration: BoxDecoration(
-          color: context.ext.shimmerBase,
-          borderRadius: BorderRadius.circular(radius),
-        ),
+  Widget _accordionSkeleton(BuildContext context, {required double width}) {
+    return Container(
+      height: 48,
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
+      decoration: BoxDecoration(
+        color: context.ext.shimmerBase,
+        borderRadius: BorderRadius.circular(AppRadius.ml),
+      ),
+      child: Row(
+        children: [
+          Container(
+            height: 14,
+            width: width,
+            decoration: BoxDecoration(
+              color: context.colors.surface,
+              borderRadius: BorderRadius.circular(AppRadius.xxs),
+            ),
+          ),
+          const Spacer(),
+          Container(
+            width: 16,
+            height: 16,
+            decoration: BoxDecoration(
+              color: context.colors.surface,
+              borderRadius: BorderRadius.circular(AppRadius.xxs),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _pickerSkeleton(BuildContext context) {
+    return Container(
+      height: 48,
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.ml),
       ),
     );
   }

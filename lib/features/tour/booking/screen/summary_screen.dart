@@ -58,7 +58,7 @@ class SummaryScreen extends StatelessWidget {
             headerImage: detailVm.tourPointImage,
             children: [
               _row(context, tr('summary_date'),
-                  _formatDate(date, selectionVm.selectedTime)),
+                  _formatDate(context, date, selectionVm.selectedTime)),
               _row(context, tr('summary_departure_city'),
                   detailVm.selectedCityName ?? "\u2014"),
               _row(context, tr('summary_district'),
@@ -175,7 +175,7 @@ class SummaryScreen extends StatelessWidget {
   Widget _sectionLabel(String text) {
     return Text(
       text,
-      style: AppTextStyles.labelMedium,
+      style: AppTextStyles.titleSmall,
     );
   }
 
@@ -227,26 +227,27 @@ class SummaryScreen extends StatelessWidget {
 
   Widget _row(BuildContext context, String label, String value, {bool multiline = false}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       child: Row(
         crossAxisAlignment:
             multiline ? CrossAxisAlignment.start : CrossAxisAlignment.center,
         children: [
           Text(
             label,
-            style: AppTextStyles.labelSmall.copyWith(
+            style: AppTextStyles.bodyMedium.copyWith(
               color: context.ext.textLight,
             ),
           ),
-          const SizedBox(width: AppSpacing.s),
+          const SizedBox(width: AppSpacing.m),
           Expanded(
             child: Text(
               value,
               textAlign: TextAlign.right,
               maxLines: multiline ? 3 : 1,
               overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.labelSmall.copyWith(
+              style: AppTextStyles.bodyMedium.copyWith(
                 color: context.colors.onSurface,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -313,20 +314,20 @@ class SummaryScreen extends StatelessWidget {
     bool accent = false,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: AppTextStyles.labelMedium.copyWith(
+            style: AppTextStyles.bodyMedium.copyWith(
               color: bold ? context.colors.onSurface : context.colors.onSurfaceVariant,
               fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
             ),
           ),
           Text(
             value,
-            style: (accent ? AppTextStyles.bodyMedium : AppTextStyles.labelMedium).copyWith(
+            style: (accent ? AppTextStyles.titleSmall : AppTextStyles.bodyMedium).copyWith(
               color: accent ? context.colors.secondary : context.colors.onSurface,
               fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
             ),
@@ -359,16 +360,16 @@ class SummaryScreen extends StatelessWidget {
     ].whereType<String>().join(" \u00B7 ");
   }
 
-  String _formatDate(DateTime? date, String? time) {
+  String _formatDate(BuildContext context, DateTime? date, String? time) {
     if (date == null) return "\u2014";
-    final df = DateFormat("d MMMM yyyy, EEEE", "tr_TR");
+    final df = DateFormat("d MMMM yyyy, EEEE", context.locale.toString());
     return "${df.format(date)} ${time ?? ""}";
   }
 
   String _formatCurrency(num? v) {
     if (v == null) return "\u2014";
     return NumberFormat.currency(
-      locale: "tr_TR",
+      locale: "tr",
       symbol: "\u20BA",
       decimalDigits: 2,
     ).format(v);

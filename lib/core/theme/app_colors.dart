@@ -55,7 +55,7 @@ class AppColors {
 
   // ── Misc semantic ──────────────────────────────────
   static const favorite = Color(0xFFEF4444);
-  static const star = Color(0xFFFFC107);
+  static const star = Color(0xFFEC5807);
   static const purple = Color(0xFF8B5CF6);
 
   // ── Confetti ─────────────────────────────────────────

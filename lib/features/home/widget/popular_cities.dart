@@ -1,170 +1,230 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:provider/provider.dart';
 import 'package:solar_icons/solar_icons.dart';
 
 import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/theme/app_theme_context.dart';
-
-class _CityData {
-  final String name;
-  final String subtitleKey;
-  final String imageUrl;
-  final String cityId;
-
-  const _CityData({
-    required this.name,
-    required this.subtitleKey,
-    required this.imageUrl,
-    required this.cityId,
-  });
-}
-
-const _cities = [
-  _CityData(
-    name: 'İstanbul',
-    subtitleKey: 'city_subtitle_istanbul',
-    imageUrl: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=600',
-    cityId: '',
-  ),
-  _CityData(
-    name: 'Antalya',
-    subtitleKey: 'city_subtitle_antalya',
-    imageUrl: 'https://images.unsplash.com/photo-1593238739364-18cfde865992?w=600',
-    cityId: '',
-  ),
-  _CityData(
-    name: 'Kapadokya',
-    subtitleKey: 'city_subtitle_cappadocia',
-    imageUrl: 'https://images.unsplash.com/photo-1641128324972-af3212f0f6bd?w=600',
-    cityId: '',
-  ),
-  _CityData(
-    name: 'İzmir',
-    subtitleKey: 'city_subtitle_istanbul',
-    imageUrl: 'https://images.unsplash.com/photo-1590076084383-bfdb09de628a?w=600',
-    cityId: '',
-  ),
-  _CityData(
-    name: 'Bodrum',
-    subtitleKey: 'city_subtitle_bodrum',
-    imageUrl: 'https://images.unsplash.com/photo-1614587185092-af24d327c858?w=600',
-    cityId: '',
-  ),
-  _CityData(
-    name: 'Trabzon',
-    subtitleKey: 'city_subtitle_trabzon',
-    imageUrl: 'https://images.unsplash.com/photo-1571935281914-d898e1e8f104?w=600',
-    cityId: '',
-  ),
-];
+import 'package:tour_booking/features/home/home_viewmodel.dart';
 
 class PopularCitiesWidget extends StatelessWidget {
   const PopularCitiesWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 180,
-      child: ListView.separated(
-        key: const PageStorageKey("popular_cities"),
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
-        itemCount: _cities.length,
-        separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.m),
-        itemBuilder: (context, index) {
-          final city = _cities[index];
-          return _CityCard(
-            name: city.name,
-            subtitle: tr(city.subtitleKey),
-            imageUrl: city.imageUrl,
-            onTap: () {
-              // TODO: search tours by city
-            },
+    return Consumer<HomeViewModel>(
+      builder: (context, vm, _) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        final cardWidth = (screenWidth - AppSpacing.screenPadding * 2 - AppSpacing.m) / 2;
+
+        // Loading state
+        if (vm.isLoadingPopularDestinations) {
+          return SizedBox(
+            height: 170,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.screenPadding,
+              ),
+              itemCount: 3,
+              separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.m),
+              itemBuilder: (context, _) {
+                return Shimmer.fromColors(
+                  baseColor: context.ext.shimmerBase,
+                  highlightColor: context.ext.shimmerHighlight,
+                  child: SizedBox(
+                    width: cardWidth,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(AppRadius.small),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          // Image placeholder
+                          Container(color: context.ext.shimmerBase),
+
+                          // Gradient overlay (matches actual card)
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            height: 70,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.transparent,
+                                    Colors.black.withValues(alpha: 0.15),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          // City name placeholder
+                          Positioned(
+                            left: AppSpacing.m,
+                            right: AppSpacing.m,
+                            bottom: AppSpacing.m,
+                            child: Container(
+                              height: 14,
+                              width: 80,
+                              decoration: BoxDecoration(
+                                color: context.ext.shimmerBase,
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.xxs),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
           );
-        },
-      ),
+        }
+
+        // Empty state
+        if (vm.popularDestinations.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        // Data loaded
+        return SizedBox(
+          height: 170,
+          child: ListView.separated(
+            key: const PageStorageKey("popular_cities"),
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.screenPadding,
+            ),
+            itemCount: vm.popularDestinations.length,
+            separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.m),
+            itemBuilder: (context, index) {
+              final destination = vm.popularDestinations[index];
+              final name = destination.districtName ?? destination.cityName ?? '';
+
+              return _PopularCityCard(
+                name: name,
+                imageUrl: destination.imageUrl,
+                cardWidth: cardWidth,
+                onTap: () {
+                  final params = <String, String>{'type': '1'};
+                  if (destination.cityId != null) {
+                    params['cityId'] = destination.cityId!;
+                    params['cityName'] = destination.cityName ?? '';
+                  }
+                  if (destination.districtId != null) {
+                    params['districtId'] = destination.districtId!;
+                    params['districtName'] = destination.districtName ?? '';
+                  }
+                  context.pushNamed('searchResults', queryParameters: params);
+                },
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
 
-class _CityCard extends StatelessWidget {
+class _PopularCityCard extends StatelessWidget {
   final String name;
-  final String subtitle;
   final String imageUrl;
+  final double cardWidth;
   final VoidCallback onTap;
 
-  const _CityCard({
+  const _PopularCityCard({
     required this.name,
-    required this.subtitle,
     required this.imageUrl,
+    required this.cardWidth,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final dpr = MediaQuery.of(context).devicePixelRatio;
+    final targetWidth = (cardWidth * dpr).round();
+
     return Semantics(
       button: true,
       label: name,
       child: GestureDetector(
         onTap: onTap,
         child: SizedBox(
-          width: 140,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // IMAGE
-              Expanded(
-                child: Semantics(
-                  image: true,
-                  label: name,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppRadius.medium),
-                    child: CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      memCacheWidth: 400,
-                      fadeInDuration: const Duration(milliseconds: 150),
-                      placeholder: (_, __) => Container(
-                        color: context.colors.surfaceContainerHighest,
-                      ),
-                      errorWidget: (_, __, ___) => Container(
-                        color: context.colors.primaryContainer,
-                        child: Icon(SolarIconsOutline.gallery, color: Colors.white.withValues(alpha: 0.54), semanticLabel: 'Image placeholder'),
+          width: cardWidth,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AppRadius.small),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // IMAGE
+                CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  fit: BoxFit.cover,
+                  memCacheWidth: targetWidth,
+                  maxWidthDiskCache: targetWidth,
+                  fadeInDuration: const Duration(milliseconds: 150),
+                  placeholder: (_, __) => Container(
+                    color: context.colors.surfaceContainerHighest,
+                  ),
+                  errorWidget: (_, __, ___) => Container(
+                    color: context.colors.primaryContainer,
+                    child: Icon(
+                      SolarIconsOutline.gallery,
+                      color: Colors.white.withValues(alpha: 0.54),
+                      semanticLabel: 'Image placeholder',
+                    ),
+                  ),
+                ),
+
+                // GRADIENT OVERLAY
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: 70,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withValues(alpha: 0.65),
+                        ],
                       ),
                     ),
                   ),
                 ),
-              ),
 
-              const SizedBox(height: AppSpacing.s),
-
-              // NAME
-              Text(
-                name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.labelLarge.copyWith(
-                  color: context.colors.onSurface,
+                // CITY NAME
+                Positioned(
+                  left: AppSpacing.m,
+                  right: AppSpacing.m,
+                  bottom: AppSpacing.m,
+                  child: Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.titleSmall.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
-              ),
-
-              const SizedBox(height: AppSpacing.xxs),
-
-              // SUBTITLE
-              Text(
-                subtitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.labelSmall.copyWith(
-                  color: context.ext.textLight,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

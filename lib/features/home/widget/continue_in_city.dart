@@ -1,12 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/features/home/widget/featured_card_skeleton.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
-import 'package:tour_booking/core/theme/app_theme_context.dart';
 import 'package:tour_booking/core/widgets/section_title.dart';
 import 'package:tour_booking/features/favorite/favorite_viewmodel.dart';
 import 'package:tour_booking/features/home/home_viewmodel.dart';
@@ -45,7 +43,7 @@ class _LazyCitySectionState extends State<LazyCitySection> {
       key: Key('city_visibility_${section.cityId}'),
       onVisibilityChanged: _onVisibilityChanged,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: AppSpacing.sectionSpacing),
+        padding: const EdgeInsets.only(top: AppSpacing.sectionSpacing),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -80,29 +78,21 @@ class _LazyCitySectionState extends State<LazyCitySection> {
   }
 
   Widget _buildSkeleton(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = (screenWidth - AppSpacing.screenPadding * 2 - AppSpacing.m) / 2;
+
     return SizedBox(
-      height: 220,
+      height: 260,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
         itemCount: 3,
         separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.m),
-        itemBuilder: (context, _) {
-          final screenWidth = MediaQuery.of(context).size.width;
-          final cardWidth = (screenWidth - AppSpacing.screenPadding * 2 - AppSpacing.m) / 2;
-          return Shimmer.fromColors(
-            baseColor: context.ext.shimmerBase,
-            highlightColor: context.ext.shimmerHighlight,
-            child: Container(
-              width: cardWidth,
-              decoration: BoxDecoration(
-                color: context.ext.shimmerBase,
-                borderRadius: BorderRadius.circular(AppRadius.ml),
-              ),
-            ),
-          );
-        },
+        itemBuilder: (_, __) => SizedBox(
+          width: cardWidth,
+          child: const FeaturedCardSkeleton(),
+        ),
       ),
     );
   }
@@ -118,7 +108,7 @@ class _LazyCitySectionState extends State<LazyCitySection> {
     final cardWidth = (screenWidth - AppSpacing.screenPadding * 2 - AppSpacing.m) / 2;
 
     return SizedBox(
-      height: 220,
+      height: 260,
       child: ListView.separated(
         key: PageStorageKey("city_tours_${section.cityId}"),
         scrollDirection: Axis.horizontal,
@@ -138,7 +128,7 @@ class _LazyCitySectionState extends State<LazyCitySection> {
             durationHours: tour.durationHours,
             durationMinutes: tour.durationMinutes,
             cardWidth: cardWidth,
-            imageHeight: 130,
+            imageHeight: 170,
             isFavorite: favVm.isFavorite(tour.id),
             onFavoriteToggle: () => favVm.toggleFavorite(tour.id),
             heroTag: "cityTour_${tour.id}",

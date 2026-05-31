@@ -29,6 +29,7 @@ class TransportSummaryViewModel extends BaseViewModel {
   String? selectedTime;
   double? clientDistanceKm;
   int? clientDurationMinutes;
+  String? routePolyline;
 
   void setContext({
     required TransportVehicle vehicle,
@@ -42,6 +43,7 @@ class TransportSummaryViewModel extends BaseViewModel {
     required String? time,
     double? distanceKm,
     int? durationMinutes,
+    String? routePolyline,
   }) {
     selectedVehicle = vehicle;
     pickupAddress = pickup;
@@ -54,6 +56,7 @@ class TransportSummaryViewModel extends BaseViewModel {
     selectedTime = time;
     clientDistanceKm = distanceKm;
     clientDurationMinutes = durationMinutes;
+    this.routePolyline = routePolyline;
   }
 
   Future<void> calculatePrice() async {
@@ -107,6 +110,8 @@ class TransportSummaryViewModel extends BaseViewModel {
         dropoffLat == null ||
         selectedDate == null ||
         selectedTime == null) {
+      errorMessage = tr('error_generic');
+      notifyListeners();
       return;
     }
 
@@ -129,6 +134,7 @@ class TransportSummaryViewModel extends BaseViewModel {
         buyerLastName: buyerLastName,
         buyerEmail: buyerEmail,
         buyerPhone: buyerPhone,
+        routePolyline: routePolyline,
       );
 
       final resp = await _service.createBooking(request);

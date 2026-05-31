@@ -332,6 +332,7 @@ class _BookingDetailSheetState extends State<_BookingDetailSheet> {
           elevation: 0,
           backgroundColor: context.colors.secondary,
           foregroundColor: context.colors.onSecondary,
+          padding: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.medium),
           ),

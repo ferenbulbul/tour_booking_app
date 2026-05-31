@@ -22,6 +22,7 @@ _$$CreateTransportBookingRequestImplFromJson(Map<String, dynamic> json) =>
       buyerLastName: json['buyerLastName'] as String,
       buyerEmail: json['buyerEmail'] as String,
       buyerPhone: json['buyerPhone'] as String,
+      routePolyline: json['routePolyline'] as String?,
     );
 
 Map<String, dynamic> _$$CreateTransportBookingRequestImplToJson(
@@ -40,4 +41,5 @@ Map<String, dynamic> _$$CreateTransportBookingRequestImplToJson(
   'buyerLastName': instance.buyerLastName,
   'buyerEmail': instance.buyerEmail,
   'buyerPhone': instance.buyerPhone,
+  'routePolyline': instance.routePolyline,
 };

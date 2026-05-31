@@ -37,6 +37,7 @@ class TransportRouteMap extends StatefulWidget {
   final double? initialDistanceKm;
   final ValueChanged<RouteInfo>? onRouteSelected;
   final VoidCallback? onRouteFetchFailed;
+  final VoidCallback? onTap;
 
   const TransportRouteMap({
     super.key,
@@ -49,6 +50,7 @@ class TransportRouteMap extends StatefulWidget {
     this.initialDistanceKm,
     this.onRouteSelected,
     this.onRouteFetchFailed,
+    this.onTap,
   });
 
   @override
@@ -139,9 +141,8 @@ class _TransportRouteMapState extends State<TransportRouteMap> {
       polylines.add(Polyline(
         polylineId: PolylineId('route_$i'),
         points: vm.routes[i].points,
-        color: context.ext.shimmerBase,
+        color: context.ext.shimmerBase.withValues(alpha: 0.5),
         width: 3,
-        patterns: [PatternItem.dash(20), PatternItem.gap(10)],
         consumeTapEvents: true,
         onTap: () => _selectRoute(vm, capturedIndex),
       ));
@@ -186,27 +187,40 @@ class _TransportRouteMapState extends State<TransportRouteMap> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(AppRadius.large),
-          child: SizedBox(
-            height: widget.height,
-            child: GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: LatLng(midLat, midLng),
-                zoom: 10,
+        RepaintBoundary(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AppRadius.large),
+            child: SizedBox(
+              height: widget.height,
+              child: Stack(
+                children: [
+                  GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(midLat, midLng),
+                      zoom: 10,
+                    ),
+                    markers: _markers,
+                    polylines: _buildPolylines(vm),
+                    onMapCreated: (controller) {
+                      _controller = controller;
+                      if (vm.routeLoaded) _fitBounds();
+                    },
+                    zoomControlsEnabled: false,
+                    myLocationButtonEnabled: false,
+                    scrollGesturesEnabled: false,
+                    zoomGesturesEnabled: false,
+                    rotateGesturesEnabled: false,
+                    tiltGesturesEnabled: false,
+                  ),
+                  if (widget.onTap != null)
+                    Positioned.fill(
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(onTap: widget.onTap),
+                      ),
+                    ),
+                ],
               ),
-              markers: _markers,
-              polylines: _buildPolylines(vm),
-              onMapCreated: (controller) {
-                _controller = controller;
-                if (vm.routeLoaded) _fitBounds();
-              },
-              zoomControlsEnabled: false,
-              myLocationButtonEnabled: false,
-              scrollGesturesEnabled: false,
-              zoomGesturesEnabled: false,
-              rotateGesturesEnabled: false,
-              tiltGesturesEnabled: false,
             ),
           ),
         ),

@@ -31,6 +31,7 @@ class FakeSearchBar extends StatelessWidget {
           decoration: BoxDecoration(
             color: context.colors.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(AppRadius.large),
+            border: Border.all(color: context.colors.secondary),
           ),
           child: Row(
             children: [

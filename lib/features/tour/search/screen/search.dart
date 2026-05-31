@@ -130,7 +130,7 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: context.colors.primary,
-                    foregroundColor: context.colors.onSecondary,
+                    foregroundColor: context.colors.onPrimary,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppRadius.medium),
@@ -144,7 +144,7 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
                       Text(
                         tr("search"),
                         style: AppTextStyles.titleSmall.copyWith(
-                          color: context.colors.onSecondary,
+                          color: context.colors.onPrimary,
                           fontWeight: FontWeight.w700,
                         ),
                       ),

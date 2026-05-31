@@ -207,7 +207,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       title: tr("notifications"),
                       onTap: () => showNotificationPreferencesSheet(context),
                     ),
-                    _AppearanceTile(),
+                    AppearanceTile(),
                   ],
                 ),
 
@@ -248,6 +248,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       showDivider: false,
                       onTap: () async {
                         final splashVm = context.read<SplashViewModel>();
+                        final profileVm = context.read<ProfileViewModel>();
+                        profileVm.clear();
                         await splashVm.performFullSignOut(
                           socialCleanup: () => authVm.socialSignOut(),
                         );
@@ -271,7 +273,7 @@ String getLanguageName(BuildContext context) {
   return tr('language_name');
 }
 
-class _AppearanceTile extends StatelessWidget {
+class AppearanceTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeVM = context.watch<ThemeViewModel>();

@@ -61,6 +61,7 @@ Future<bool?> showCancelBookingDialog(BuildContext context) {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: context.colors.onSurfaceVariant,
                         side: BorderSide(color: context.colors.outline),
+                        padding: EdgeInsets.zero,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(AppRadius.medium),
                         ),
@@ -80,14 +81,18 @@ Future<bool?> showCancelBookingDialog(BuildContext context) {
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
                         backgroundColor: context.colors.error,
-                        foregroundColor: context.colors.onSecondary,
+                        foregroundColor: context.colors.onError,
+                        padding: EdgeInsets.zero,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(AppRadius.medium),
                         ),
                       ),
                       onPressed: () =>
                           Navigator.of(context, rootNavigator: true).pop(true),
-                      child: Text("common_yes".tr()),
+                      child: Text(
+                        "common_yes".tr(),
+                        style: TextStyle(color: context.colors.onError),
+                      ),
                     ),
                   ),
                 ),

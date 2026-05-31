@@ -36,6 +36,7 @@ class NearbyTourPointsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const SizedBox(height: AppSpacing.sectionSpacing),
         // Title
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
@@ -64,11 +65,11 @@ class _NearbyCardList extends StatelessWidget {
   Widget build(BuildContext context) {
     final favVm = context.watch<FavoriteViewModel>();
     final screenWidth = MediaQuery.of(context).size.width;
-    final cardWidth = (screenWidth - AppSpacing.screenPadding * 2 - AppSpacing.m) / 2;
-    const imageHeight = 130.0;
+    final cardWidth = (screenWidth - AppSpacing.screenPadding * 2 - AppSpacing.m * 2) / 3;
+    const imageHeight = 120.0;
 
     return SizedBox(
-      height: 220,
+      height: 210,
       child: ListView.separated(
         key: const PageStorageKey("nearby_list"),
         scrollDirection: Axis.horizontal,
@@ -110,10 +111,10 @@ class _NearbyLoadingSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final cardWidth = (screenWidth - AppSpacing.screenPadding * 2 - AppSpacing.m) / 2;
+    final cardWidth = (screenWidth - AppSpacing.screenPadding * 2 - AppSpacing.m * 2) / 3;
 
     return SizedBox(
-      height: 220,
+      height: 210,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),

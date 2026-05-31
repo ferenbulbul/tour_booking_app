@@ -32,6 +32,7 @@ class _NearbyPointsScreenState extends State<NearbyPointsScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final locVm = context.read<LocationViewModel>();
+      final homeVm = context.read<HomeViewModel>();
 
       // Force send location to server when entering Nearby page
       await locVm.sendLocationUpdate();
@@ -39,10 +40,10 @@ class _NearbyPointsScreenState extends State<NearbyPointsScreen> {
       if (!mounted) return;
       final pos = locVm.currentPosition;
       if (pos != null) {
-        context.read<HomeViewModel>().fetchNearbyTourPoints(
-              latitude: pos.latitude,
-              longitude: pos.longitude,
-            );
+        homeVm.fetchNearbyTourPoints(
+          latitude: pos.latitude,
+          longitude: pos.longitude,
+        );
       }
     });
   }

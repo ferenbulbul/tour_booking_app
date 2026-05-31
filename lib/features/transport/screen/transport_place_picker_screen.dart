@@ -100,13 +100,15 @@ class _TransportPlacePickerScreenState
         create: (_) => TransportSearchViewModel(),
         child: TransportSearchSheet(
           apiKey: vm.apiKey,
-          cityBias: forPickup ? vm.cityName : null,
-          cityCenter: forPickup ? vm.cityCenter : null,
-          cityName: forPickup ? vm.cityName : null,
+          cityCenter: vm.cityCenter,
+          cityName: vm.cityName,
+          restrictToCity: forPickup,
           hintText: forPickup
               ? tr('transport_search_pickup')
               : tr('transport_search_dropoff'),
           iconColor: forPickup ? context.ext.success : context.colors.error,
+          suggestedLocations:
+              forPickup ? vm.suggestedLocations : const [],
         ),
       ),
     );

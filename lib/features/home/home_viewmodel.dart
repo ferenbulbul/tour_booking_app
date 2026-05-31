@@ -5,6 +5,8 @@ import 'package:tour_booking/core/network/handle_response.dart';
 import 'package:tour_booking/core/network/result.dart';
 import 'package:tour_booking/models/featured_tour_point/featured_tour_point_dto.dart';
 import 'package:tour_booking/models/featured_tour_point_list/featured_tour_point_list_dto.dart';
+import 'package:tour_booking/models/popular_destination/popular_destination_dto.dart';
+import 'package:tour_booking/models/popular_destination_list/popular_destination_list_dto.dart';
 import 'package:tour_booking/models/nearby_list/nearby_list_response.dart';
 import 'package:tour_booking/models/nearby_tourpoint/nearby_tour_point_dto.dart';
 import 'package:tour_booking/models/tour_point/tour_point.dart';
@@ -22,6 +24,11 @@ class HomeViewModel extends BaseViewModel {
   bool isLoadingFeatured = false;
   List<FeaturedTourPointDto> featuredPoints = [];
 
+  // Popular Destinations
+  bool isLoadingPopularDestinations = false;
+  String? popularDestinationsMessage;
+  List<PopularDestinationDto> popularDestinations = [];
+
   // Tour Types (Categories) — lazy loaded
   bool isLoadingTourTypes = false;
   String? tourTypesMessage;
@@ -30,6 +37,7 @@ class HomeViewModel extends BaseViewModel {
   Future<void> init() async {
     await Future.wait([
       fetchFeaturedTourPoints(),
+      fetchPopularDestinations(),
       if (tourTypes.isNotEmpty) fetchTourTypes(),
     ]);
   }
@@ -50,6 +58,25 @@ class HomeViewModel extends BaseViewModel {
     }
 
     isLoadingFeatured = false;
+    notifyListeners();
+  }
+
+  Future<void> fetchPopularDestinations() async {
+    isLoadingPopularDestinations = true;
+    notifyListeners();
+
+    final response = await _tourService.getPopularDestinations();
+    final result = handleResponse<PopularDestinationListDto>(response);
+
+    if (result.isSuccess && result.data != null) {
+      popularDestinations = result.data?.popularDestinations ?? [];
+      popularDestinationsMessage = null;
+    } else {
+      popularDestinationsMessage =
+          result.error?.message ?? tr('error_data_load_failed');
+    }
+
+    isLoadingPopularDestinations = false;
     notifyListeners();
   }
 

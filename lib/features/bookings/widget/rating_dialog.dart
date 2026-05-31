@@ -104,13 +104,17 @@ class _RatingDialogState extends State<RatingDialog> {
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
                         backgroundColor: context.colors.primary,
-                        foregroundColor: context.colors.onSecondary,
+                        foregroundColor: context.colors.onPrimary,
+                        padding: EdgeInsets.zero,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(AppRadius.medium),
                         ),
                       ),
                       onPressed: () => Navigator.pop(context, false),
-                      child: Text('common_close'.tr()),
+                      child: Text(
+                        'common_close'.tr(),
+                        style: TextStyle(color: context.colors.onPrimary),
+                      ),
                     ),
                   ),
                 ],
@@ -255,6 +259,7 @@ class _RatingDialogState extends State<RatingDialog> {
             foregroundColor: context.colors.onSecondary,
             disabledBackgroundColor: context.colors.secondary.withValues(alpha: 0.3),
             disabledForegroundColor: context.colors.onSecondary.withValues(alpha: 0.7),
+            padding: EdgeInsets.zero,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppRadius.medium),
             ),
@@ -282,7 +287,10 @@ class _RatingDialogState extends State<RatingDialog> {
                     color: Colors.white,
                   ),
                 )
-              : Text('rating_submit'.tr()),
+              : Text(
+                  'rating_submit'.tr(),
+                  style: TextStyle(color: context.colors.onSecondary),
+                ),
         ),
       ),
     );

@@ -27,7 +27,13 @@ class TourVehicleListScreen extends StatelessWidget {
       backgroundColor: context.colors.surfaceContainerHighest,
       appBar: CommonAppBar(title: tr("available_vehicles")),
       body: vm.isVehiclesLoading
-          ? const Center(child: VehicleCardSkeleton())
+          ? ListView.separated(
+              padding: const EdgeInsets.all(AppSpacing.l),
+              itemCount: 3,
+              separatorBuilder: (_, __) =>
+                  const SizedBox(height: AppSpacing.m),
+              itemBuilder: (_, __) => const VehicleCardSkeleton(),
+            )
           : vm.vehicles.isEmpty
               ? _buildEmptyState(context)
               : ListView.separated(

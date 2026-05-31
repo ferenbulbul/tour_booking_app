@@ -6,9 +6,13 @@ import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
+import 'package:tour_booking/core/enum/user_role.dart';
 import 'package:tour_booking/features/auth/login/google_viewmodel.dart';
+import 'package:tour_booking/features/home/home_viewmodel.dart';
+import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
 import 'package:tour_booking/core/theme/app_theme_context.dart';
+import 'package:tour_booking/navigation/app_router.dart';
 
 class SocialLoginButtons extends StatelessWidget {
   final VoidCallback? onSuccess;
@@ -99,6 +103,10 @@ class SocialLoginButtons extends StatelessWidget {
     SplashViewModel splashVM,
     AuthProviderType type,
   ) async {
+    // Capture ViewModel references before any async gap (context may go stale)
+    final homeVm = context.read<HomeViewModel>();
+    final profileVm = context.read<ProfileViewModel>();
+
     _showLoading(context);
 
     final result = await authVM.signIn(type);
@@ -107,8 +115,21 @@ class SocialLoginButtons extends StatelessWidget {
 
     if (context.mounted) {
       if (result.isSuccess) {
-        await splashVM.saveAuthData(result.data!);
+        final user = result.data!;
+        await splashVM.saveAuthData(user);
+
+        // Directly refresh home data & profile with new auth token
+        homeVm.init();
+        homeVm.loadCityTargets();
+        profileVm.fetchProfile();
+
         onSuccess?.call();
+
+        if (user.role.toLowerCase() == UserRole.driver.name) {
+          router.go(user.isFirstLogin ? '/change-password-driver' : '/driver');
+        } else {
+          router.go('/home');
+        }
       } else {
         UIHelper.showError(
           context,

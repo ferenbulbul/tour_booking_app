@@ -9,18 +9,47 @@ class TransportSearchViewModel extends BaseViewModel {
       ServiceLocator.instance.googlePlaceService;
 
   List<PlacePrediction> predictions = [];
+  bool initialLoaded = false;
 
   /// Fetches autocomplete predictions for transport location search.
+  ///
+  /// [cityName] → pickup mode: prepends city name, strict bounds, 30km radius.
+  /// [initialCityQuery] → dropoff initial: prepends city name for first load
+  ///   but no strict bounds (user can type anything afterwards).
   Future<void> fetchPredictions({
     required String input,
     required String apiKey,
     LatLng? cityCenter,
+    String? cityName,
+    String? initialCityQuery,
   }) async {
+    final String query;
+    final bool strict;
+    final int radius;
+
+    if (cityName != null) {
+      // Pickup: always prepend city + strict bounds
+      query = '$cityName $input'.trim();
+      strict = true;
+      radius = 30000;
+    } else if (initialCityQuery != null && input.isEmpty) {
+      // Dropoff initial load: search with city name, no restriction
+      query = initialCityQuery;
+      strict = false;
+      radius = 50000;
+    } else {
+      // Dropoff with user input: free search, biased to city center
+      query = input;
+      strict = false;
+      radius = 50000;
+    }
+
     final results = await _placeService.autocomplete(
-      input: input,
+      input: query,
       components: 'country:tr',
       location: cityCenter,
-      radiusMeters: 50000,
+      radiusMeters: radius,
+      strictBounds: strict,
     );
 
     predictions = results
@@ -31,6 +60,7 @@ class TransportSearchViewModel extends BaseViewModel {
               secondaryText: e.secondaryText,
             ))
         .toList();
+    initialLoaded = true;
     notifyListeners();
   }
 

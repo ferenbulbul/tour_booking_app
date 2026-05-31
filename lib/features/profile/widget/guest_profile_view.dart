@@ -8,7 +8,10 @@ import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/features/profile/screen/language_screen.dart';
 import 'package:tour_booking/features/profile/screen/profile_screen.dart';
 import 'package:tour_booking/features/profile/widget/profile_section.dart';
+import 'package:provider/provider.dart';
 import 'package:tour_booking/features/auth/login/widget/login_bottom_sheet.dart';
+import 'package:tour_booking/features/home/home_viewmodel.dart';
+import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 import 'package:tour_booking/features/profile/widget/notification_preferences_sheet.dart';
 import 'package:tour_booking/features/profile/widget/profile_menu_tile.dart';
 import 'package:tour_booking/navigation/app_router.dart';
@@ -135,8 +138,8 @@ class GuestProfileView extends StatelessWidget {
                       title: tr("notifications"),
                       onTap: () =>
                           showNotificationPreferencesSheet(context),
-                      showDivider: false,
                     ),
+                    AppearanceTile(),
                   ],
                 ),
 
@@ -174,9 +177,7 @@ class GuestProfileView extends StatelessWidget {
   }
 
   void _handleLogin(BuildContext context) async {
-    final result = await showLoginBottomSheet(context);
-    if (result == true) {
-      router.go('/home');
-    }
+    // Bottom sheet handles navigation (home/driver) after successful login
+    await showLoginBottomSheet(context);
   }
 }

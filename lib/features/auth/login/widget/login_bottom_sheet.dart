@@ -12,6 +12,8 @@ import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/core/widgets/buttons/primary_button.dart';
 import 'package:tour_booking/features/auth/login/login_viewmodel.dart';
 import 'package:tour_booking/features/auth/login/widget/social_login_button.dart';
+import 'package:tour_booking/features/home/home_viewmodel.dart';
+import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
 import 'package:tour_booking/navigation/app_router.dart';
 import 'package:tour_booking/utils/password_validator.dart';
@@ -72,6 +74,8 @@ class _LoginBottomSheetContentState extends State<_LoginBottomSheetContent> {
   void _login() async {
     final splashVM = Provider.of<SplashViewModel>(context, listen: false);
     final vm = Provider.of<LoginViewModel>(context, listen: false);
+    final homeVm = context.read<HomeViewModel>();
+    final profileVm = context.read<ProfileViewModel>();
     final navigator = Navigator.of(context);
     FocusScope.of(context).unfocus();
 
@@ -85,12 +89,17 @@ class _LoginBottomSheetContentState extends State<_LoginBottomSheetContent> {
     if (result.isSuccess && result.data != null) {
       final user = result.data!;
       await splashVM.saveAuthData(user);
-      // Pop sheet and navigate — use global router (context may be stale)
+
+      // Directly refresh home data & profile with new auth token
+      homeVm.init();
+      homeVm.loadCityTargets();
+      profileVm.fetchProfile();
+
+      // Pop sheet and navigate
       try { navigator.pop(true); } catch (e) { debugPrint('_LoginBottomSheetContentState._login: $e'); }
 
-      if (user.role.toLowerCase() == UserRole.driver.name &&
-          user.isFirstLogin) {
-        router.go('/change-password-driver');
+      if (user.role.toLowerCase() == UserRole.driver.name) {
+        router.go(user.isFirstLogin ? '/change-password-driver' : '/driver');
       } else {
         router.go('/home');
       }

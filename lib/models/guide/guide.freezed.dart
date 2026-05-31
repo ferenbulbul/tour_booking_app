@@ -24,7 +24,7 @@ mixin _$Guide {
   String get guideId => throw _privateConstructorUsedError;
   num get price => throw _privateConstructorUsedError;
   List<String> get languages =>
-      throw _privateConstructorUsedError; // backend null dönerse map'lerken boş listeye düşebiliriz
+      throw _privateConstructorUsedError; // Default to empty list if backend returns null
   String get firstName => throw _privateConstructorUsedError;
   String get lastName => throw _privateConstructorUsedError;
   String? get image => throw _privateConstructorUsedError;
@@ -233,7 +233,7 @@ class _$GuideImpl implements _Guide {
     return EqualUnmodifiableListView(_languages);
   }
 
-  // backend null dönerse map'lerken boş listeye düşebiliriz
+  // Default to empty list if backend returns null
   @override
   final String firstName;
   @override
@@ -319,7 +319,7 @@ abstract class _Guide implements Guide {
   @override
   num get price;
   @override
-  List<String> get languages; // backend null dönerse map'lerken boş listeye düşebiliriz
+  List<String> get languages; // Default to empty list if backend returns null
   @override
   String get firstName;
   @override

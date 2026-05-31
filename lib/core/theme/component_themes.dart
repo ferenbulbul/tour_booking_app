@@ -32,7 +32,6 @@ class ComponentThemes {
       textStyle: WidgetStateProperty.all(
         AppTextStyles.labelLarge.copyWith(
           fontWeight: FontWeight.w700,
-          color: AppColors.white,
         ),
       ),
     ),

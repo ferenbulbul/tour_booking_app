@@ -263,41 +263,39 @@ class _TransportVehicleDetailSheetState
           ),
           const SizedBox(width: AppSpacing.l),
           Expanded(
-            child: Semantics(
-              button: true,
-              label: 'Continue to transport summary',
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                  widget.navigatorContext.push('/transport-summary', extra: {
-                    'vehicle': v,
-                    'pickupAddress': widget.searchContext['pickupAddress'],
-                    'pickupLat': widget.searchContext['pickupLat'],
-                    'pickupLng': widget.searchContext['pickupLng'],
-                    'dropoffAddress': widget.searchContext['dropoffAddress'],
-                    'dropoffLat': widget.searchContext['dropoffLat'],
-                    'dropoffLng': widget.searchContext['dropoffLng'],
-                    'date': widget.searchContext['date'],
-                    'time': widget.searchContext['time'],
-                    'clientDistanceKm':
-                        widget.searchContext['clientDistanceKm'],
-                    'clientDurationMinutes':
-                        widget.searchContext['clientDurationMinutes'],
-                  });
-                },
-                child: Container(
-                  height: 46,
-                  decoration: BoxDecoration(
-                    color: context.colors.secondary,
-                    borderRadius: BorderRadius.circular(AppRadius.medium),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    tr("continue"),
-                    style: AppTextStyles.labelLarge.copyWith(
-                      color: context.colors.onSecondary,
-                    ),
-                  ),
+            child: FilledButton(
+              onPressed: () {
+                Navigator.pop(context);
+                widget.navigatorContext.push('/transport-summary', extra: {
+                  'vehicle': v,
+                  'pickupAddress': widget.searchContext['pickupAddress'],
+                  'pickupLat': widget.searchContext['pickupLat'],
+                  'pickupLng': widget.searchContext['pickupLng'],
+                  'dropoffAddress': widget.searchContext['dropoffAddress'],
+                  'dropoffLat': widget.searchContext['dropoffLat'],
+                  'dropoffLng': widget.searchContext['dropoffLng'],
+                  'date': widget.searchContext['date'],
+                  'time': widget.searchContext['time'],
+                  'clientDistanceKm':
+                      widget.searchContext['clientDistanceKm'],
+                  'clientDurationMinutes':
+                      widget.searchContext['clientDurationMinutes'],
+                  'routePolyline':
+                      widget.searchContext['routePolyline'],
+                });
+              },
+              style: FilledButton.styleFrom(
+                backgroundColor: context.colors.secondary,
+                foregroundColor: context.colors.onSecondary,
+                minimumSize: const Size.fromHeight(46),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.medium),
+                ),
+              ),
+              child: Text(
+                tr("continue"),
+                style: AppTextStyles.labelLarge.copyWith(
+                  color: context.colors.onSecondary,
                 ),
               ),
             ),
@@ -309,7 +307,7 @@ class _TransportVehicleDetailSheetState
 
   String _formatPrice(num value) {
     return NumberFormat.currency(
-      locale: 'tr_TR',
+      locale: 'tr',
       symbol: '\u20BA',
       decimalDigits: 2,
     ).format(value);

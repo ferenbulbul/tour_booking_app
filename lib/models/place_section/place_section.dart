@@ -11,11 +11,13 @@ class TransportLocationsResult {
   final PlaceSelection? dropoff;
   final double? distanceKm;
   final int? durationMinutes;
+  final String? routePolyline;
 
   const TransportLocationsResult({
     this.pickup,
     this.dropoff,
     this.distanceKm,
     this.durationMinutes,
+    this.routePolyline,
   });
 }

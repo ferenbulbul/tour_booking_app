@@ -8,6 +8,8 @@ class SecureTokenStorage {
   static const _keyRefreshToken = 'refresh_token';
 
   Future<void> saveTokens(String accessToken, String refreshToken) async {
+    // Update in-memory cache FIRST so subsequent API calls use the new token
+    ApiClient.updateTokenCache(accessToken, refreshToken);
     await _storage.write(key: _keyAccessToken, value: accessToken);
     await _storage.write(key: _keyRefreshToken, value: refreshToken);
   }

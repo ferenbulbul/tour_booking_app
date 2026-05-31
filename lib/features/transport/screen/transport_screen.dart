@@ -110,6 +110,7 @@ class _TransportScreenState extends State<TransportScreen> {
             dropoffAddress: vm.dropoffAddress,
             initialModePickup: startAsPickup,
             cityName: vm.selectedCityName,
+            suggestedLocations: vm.suggestedLocations,
           ),
           child: const TransportPlacePickerScreen(),
         ),
@@ -190,6 +191,7 @@ class _TransportScreenState extends State<TransportScreen> {
       'time': vm.selectedTime,
       'clientDistanceKm': vm.selectedRouteDistanceKm,
       'clientDurationMinutes': vm.selectedRouteDurationMinutes,
+      'routePolyline': vm.selectedRoutePolyline,
     });
   }
 
@@ -201,40 +203,40 @@ class _TransportScreenState extends State<TransportScreen> {
         child: Consumer<TransportViewModel>(
           builder: (context, vm, _) {
             final dateText = vm.selectedDate != null
-                ? DateFormat('dd MMM yyyy', 'tr_TR').format(vm.selectedDate!)
+                ? DateFormat('dd MMM yyyy', context.locale.toString()).format(vm.selectedDate!)
                 : null;
 
-            return SingleChildScrollView(
-              controller: _scrollController,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.screenPadding, AppSpacing.xxl, AppSpacing.screenPadding, 0,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'transport_title'.tr(),
-                          style: AppTextStyles.headlineSmall.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        Text(
-                          'transport_entry_subtitle'.tr(),
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: context.colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.screenPadding, AppSpacing.xxl, AppSpacing.screenPadding, 0,
                   ),
-                  const SizedBox(height: AppSpacing.xxl),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'transport_title'.tr(),
+                        style: AppTextStyles.headlineSmall.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        'transport_entry_subtitle'.tr(),
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: context.colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xxl),
 
-                  Padding(
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
                     padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -308,8 +310,8 @@ class _TransportScreenState extends State<TransportScreen> {
                       ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             );
           },
         ),

@@ -37,6 +37,7 @@ mixin _$CreateTransportBookingRequest {
   String get buyerLastName => throw _privateConstructorUsedError;
   String get buyerEmail => throw _privateConstructorUsedError;
   String get buyerPhone => throw _privateConstructorUsedError;
+  String? get routePolyline => throw _privateConstructorUsedError;
 
   /// Serializes this CreateTransportBookingRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -73,6 +74,7 @@ abstract class $CreateTransportBookingRequestCopyWith<$Res> {
     String buyerLastName,
     String buyerEmail,
     String buyerPhone,
+    String? routePolyline,
   });
 }
 
@@ -107,6 +109,7 @@ class _$CreateTransportBookingRequestCopyWithImpl<
     Object? buyerLastName = null,
     Object? buyerEmail = null,
     Object? buyerPhone = null,
+    Object? routePolyline = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -162,6 +165,10 @@ class _$CreateTransportBookingRequestCopyWithImpl<
                 ? _value.buyerPhone
                 : buyerPhone // ignore: cast_nullable_to_non_nullable
                       as String,
+            routePolyline: freezed == routePolyline
+                ? _value.routePolyline
+                : routePolyline // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -191,6 +198,7 @@ abstract class _$$CreateTransportBookingRequestImplCopyWith<$Res>
     String buyerLastName,
     String buyerEmail,
     String buyerPhone,
+    String? routePolyline,
   });
 }
 
@@ -225,6 +233,7 @@ class __$$CreateTransportBookingRequestImplCopyWithImpl<$Res>
     Object? buyerLastName = null,
     Object? buyerEmail = null,
     Object? buyerPhone = null,
+    Object? routePolyline = freezed,
   }) {
     return _then(
       _$CreateTransportBookingRequestImpl(
@@ -280,6 +289,10 @@ class __$$CreateTransportBookingRequestImplCopyWithImpl<$Res>
             ? _value.buyerPhone
             : buyerPhone // ignore: cast_nullable_to_non_nullable
                   as String,
+        routePolyline: freezed == routePolyline
+            ? _value.routePolyline
+            : routePolyline // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -303,6 +316,7 @@ class _$CreateTransportBookingRequestImpl
     required this.buyerLastName,
     required this.buyerEmail,
     required this.buyerPhone,
+    this.routePolyline,
   });
 
   factory _$CreateTransportBookingRequestImpl.fromJson(
@@ -336,10 +350,12 @@ class _$CreateTransportBookingRequestImpl
   final String buyerEmail;
   @override
   final String buyerPhone;
+  @override
+  final String? routePolyline;
 
   @override
   String toString() {
-    return 'CreateTransportBookingRequest(transportPricingId: $transportPricingId, date: $date, pickupTime: $pickupTime, pickupAddress: $pickupAddress, pickupLatitude: $pickupLatitude, pickupLongitude: $pickupLongitude, dropoffAddress: $dropoffAddress, dropoffLatitude: $dropoffLatitude, dropoffLongitude: $dropoffLongitude, buyerFirstName: $buyerFirstName, buyerLastName: $buyerLastName, buyerEmail: $buyerEmail, buyerPhone: $buyerPhone)';
+    return 'CreateTransportBookingRequest(transportPricingId: $transportPricingId, date: $date, pickupTime: $pickupTime, pickupAddress: $pickupAddress, pickupLatitude: $pickupLatitude, pickupLongitude: $pickupLongitude, dropoffAddress: $dropoffAddress, dropoffLatitude: $dropoffLatitude, dropoffLongitude: $dropoffLongitude, buyerFirstName: $buyerFirstName, buyerLastName: $buyerLastName, buyerEmail: $buyerEmail, buyerPhone: $buyerPhone, routePolyline: $routePolyline)';
   }
 
   @override
@@ -371,7 +387,9 @@ class _$CreateTransportBookingRequestImpl
             (identical(other.buyerEmail, buyerEmail) ||
                 other.buyerEmail == buyerEmail) &&
             (identical(other.buyerPhone, buyerPhone) ||
-                other.buyerPhone == buyerPhone));
+                other.buyerPhone == buyerPhone) &&
+            (identical(other.routePolyline, routePolyline) ||
+                other.routePolyline == routePolyline));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -391,6 +409,7 @@ class _$CreateTransportBookingRequestImpl
     buyerLastName,
     buyerEmail,
     buyerPhone,
+    routePolyline,
   );
 
   /// Create a copy of CreateTransportBookingRequest
@@ -428,6 +447,7 @@ abstract class _CreateTransportBookingRequest
     required final String buyerLastName,
     required final String buyerEmail,
     required final String buyerPhone,
+    final String? routePolyline,
   }) = _$CreateTransportBookingRequestImpl;
 
   factory _CreateTransportBookingRequest.fromJson(Map<String, dynamic> json) =
@@ -460,6 +480,8 @@ abstract class _CreateTransportBookingRequest
   String get buyerEmail;
   @override
   String get buyerPhone;
+  @override
+  String? get routePolyline;
 
   /// Create a copy of CreateTransportBookingRequest
   /// with the given fields replaced by the non-null parameter values.

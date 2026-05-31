@@ -118,9 +118,8 @@ class PlacePickerMapView extends StatelessWidget {
       polylines.add(Polyline(
         polylineId: PolylineId('route_$i'),
         points: vm.routes[i].points,
-        color: context.ext.textLight,
+        color: context.ext.textLight.withValues(alpha: 0.5),
         width: 3,
-        patterns: [PatternItem.dash(20), PatternItem.gap(10)],
         consumeTapEvents: true,
         onTap: () => vm.selectRoute(i),
       ));

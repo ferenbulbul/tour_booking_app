@@ -12,15 +12,23 @@ class ContactInfoViewModel extends BaseViewModel {
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final emailController = TextEditingController();
-  final phoneController = TextEditingController();
 
   bool isLoading = false;
   bool isPrefilled = false;
 
+  /// Phone data from IntlPhoneField
+  String _phoneCompleteNumber = '';
+  String _initialPhone = '';
+
   String get firstName => firstNameController.text.trim();
   String get lastName => lastNameController.text.trim();
   String get email => emailController.text.trim();
-  String get phone => phoneController.text.trim();
+  String get phone => _phoneCompleteNumber;
+  String get initialPhone => _initialPhone;
+
+  void setPhone(String completeNumber) {
+    _phoneCompleteNumber = completeNumber;
+  }
 
   /// Prefill from profile if user is registered (non-guest)
   Future<void> prefillFromProfile() async {
@@ -55,7 +63,8 @@ class ContactInfoViewModel extends BaseViewModel {
       }
     }
     emailController.text = profile.email;
-    phoneController.text = profile.phoneNumber;
+    _initialPhone = profile.phoneNumber;
+    _phoneCompleteNumber = profile.phoneNumber;
   }
 
   String? validateFirstName(String? value) {
@@ -75,9 +84,9 @@ class ContactInfoViewModel extends BaseViewModel {
     return null;
   }
 
-  String? validatePhone(String? value) {
-    if (value == null || value.trim().isEmpty) return tr('validation_phone_required');
-    final digits = value.replaceAll(RegExp(r'[^\d+]'), '');
+  String? validatePhone() {
+    if (_phoneCompleteNumber.isEmpty) return tr('validation_phone_required');
+    final digits = _phoneCompleteNumber.replaceAll(RegExp(r'[^\d]'), '');
     if (digits.length < 10) return tr('validation_phone_invalid');
     return null;
   }
@@ -87,7 +96,6 @@ class ContactInfoViewModel extends BaseViewModel {
     firstNameController.dispose();
     lastNameController.dispose();
     emailController.dispose();
-    phoneController.dispose();
     super.dispose();
   }
 }

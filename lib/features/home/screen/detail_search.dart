@@ -132,6 +132,7 @@ class _DetailSearchScreenState extends State<DetailSearchScreen> {
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
                           foregroundColor: ctx.colors.onSurfaceVariant,
+                          padding: EdgeInsets.zero,
                           side: BorderSide(color: ctx.colors.outline),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(AppRadius.medium),
@@ -151,6 +152,7 @@ class _DetailSearchScreenState extends State<DetailSearchScreen> {
                           elevation: 0,
                           backgroundColor: ctx.colors.secondary,
                           foregroundColor: ctx.colors.onSecondary,
+                          padding: EdgeInsets.zero,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(AppRadius.medium),
                           ),

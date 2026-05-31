@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:tour_booking/models/base/base_response.dart';
 
@@ -14,11 +15,13 @@ Future<BaseResponse<T>> safeCall<T>(
   try {
     return await fn();
   } catch (e, st) {
-    debugPrint('$e\n$st');
+    debugPrint('[safeCall] ERROR: $e\n$st');
 
     return BaseResponse<T>(
       isSuccess: false,
-      message: 'error_generic',
+      message: kDebugMode
+          ? '${tr('error_generic')}\n($e)'
+          : tr('error_generic'),
       validationErrors: const [],
       data: null,
     );

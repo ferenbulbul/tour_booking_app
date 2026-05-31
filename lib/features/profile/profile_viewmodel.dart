@@ -17,6 +17,13 @@ class ProfileViewModel extends BaseViewModel {
   ProfileResponse? get profile => _profile;
   String? get updatingPreference => _updatingPreference;
 
+  void clear() {
+    _profile = null;
+    isLoading = false;
+    message = null;
+    notifyListeners();
+  }
+
   final TourService _tourService = ServiceLocator.instance.tourService;
   final AuthService _authService = ServiceLocator.instance.authService;
 

@@ -13,64 +13,113 @@ class GuideCardSkeleton extends StatelessWidget {
       baseColor: context.ext.shimmerBase,
       highlightColor: context.ext.shimmerHighlight,
       child: Container(
-        height: 110,
-        padding: const EdgeInsets.all(AppSpacing.l),
+        padding: const EdgeInsets.all(AppSpacing.ml),
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.large),
+          borderRadius: BorderRadius.circular(AppRadius.ml),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Foto skeleton
+            // AVATAR (52x52, matching actual)
             Container(
-              width: 64,
-              height: 64,
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
                 color: context.ext.shimmerBase,
                 shape: BoxShape.circle,
               ),
             ),
 
-            const SizedBox(width: AppSpacing.l),
+            const SizedBox(width: AppSpacing.m),
 
-            // Sag taraf info skeleton
+            // INFO COLUMN
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Isim skeleton
-                  Container(
-                    height: 16,
-                    width: 140,
-                    decoration: BoxDecoration(
-                      color: context.ext.shimmerBase,
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                    ),
+                  // NAME + PRICE ROW
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        height: 16,
+                        width: 110,
+                        decoration: BoxDecoration(
+                          color: context.ext.shimmerBase,
+                          borderRadius:
+                              BorderRadius.circular(AppRadius.xxs),
+                        ),
+                      ),
+                      Container(
+                        height: 16,
+                        width: 60,
+                        decoration: BoxDecoration(
+                          color: context.ext.shimmerBase,
+                          borderRadius:
+                              BorderRadius.circular(AppRadius.xxs),
+                        ),
+                      ),
+                    ],
                   ),
 
-                  const SizedBox(height: AppSpacing.ms),
+                  const SizedBox(height: AppSpacing.xs),
 
-                  // Fiyat skeleton
-                  Container(
-                    height: 14,
-                    width: 90,
-                    decoration: BoxDecoration(
-                      color: context.ext.shimmerBase,
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                    ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.ml),
-
-                  // Chip skeletonlari
+                  // RATING ROW (5 stars + text)
                   Row(
                     children: [
-                      _chip(context),
-                      const SizedBox(width: AppSpacing.s),
-                      _chip(context, width: 60),
-                      const SizedBox(width: AppSpacing.s),
-                      _chip(context, width: 50),
+                      ...List.generate(
+                        5,
+                        (_) => Padding(
+                          padding:
+                              const EdgeInsets.only(right: AppSpacing.xxs),
+                          child: Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: context.ext.shimmerBase,
+                              borderRadius:
+                                  BorderRadius.circular(AppRadius.xxs),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Container(
+                        height: 10,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: context.ext.shimmerBase,
+                          borderRadius:
+                              BorderRadius.circular(AppRadius.xxs),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: AppSpacing.xs),
+
+                  // LANGUAGES ROW (icon + text)
+                  Row(
+                    children: [
+                      Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: context.ext.shimmerBase,
+                          borderRadius:
+                              BorderRadius.circular(AppRadius.xxs),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Container(
+                        height: 12,
+                        width: 90,
+                        decoration: BoxDecoration(
+                          color: context.ext.shimmerBase,
+                          borderRadius:
+                              BorderRadius.circular(AppRadius.xxs),
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -79,28 +128,17 @@ class GuideCardSkeleton extends StatelessWidget {
 
             const SizedBox(width: AppSpacing.s),
 
-            // arrow icon skeleton
+            // ARROW ICON
             Container(
-              width: 20,
-              height: 20,
+              width: 18,
+              height: 18,
               decoration: BoxDecoration(
                 color: context.ext.shimmerBase,
-                borderRadius: BorderRadius.circular(AppRadius.xs),
+                borderRadius: BorderRadius.circular(AppRadius.xxs),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _chip(BuildContext context, {double width = 70}) {
-    return Container(
-      height: 20,
-      width: width,
-      decoration: BoxDecoration(
-        color: context.ext.shimmerBase,
-        borderRadius: BorderRadius.circular(AppRadius.xl),
       ),
     );
   }

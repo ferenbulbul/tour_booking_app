@@ -230,7 +230,7 @@ class ResultTile extends StatelessWidget {
       }
       if (item.avgRating != null && item.avgRating! > 0) {
         if (parts.isNotEmpty) parts.add(const SizedBox(width: AppSpacing.s));
-        parts.add(Icon(SolarIconsOutline.star, size: AppIconSize.xs, color: context.ext.warning, semanticLabel: 'Rating'));
+        parts.add(Icon(Icons.star_rounded, size: AppIconSize.xs, color: context.ext.star, semanticLabel: 'Rating'));
         parts.add(const SizedBox(width: AppSpacing.xxs));
         parts.add(Text(
           item.avgRating!.toStringAsFixed(1),
