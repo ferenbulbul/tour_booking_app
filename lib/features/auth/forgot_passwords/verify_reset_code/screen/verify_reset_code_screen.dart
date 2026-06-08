@@ -16,9 +16,9 @@ class VerifyResetCodeScreen extends StatelessWidget {
     final text = context.textStyles;
 
     return Scaffold(
-      backgroundColor: scheme.background,
+      backgroundColor: scheme.surface,
       appBar: AppBar(
-        backgroundColor: scheme.background,
+        backgroundColor: scheme.surface,
         elevation: 0,
         title: Text(
           tr("verify_code"),

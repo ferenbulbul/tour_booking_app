@@ -340,6 +340,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
       tourPointId: widget.tourPointId,
       date: selectionVm.selectedDate!,
     );
+    if (!mounted) return;
 
     if (vehicleGuideVm.vehicles.isEmpty) {
       UIHelper.showWarning(context, tr("no_available_vehicle_date"));

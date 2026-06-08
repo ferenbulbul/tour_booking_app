@@ -10,7 +10,7 @@ class DeepLinkService {
   Future<void> init(BuildContext context) async {
     // App was opened via link while closed
     final initialUri = await _appLinks.getInitialLink();
-    if (initialUri != null) {
+    if (initialUri != null && context.mounted) {
       _handle(context, initialUri);
     }
 

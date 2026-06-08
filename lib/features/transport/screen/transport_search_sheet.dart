@@ -172,7 +172,6 @@ class _TransportSearchSheetState extends State<TransportSearchSheet> {
         ),
       );
     } catch (e) {
-      debugPrint('TransportSearchSheet._useCurrentLocation: $e');
       if (mounted) setState(() => _locationLoading = false);
     }
   }

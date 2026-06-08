@@ -239,9 +239,9 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                 child: SimpleIconButton(
                   icon: Icons.arrow_back_ios_new,
                   onTap: () => Navigator.pop(context),
-                  fillColor: Colors.white,
-                  iconColor: Colors.black,
-                  borderColor: Colors.white,
+                  fillColor: context.colors.surface,
+                  iconColor: context.colors.onSurface,
+                  borderColor: context.colors.surface,
                   borderWidth: 1.2,
                   tooltip: 'Back',
                 ),
@@ -257,8 +257,8 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                     tr("vehicle_selection_title"),
                     style: AppTextStyles.titleMedium.copyWith(
                       color: collapseT > 0.5
-                          ? Colors.black
-                          : Colors.black.withValues(alpha: 0),
+                          ? context.colors.onSurface
+                          : context.colors.onSurface.withValues(alpha: 0),
                     ),
                   ),
                 ),

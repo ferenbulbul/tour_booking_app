@@ -96,6 +96,7 @@ class _RegisterFormState extends State<RegisterForm> {
       // This triggers notifyListeners() so GoRouter will navigate to /email-confirmed instantly.
 
       await splashVM.saveAuthData(result.data!);
+      if (!mounted) return;
     } else {
       if (vm.validationErrors.isNotEmpty) {
         final message = vm.validationErrors.join('\n• ');

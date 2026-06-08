@@ -81,6 +81,7 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
     if (result.isSuccess && result.data != null) {
       UIHelper.showSuccess(context, tr("upgrade_account_success"));
       await splashVM.saveAuthData(result.data!);
+      if (!mounted) return;
     } else {
       if (vm.validationErrors.isNotEmpty) {
         final message = vm.validationErrors.join('\n• ');

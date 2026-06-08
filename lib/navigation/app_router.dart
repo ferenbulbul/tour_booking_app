@@ -44,7 +44,6 @@ final GoRouter router = GoRouter(
     final UserRole? role = splashVM.role;
 
     final String path = state.uri.path;
-    final bool isDeepLink = path.startsWith('/tour/');
     final redirectParam = state.uri.queryParameters['redirect'];
 
     // Auth pages (except login -- login is now a bottom sheet)
@@ -54,10 +53,6 @@ final GoRouter router = GoRouter(
       '/verify-reset-code',
       '/reset-password',
     ];
-
-    debugPrint(
-      'redirect | path=$path | loggedIn=$loggedIn | guest=$isGuestUser | deepLink=$isDeepLink',
-    );
 
     // Redirect all /login requests to /home -- login is now a bottom sheet
     if (path == '/login') {

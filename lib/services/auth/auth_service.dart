@@ -5,12 +5,10 @@ import 'package:tour_booking/models/login/login_response.dart';
 import 'package:tour_booking/models/register/register_request.dart';
 import 'package:tour_booking/models/user_me/user_me.dart';
 import 'package:tour_booking/services/core/api_client.dart';
-import 'package:tour_booking/services/core/secure_token_storage.dart';
 import 'package:tour_booking/utils/device_info_helper.dart';
 
 class AuthService {
   final ApiClient _apiClient;
-  final SecureTokenStorage _tokenStorage = SecureTokenStorage();
 
   AuthService({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
 

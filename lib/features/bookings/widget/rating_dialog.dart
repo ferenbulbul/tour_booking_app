@@ -279,12 +279,12 @@ class _RatingDialogState extends State<RatingDialog> {
                   }
                 },
           child: vm.isSubmitting
-              ? const SizedBox(
+              ? SizedBox(
                   height: 18,
                   width: 18,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Colors.white,
+                    color: context.colors.onSecondary,
                   ),
                 )
               : Text(

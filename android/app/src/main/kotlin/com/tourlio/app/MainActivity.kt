@@ -1,4 +1,4 @@
-package com.tourbooking.app
+package com.tourlio.app
 
 import io.flutter.embedding.android.FlutterActivity
 import android.content.Intent

@@ -133,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   // LOCATION CHECK
   // ============================================================
   Future<void> _checkLocation() async {
-    if (_currentRole == null) return;
+    if (_currentRole == null || _currentRole == UserRole.driver) return;
 
     await context.read<LocationViewModel>().checkAndHandleLocation(
       _currentRole!,

@@ -5,8 +5,8 @@ import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/features/driver_home_page/driver_viewmodel.dart';
 import 'package:tour_booking/features/driver_home_page/widget/customer_info_list_view.dart';
-import 'package:tour_booking/features/driver_home_page/widget/location_control_card.dart';
 import 'package:tour_booking/features/home/widget/driver_location_status.dart';
+import 'package:tour_booking/features/location/location_viewmodel.dart';
 import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class DriverDashboardTab extends StatelessWidget {
@@ -38,9 +38,7 @@ class DriverDashboardTab extends StatelessWidget {
               else ...[
                 if (isDriver) ...[
                   const DriverLocationStatus(),
-                  const SizedBox(height: AppSpacing.m),
-                  LocationControlCard(role: role!),
-                  const SizedBox(height: AppSpacing.xxl),
+                  const SizedBox(height: AppSpacing.l),
                 ],
 
                 if (vm.isLoading)
@@ -63,6 +61,16 @@ class DriverDashboardTab extends StatelessWidget {
                   CustomerInfoListView(
                     items: vm.customerList,
                     onCompleteDropoff: vm.completeDropoff,
+                    activeTourBookingId: vm.activeTourBookingId,
+                    onStartTour: (bookingId) async {
+                      vm.startTour(bookingId);
+                      final locationVm = context.read<LocationViewModel>();
+                      await locationVm.checkAndHandleLocation(UserRole.driver);
+                    },
+                    onEndTour: () {
+                      vm.endTour();
+                      context.read<LocationViewModel>().stopTracking();
+                    },
                   ),
               ],
             ],

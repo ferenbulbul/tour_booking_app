@@ -38,8 +38,9 @@ class _VerifyResetCodeFormState extends State<VerifyResetCodeForm> {
     }
 
     final ok = await vm.verifyPasswordCode(widget.email, code);
+    if (!mounted) return;
 
-    if (ok.isSuccess && mounted) {
+    if (ok.isSuccess) {
       context.go("/reset-password", extra: widget.email);
     } else {
       UIHelper.showError(context, vm.errorMessage ?? tr("unexpected_error"));

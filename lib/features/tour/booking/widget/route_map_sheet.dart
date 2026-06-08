@@ -256,7 +256,7 @@ class _RouteMapSheetState extends State<RouteMapSheet> {
         CameraUpdate.newLatLngZoom(target, 16),
       );
     } catch (e) {
-      debugPrint('_RouteMapSheetState._animateToPoint: $e');
+      // silently ignored
     }
   }
 

@@ -99,7 +99,6 @@ class AuthViewModel extends BaseViewModel {
       await _googleSignIn.signOut();
       await _firebaseAuth.signOut();
     } catch (e) {
-      debugPrint("Social SignOut Error: $e");
       // Non-critical: social sign-out failure doesn't affect app state
     }
   }

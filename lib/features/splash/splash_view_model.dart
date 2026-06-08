@@ -114,7 +114,6 @@ class SplashViewModel extends BaseViewModel {
         _isLoggedIn = false;
       }
     } catch (e) {
-      debugPrint('Guest sign-in failed: $e');
       _isLoggedIn = false;
     }
   }
@@ -212,7 +211,7 @@ class SplashViewModel extends BaseViewModel {
     try {
       await _authService.logout();
     } catch (e) {
-      debugPrint('SplashViewModel.performFullSignOut: $e');
+      // silently ignored
     }
     if (socialCleanup != null) await socialCleanup();
     await _clearAuthData();

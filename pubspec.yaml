@@ -77,6 +77,9 @@ flutter:
    - assets/translations/
    - .env.ios
    - .env.android
+   # NOT: .env dosyalari flutter_dotenv icin asset olarak kalmali,
+   # ancak iclerinde sadece uretim URL'leri ve public API key'ler olmali.
+   # Keystore sifreleri gibi hassas bilgiler .env dosyalarinda OLMAMALI.
   fonts:
     - family: Inter
       fonts:

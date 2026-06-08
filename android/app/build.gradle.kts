@@ -39,7 +39,7 @@ loadDotEnvIntoExtra(".env.android")
 /* ---------------------------------------------------------------------- */
 
 android {
-    namespace = "com.tourbooking.app"
+    namespace = "com.tourlio.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -50,7 +50,7 @@ android {
     kotlinOptions { jvmTarget = JavaVersion.VERSION_11.toString() }
 
     defaultConfig {
-        applicationId = "com.tourbooking.app"
+        applicationId = "com.tourlio.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -71,8 +71,12 @@ android {
         release {
             // 🔴 debug imzası KULLANMA
             signingConfig = signingConfigs.getByName("release")  // ✅
-            isMinifyEnabled = false
-            isShrinkResources = false 
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }

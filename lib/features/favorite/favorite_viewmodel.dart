@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/core/network/handle_response.dart';
 import 'package:tour_booking/models/featured_tour_point/featured_tour_point_dto.dart';
@@ -49,7 +48,6 @@ class FavoriteViewModel extends BaseViewModel {
         message = resp.message ?? tr('error_favorites_failed');
       }
     } catch (e) {
-      debugPrint('FavoriteViewModel.fetchFavorites: $e');
       favorites = [];
       _favoriteIds.clear();
       message = tr('error_generic');
@@ -81,7 +79,6 @@ class FavoriteViewModel extends BaseViewModel {
     try {
       await _service.toggleFavorite(id);
     } catch (e) {
-      debugPrint('FavoriteViewModel.toggleFavorite: $e');
       // ROLLBACK
       if (wasFavorite) {
         _favoriteIds.add(id);

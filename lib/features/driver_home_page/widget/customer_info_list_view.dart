@@ -16,10 +16,16 @@ class CustomerInfoListView extends StatelessWidget {
     super.key,
     required this.items,
     this.onCompleteDropoff,
+    this.onStartTour,
+    this.onEndTour,
+    this.activeTourBookingId,
   });
 
   final List<CustomerInfo> items;
   final Future<bool> Function(String bookingId)? onCompleteDropoff;
+  final Future<void> Function(String bookingId)? onStartTour;
+  final VoidCallback? onEndTour;
+  final String? activeTourBookingId;
 
   String _statusLabel(CustomerInfo item) {
     switch (item.status) {
@@ -290,6 +296,29 @@ class CustomerInfoListView extends StatelessWidget {
                         ),
                       ],
 
+                      // Active tour badge
+                      if (activeTourBookingId == item.bookingId) ...[
+                        const SizedBox(width: AppSpacing.s),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.s,
+                            vertical: AppSpacing.xxxs,
+                          ),
+                          decoration: BoxDecoration(
+                            color: context.ext.success.withValues(alpha: 0.1),
+                            borderRadius:
+                                BorderRadius.circular(AppSpacing.sm),
+                          ),
+                          child: Text(
+                            tr('driver_tour_active'),
+                            style: AppTextStyles.caption.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: context.ext.success,
+                            ),
+                          ),
+                        ),
+                      ],
+
                       const Spacer(),
 
                       // Chevron
@@ -300,6 +329,57 @@ class CustomerInfoListView extends StatelessWidget {
                       ),
                     ],
                   ),
+
+                  // TOUR START/END BUTTON
+                  if (item.status == DriverBookingStatus.today &&
+                      item.bookingId != null) ...[
+                    if (activeTourBookingId == null) ...[
+                      const SizedBox(height: AppSpacing.ms),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          icon: const Icon(SolarIconsOutline.play, size: 18),
+                          label: Text(tr('driver_start_tour')),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: context.ext.success,
+                            foregroundColor: scheme.surface,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(AppRadius.medium),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: AppSpacing.ms,
+                            ),
+                          ),
+                          onPressed: () =>
+                              onStartTour?.call(item.bookingId!),
+                        ),
+                      ),
+                    ] else if (activeTourBookingId == item.bookingId) ...[
+                      const SizedBox(height: AppSpacing.ms),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          icon: const Icon(SolarIconsOutline.stop, size: 18),
+                          label: Text(tr('driver_end_tour')),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: scheme.error,
+                            foregroundColor: scheme.onError,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(AppRadius.medium),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: AppSpacing.ms,
+                            ),
+                          ),
+                          onPressed: onEndTour,
+                        ),
+                      ),
+                    ],
+                  ],
                 ],
               ),
             ),

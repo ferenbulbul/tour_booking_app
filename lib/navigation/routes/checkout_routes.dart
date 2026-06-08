@@ -37,6 +37,7 @@ List<RouteBase> checkoutRoutes() => [
                     buyerEmail: email,
                     buyerPhone: phone,
                   );
+                  if (!ctx.mounted) return;
                   if (transportVm.bookingId != null &&
                       transportVm.bookingId!.isNotEmpty) {
                     nav.push('/payment', extra: transportVm.bookingId);
@@ -63,6 +64,7 @@ List<RouteBase> checkoutRoutes() => [
                     latitude: selectionVm.selectedPlaceLat,
                     longitude: selectionVm.selectedPlaceLng,
                   );
+                  if (!ctx.mounted) return;
                   if (vehicleGuideVm.isValid &&
                       vehicleGuideVm.bookingId != null) {
                     nav.push('/payment', extra: vehicleGuideVm.bookingId);

@@ -77,11 +77,11 @@ class _PremiumNavBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.colors.surface,
         border: Border(
-          top: BorderSide(color: Colors.black.withValues(alpha: 0.12), width: 0.3),
+          top: BorderSide(color: context.colors.outline, width: 0.3),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: context.colors.shadow.withValues(alpha: 0.04),
             blurRadius: 12,
             offset: const Offset(0, -2),
           ),

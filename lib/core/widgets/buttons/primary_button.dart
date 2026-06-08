@@ -35,7 +35,7 @@ class PrimaryButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, size: AppIconSize.ml, color: Colors.white),
+                    Icon(icon, size: AppIconSize.ml, color: context.colors.onPrimary),
                     const SizedBox(width: AppSpacing.s),
                   ],
                   Text(

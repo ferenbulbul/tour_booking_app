@@ -1,0 +1,5 @@
+"CFBundleDisplayName" = "Tourlio";
+"NSLocationWhenInUseUsageDescription" = "نحتاج إلى موقعك للعثور على الجولات والفعاليات القريبة منك.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "كمنشأة تجارية، يلزم مشاركة الموقع حتى عندما يكون التطبيق في الخلفية حتى يتمكن العملاء من تتبعك مباشرة على الخريطة.";
+"NSLocationAlwaysUsageDescription" = "كمنشأة تجارية، يلزم مشاركة الموقع حتى عندما يكون التطبيق في الخلفية حتى يتمكن العملاء من تتبعك مباشرة على الخريطة.";
+"NSLocalNetworkUsageDescription" = "يتطلب هذا التطبيق اتصال بالشبكة المحلية.";

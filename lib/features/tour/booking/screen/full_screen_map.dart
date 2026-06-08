@@ -229,7 +229,6 @@ class _FullMapViewState extends State<FullMapView> {
         CameraUpdate.newLatLngZoom(myLatLng, 16),
       );
     } catch (e) {
-      debugPrint('_FullMapViewState._goToMyLocation: $e');
       // Timeout or error -- silently ignore
     } finally {
       if (mounted) setState(() => _locatingUser = false);

@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/models/transport/search_vehicles_request/search_vehicles_request.dart';
 import 'package:tour_booking/models/transport/transport_vehicle/transport_vehicle.dart';
@@ -27,7 +26,6 @@ class TransportVehicleListViewModel extends BaseViewModel {
         errorMessage = resp.message ?? tr('error_generic');
       }
     } catch (e) {
-      debugPrint('TransportVehicleListViewModel.searchVehicles: $e');
       vehicles = [];
       errorMessage = tr('error_generic');
     } finally {

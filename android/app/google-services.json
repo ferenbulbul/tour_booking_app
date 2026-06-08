@@ -14,6 +14,66 @@
       },
       "oauth_client": [
         {
+          "client_id": "423047904244-9evgt7t12d52n8hee9p2m6qkncp3mk0u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tourbooking.app",
+            "certificate_hash": "a06e03249d8d7b313a80b08068cf9e8c30d4933d"
+          }
+        },
+        {
+          "client_id": "423047904244-g3mh3qji7vuof8899m34n97qpl877r6l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tourbooking.app",
+            "certificate_hash": "a07eb8208c842d903af29906efdadf5ba64af801"
+          }
+        },
+        {
+          "client_id": "423047904244-m02l0l59htk8abs5kj02h7ri90tdmtta.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tourbooking.app",
+            "certificate_hash": "6f07e0869c4e01847b1d7f653f165c16632a84ca"
+          }
+        },
+        {
+          "client_id": "423047904244-7figq019fbofd60cebnejob4d9d8opdk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZ6aSAvIbV1ne-7wFkjdV_mr73OBBWris"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "423047904244-7figq019fbofd60cebnejob4d9d8opdk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "423047904244-30kirp95iq53kvltrijiuf12copgit59.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tourbooking.app"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:423047904244:android:23cdfce7295421c92d57a1",
+        "android_client_info": {
+          "package_name": "com.tourlio.app"
+        }
+      },
+      "oauth_client": [
+        {
           "client_id": "423047904244-7figq019fbofd60cebnejob4d9d8opdk.apps.googleusercontent.com",
           "client_type": 3
         }

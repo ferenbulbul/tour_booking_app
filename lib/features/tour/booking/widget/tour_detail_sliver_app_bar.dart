@@ -113,7 +113,7 @@ class TourDetailSliverAppBar extends StatelessWidget {
                         icon: Icons.arrow_back_ios_new,
                         onTap: onBack,
                         fillColor: context.ext.surfaceLight,
-                        iconColor: Colors.black,
+                        iconColor: context.colors.onSurface,
                         tooltip: 'Back',
                       ),
 
@@ -145,7 +145,7 @@ class TourDetailSliverAppBar extends StatelessWidget {
                         icon: SolarIconsOutline.export,
                         onTap: onShare,
                         fillColor: context.ext.surfaceLight,
-                        iconColor: Colors.black,
+                        iconColor: context.colors.onSurface,
                         tooltip: 'Share',
                       ),
 
@@ -162,7 +162,7 @@ class TourDetailSliverAppBar extends StatelessWidget {
                         },
                         iconColor: detailVm.isFavorite
                             ? context.colors.error
-                            : Colors.black,
+                            : context.colors.onSurface,
                         fillColor: context.ext.surfaceLight,
                         tooltip: detailVm.isFavorite
                             ? 'Remove from favorites'

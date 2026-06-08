@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:tour_booking/models/auth_response/auth_response.dart';
@@ -14,10 +13,7 @@ import 'package:tour_booking/services/core/safe_call.dart';
 class ApiClient {
   final http.Client _client;
   final SecureTokenStorage _tokenStorage = SecureTokenStorage();
-  final String _baseUrl = dotenv.env['baseUrl'] ?? '';
-  final String _mobileUrl = dotenv.env['mobileAndroid'] ?? '';
-  final String _cloudUrl = dotenv.env['cloud'] ?? '';
-  late String _url = _cloudUrl;
+  final String _url = dotenv.env['cloud'] ?? '';
 
   /// HTTP request timeout — prevents hanging indefinitely
   static const Duration _requestTimeout = Duration(seconds: 30);
@@ -71,18 +67,10 @@ class ApiClient {
   Future<BaseResponse<T>> _handle<T>({
     required Future<http.Response> Function(String token) send,
     T Function(Object?)? fromJson,
-    String? debugPath,
   }) async {
     return safeCall<T>(() async {
-      final sw = Stopwatch()..start();
       String? token = await _getToken();
-      debugPrint(
-        '[ApiClient] ${debugPath ?? "?"} → token: ${token != null ? "${token.substring(0, 10)}..." : "NULL"} (${sw.elapsedMilliseconds}ms)',
-      );
       http.Response response = await send(token ?? '').timeout(_requestTimeout);
-      debugPrint(
-        '[ApiClient] ${debugPath ?? "?"} → ${response.statusCode} (${sw.elapsedMilliseconds}ms)',
-      );
 
       if (response.statusCode == 401) {
         final refreshSuccess = await _refreshAccessToken();
@@ -138,9 +126,9 @@ class ApiClient {
         return true;
       }
     } on TimeoutException {
-      debugPrint('[ApiClient] Token refresh timed out');
+      // silently ignored
     } catch (e) {
-      debugPrint('[ApiClient] Token refresh failed: $e');
+      // silently ignored
     }
 
     return false;
@@ -156,9 +144,7 @@ class ApiClient {
     final fullUri = Uri.parse(
       '$_url$path',
     ).replace(queryParameters: queryParams);
-    debugPrint('[ApiClient] GET $fullUri');
     return _handle<T>(
-      debugPath: 'GET $path',
       fromJson: fromJson,
       send: (token) => _client.get(
         fullUri,
@@ -174,9 +160,7 @@ class ApiClient {
     Map<String, String>? extraHeaders,
     T Function(Object?)? fromJson,
   }) {
-    debugPrint('[ApiClient] POST $_url$path');
     return _handle<T>(
-      debugPath: 'POST $path',
       fromJson: fromJson,
       send: (token) => _client.post(
         Uri.parse('$_url$path'),

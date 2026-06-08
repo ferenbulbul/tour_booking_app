@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:tour_booking/models/city/city_dto.dart';
 import 'package:tour_booking/models/region/region_dto.dart';
 
 part 'region_list_response.freezed.dart';

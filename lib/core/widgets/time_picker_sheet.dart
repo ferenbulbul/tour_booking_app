@@ -36,7 +36,7 @@ class TimePickerSheet extends StatelessWidget {
               height: 5,
               margin: const EdgeInsetsDirectional.only(bottom: 14),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.18),
+                color: context.colors.onSurfaceVariant.withValues(alpha: 0.22),
                 borderRadius: BorderRadius.circular(AppRadius.huge),
               ),
             ),
@@ -119,7 +119,7 @@ class TimePickerSheet extends StatelessWidget {
                             SolarIconsOutline.clockCircle,
                             size: 18,
                             color: isSelected
-                                ? Colors.white
+                                ? context.colors.onSecondary
                                 : context.ext.textLight,
                             semanticLabel: 'Time',
                           ),
@@ -132,7 +132,7 @@ class TimePickerSheet extends StatelessWidget {
                                     ? FontWeight.w700
                                     : FontWeight.w500,
                                 color: isSelected
-                                    ? Colors.white
+                                    ? context.colors.onSecondary
                                     : context.colors.onSurface,
                               ),
                             ),
@@ -141,7 +141,7 @@ class TimePickerSheet extends StatelessWidget {
                             Icon(
                               SolarIconsOutline.checkCircle,
                               size: 20,
-                              color: Colors.white,
+                              color: context.colors.onSecondary,
                               semanticLabel: 'Selected',
                             ),
                         ],

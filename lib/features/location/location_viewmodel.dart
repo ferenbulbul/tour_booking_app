@@ -80,7 +80,6 @@ class LocationViewModel extends BaseViewModel {
       await _sendToServer(pos, force: isDriver);
       notifyListeners();
     } catch (e) {
-      debugPrint('LocationViewModel._startLocationTracking: $e');
       _errorMessage = 'Failed to get current position: $e';
       notifyListeners();
       // If initial position fails, rely on stream
@@ -115,7 +114,6 @@ class LocationViewModel extends BaseViewModel {
       _lastSentPosition = pos;
       _lastSentTime = DateTime.now();
     } catch (e) {
-      debugPrint('[LocationVM] locationUpdate error: $e');
       _errorMessage = 'Failed to send location update: $e';
       notifyListeners();
     }

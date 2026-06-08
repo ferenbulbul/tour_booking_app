@@ -14,8 +14,7 @@ Future<BaseResponse<T>> safeCall<T>(
 ) async {
   try {
     return await fn();
-  } catch (e, st) {
-    debugPrint('[safeCall] ERROR: $e\n$st');
+  } catch (e) {
 
     return BaseResponse<T>(
       isSuccess: false,

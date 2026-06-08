@@ -38,8 +38,8 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = context.colors.secondary;
+    final scheme = context.colors;
+    final primary = scheme.secondary;
     final locale = context.locale;
     final isRtl = locale.languageCode == 'ar';
 
@@ -47,7 +47,7 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
       bottom: false,
       child: Container(
         decoration: BoxDecoration(
-          color: isDark ? Colors.black : Colors.white,
+          color: scheme.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xxl)),
         ),
         padding: const EdgeInsetsDirectional.only(top: AppSpacing.ms, bottom: AppSpacing.xl),
@@ -60,9 +60,7 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
               height: AppSpacing.xsm,
               margin: const EdgeInsetsDirectional.only(bottom: AppSpacing.ml),
               decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.22)
-                    : Colors.black.withValues(alpha: 0.18),
+                color: scheme.onSurfaceVariant.withValues(alpha: 0.22),
                 borderRadius: BorderRadius.circular(AppRadius.circular),
               ),
             ),
@@ -101,17 +99,17 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
                     titleCentered: true,
                     formatButtonVisible: false,
                     titleTextStyle: AppTextStyles.bodyLargeEmphasis.copyWith(
-                      color: context.colors.onSurface,
+                      color: scheme.onSurface,
                     ),
                     leftChevronIcon: Icon(
                       isRtl ? SolarIconsOutline.arrowRight : SolarIconsOutline.altArrowLeft,
-                      color: isDark ? Colors.white.withValues(alpha: 0.7) : Colors.black.withValues(alpha: 0.54),
+                      color: scheme.onSurfaceVariant,
                       size: AppIconSize.xxl,
                       semanticLabel: 'Previous month',
                     ),
                     rightChevronIcon: Icon(
                       isRtl ? SolarIconsOutline.altArrowLeft : SolarIconsOutline.arrowRight,
-                      color: isDark ? Colors.white.withValues(alpha: 0.7) : Colors.black.withValues(alpha: 0.54),
+                      color: scheme.onSurfaceVariant,
                       size: AppIconSize.xxl,
                       semanticLabel: 'Next month',
                     ),
@@ -120,35 +118,31 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
                   daysOfWeekStyle: DaysOfWeekStyle(
                     weekdayStyle: AppTextStyles.labelMedium.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.7)
-                          : Colors.black.withValues(alpha: 0.65),
+                      color: scheme.onSurfaceVariant,
                     ),
                     weekendStyle: AppTextStyles.labelMedium.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.7)
-                          : Colors.black.withValues(alpha: 0.65),
+                      color: scheme.onSurfaceVariant,
                     ),
                   ),
 
                   calendarStyle: CalendarStyle(
                     defaultTextStyle: AppTextStyles.labelLarge.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: context.colors.onSurface,
+                      color: scheme.onSurface,
                     ),
                     weekendTextStyle: AppTextStyles.labelLarge.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: context.colors.onSurface,
+                      color: scheme.onSurface,
                     ),
                     outsideTextStyle: AppTextStyles.labelLarge.copyWith(
                       fontWeight: FontWeight.w400,
-                      color: isDark ? Colors.white.withValues(alpha: 0.24) : context.ext.textLight,
+                      color: context.ext.textLight,
                     ),
 
                     disabledTextStyle: AppTextStyles.labelLarge.copyWith(
                       fontWeight: FontWeight.w400,
-                      color: isDark ? Colors.white.withValues(alpha: 0.24) : context.ext.shimmerBase,
+                      color: context.ext.textLight,
                     ),
 
                     selectedDecoration: BoxDecoration(
@@ -156,7 +150,7 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
                       shape: BoxShape.circle,
                     ),
                     selectedTextStyle: AppTextStyles.labelLarge.copyWith(
-                      color: context.colors.onSecondary,
+                      color: scheme.onSecondary,
                       fontWeight: FontWeight.w600,
                     ),
 

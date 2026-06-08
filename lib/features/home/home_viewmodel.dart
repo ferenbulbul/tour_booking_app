@@ -129,7 +129,6 @@ class HomeViewModel extends BaseViewModel {
         messageSearchByType = resp.message ?? tr('error_generic');
       }
     } catch (e) {
-      debugPrint('HomeViewModel.fetchTourPointsByType: $e');
       searchItemsByType = [];
       messageSearchByType = tr('error_generic');
     } finally {
@@ -165,7 +164,6 @@ class HomeViewModel extends BaseViewModel {
         messageNearby = resp.message ?? tr('error_nearby_failed');
       }
     } catch (e) {
-      debugPrint('HomeViewModel.fetchNearbyTourPoints: $e');
       nearbyPoints = [];
       messageNearby = tr('error_generic');
     } finally {
@@ -266,7 +264,6 @@ class HomeViewModel extends BaseViewModel {
       citySections = newSections;
       notifyListeners();
     } catch (e) {
-      debugPrint('HomeViewModel.loadCityTargets: $e');
       citySections = [];
       notifyListeners();
     }
@@ -316,7 +313,6 @@ class HomeViewModel extends BaseViewModel {
             citySections[i],
       ];
     } catch (e) {
-      debugPrint('HomeViewModel.fetchCityTours: $e');
       final currentIdx = citySections.indexWhere((s) => s.cityId == cityId);
       if (currentIdx == -1) return;
 

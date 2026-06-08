@@ -42,6 +42,7 @@ class _LanguageSheetContentState extends State<_LanguageSheetContent> {
   void _selectLanguage(Locale locale, String title) async {
     setState(() => _selected = locale.languageCode);
     await widget.parentContext.setLocale(locale);
+    if (!mounted) return;
     widget.parentContext.read<HomeViewModel>().init();
     if (mounted) {
       Navigator.of(context).pop();
@@ -224,6 +225,7 @@ class LanguageSettingsScreen extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppRadius.medium),
       onTap: () async {
         await context.setLocale(locale);
+        if (!context.mounted) return;
         context.read<HomeViewModel>().init();
 
         UIHelper.showSuccess(context, tr("language_changed_message", namedArgs: {"language": title}));

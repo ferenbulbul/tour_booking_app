@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_colors_extension.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
+import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/theme/component_themes.dart';
 
@@ -124,9 +125,38 @@ class AppTheme {
     ),
 
     snackBarTheme: ComponentThemes.snackBarTheme,
-    cardTheme: ComponentThemes.cardTheme,
-    chipTheme: ComponentThemes.chipTheme,
-    bottomNavigationBarTheme: ComponentThemes.bottomNavTheme,
+
+    cardTheme: const CardThemeData(
+      color: Color(0xFF1A1A1A),
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      shadowColor: Color.fromRGBO(0, 0, 0, 0.067),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(AppRadius.large)),
+      ),
+    ),
+
+    chipTheme: ChipThemeData(
+      backgroundColor: Colors.white.withValues(alpha: 0.12),
+      selectedColor: AppColors.primaryLight,
+      labelStyle: AppTextStyles.labelLarge,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.m,
+        vertical: AppSpacing.sm,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.small),
+      ),
+    ),
+
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: Color(0xFF1A1A1A),
+      selectedItemColor: AppColors.accent,
+      unselectedItemColor: Color(0xFFBBBBBB),
+      elevation: 8,
+      type: BottomNavigationBarType.fixed,
+    ),
+
     extensions: const [AppColorsExtension.dark],
   );
 }

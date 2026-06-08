@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/core/network/handle_response.dart';
 import 'package:tour_booking/core/network/failure_model.dart';
@@ -39,7 +38,6 @@ class LoginViewModel extends BaseViewModel {
       notifyListeners();
       return result;
     } catch (e) {
-      debugPrint('LoginViewModel.login: $e');
       message = tr('error_generic');
       validationErrors = [];
       isLoading = false;

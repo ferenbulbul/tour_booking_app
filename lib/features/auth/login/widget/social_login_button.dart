@@ -35,7 +35,7 @@ class SocialLoginButtons extends StatelessWidget {
     );
 
     final appleButtonStyle = ElevatedButton.styleFrom(
-      backgroundColor: Colors.black,
+      backgroundColor: scheme.inverseSurface,
       foregroundColor: scheme.onInverseSurface,
       minimumSize: const Size.fromHeight(AppSpacing.xxxxxl),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.medium)),

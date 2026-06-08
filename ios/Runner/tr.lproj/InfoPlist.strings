@@ -1,0 +1,5 @@
+"CFBundleDisplayName" = "Tourlio";
+"NSLocationWhenInUseUsageDescription" = "Yakınınızdaki turları ve etkinlikleri bulmak için konumunuza ihtiyaç duyuyoruz.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "İşletme olarak, müşterilerin sizi haritada canlı takip edebilmesi için uygulama arka plandayken bile konum paylaşımı gereklidir.";
+"NSLocationAlwaysUsageDescription" = "İşletme olarak, müşterilerin sizi haritada canlı takip edebilmesi için uygulama arka plandayken bile konum paylaşımı gereklidir.";
+"NSLocalNetworkUsageDescription" = "Bu uygulama, yerel ağ bağlantısı gerektirir.";

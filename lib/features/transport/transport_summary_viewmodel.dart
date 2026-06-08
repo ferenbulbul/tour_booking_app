@@ -73,7 +73,6 @@ class TransportSummaryViewModel extends BaseViewModel {
     notifyListeners();
 
     try {
-      debugPrint('🔴 CALCULATE PRICE: clientDistanceKm=$clientDistanceKm, clientDurationMinutes=$clientDurationMinutes');
       final request = TransportCalculatePriceRequest(
         transportPricingId: selectedVehicle!.transportPricingId,
         pickupLatitude: pickupLat!,
@@ -91,7 +90,6 @@ class TransportSummaryViewModel extends BaseViewModel {
         errorMessage = resp.message ?? tr('error_generic');
       }
     } catch (e) {
-      debugPrint('TransportSummaryViewModel.calculatePrice: $e');
       errorMessage = tr('error_generic');
     } finally {
       isLoading = false;
@@ -144,7 +142,6 @@ class TransportSummaryViewModel extends BaseViewModel {
         errorMessage = resp.message ?? tr('error_generic');
       }
     } catch (e) {
-      debugPrint('TransportSummaryViewModel.createBooking: $e');
       errorMessage = tr('error_generic');
     } finally {
       isBooking = false;

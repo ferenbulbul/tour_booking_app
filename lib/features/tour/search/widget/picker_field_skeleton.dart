@@ -9,15 +9,8 @@ class PickerFieldSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    final base = isDark
-        ? Colors.white.withValues(alpha: 0.08)
-        : Colors.black.withValues(alpha: 0.07);
-
-    final highlight = isDark
-        ? Colors.white.withValues(alpha: 0.20)
-        : Colors.black.withValues(alpha: 0.13);
+    final base = context.ext.shimmerBase;
+    final highlight = context.ext.shimmerHighlight;
 
     return Shimmer.fromColors(
       baseColor: base,
@@ -27,9 +20,7 @@ class PickerFieldSkeleton extends StatelessWidget {
         height: 56,
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.ml),
         decoration: BoxDecoration(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.04)
-              : Colors.black.withValues(alpha: 0.03),
+          color: context.colors.onSurface.withValues(alpha: 0.03),
           borderRadius: BorderRadius.circular(AppRadius.ml),
           border: Border.all(color: context.colors.outline.withValues(alpha: 0.5)),
         ),

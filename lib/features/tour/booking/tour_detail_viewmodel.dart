@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/models/tour_point_detail/tour_point_detail.dart';
@@ -45,7 +44,6 @@ class TourDetailViewModel extends BaseViewModel {
     // Check cache first — instant load for previously visited tour points
     final cached = _detailCache[id];
     if (cached != null) {
-      debugPrint('[TourDetail] Cache HIT for $id');
       _applyDetail(id, cached);
       isLoading = false;
       notifyListeners();
@@ -53,9 +51,7 @@ class TourDetailViewModel extends BaseViewModel {
     }
 
     try {
-      final sw = Stopwatch()..start();
       final result = await _tourService.getTourPointDetail(id);
-      debugPrint('[TourDetail] API call took ${sw.elapsedMilliseconds}ms');
       selectedTourPointId = id;
       if (result.data != null) {
         final fetched = result.data!.tourPointDetails;

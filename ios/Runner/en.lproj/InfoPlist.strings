@@ -1,0 +1,5 @@
+"CFBundleDisplayName" = "Tourlio";
+"NSLocationWhenInUseUsageDescription" = "We need your location to find nearby tours and events.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "As a business, location sharing is required even when the app is in the background so that customers can track you live on the map.";
+"NSLocationAlwaysUsageDescription" = "As a business, location sharing is required even when the app is in the background so that customers can track you live on the map.";
+"NSLocalNetworkUsageDescription" = "This app requires a local network connection.";

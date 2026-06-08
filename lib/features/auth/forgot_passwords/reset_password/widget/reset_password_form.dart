@@ -117,6 +117,7 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
                       widget.email,
                       _newPasswordController.text.trim(),
                     );
+                    if (!mounted) return;
 
                     if (result.isSuccess) {
                       UIHelper.showSuccess(

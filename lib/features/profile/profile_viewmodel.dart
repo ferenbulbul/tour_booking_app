@@ -136,7 +136,7 @@ class ProfileViewModel extends BaseViewModel {
     try {
       await OneSignal.logout();
     } catch (e) {
-      debugPrint('ProfileViewModel.deleteAccount: $e');
+      // silently ignored
     }
 
     final result = await _authService.deleteAccount();

@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/models/customer_info_for_driver/customer_info.dart';
 import 'package:tour_booking/models/transport/complete_dropoff_request/complete_dropoff_request.dart';
@@ -17,8 +16,21 @@ class DriverHomeViewModel extends BaseViewModel {
   String? error;
   bool isCompletingDropoff = false;
   String? dropoffError;
+  String? activeTourBookingId;
+
+  bool get hasActiveTour => activeTourBookingId != null;
 
   List<CustomerInfo> customerList = [];
+
+  void startTour(String bookingId) {
+    activeTourBookingId = bookingId;
+    notifyListeners();
+  }
+
+  void endTour() {
+    activeTourBookingId = null;
+    notifyListeners();
+  }
 
   Future<void> refresh() async {
     try {
@@ -34,7 +46,6 @@ class DriverHomeViewModel extends BaseViewModel {
         error = response.message ?? tr('error_data_fetch_failed');
       }
     } catch (e, st) {
-      debugPrint('DriverHomeViewModel.refresh: $e\n$st');
       error = tr('error_something_went_wrong', namedArgs: {'error': e.toString()});
     } finally {
       isLoading = false;
@@ -59,7 +70,6 @@ class DriverHomeViewModel extends BaseViewModel {
         return false;
       }
     } catch (e) {
-      debugPrint('DriverHomeViewModel.completeDropoff: $e');
       dropoffError = tr('error_generic');
       return false;
     } finally {

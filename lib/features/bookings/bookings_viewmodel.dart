@@ -54,7 +54,6 @@ class BookingsViewModel extends BaseViewModel {
         setMessage(resp.message); // Key arrives (error_generic etc.)
       }
     } catch (e) {
-      debugPrint('BookingsViewModel.fetchBookingsByStatus: $e');
       setMessage(tr('error_generic'));
     } finally {
       _setLoading(status, false);
@@ -75,7 +74,6 @@ class BookingsViewModel extends BaseViewModel {
         await fetchBookingsByStatus(BookingStatus.cancelled);
       }
     } catch (e) {
-      debugPrint('BookingsViewModel.requestCancellation: $e');
       setMessage(tr('error_generic'));
     }
   }

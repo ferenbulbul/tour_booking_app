@@ -12,7 +12,7 @@
         android:label="Tourlio"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="false">
 
         <!-- ⭐ Google Maps / Places API Key -->
         <meta-data

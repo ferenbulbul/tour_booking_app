@@ -28,7 +28,6 @@ class RatingsViewModel extends BaseViewModel {
       final res = await _service.getPendingRating(token: token);
       pendingRating = res.data;
     } catch (e) {
-      debugPrint('RatingsViewModel.loadPendingRating: $e');
       pendingRating = null;
       errorMessage = tr('error_data_load_failed');
     } finally {
@@ -71,7 +70,6 @@ class RatingsViewModel extends BaseViewModel {
       notifyListeners();
       return true;
     } catch (e) {
-      debugPrint('RatingsViewModel.submitRating: $e');
       errorMessage = tr('error_generic');
       isSubmitting = false;
       notifyListeners();

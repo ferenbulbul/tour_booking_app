@@ -65,7 +65,7 @@ class _TransportTimePickerState extends State<TransportTimePicker> {
             height: 5,
             margin: const EdgeInsets.only(bottom: AppSpacing.ml),
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.18),
+              color: context.colors.onSurfaceVariant.withValues(alpha: 0.22),
               borderRadius: BorderRadius.circular(AppRadius.circular),
             ),
           ),
@@ -161,7 +161,7 @@ class _TransportTimePickerState extends State<TransportTimePicker> {
                     child: Text(
                       tr('confirm'),
                       style: AppTextStyles.titleSmall.copyWith(
-                        color: Colors.white,
+                        color: context.colors.onSecondary,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

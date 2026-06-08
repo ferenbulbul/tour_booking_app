@@ -53,11 +53,9 @@ void main() async {
   // Global error handlers for uncaught exceptions
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
-    debugPrint('FlutterError: ${details.exception}');
   };
 
   PlatformDispatcher.instance.onError = (error, stack) {
-    debugPrint('PlatformError: $error\n$stack');
     return true;
   };
 

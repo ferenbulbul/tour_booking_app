@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,7 +28,7 @@ class DeviceInfoHelper {
 
       if (Platform.isAndroid) {
         final info = await _deviceInfo.androidInfo;
-        deviceId = info.id ?? info.fingerprint ?? _uuid.v4();
+        deviceId = info.id.isNotEmpty ? info.id : _uuid.v4();
         deviceModel = "${info.manufacturer} ${info.model}";
       } else if (Platform.isIOS) {
         final info = await _deviceInfo.iosInfo;
@@ -43,7 +42,6 @@ class DeviceInfoHelper {
 
       return DeviceInfoModel(deviceId: deviceId, deviceModel: deviceModel);
     } catch (e) {
-      debugPrint("Device info error: $e");
       return DeviceInfoModel(
         deviceId: await _getPersistentUUID(),
         deviceModel: "Error",

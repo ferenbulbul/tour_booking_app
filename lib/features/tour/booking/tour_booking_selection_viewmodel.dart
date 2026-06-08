@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/models/place_section/place_section.dart';
@@ -33,9 +32,7 @@ class TourBookingSelectionViewModel extends BaseViewModel {
     String district, {
     bool triggeredByUser = false,
   }) async {
-    final sw = Stopwatch()..start();
     final result = await _placeService.findDefaultPlace(city, district);
-    debugPrint('[AutoSelectPlace] Google Geocoding took ${sw.elapsedMilliseconds}ms (result: ${result != null ? "OK" : "NULL"})');
     if (result == null) return;
 
     if (!triggeredByUser) {

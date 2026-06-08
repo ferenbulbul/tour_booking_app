@@ -11,20 +11,15 @@ class AppBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final onSurface = context.colors.onSurface;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.ms, vertical: AppSpacing.xsm),
       decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.06)
-            : Colors.black.withValues(alpha: 0.05),
+        color: onSurface.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(AppRadius.medium),
         border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.12)
-              : Colors.black.withValues(alpha: 0.08),
+          color: onSurface.withValues(alpha: 0.10),
         ),
       ),
       child: Text(

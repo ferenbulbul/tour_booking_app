@@ -45,7 +45,6 @@ class ContactInfoViewModel extends BaseViewModel {
         isPrefilled = true;
       }
     } catch (e) {
-      debugPrint('ContactInfoViewModel.prefillFromProfile: $e');
       // Prefill failed — user fills in manually
     } finally {
       isLoading = false;

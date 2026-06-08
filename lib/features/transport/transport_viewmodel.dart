@@ -79,7 +79,6 @@ class TransportViewModel extends BaseViewModel {
         cities = allCities;
       }
     } catch (e) {
-      debugPrint('TransportViewModel.fetchCities: $e');
       errorMessage = tr('error_generic');
     }
 
@@ -118,7 +117,6 @@ class TransportViewModel extends BaseViewModel {
         }
       }
     } catch (e) {
-      debugPrint('TransportViewModel.autoDetectCity: $e');
       errorMessage = tr('error_generic');
       notifyListeners();
     }
@@ -225,7 +223,6 @@ class TransportViewModel extends BaseViewModel {
         suggestedLocations = resp.data!.locations;
       }
     } catch (e) {
-      debugPrint('TransportViewModel.fetchSuggestedLocations: $e');
       errorMessage = tr('error_generic');
     }
 

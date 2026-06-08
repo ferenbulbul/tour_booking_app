@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:tour_booking/keys.dart';
@@ -122,7 +121,6 @@ class GooglePlaceService {
       _cache[query] = result;
       return result;
     } catch (e) {
-      debugPrint('GooglePlaceService.findDefaultPlace: $e');
       return null;
     }
   }
@@ -171,7 +169,6 @@ class GooglePlaceService {
           .map((e) => PlaceAutocompletePrediction.fromJson(e))
           .toList();
     } catch (e) {
-      debugPrint('GooglePlaceService.autocomplete: $e');
       return [];
     }
   }
@@ -216,7 +213,6 @@ class GooglePlaceService {
         addressComponents: result['address_components'] ?? [],
       );
     } catch (e) {
-      debugPrint('GooglePlaceService.placeDetails: $e');
       return null;
     }
   }
@@ -247,7 +243,6 @@ class GooglePlaceService {
         address: '',
       );
     } catch (e) {
-      debugPrint('GooglePlaceService.placeGeometry: $e');
       return null;
     }
   }
@@ -285,7 +280,6 @@ class GooglePlaceService {
         addressComponents: first['address_components'] ?? [],
       );
     } catch (e) {
-      debugPrint('GooglePlaceService.reverseGeocode: $e');
       return null;
     }
   }
@@ -345,7 +339,6 @@ class GooglePlaceService {
 
       return parsed;
     } catch (e) {
-      debugPrint('GooglePlaceService.fetchDirections: $e');
       return [];
     }
   }

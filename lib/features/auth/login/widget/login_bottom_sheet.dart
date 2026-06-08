@@ -89,6 +89,7 @@ class _LoginBottomSheetContentState extends State<_LoginBottomSheetContent> {
     if (result.isSuccess && result.data != null) {
       final user = result.data!;
       await splashVM.saveAuthData(user);
+      if (!mounted) return;
 
       // Directly refresh home data & profile with new auth token
       homeVm.init();
@@ -96,7 +97,7 @@ class _LoginBottomSheetContentState extends State<_LoginBottomSheetContent> {
       profileVm.fetchProfile();
 
       // Pop sheet and navigate
-      try { navigator.pop(true); } catch (e) { debugPrint('_LoginBottomSheetContentState._login: $e'); }
+      try { navigator.pop(true); } catch (e) { /* silently ignored */ }
 
       if (user.role.toLowerCase() == UserRole.driver.name) {
         router.go(user.isFirstLogin ? '/change-password-driver' : '/driver');

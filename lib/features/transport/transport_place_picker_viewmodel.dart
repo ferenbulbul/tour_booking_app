@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -202,7 +201,6 @@ class TransportPlacePickerViewModel extends BaseViewModel {
         }
       }
     } catch (e) {
-      debugPrint('TransportPlacePickerViewModel.geocodeCity: $e');
       // Non-critical: map just won't auto-center on the city
     }
   }
@@ -269,7 +267,6 @@ class TransportPlacePickerViewModel extends BaseViewModel {
         onFitBoundsRequest?.call();
       }
     } catch (e) {
-      debugPrint('TransportPlacePickerViewModel.fetchRoutes: $e');
       _routeError = tr('error_generic');
     } finally {
       _routesLoading = false;
@@ -417,8 +414,6 @@ class TransportPlacePickerViewModel extends BaseViewModel {
       }
       notifyListeners();
     } catch (e) {
-      debugPrint(
-          'TransportPlacePickerViewModel._reverseGeocodeWithValidation: $e');
       // Address resolution failed — clear address so user retries
       if (isPickup) {
         _pickupAddr = null;
