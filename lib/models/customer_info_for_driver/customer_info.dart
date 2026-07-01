@@ -33,6 +33,7 @@ class CustomerInfo with _$CustomerInfo {
     String? vehicleName,
     String? vehiclePlate,
     int? vehicleSeatCount,
+    @Default(false) bool isStarted,
   }) = _CustomerInfo;
 
   factory CustomerInfo.fromJson(Map<String, dynamic> json) =>

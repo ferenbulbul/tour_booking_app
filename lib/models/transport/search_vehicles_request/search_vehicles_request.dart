@@ -12,6 +12,12 @@ class TransportSearchVehiclesRequest with _$TransportSearchVehiclesRequest {
     @JsonKey(toJson: _dateToString) required DateTime date,
     required String startTime,
     @Default(60) int estimatedDurationMinutes,
+    double? pickupLatitude,
+    double? pickupLongitude,
+    double? dropoffLatitude,
+    double? dropoffLongitude,
+    double? clientDistanceKm,
+    int? clientDurationMinutes,
   }) = _TransportSearchVehiclesRequest;
 
   factory TransportSearchVehiclesRequest.fromJson(

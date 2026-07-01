@@ -1,4 +1,5 @@
 import 'package:tour_booking/services/auth/auth_service.dart';
+import 'package:tour_booking/services/core/analytics_service.dart';
 import 'package:tour_booking/services/driver/driver_service.dart';
 import 'package:tour_booking/services/google_places/google_place_service.dart';
 import 'package:tour_booking/services/location/location_permission_service.dart';
@@ -24,6 +25,7 @@ class ServiceLocator {
   late final LocationPermissionService locationPermissionService;
   late final LocationService locationService;
   late final RecentSearchService recentSearchService;
+  late final AnalyticsService analyticsService;
 
   void init() {
     tourService = TourService();
@@ -35,5 +37,6 @@ class ServiceLocator {
     locationPermissionService = LocationPermissionService();
     locationService = LocationService();
     recentSearchService = RecentSearchService();
+    analyticsService = AnalyticsService.instance;
   }
 }

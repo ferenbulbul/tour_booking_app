@@ -55,6 +55,8 @@ class _DashboardBookingDetailSheet extends StatelessWidget {
         return tr('today');
       case DriverBookingStatus.upcoming:
         return tr('booking_tab_upcoming');
+      case DriverBookingStatus.past:
+        return tr('driver_status_past');
     }
   }
 
@@ -64,6 +66,8 @@ class _DashboardBookingDetailSheet extends StatelessWidget {
         return context.ext.success;
       case DriverBookingStatus.upcoming:
         return context.ext.info;
+      case DriverBookingStatus.past:
+        return context.colors.error;
     }
   }
 
@@ -414,7 +418,8 @@ class _DashboardBookingDetailSheet extends StatelessWidget {
           // TRANSPORT: Dropoff button
           if (_isTransport && item.bookingId != null) ...[
             const SizedBox(height: AppSpacing.s),
-            if (item.status == DriverBookingStatus.today)
+            if (item.status == DriverBookingStatus.today ||
+                item.status == DriverBookingStatus.past)
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(

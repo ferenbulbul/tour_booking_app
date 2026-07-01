@@ -49,6 +49,7 @@ void main() async {
   debugPaintLayerBordersEnabled = false;
 
   ServiceLocator.instance.init();
+  await ServiceLocator.instance.analyticsService.init();
 
   // Global error handlers for uncaught exceptions
   FlutterError.onError = (details) {

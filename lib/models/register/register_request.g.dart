@@ -13,7 +13,7 @@ _$RegisterRequestImpl _$$RegisterRequestImplFromJson(
   lastName: json['lastName'] as String,
   email: json['email'] as String,
   password: json['password'] as String,
-  phoneNumber: json['phoneNumber'] as String,
+  phoneNumber: json['phoneNumber'] as String?,
   countryCode: json['countryCode'] as String?,
   deviceId: json['deviceId'] as String?,
   deviceModel: json['deviceModel'] as String?,

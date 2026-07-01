@@ -7,6 +7,7 @@ import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/widgets/empty_state.dart';
+import 'package:tour_booking/core/ui/ui_helper.dart';
 import 'package:tour_booking/features/driver_home_page/widget/dashboard_booking_detail_sheet.dart';
 import 'package:tour_booking/models/customer_info_for_driver/customer_info.dart';
 import 'package:tour_booking/core/theme/app_theme_context.dart';
@@ -33,6 +34,8 @@ class CustomerInfoListView extends StatelessWidget {
         return tr('today');
       case DriverBookingStatus.upcoming:
         return tr('booking_tab_upcoming');
+      case DriverBookingStatus.past:
+        return tr('driver_status_past');
     }
   }
 
@@ -42,7 +45,234 @@ class CustomerInfoListView extends StatelessWidget {
         return context.ext.success;
       case DriverBookingStatus.upcoming:
         return context.ext.info;
+      case DriverBookingStatus.past:
+        return context.colors.error;
     }
+  }
+
+  void _showStartTourConfirmDialog(BuildContext context, CustomerInfo item) {
+    final scheme = context.colors;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xxl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: context.ext.success.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppRadius.large),
+                ),
+                child: Icon(
+                  SolarIconsOutline.play,
+                  size: 28,
+                  color: context.ext.success,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.l),
+              Text(
+                tr('driver_start_tour_confirm'),
+                style: AppTextStyles.titleSmall.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: scheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.s),
+              Text(
+                tr('driver_start_tour_confirm_message'),
+                textAlign: TextAlign.center,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 46,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: scheme.onSurfaceVariant,
+                          padding: EdgeInsets.zero,
+                          side: BorderSide(color: scheme.outline),
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.medium),
+                          ),
+                        ),
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text(
+                          tr('cancel'),
+                          style: TextStyle(
+                            color: scheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.m),
+                  Expanded(
+                    child: SizedBox(
+                      height: 46,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          backgroundColor: context.ext.success,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.medium),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          onStartTour?.call(item.bookingId!);
+                        },
+                        child: Text(
+                          tr('driver_start_tour'),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showDropoffConfirmDialog(BuildContext context, CustomerInfo item,
+      {bool stopTrackingOnComplete = true}) {
+    final scheme = context.colors;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xxl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: context.ext.success.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppRadius.large),
+                ),
+                child: Icon(
+                  SolarIconsOutline.checkCircle,
+                  size: 28,
+                  color: context.ext.success,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.l),
+              Text(
+                tr('driver_transport_dropoff_confirm'),
+                style: AppTextStyles.titleSmall.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: scheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.s),
+              Text(
+                tr('driver_transport_dropoff_confirm_message'),
+                textAlign: TextAlign.center,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 46,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: scheme.onSurfaceVariant,
+                          padding: EdgeInsets.zero,
+                          side: BorderSide(color: scheme.outline),
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.medium),
+                          ),
+                        ),
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text(
+                          tr('cancel'),
+                          style: TextStyle(
+                            color: scheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.m),
+                  Expanded(
+                    child: SizedBox(
+                      height: 46,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          backgroundColor: context.ext.success,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.medium),
+                          ),
+                        ),
+                        onPressed: () async {
+                          Navigator.pop(ctx);
+                          final success = await onCompleteDropoff
+                              ?.call(item.bookingId!);
+                          if (success == true) {
+                            if (stopTrackingOnComplete) onEndTour?.call();
+                            if (context.mounted) {
+                              UIHelper.showSuccess(context,
+                                  tr('driver_transport_dropoff_success'));
+                            }
+                          }
+                        },
+                        child: Text(
+                          tr('confirm'),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -65,9 +295,12 @@ class CustomerInfoListView extends StatelessWidget {
         final isTransport = item.bookingType == 1;
         final scheme = context.colors;
         final statusColor = _statusColor(context, item);
+        final isActiveTour = activeTourBookingId == item.bookingId;
 
         return Material(
-          color: scheme.surface,
+          color: isActiveTour
+              ? context.ext.success.withValues(alpha: 0.04)
+              : scheme.surface,
           borderRadius: BorderRadius.circular(AppRadius.medium),
           child: InkWell(
             onTap: () => showDashboardBookingDetailSheet(
@@ -81,7 +314,10 @@ class CustomerInfoListView extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppRadius.medium),
                 border: Border.all(
-                  color: scheme.outline.withValues(alpha: 0.12),
+                  color: isActiveTour
+                      ? context.ext.success
+                      : scheme.outline.withValues(alpha: 0.12),
+                  width: isActiveTour ? 1.5 : 1,
                 ),
               ),
               child: Column(
@@ -95,15 +331,21 @@ class CustomerInfoListView extends StatelessWidget {
                         width: 48,
                         height: 48,
                         decoration: BoxDecoration(
-                          color: scheme.primary.withValues(alpha: 0.08),
+                          color: isActiveTour
+                              ? context.ext.success.withValues(alpha: 0.12)
+                              : scheme.primary.withValues(alpha: 0.08),
                           borderRadius:
                               BorderRadius.circular(AppRadius.medium),
                         ),
                         child: Icon(
-                          isTransport
-                              ? SolarIconsOutline.routing
-                              : SolarIconsOutline.map,
-                          color: scheme.primary,
+                          isActiveTour
+                              ? SolarIconsOutline.mapPoint
+                              : (isTransport
+                                  ? SolarIconsOutline.routing
+                                  : SolarIconsOutline.map),
+                          color: isActiveTour
+                              ? context.ext.success
+                              : scheme.primary,
                           size: AppIconSize.lm,
                         ),
                       ),
@@ -296,7 +538,7 @@ class CustomerInfoListView extends StatelessWidget {
                         ),
                       ],
 
-                      // Active tour badge
+                      // Active tour badge – "Konum Paylaşılıyor"
                       if (activeTourBookingId == item.bookingId) ...[
                         const SizedBox(width: AppSpacing.s),
                         Container(
@@ -309,12 +551,23 @@ class CustomerInfoListView extends StatelessWidget {
                             borderRadius:
                                 BorderRadius.circular(AppSpacing.sm),
                           ),
-                          child: Text(
-                            tr('driver_tour_active'),
-                            style: AppTextStyles.caption.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: context.ext.success,
-                            ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                SolarIconsOutline.mapPoint,
+                                size: 12,
+                                color: context.ext.success,
+                              ),
+                              const SizedBox(width: AppSpacing.xxs),
+                              Text(
+                                tr('driver_location_sharing_active'),
+                                style: AppTextStyles.caption.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: context.ext.success,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -353,7 +606,7 @@ class CustomerInfoListView extends StatelessWidget {
                             ),
                           ),
                           onPressed: () =>
-                              onStartTour?.call(item.bookingId!),
+                              _showStartTourConfirmDialog(context, item),
                         ),
                       ),
                     ] else if (activeTourBookingId == item.bookingId) ...[
@@ -361,11 +614,12 @@ class CustomerInfoListView extends StatelessWidget {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
-                          icon: const Icon(SolarIconsOutline.stop, size: 18),
-                          label: Text(tr('driver_end_tour')),
+                          icon: const Icon(SolarIconsOutline.checkCircle,
+                              size: 18),
+                          label: Text(tr('driver_transport_dropoff')),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: scheme.error,
-                            foregroundColor: scheme.onError,
+                            backgroundColor: context.ext.success,
+                            foregroundColor: scheme.surface,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius:
@@ -375,10 +629,43 @@ class CustomerInfoListView extends StatelessWidget {
                               vertical: AppSpacing.ms,
                             ),
                           ),
-                          onPressed: onEndTour,
+                          onPressed: () =>
+                              _showDropoffConfirmDialog(context, item),
                         ),
                       ),
                     ],
+                  ],
+
+                  // SÜRESİ GEÇMİŞ (bitirilmeyi unutulmuş) iş: doğrudan tamamla
+                  if (item.status == DriverBookingStatus.past &&
+                      item.bookingId != null) ...[
+                    const SizedBox(height: AppSpacing.ms),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        icon: const Icon(SolarIconsOutline.checkCircle,
+                            size: 18),
+                        label: Text(tr('driver_complete_overdue')),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: context.colors.error,
+                          foregroundColor: scheme.surface,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.medium),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: AppSpacing.ms,
+                          ),
+                        ),
+                        onPressed: () => _showDropoffConfirmDialog(
+                            context, item,
+                            // Bu geçmiş iş aktif takip edilen tur ise tamamlamada
+                            // takibi durdur; değilse başka aktif turu bozma.
+                            stopTrackingOnComplete:
+                                activeTourBookingId == item.bookingId),
+                      ),
+                    ),
                   ],
                 ],
               ),

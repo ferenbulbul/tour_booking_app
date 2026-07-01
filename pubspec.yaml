@@ -2,7 +2,7 @@ name: tour_booking
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: '>=3.8.1 <4.0.0'
@@ -31,6 +31,7 @@ dependencies:
   permission_handler: ^12.0.1
   geolocator: ^14.0.2
   firebase_storage: ^12.4.10
+  firebase_analytics: ^11.3.6
   flutter_debouncer: ^2.0.0
   flutter_toggle_tab: ^1.5.1
   intl: ^0.20.2

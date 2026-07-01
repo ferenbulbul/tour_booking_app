@@ -1,13 +1,15 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-enum DriverBookingStatus { upcoming, today }
+enum DriverBookingStatus { upcoming, today, past }
 
 extension DriverBookingStatusX on DriverBookingStatus {
   static DriverBookingStatus fromInt(int value) {
     switch (value) {
       case 1:
         return DriverBookingStatus.today;
+      case 2:
+        return DriverBookingStatus.past;
       case 0:
       default:
         return DriverBookingStatus.upcoming;
@@ -20,6 +22,8 @@ extension DriverBookingStatusX on DriverBookingStatus {
         return tr('driver_status_today');
       case DriverBookingStatus.upcoming:
         return tr('driver_status_upcoming');
+      case DriverBookingStatus.past:
+        return tr('driver_status_past');
     }
   }
 }
@@ -33,6 +37,8 @@ class DriverBookingStatusConverter
     switch (json) {
       case 1:
         return DriverBookingStatus.today;
+      case 2:
+        return DriverBookingStatus.past;
       case 0:
       default:
         return DriverBookingStatus.upcoming;

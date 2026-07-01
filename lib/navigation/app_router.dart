@@ -21,12 +21,14 @@ import 'package:tour_booking/navigation/routes/checkout_routes.dart';
 import 'package:tour_booking/navigation/routes/profile_routes.dart';
 import 'package:tour_booking/navigation/routes/tour_routes.dart';
 import 'package:tour_booking/navigation/routes/transport_routes.dart';
+import 'package:tour_booking/services/core/analytics_service.dart';
 
 final RouteObserver<ModalRoute<void>> globalRouteObserver =
     RouteObserver<ModalRoute<void>>();
 final SplashViewModel splashViewModel = SplashViewModel();
 final GoRouter router = GoRouter(
   navigatorKey: appNavigatorKey,
+  observers: [AnalyticsService.instance.observer],
 
   refreshListenable: splashViewModel, // Must listen to ViewModel!
   debugLogDiagnostics: false,

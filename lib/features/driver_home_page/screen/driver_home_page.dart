@@ -13,6 +13,7 @@ import 'package:tour_booking/features/driver_home_page/driver_past_orders_viewmo
 import 'package:tour_booking/features/driver_home_page/driver_profile_viewmodel.dart';
 import 'package:tour_booking/features/driver_home_page/widget/driver_dashboard_tab.dart';
 import 'package:tour_booking/features/driver_home_page/widget/driver_past_orders_tab.dart';
+import 'package:tour_booking/features/location/location_viewmodel.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
 import 'package:tour_booking/services/driver/driver_service.dart';
 import 'package:tour_booking/core/theme/app_theme_context.dart';
@@ -49,7 +50,7 @@ class _DriverHomeScreenContent extends StatefulWidget {
 }
 
 class _DriverHomeScreenState extends State<_DriverHomeScreenContent>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late final TabController _tabController;
   UserRole? _currentUserRole;
 
@@ -57,11 +58,16 @@ class _DriverHomeScreenState extends State<_DriverHomeScreenContent>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DriverHomeViewModel>().refresh();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _loadUserRole();
+      await context.read<DriverHomeViewModel>().refresh();
+      if (!mounted) return;
       context.read<DriverPastOrdersViewModel>().fetchPastBookings();
       context.read<DriverProfileViewModel>().fetchProfile();
-      _loadUserRole();
+      // Aktif (başlatılmış) tur varsa konum takibini durumla eşitle:
+      // uygulama yeniden açıldığında takibi geri başlatır.
+      await _reconcileTracking();
     });
   }
 
@@ -72,8 +78,37 @@ class _DriverHomeScreenState extends State<_DriverHomeScreenContent>
     });
   }
 
+  /// Konum takibini aktif tur durumuna bağlar: aktif tur varsa (ve izin
+  /// uygunsa) takibi başlatır, yoksa durdurur. Böylece "başlat → konum başlar,
+  /// bitir → konum durur" davranışı uygulama yeniden açılsa da korunur.
+  Future<void> _reconcileTracking() async {
+    if (!mounted) return;
+    if (_currentUserRole != UserRole.driver) return;
+
+    final driverVm = context.read<DriverHomeViewModel>();
+    final locVm = context.read<LocationViewModel>();
+
+    if (driverVm.hasActiveTour && !locVm.isTracking) {
+      await locVm.checkAndHandleLocation(UserRole.driver);
+    } else if (!driverVm.hasActiveTour && locVm.isTracking) {
+      locVm.stopTracking();
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      // Öne dönünce, arka planda kesilmiş olabilecek takibi durumla eşitle.
+      context.read<DriverHomeViewModel>().refresh().then((_) {
+        if (mounted) _reconcileTracking();
+      });
+    }
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
     super.dispose();
   }

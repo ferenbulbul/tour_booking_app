@@ -29,6 +29,12 @@ mixin _$TransportSearchVehiclesRequest {
   DateTime get date => throw _privateConstructorUsedError;
   String get startTime => throw _privateConstructorUsedError;
   int get estimatedDurationMinutes => throw _privateConstructorUsedError;
+  double? get pickupLatitude => throw _privateConstructorUsedError;
+  double? get pickupLongitude => throw _privateConstructorUsedError;
+  double? get dropoffLatitude => throw _privateConstructorUsedError;
+  double? get dropoffLongitude => throw _privateConstructorUsedError;
+  double? get clientDistanceKm => throw _privateConstructorUsedError;
+  int? get clientDurationMinutes => throw _privateConstructorUsedError;
 
   /// Serializes this TransportSearchVehiclesRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -57,6 +63,12 @@ abstract class $TransportSearchVehiclesRequestCopyWith<$Res> {
     @JsonKey(toJson: _dateToString) DateTime date,
     String startTime,
     int estimatedDurationMinutes,
+    double? pickupLatitude,
+    double? pickupLongitude,
+    double? dropoffLatitude,
+    double? dropoffLongitude,
+    double? clientDistanceKm,
+    int? clientDurationMinutes,
   });
 }
 
@@ -83,6 +95,12 @@ class _$TransportSearchVehiclesRequestCopyWithImpl<
     Object? date = null,
     Object? startTime = null,
     Object? estimatedDurationMinutes = null,
+    Object? pickupLatitude = freezed,
+    Object? pickupLongitude = freezed,
+    Object? dropoffLatitude = freezed,
+    Object? dropoffLongitude = freezed,
+    Object? clientDistanceKm = freezed,
+    Object? clientDurationMinutes = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -106,6 +124,30 @@ class _$TransportSearchVehiclesRequestCopyWithImpl<
                 ? _value.estimatedDurationMinutes
                 : estimatedDurationMinutes // ignore: cast_nullable_to_non_nullable
                       as int,
+            pickupLatitude: freezed == pickupLatitude
+                ? _value.pickupLatitude
+                : pickupLatitude // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            pickupLongitude: freezed == pickupLongitude
+                ? _value.pickupLongitude
+                : pickupLongitude // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            dropoffLatitude: freezed == dropoffLatitude
+                ? _value.dropoffLatitude
+                : dropoffLatitude // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            dropoffLongitude: freezed == dropoffLongitude
+                ? _value.dropoffLongitude
+                : dropoffLongitude // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            clientDistanceKm: freezed == clientDistanceKm
+                ? _value.clientDistanceKm
+                : clientDistanceKm // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            clientDurationMinutes: freezed == clientDurationMinutes
+                ? _value.clientDurationMinutes
+                : clientDurationMinutes // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -127,6 +169,12 @@ abstract class _$$TransportSearchVehiclesRequestImplCopyWith<$Res>
     @JsonKey(toJson: _dateToString) DateTime date,
     String startTime,
     int estimatedDurationMinutes,
+    double? pickupLatitude,
+    double? pickupLongitude,
+    double? dropoffLatitude,
+    double? dropoffLongitude,
+    double? clientDistanceKm,
+    int? clientDurationMinutes,
   });
 }
 
@@ -153,6 +201,12 @@ class __$$TransportSearchVehiclesRequestImplCopyWithImpl<$Res>
     Object? date = null,
     Object? startTime = null,
     Object? estimatedDurationMinutes = null,
+    Object? pickupLatitude = freezed,
+    Object? pickupLongitude = freezed,
+    Object? dropoffLatitude = freezed,
+    Object? dropoffLongitude = freezed,
+    Object? clientDistanceKm = freezed,
+    Object? clientDurationMinutes = freezed,
   }) {
     return _then(
       _$TransportSearchVehiclesRequestImpl(
@@ -176,6 +230,30 @@ class __$$TransportSearchVehiclesRequestImplCopyWithImpl<$Res>
             ? _value.estimatedDurationMinutes
             : estimatedDurationMinutes // ignore: cast_nullable_to_non_nullable
                   as int,
+        pickupLatitude: freezed == pickupLatitude
+            ? _value.pickupLatitude
+            : pickupLatitude // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        pickupLongitude: freezed == pickupLongitude
+            ? _value.pickupLongitude
+            : pickupLongitude // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        dropoffLatitude: freezed == dropoffLatitude
+            ? _value.dropoffLatitude
+            : dropoffLatitude // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        dropoffLongitude: freezed == dropoffLongitude
+            ? _value.dropoffLongitude
+            : dropoffLongitude // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        clientDistanceKm: freezed == clientDistanceKm
+            ? _value.clientDistanceKm
+            : clientDistanceKm // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        clientDurationMinutes: freezed == clientDurationMinutes
+            ? _value.clientDurationMinutes
+            : clientDurationMinutes // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -191,6 +269,12 @@ class _$TransportSearchVehiclesRequestImpl
     @JsonKey(toJson: _dateToString) required this.date,
     required this.startTime,
     this.estimatedDurationMinutes = 60,
+    this.pickupLatitude,
+    this.pickupLongitude,
+    this.dropoffLatitude,
+    this.dropoffLongitude,
+    this.clientDistanceKm,
+    this.clientDurationMinutes,
   });
 
   factory _$TransportSearchVehiclesRequestImpl.fromJson(
@@ -209,10 +293,22 @@ class _$TransportSearchVehiclesRequestImpl
   @override
   @JsonKey()
   final int estimatedDurationMinutes;
+  @override
+  final double? pickupLatitude;
+  @override
+  final double? pickupLongitude;
+  @override
+  final double? dropoffLatitude;
+  @override
+  final double? dropoffLongitude;
+  @override
+  final double? clientDistanceKm;
+  @override
+  final int? clientDurationMinutes;
 
   @override
   String toString() {
-    return 'TransportSearchVehiclesRequest(cityId: $cityId, districtId: $districtId, date: $date, startTime: $startTime, estimatedDurationMinutes: $estimatedDurationMinutes)';
+    return 'TransportSearchVehiclesRequest(cityId: $cityId, districtId: $districtId, date: $date, startTime: $startTime, estimatedDurationMinutes: $estimatedDurationMinutes, pickupLatitude: $pickupLatitude, pickupLongitude: $pickupLongitude, dropoffLatitude: $dropoffLatitude, dropoffLongitude: $dropoffLongitude, clientDistanceKm: $clientDistanceKm, clientDurationMinutes: $clientDurationMinutes)';
   }
 
   @override
@@ -230,7 +326,19 @@ class _$TransportSearchVehiclesRequestImpl
                   other.estimatedDurationMinutes,
                   estimatedDurationMinutes,
                 ) ||
-                other.estimatedDurationMinutes == estimatedDurationMinutes));
+                other.estimatedDurationMinutes == estimatedDurationMinutes) &&
+            (identical(other.pickupLatitude, pickupLatitude) ||
+                other.pickupLatitude == pickupLatitude) &&
+            (identical(other.pickupLongitude, pickupLongitude) ||
+                other.pickupLongitude == pickupLongitude) &&
+            (identical(other.dropoffLatitude, dropoffLatitude) ||
+                other.dropoffLatitude == dropoffLatitude) &&
+            (identical(other.dropoffLongitude, dropoffLongitude) ||
+                other.dropoffLongitude == dropoffLongitude) &&
+            (identical(other.clientDistanceKm, clientDistanceKm) ||
+                other.clientDistanceKm == clientDistanceKm) &&
+            (identical(other.clientDurationMinutes, clientDurationMinutes) ||
+                other.clientDurationMinutes == clientDurationMinutes));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -242,6 +350,12 @@ class _$TransportSearchVehiclesRequestImpl
     date,
     startTime,
     estimatedDurationMinutes,
+    pickupLatitude,
+    pickupLongitude,
+    dropoffLatitude,
+    dropoffLongitude,
+    clientDistanceKm,
+    clientDurationMinutes,
   );
 
   /// Create a copy of TransportSearchVehiclesRequest
@@ -271,6 +385,12 @@ abstract class _TransportSearchVehiclesRequest
     @JsonKey(toJson: _dateToString) required final DateTime date,
     required final String startTime,
     final int estimatedDurationMinutes,
+    final double? pickupLatitude,
+    final double? pickupLongitude,
+    final double? dropoffLatitude,
+    final double? dropoffLongitude,
+    final double? clientDistanceKm,
+    final int? clientDurationMinutes,
   }) = _$TransportSearchVehiclesRequestImpl;
 
   factory _TransportSearchVehiclesRequest.fromJson(Map<String, dynamic> json) =
@@ -287,6 +407,18 @@ abstract class _TransportSearchVehiclesRequest
   String get startTime;
   @override
   int get estimatedDurationMinutes;
+  @override
+  double? get pickupLatitude;
+  @override
+  double? get pickupLongitude;
+  @override
+  double? get dropoffLatitude;
+  @override
+  double? get dropoffLongitude;
+  @override
+  double? get clientDistanceKm;
+  @override
+  int? get clientDurationMinutes;
 
   /// Create a copy of TransportSearchVehiclesRequest
   /// with the given fields replaced by the non-null parameter values.

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:solar_icons/solar_icons.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/ui/ui_helper.dart';
 
@@ -43,8 +42,6 @@ class _RegisterFormState extends State<RegisterForm> {
   bool _kvkkAccepted = false;
   bool _privacyAccepted = false;
 
-  dynamic _selectedPhone;
-
   @override
   void dispose() {
     _firstName.dispose();
@@ -61,10 +58,6 @@ class _RegisterFormState extends State<RegisterForm> {
       setState(() => _passwordTouched = true);
       return;
     }
-    if (_selectedPhone == null) {
-      UIHelper.showError(context, tr("phone_required"));
-      return;
-    }
     if (!_kvkkAccepted || !_privacyAccepted) {
       UIHelper.showError(context, tr("terms_required"));
       return;
@@ -79,8 +72,6 @@ class _RegisterFormState extends State<RegisterForm> {
       lastName: _lastName.text.trim(),
       email: _email.text.trim(),
       password: _password.text.trim(),
-      phoneNumber: _selectedPhone.completeNumber,
-      countryCode: _selectedPhone.countryCode,
       deviceId: null,
       deviceModel: null,
     );
@@ -154,26 +145,6 @@ class _RegisterFormState extends State<RegisterForm> {
               if (!r.hasMatch(v)) return tr("email_invalid");
               return null;
             },
-          ),
-
-          const SizedBox(height: AppSpacing.l),
-
-          Directionality(
-            textDirection: ui.TextDirection.ltr,
-            child: IntlPhoneField(
-              invalidNumberMessage: tr("invalid_phone_number"),
-              decoration: InputDecoration(labelText: tr("phone_number")),
-              initialCountryCode: 'TR',
-              style: text.bodyMedium,
-              cursorColor: scheme.primary,
-              onChanged: (p) => _selectedPhone = p,
-              validator: (value) {
-                if (value == null || value.number.isEmpty) {
-                  return tr("phone_required");
-                }
-                return null;
-              },
-            ),
           ),
 
           const SizedBox(height: AppSpacing.l),

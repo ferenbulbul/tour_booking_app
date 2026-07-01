@@ -10,7 +10,7 @@ class RegisterRequest with _$RegisterRequest {
     required String lastName,
     required String email,
     required String password,
-    required String phoneNumber,
+    String? phoneNumber,
     String? countryCode,
     String? deviceId,
     String? deviceModel,

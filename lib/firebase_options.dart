@@ -69,7 +69,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '423047904244',
     projectId: 'tourbooking-e49bf',
     storageBucket: 'tourbooking-e49bf.firebasestorage.app',
-    androidClientId: '423047904244-m02l0l59htk8abs5kj02h7ri90tdmtta.apps.googleusercontent.com',
+    androidClientId: '423047904244-8s2g1ijp2kl58el6scbrk2imerclek59.apps.googleusercontent.com',
     iosClientId: '423047904244-ls89sh0e3mnp1vb01c91gg3kosogrtnm.apps.googleusercontent.com',
     iosBundleId: 'app.tourrent.ios',
   );

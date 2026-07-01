@@ -1,19 +1,17 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/models/customer_info_for_driver/customer_info.dart';
-import 'package:tour_booking/models/transport/complete_dropoff_request/complete_dropoff_request.dart';
 import 'package:tour_booking/services/driver/driver_service.dart';
-import 'package:tour_booking/core/di/service_locator.dart';
-import 'package:tour_booking/services/transport/transport_service.dart';
 
 class DriverHomeViewModel extends BaseViewModel {
   final DriverService _driverService;
-  final TransportService _transportService = ServiceLocator.instance.transportService;
 
   DriverHomeViewModel(this._driverService);
 
   bool isLoading = false;
   String? error;
+  bool isStartingTour = false;
+  String? startError;
   bool isCompletingDropoff = false;
   String? dropoffError;
   String? activeTourBookingId;
@@ -21,11 +19,6 @@ class DriverHomeViewModel extends BaseViewModel {
   bool get hasActiveTour => activeTourBookingId != null;
 
   List<CustomerInfo> customerList = [];
-
-  void startTour(String bookingId) {
-    activeTourBookingId = bookingId;
-    notifyListeners();
-  }
 
   void endTour() {
     activeTourBookingId = null;
@@ -42,10 +35,17 @@ class DriverHomeViewModel extends BaseViewModel {
 
       if (response.isSuccess == true && response.data != null) {
         customerList = response.data!.customerInfo;
+
+        // Backend "Started" durumundaki booking'i kaynak kabul et:
+        // uygulama yeniden açıldığında aktif tur durumunu geri yükler,
+        // başka yerden tamamlanmışsa temizler.
+        final started = customerList.where((c) => c.isStarted).toList();
+        activeTourBookingId =
+            started.isNotEmpty ? started.first.bookingId : null;
       } else {
         error = response.message ?? tr('error_data_fetch_failed');
       }
-    } catch (e, st) {
+    } catch (e) {
       error = tr('error_something_went_wrong', namedArgs: {'error': e.toString()});
     } finally {
       isLoading = false;
@@ -53,16 +53,47 @@ class DriverHomeViewModel extends BaseViewModel {
     }
   }
 
+  /// Sürücü turu/transferi başlatır (backend'e işler, sonra aktif kabul eder).
+  Future<bool> startTour(String bookingId) async {
+    isStartingTour = true;
+    startError = null;
+    notifyListeners();
+
+    try {
+      final resp = await _driverService.startBooking(bookingId);
+
+      if (resp.isSuccess == true) {
+        activeTourBookingId = bookingId;
+        return true;
+      } else {
+        startError = resp.message ?? tr('error_generic');
+        return false;
+      }
+    } catch (e) {
+      startError = tr('error_generic');
+      return false;
+    } finally {
+      isStartingTour = false;
+      notifyListeners();
+    }
+  }
+
+  /// Sürücü turu/transferi tamamlar (tip-bağımsız birleşik endpoint).
   Future<bool> completeDropoff(String bookingId) async {
     isCompletingDropoff = true;
     dropoffError = null;
     notifyListeners();
 
     try {
-      final req = TransportCompleteDropoffRequest(bookingId: bookingId);
-      final resp = await _transportService.completeDropoff(req);
+      final resp = await _driverService.completeBooking(bookingId);
 
       if (resp.isSuccess == true) {
+        // Yalnızca tamamlanan iş aktif tursa temizle (geçmiş iş tamamlamada
+        // başka bir aktif turu bozmamak için). refresh zaten isStarted'a göre
+        // aktif tur durumunu yeniden hesaplar.
+        if (activeTourBookingId == bookingId) {
+          activeTourBookingId = null;
+        }
         await refresh();
         return true;
       } else {

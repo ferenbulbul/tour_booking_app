@@ -177,6 +177,12 @@ class _TransportScreenState extends State<TransportScreen> {
       cityId: vm.selectedCityId!,
       date: vm.selectedDate!,
       startTime: vm.selectedTime!,
+      pickupLatitude: vm.pickupLat,
+      pickupLongitude: vm.pickupLng,
+      dropoffLatitude: vm.dropoffLat,
+      dropoffLongitude: vm.dropoffLng,
+      clientDistanceKm: vm.selectedRouteDistanceKm,
+      clientDurationMinutes: vm.selectedRouteDurationMinutes,
     );
 
     context.push('/transport-vehicles', extra: {

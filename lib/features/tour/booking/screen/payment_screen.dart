@@ -113,6 +113,16 @@ class _PaymentScreenState extends State<PaymentScreen>
                   return NavigationDecision.navigate;
                 },
                 onPageFinished: (String finishedUrl) {
+                  // Android WebView does NOT fire onNavigationRequest
+                  // for POST-based form submissions (iyzico 3DS callback).
+                  // Detect the callback URL here as a fallback.
+                  const callbackIdentifier = "payments/callback";
+                  if (!_callbackDetected &&
+                      finishedUrl.contains(callbackIdentifier)) {
+                    _callbackDetected = true;
+                    vm.setCheckingPayment(true);
+                  }
+
                   // When the callback page finishes loading, the backend
                   // has received iyzico's POST — safe to query the result.
                   if (_callbackDetected) {

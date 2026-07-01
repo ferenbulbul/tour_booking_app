@@ -25,7 +25,7 @@ mixin _$RegisterRequest {
   String get lastName => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   String get password => throw _privateConstructorUsedError;
-  String get phoneNumber => throw _privateConstructorUsedError;
+  String? get phoneNumber => throw _privateConstructorUsedError;
   String? get countryCode => throw _privateConstructorUsedError;
   String? get deviceId => throw _privateConstructorUsedError;
   String? get deviceModel => throw _privateConstructorUsedError;
@@ -52,7 +52,7 @@ abstract class $RegisterRequestCopyWith<$Res> {
     String lastName,
     String email,
     String password,
-    String phoneNumber,
+    String? phoneNumber,
     String? countryCode,
     String? deviceId,
     String? deviceModel,
@@ -78,7 +78,7 @@ class _$RegisterRequestCopyWithImpl<$Res, $Val extends RegisterRequest>
     Object? lastName = null,
     Object? email = null,
     Object? password = null,
-    Object? phoneNumber = null,
+    Object? phoneNumber = freezed,
     Object? countryCode = freezed,
     Object? deviceId = freezed,
     Object? deviceModel = freezed,
@@ -101,10 +101,10 @@ class _$RegisterRequestCopyWithImpl<$Res, $Val extends RegisterRequest>
                 ? _value.password
                 : password // ignore: cast_nullable_to_non_nullable
                       as String,
-            phoneNumber: null == phoneNumber
+            phoneNumber: freezed == phoneNumber
                 ? _value.phoneNumber
                 : phoneNumber // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
             countryCode: freezed == countryCode
                 ? _value.countryCode
                 : countryCode // ignore: cast_nullable_to_non_nullable
@@ -137,7 +137,7 @@ abstract class _$$RegisterRequestImplCopyWith<$Res>
     String lastName,
     String email,
     String password,
-    String phoneNumber,
+    String? phoneNumber,
     String? countryCode,
     String? deviceId,
     String? deviceModel,
@@ -162,7 +162,7 @@ class __$$RegisterRequestImplCopyWithImpl<$Res>
     Object? lastName = null,
     Object? email = null,
     Object? password = null,
-    Object? phoneNumber = null,
+    Object? phoneNumber = freezed,
     Object? countryCode = freezed,
     Object? deviceId = freezed,
     Object? deviceModel = freezed,
@@ -185,10 +185,10 @@ class __$$RegisterRequestImplCopyWithImpl<$Res>
             ? _value.password
             : password // ignore: cast_nullable_to_non_nullable
                   as String,
-        phoneNumber: null == phoneNumber
+        phoneNumber: freezed == phoneNumber
             ? _value.phoneNumber
             : phoneNumber // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
         countryCode: freezed == countryCode
             ? _value.countryCode
             : countryCode // ignore: cast_nullable_to_non_nullable
@@ -214,7 +214,7 @@ class _$RegisterRequestImpl implements _RegisterRequest {
     required this.lastName,
     required this.email,
     required this.password,
-    required this.phoneNumber,
+    this.phoneNumber,
     this.countryCode,
     this.deviceId,
     this.deviceModel,
@@ -232,7 +232,7 @@ class _$RegisterRequestImpl implements _RegisterRequest {
   @override
   final String password;
   @override
-  final String phoneNumber;
+  final String? phoneNumber;
   @override
   final String? countryCode;
   @override
@@ -304,7 +304,7 @@ abstract class _RegisterRequest implements RegisterRequest {
     required final String lastName,
     required final String email,
     required final String password,
-    required final String phoneNumber,
+    final String? phoneNumber,
     final String? countryCode,
     final String? deviceId,
     final String? deviceModel,
@@ -322,7 +322,7 @@ abstract class _RegisterRequest implements RegisterRequest {
   @override
   String get password;
   @override
-  String get phoneNumber;
+  String? get phoneNumber;
   @override
   String? get countryCode;
   @override

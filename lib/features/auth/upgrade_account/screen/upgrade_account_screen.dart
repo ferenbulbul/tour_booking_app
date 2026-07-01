@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:solar_icons/solar_icons.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_booking/core/theme/app_elevation.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
@@ -35,8 +34,6 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
 
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
-  dynamic _selectedPhone;
-
   bool get _isPasswordValid => PasswordValidator.isValid(_passwordValue);
 
   @override
@@ -60,20 +57,11 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
     final splashVM = context.read<SplashViewModel>();
     FocusScope.of(context).unfocus();
 
-    String? phoneNumber;
-    String? countryCode;
-    if (_selectedPhone != null) {
-      phoneNumber = _selectedPhone.completeNumber;
-      countryCode = _selectedPhone.countryCode;
-    }
-
     final result = await vm.upgradeAccount(
       firstName: _firstName.text.trim(),
       lastName: _lastName.text.trim(),
       email: _email.text.trim(),
       password: _password.text.trim(),
-      phoneNumber: phoneNumber,
-      countryCode: countryCode,
     );
 
     if (!mounted) return;
@@ -169,20 +157,6 @@ class _UpgradeAccountScreenState extends State<UpgradeAccountScreen> {
                             if (!r.hasMatch(v)) return tr("email_invalid");
                             return null;
                           },
-                        ),
-
-                        const SizedBox(height: AppSpacing.l),
-
-                        Directionality(
-                          textDirection: ui.TextDirection.ltr,
-                          child: IntlPhoneField(
-                            invalidNumberMessage: tr("invalid_phone_number"),
-                            decoration: InputDecoration(labelText: tr("phone_number")),
-                            initialCountryCode: 'TR',
-                            style: text.bodyMedium,
-                            cursorColor: scheme.primary,
-                            onChanged: (p) => _selectedPhone = p,
-                          ),
                         ),
 
                         const SizedBox(height: AppSpacing.l),

@@ -32,6 +32,9 @@ mixin _$TransportVehicle {
   String? get modelYear => throw _privateConstructorUsedError;
   num get baseFee => throw _privateConstructorUsedError;
   num get pricePerKm => throw _privateConstructorUsedError;
+  num get totalPrice => throw _privateConstructorUsedError;
+  double get distanceKm => throw _privateConstructorUsedError;
+  int get estimatedDurationMinutes => throw _privateConstructorUsedError;
   String get currency => throw _privateConstructorUsedError;
   String get driverName => throw _privateConstructorUsedError;
   String? get driverPhoto => throw _privateConstructorUsedError;
@@ -69,6 +72,9 @@ abstract class $TransportVehicleCopyWith<$Res> {
     String? modelYear,
     num baseFee,
     num pricePerKm,
+    num totalPrice,
+    double distanceKm,
+    int estimatedDurationMinutes,
     String currency,
     String driverName,
     String? driverPhoto,
@@ -105,6 +111,9 @@ class _$TransportVehicleCopyWithImpl<$Res, $Val extends TransportVehicle>
     Object? modelYear = freezed,
     Object? baseFee = null,
     Object? pricePerKm = null,
+    Object? totalPrice = null,
+    Object? distanceKm = null,
+    Object? estimatedDurationMinutes = null,
     Object? currency = null,
     Object? driverName = null,
     Object? driverPhoto = freezed,
@@ -159,6 +168,18 @@ class _$TransportVehicleCopyWithImpl<$Res, $Val extends TransportVehicle>
                 ? _value.pricePerKm
                 : pricePerKm // ignore: cast_nullable_to_non_nullable
                       as num,
+            totalPrice: null == totalPrice
+                ? _value.totalPrice
+                : totalPrice // ignore: cast_nullable_to_non_nullable
+                      as num,
+            distanceKm: null == distanceKm
+                ? _value.distanceKm
+                : distanceKm // ignore: cast_nullable_to_non_nullable
+                      as double,
+            estimatedDurationMinutes: null == estimatedDurationMinutes
+                ? _value.estimatedDurationMinutes
+                : estimatedDurationMinutes // ignore: cast_nullable_to_non_nullable
+                      as int,
             currency: null == currency
                 ? _value.currency
                 : currency // ignore: cast_nullable_to_non_nullable
@@ -214,6 +235,9 @@ abstract class _$$TransportVehicleImplCopyWith<$Res>
     String? modelYear,
     num baseFee,
     num pricePerKm,
+    num totalPrice,
+    double distanceKm,
+    int estimatedDurationMinutes,
     String currency,
     String driverName,
     String? driverPhoto,
@@ -249,6 +273,9 @@ class __$$TransportVehicleImplCopyWithImpl<$Res>
     Object? modelYear = freezed,
     Object? baseFee = null,
     Object? pricePerKm = null,
+    Object? totalPrice = null,
+    Object? distanceKm = null,
+    Object? estimatedDurationMinutes = null,
     Object? currency = null,
     Object? driverName = null,
     Object? driverPhoto = freezed,
@@ -303,6 +330,18 @@ class __$$TransportVehicleImplCopyWithImpl<$Res>
             ? _value.pricePerKm
             : pricePerKm // ignore: cast_nullable_to_non_nullable
                   as num,
+        totalPrice: null == totalPrice
+            ? _value.totalPrice
+            : totalPrice // ignore: cast_nullable_to_non_nullable
+                  as num,
+        distanceKm: null == distanceKm
+            ? _value.distanceKm
+            : distanceKm // ignore: cast_nullable_to_non_nullable
+                  as double,
+        estimatedDurationMinutes: null == estimatedDurationMinutes
+            ? _value.estimatedDurationMinutes
+            : estimatedDurationMinutes // ignore: cast_nullable_to_non_nullable
+                  as int,
         currency: null == currency
             ? _value.currency
             : currency // ignore: cast_nullable_to_non_nullable
@@ -351,6 +390,9 @@ class _$TransportVehicleImpl implements _TransportVehicle {
     this.modelYear,
     required this.baseFee,
     required this.pricePerKm,
+    this.totalPrice = 0,
+    this.distanceKm = 0,
+    this.estimatedDurationMinutes = 0,
     this.currency = 'TRY',
     required this.driverName,
     this.driverPhoto,
@@ -394,6 +436,15 @@ class _$TransportVehicleImpl implements _TransportVehicle {
   final num pricePerKm;
   @override
   @JsonKey()
+  final num totalPrice;
+  @override
+  @JsonKey()
+  final double distanceKm;
+  @override
+  @JsonKey()
+  final int estimatedDurationMinutes;
+  @override
+  @JsonKey()
   final String currency;
   @override
   final String driverName;
@@ -412,7 +463,7 @@ class _$TransportVehicleImpl implements _TransportVehicle {
 
   @override
   String toString() {
-    return 'TransportVehicle(vehicleId: $vehicleId, transportPricingId: $transportPricingId, vehicleImage: $vehicleImage, otherImages: $otherImages, licensePlate: $licensePlate, seatCount: $seatCount, brandName: $brandName, className: $className, modelYear: $modelYear, baseFee: $baseFee, pricePerKm: $pricePerKm, currency: $currency, driverName: $driverName, driverPhoto: $driverPhoto, experienceYears: $experienceYears, agencyName: $agencyName, avgRating: $avgRating, ratingCount: $ratingCount)';
+    return 'TransportVehicle(vehicleId: $vehicleId, transportPricingId: $transportPricingId, vehicleImage: $vehicleImage, otherImages: $otherImages, licensePlate: $licensePlate, seatCount: $seatCount, brandName: $brandName, className: $className, modelYear: $modelYear, baseFee: $baseFee, pricePerKm: $pricePerKm, totalPrice: $totalPrice, distanceKm: $distanceKm, estimatedDurationMinutes: $estimatedDurationMinutes, currency: $currency, driverName: $driverName, driverPhoto: $driverPhoto, experienceYears: $experienceYears, agencyName: $agencyName, avgRating: $avgRating, ratingCount: $ratingCount)';
   }
 
   @override
@@ -443,6 +494,15 @@ class _$TransportVehicleImpl implements _TransportVehicle {
             (identical(other.baseFee, baseFee) || other.baseFee == baseFee) &&
             (identical(other.pricePerKm, pricePerKm) ||
                 other.pricePerKm == pricePerKm) &&
+            (identical(other.totalPrice, totalPrice) ||
+                other.totalPrice == totalPrice) &&
+            (identical(other.distanceKm, distanceKm) ||
+                other.distanceKm == distanceKm) &&
+            (identical(
+                  other.estimatedDurationMinutes,
+                  estimatedDurationMinutes,
+                ) ||
+                other.estimatedDurationMinutes == estimatedDurationMinutes) &&
             (identical(other.currency, currency) ||
                 other.currency == currency) &&
             (identical(other.driverName, driverName) ||
@@ -461,7 +521,7 @@ class _$TransportVehicleImpl implements _TransportVehicle {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     vehicleId,
     transportPricingId,
@@ -474,6 +534,9 @@ class _$TransportVehicleImpl implements _TransportVehicle {
     modelYear,
     baseFee,
     pricePerKm,
+    totalPrice,
+    distanceKm,
+    estimatedDurationMinutes,
     currency,
     driverName,
     driverPhoto,
@@ -481,7 +544,7 @@ class _$TransportVehicleImpl implements _TransportVehicle {
     agencyName,
     avgRating,
     ratingCount,
-  );
+  ]);
 
   /// Create a copy of TransportVehicle
   /// with the given fields replaced by the non-null parameter values.
@@ -513,6 +576,9 @@ abstract class _TransportVehicle implements TransportVehicle {
     final String? modelYear,
     required final num baseFee,
     required final num pricePerKm,
+    final num totalPrice,
+    final double distanceKm,
+    final int estimatedDurationMinutes,
     final String currency,
     required final String driverName,
     final String? driverPhoto,
@@ -547,6 +613,12 @@ abstract class _TransportVehicle implements TransportVehicle {
   num get baseFee;
   @override
   num get pricePerKm;
+  @override
+  num get totalPrice;
+  @override
+  double get distanceKm;
+  @override
+  int get estimatedDurationMinutes;
   @override
   String get currency;
   @override

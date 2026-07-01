@@ -47,6 +47,7 @@ mixin _$CustomerInfo {
   String? get vehicleName => throw _privateConstructorUsedError;
   String? get vehiclePlate => throw _privateConstructorUsedError;
   int? get vehicleSeatCount => throw _privateConstructorUsedError;
+  bool get isStarted => throw _privateConstructorUsedError;
 
   /// Serializes this CustomerInfo to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -91,6 +92,7 @@ abstract class $CustomerInfoCopyWith<$Res> {
     String? vehicleName,
     String? vehiclePlate,
     int? vehicleSeatCount,
+    bool isStarted,
   });
 }
 
@@ -134,6 +136,7 @@ class _$CustomerInfoCopyWithImpl<$Res, $Val extends CustomerInfo>
     Object? vehicleName = freezed,
     Object? vehiclePlate = freezed,
     Object? vehicleSeatCount = freezed,
+    Object? isStarted = null,
   }) {
     return _then(
       _value.copyWith(
@@ -237,6 +240,10 @@ class _$CustomerInfoCopyWithImpl<$Res, $Val extends CustomerInfo>
                 ? _value.vehicleSeatCount
                 : vehicleSeatCount // ignore: cast_nullable_to_non_nullable
                       as int?,
+            isStarted: null == isStarted
+                ? _value.isStarted
+                : isStarted // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -278,6 +285,7 @@ abstract class _$$CustomerInfoImplCopyWith<$Res>
     String? vehicleName,
     String? vehiclePlate,
     int? vehicleSeatCount,
+    bool isStarted,
   });
 }
 
@@ -320,6 +328,7 @@ class __$$CustomerInfoImplCopyWithImpl<$Res>
     Object? vehicleName = freezed,
     Object? vehiclePlate = freezed,
     Object? vehicleSeatCount = freezed,
+    Object? isStarted = null,
   }) {
     return _then(
       _$CustomerInfoImpl(
@@ -423,6 +432,10 @@ class __$$CustomerInfoImplCopyWithImpl<$Res>
             ? _value.vehicleSeatCount
             : vehicleSeatCount // ignore: cast_nullable_to_non_nullable
                   as int?,
+        isStarted: null == isStarted
+            ? _value.isStarted
+            : isStarted // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -457,6 +470,7 @@ class _$CustomerInfoImpl implements _CustomerInfo {
     this.vehicleName,
     this.vehiclePlate,
     this.vehicleSeatCount,
+    this.isStarted = false,
   }) : _routePoints = routePoints;
 
   factory _$CustomerInfoImpl.fromJson(Map<String, dynamic> json) =>
@@ -530,10 +544,13 @@ class _$CustomerInfoImpl implements _CustomerInfo {
   final String? vehiclePlate;
   @override
   final int? vehicleSeatCount;
+  @override
+  @JsonKey()
+  final bool isStarted;
 
   @override
   String toString() {
-    return 'CustomerInfo(cutomerFullName: $cutomerFullName, customerPhoneNumber: $customerPhoneNumber, tourPointName: $tourPointName, departureDescription: $departureDescription, departureLatitude: $departureLatitude, departureLongitude: $departureLongitude, tourDate: $tourDate, status: $status, bookingType: $bookingType, bookingId: $bookingId, pickupAddress: $pickupAddress, pickupLatitude: $pickupLatitude, pickupLongitude: $pickupLongitude, dropoffAddress: $dropoffAddress, dropoffLatitude: $dropoffLatitude, dropoffLongitude: $dropoffLongitude, routePolyline: $routePolyline, guideName: $guideName, guidePhoneNumber: $guidePhoneNumber, hasGuide: $hasGuide, departureTime: $departureTime, routePoints: $routePoints, vehicleName: $vehicleName, vehiclePlate: $vehiclePlate, vehicleSeatCount: $vehicleSeatCount)';
+    return 'CustomerInfo(cutomerFullName: $cutomerFullName, customerPhoneNumber: $customerPhoneNumber, tourPointName: $tourPointName, departureDescription: $departureDescription, departureLatitude: $departureLatitude, departureLongitude: $departureLongitude, tourDate: $tourDate, status: $status, bookingType: $bookingType, bookingId: $bookingId, pickupAddress: $pickupAddress, pickupLatitude: $pickupLatitude, pickupLongitude: $pickupLongitude, dropoffAddress: $dropoffAddress, dropoffLatitude: $dropoffLatitude, dropoffLongitude: $dropoffLongitude, routePolyline: $routePolyline, guideName: $guideName, guidePhoneNumber: $guidePhoneNumber, hasGuide: $hasGuide, departureTime: $departureTime, routePoints: $routePoints, vehicleName: $vehicleName, vehiclePlate: $vehiclePlate, vehicleSeatCount: $vehicleSeatCount, isStarted: $isStarted)';
   }
 
   @override
@@ -591,7 +608,9 @@ class _$CustomerInfoImpl implements _CustomerInfo {
             (identical(other.vehiclePlate, vehiclePlate) ||
                 other.vehiclePlate == vehiclePlate) &&
             (identical(other.vehicleSeatCount, vehicleSeatCount) ||
-                other.vehicleSeatCount == vehicleSeatCount));
+                other.vehicleSeatCount == vehicleSeatCount) &&
+            (identical(other.isStarted, isStarted) ||
+                other.isStarted == isStarted));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -623,6 +642,7 @@ class _$CustomerInfoImpl implements _CustomerInfo {
     vehicleName,
     vehiclePlate,
     vehicleSeatCount,
+    isStarted,
   ]);
 
   /// Create a copy of CustomerInfo
@@ -666,6 +686,7 @@ abstract class _CustomerInfo implements CustomerInfo {
     final String? vehicleName,
     final String? vehiclePlate,
     final int? vehicleSeatCount,
+    final bool isStarted,
   }) = _$CustomerInfoImpl;
 
   factory _CustomerInfo.fromJson(Map<String, dynamic> json) =
@@ -722,6 +743,8 @@ abstract class _CustomerInfo implements CustomerInfo {
   String? get vehiclePlate;
   @override
   int? get vehicleSeatCount;
+  @override
+  bool get isStarted;
 
   /// Create a copy of CustomerInfo
   /// with the given fields replaced by the non-null parameter values.

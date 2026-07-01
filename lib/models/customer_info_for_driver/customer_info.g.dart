@@ -41,6 +41,7 @@ _$CustomerInfoImpl _$$CustomerInfoImplFromJson(Map<String, dynamic> json) =>
       vehicleName: json['vehicleName'] as String?,
       vehiclePlate: json['vehiclePlate'] as String?,
       vehicleSeatCount: (json['vehicleSeatCount'] as num?)?.toInt(),
+      isStarted: json['isStarted'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$CustomerInfoImplToJson(_$CustomerInfoImpl instance) =>
@@ -70,4 +71,5 @@ Map<String, dynamic> _$$CustomerInfoImplToJson(_$CustomerInfoImpl instance) =>
       'vehicleName': instance.vehicleName,
       'vehiclePlate': instance.vehiclePlate,
       'vehicleSeatCount': instance.vehicleSeatCount,
+      'isStarted': instance.isStarted,
     };

@@ -35,4 +35,20 @@ class DriverService {
           DriverProfile.fromJson(json as Map<String, dynamic>),
     );
   }
+
+  /// Sürücü turu/transferi başlatır (tip-bağımsız).
+  Future<BaseResponse<void>> startBooking(String bookingId) async {
+    return _apiClient.post<void>(
+      path: "/Mobile/booking/start",
+      body: {"bookingId": bookingId},
+    );
+  }
+
+  /// Sürücü turu/transferi tamamlar (tip-bağımsız).
+  Future<BaseResponse<void>> completeBooking(String bookingId) async {
+    return _apiClient.post<void>(
+      path: "/Mobile/booking/complete",
+      body: {"bookingId": bookingId},
+    );
+  }
 }

@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
-import 'package:intl/intl.dart';
 import 'package:tour_booking/core/theme/app_icon_size.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
@@ -138,11 +138,28 @@ class TransportVehicleCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      Text(
-                        _formatPrice(vehicle.baseFee),
-                        style: AppTextStyles.titleSmall.copyWith(
-                          color: context.colors.secondary,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            _formatPrice(
+                              vehicle.totalPrice > 0
+                                  ? vehicle.totalPrice
+                                  : vehicle.baseFee,
+                            ),
+                            style: AppTextStyles.titleSmall.copyWith(
+                              color: context.colors.secondary,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          if (vehicle.totalPrice > 0)
+                            Text(
+                              'transport_total'.tr(),
+                              style: AppTextStyles.caption.copyWith(
+                                color: context.colors.onSurfaceVariant,
+                              ),
+                            ),
+                        ],
                       ),
                     ],
                   ),

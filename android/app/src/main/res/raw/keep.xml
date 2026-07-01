@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Release build'de isShrinkResources=true olduğu için, google-services plugin'inin
+  ürettiği Firebase string kaynaklarının (özellikle google_app_id) resource shrinker
+  tarafından silinmesini engeller. Silinirse Firebase Analytics release'de
+  "Missing google_app_id. Firebase Analytics disabled" verir.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@string/google_app_id,@string/gcm_defaultSenderId,@string/project_id,@string/google_api_key,@string/google_storage_bucket,@string/default_web_client_id" />

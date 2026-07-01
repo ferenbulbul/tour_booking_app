@@ -28,6 +28,20 @@ class LocationService {
               )
             : null,
       );
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+      settings = AppleSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: distanceFilter,
+        // Arka planda konum akışının sürmesi (ve dolayısıyla API isteğinin
+        // atılması) için DRIVER rolünde gereklidir.
+        allowBackgroundLocationUpdates: role == UserRole.driver,
+        // iOS'un duraklatma optimizasyonunu kapat; aksi halde sürücü sabit
+        // kaldığında akış otomatik duraklatılır ve geri açılmayabilir.
+        pauseLocationUpdatesAutomatically: false,
+        // Arka plandayken durum çubuğunda mavi konum göstergesi.
+        showBackgroundLocationIndicator: role == UserRole.driver,
+        activityType: ActivityType.automotiveNavigation,
+      );
     } else {
       settings = LocationSettings(
         accuracy: LocationAccuracy.high,

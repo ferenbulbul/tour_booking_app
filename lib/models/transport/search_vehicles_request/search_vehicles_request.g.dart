@@ -15,6 +15,12 @@ _$$TransportSearchVehiclesRequestImplFromJson(Map<String, dynamic> json) =>
       startTime: json['startTime'] as String,
       estimatedDurationMinutes:
           (json['estimatedDurationMinutes'] as num?)?.toInt() ?? 60,
+      pickupLatitude: (json['pickupLatitude'] as num?)?.toDouble(),
+      pickupLongitude: (json['pickupLongitude'] as num?)?.toDouble(),
+      dropoffLatitude: (json['dropoffLatitude'] as num?)?.toDouble(),
+      dropoffLongitude: (json['dropoffLongitude'] as num?)?.toDouble(),
+      clientDistanceKm: (json['clientDistanceKm'] as num?)?.toDouble(),
+      clientDurationMinutes: (json['clientDurationMinutes'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$$TransportSearchVehiclesRequestImplToJson(
@@ -25,4 +31,10 @@ Map<String, dynamic> _$$TransportSearchVehiclesRequestImplToJson(
   'date': _dateToString(instance.date),
   'startTime': instance.startTime,
   'estimatedDurationMinutes': instance.estimatedDurationMinutes,
+  'pickupLatitude': instance.pickupLatitude,
+  'pickupLongitude': instance.pickupLongitude,
+  'dropoffLatitude': instance.dropoffLatitude,
+  'dropoffLongitude': instance.dropoffLongitude,
+  'clientDistanceKm': instance.clientDistanceKm,
+  'clientDurationMinutes': instance.clientDurationMinutes,
 };

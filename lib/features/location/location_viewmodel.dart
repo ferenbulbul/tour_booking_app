@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
@@ -20,6 +19,7 @@ class LocationViewModel extends BaseViewModel {
   bool _isTracking = false;
   LocationPermissionStatus? _permissionStatus;
   StreamSubscription<Position>? _sub;
+  Timer? _heartbeat;
   String? _errorMessage;
 
   // Throttle: last sent position and time
@@ -30,23 +30,87 @@ class LocationViewModel extends BaseViewModel {
   static const double _minDistanceMeters = 1000; // 1 km
   static const Duration _minInterval = Duration(hours: 1);
 
+  // Driver: sabit dururken bile konumu taze tutmak için heartbeat aralığı.
+  // Konum akışı (stream) hareket olmadığında tetiklenmediği için, backoffice
+  // haritasındaki konumun bayatlamaması adına periyodik gönderim yapılır.
+  static const Duration _driverHeartbeat = Duration(seconds: 15);
+
   Position? get currentPosition => _currentPosition;
   bool get isTracking => _isTracking;
   LocationPermissionStatus? get permissionStatus => _permissionStatus;
   String? get errorMessage => _errorMessage;
 
-  Future<void> checkAndHandleLocation(UserRole role) async {
-    final status = await _permissionService.checkPermission(role);
+  /// Checks location permission and starts tracking if granted.
+  /// Set [requestIfDenied] to true to prompt the OS permission dialog.
+  ///
+  /// For drivers: tracking only starts with [grantedAlways].
+  /// For customers: tracking starts with [grantedWhenInUse] or [grantedAlways].
+  ///
+  /// Returns the final [LocationPermissionStatus].
+  Future<LocationPermissionStatus> checkAndHandleLocation(
+    UserRole role, {
+    bool requestIfDenied = false,
+  }) async {
+    var status = await _permissionService.checkPermission(role);
+
+    if (requestIfDenied) {
+      // Request permission if denied OR if driver needs always but only has whenInUse
+      if (status == LocationPermissionStatus.denied ||
+          (role == UserRole.driver &&
+              status == LocationPermissionStatus.grantedWhenInUse)) {
+        status = await _permissionService.requestPermission(role);
+      }
+    }
+
     _permissionStatus = status;
 
-    if (status == LocationPermissionStatus.grantedAlways ||
-        status == LocationPermissionStatus.grantedWhenInUse) {
+    // Drivers MUST have grantedAlways to track.
+    // Customers can track with grantedWhenInUse.
+    final canTrack = (role == UserRole.driver)
+        ? status == LocationPermissionStatus.grantedAlways
+        : (status == LocationPermissionStatus.grantedAlways ||
+            status == LocationPermissionStatus.grantedWhenInUse);
+
+    if (canTrack) {
       await _startLocationTracking(role);
     } else {
       stopTracking();
     }
 
     notifyListeners();
+    return status;
+  }
+
+  /// Only requests permission and updates [permissionStatus].
+  /// Does NOT start or stop tracking.
+  /// Use this from informational UI (e.g. status banner) that should not
+  /// independently control the location stream.
+  Future<LocationPermissionStatus> requestPermissionOnly(UserRole role) async {
+    var status = await _permissionService.checkPermission(role);
+
+    if (status == LocationPermissionStatus.denied ||
+        (role == UserRole.driver &&
+            status == LocationPermissionStatus.grantedWhenInUse)) {
+      status = await _permissionService.requestPermission(role);
+    }
+
+    _permissionStatus = status;
+    notifyListeners();
+    return status;
+  }
+
+  /// Requests background (always) permission and starts tracking if granted.
+  /// Call after showing a rationale dialog to the user.
+  Future<LocationPermissionStatus> requestAlwaysAndTrack() async {
+    final status = await _permissionService.requestAlwaysPermission();
+    _permissionStatus = status;
+
+    if (status == LocationPermissionStatus.grantedAlways) {
+      await _startLocationTracking(UserRole.driver);
+    }
+
+    notifyListeners();
+    return status;
   }
 
   /// Force send location (e.g. when entering Nearby page)
@@ -85,8 +149,9 @@ class LocationViewModel extends BaseViewModel {
       // If initial position fails, rely on stream
     }
 
-    final interval = isDriver ? 60 : 3600;
-    final distance = isDriver ? 50 : 1000;
+    // Driver: sık ve düşük mesafe eşiği (anlık takip).
+    final interval = isDriver ? 10 : 3600;
+    final distance = isDriver ? 15 : 1000;
 
     _sub?.cancel();
     _sub = _locationService
@@ -100,22 +165,52 @@ class LocationViewModel extends BaseViewModel {
           _currentPosition = pos;
           await _sendToServer(pos, force: isDriver);
           notifyListeners();
+        }, onError: (_) {
+          // Akış hatasında takip durmasın; heartbeat ve sonraki emisyonlar sürer.
         });
+
+    // Driver: hareket olmasa da konumu taze tutmak için periyodik gönderim.
+    _heartbeat?.cancel();
+    if (isDriver) {
+      _heartbeat = Timer.periodic(_driverHeartbeat, (_) async {
+        try {
+          final pos = await Geolocator.getCurrentPosition(
+            locationSettings: const LocationSettings(
+              accuracy: LocationAccuracy.high,
+              timeLimit: Duration(seconds: 10),
+            ),
+          );
+          _currentPosition = pos;
+          await _sendToServer(pos, force: true);
+        } catch (_) {
+          // Taze konum alınamazsa son bilinen konumu gönder.
+          final last = _currentPosition;
+          if (last != null) await _sendToServer(last, force: true);
+        }
+      });
+    }
   }
 
-  /// Send location to server (with throttle check)
+  /// Send location to server (with throttle check + tek seferlik retry)
   Future<void> _sendToServer(Position pos, {bool force = false}) async {
     if (!force && !_shouldSendUpdate(pos)) return;
 
-    try {
-      await _service.locationUpdate(
-        LocationDto(latitude: pos.latitude, longitude: pos.longitude),
-      );
-      _lastSentPosition = pos;
-      _lastSentTime = DateTime.now();
-    } catch (e) {
-      _errorMessage = 'Failed to send location update: $e';
-      notifyListeners();
+    for (var attempt = 0; attempt < 2; attempt++) {
+      try {
+        await _service.locationUpdate(
+          LocationDto(latitude: pos.latitude, longitude: pos.longitude),
+        );
+        _lastSentPosition = pos;
+        _lastSentTime = DateTime.now();
+        return;
+      } catch (e) {
+        _errorMessage = 'Failed to send location update: $e';
+        if (attempt == 0) {
+          await Future.delayed(const Duration(seconds: 2));
+          continue;
+        }
+        notifyListeners();
+      }
     }
   }
 
@@ -143,6 +238,8 @@ class LocationViewModel extends BaseViewModel {
   void stopTracking() {
     _sub?.cancel();
     _sub = null;
+    _heartbeat?.cancel();
+    _heartbeat = null;
 
     if (_isTracking) {
       _isTracking = false;
