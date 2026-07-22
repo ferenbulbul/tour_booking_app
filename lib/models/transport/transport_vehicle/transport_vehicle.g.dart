@@ -33,6 +33,8 @@ _$TransportVehicleImpl _$$TransportVehicleImplFromJson(
   driverPhoto: json['driverPhoto'] as String?,
   experienceYears: json['experienceYears'] as String?,
   agencyName: json['agencyName'] as String,
+  tierName: json['tierName'] as String?,
+  tierBadgeColor: json['tierBadgeColor'] as String?,
   avgRating: (json['avgRating'] as num?)?.toDouble() ?? 0,
   ratingCount: (json['ratingCount'] as num?)?.toInt() ?? 0,
 );
@@ -59,6 +61,8 @@ Map<String, dynamic> _$$TransportVehicleImplToJson(
   'driverPhoto': instance.driverPhoto,
   'experienceYears': instance.experienceYears,
   'agencyName': instance.agencyName,
+  'tierName': instance.tierName,
+  'tierBadgeColor': instance.tierBadgeColor,
   'avgRating': instance.avgRating,
   'ratingCount': instance.ratingCount,
 };

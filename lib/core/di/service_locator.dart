@@ -1,9 +1,11 @@
 import 'package:tour_booking/services/auth/auth_service.dart';
 import 'package:tour_booking/services/core/analytics_service.dart';
+import 'package:tour_booking/services/core/meta_events_service.dart';
 import 'package:tour_booking/services/driver/driver_service.dart';
 import 'package:tour_booking/services/google_places/google_place_service.dart';
 import 'package:tour_booking/services/location/location_permission_service.dart';
 import 'package:tour_booking/services/location/location_service.dart';
+import 'package:tour_booking/services/notifications/notifications_service.dart';
 import 'package:tour_booking/services/payment/payment_service.dart';
 import 'package:tour_booking/services/recent_search/recent_search_service.dart';
 import 'package:tour_booking/services/tour/tour_service.dart';
@@ -25,7 +27,9 @@ class ServiceLocator {
   late final LocationPermissionService locationPermissionService;
   late final LocationService locationService;
   late final RecentSearchService recentSearchService;
+  late final NotificationsService notificationsService;
   late final AnalyticsService analyticsService;
+  late final MetaEventsService metaEventsService;
 
   void init() {
     tourService = TourService();
@@ -37,6 +41,8 @@ class ServiceLocator {
     locationPermissionService = LocationPermissionService();
     locationService = LocationService();
     recentSearchService = RecentSearchService();
+    notificationsService = NotificationsService();
     analyticsService = AnalyticsService.instance;
+    metaEventsService = MetaEventsService.instance;
   }
 }

@@ -6,6 +6,7 @@ import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/theme/app_theme_context.dart';
+import 'package:tour_booking/core/widgets/badgets/agency_tier_badge.dart';
 import 'package:tour_booking/models/transport/transport_vehicle/transport_vehicle.dart';
 
 /// Displays the vehicle header (brand, agency, rating) and the specs grid
@@ -63,6 +64,14 @@ class TransportVehicleInfoSection extends StatelessWidget {
                   ),
                 ),
               ),
+              if (vehicle.tierName != null &&
+                  vehicle.tierName!.isNotEmpty) ...[
+                const SizedBox(width: AppSpacing.xs),
+                AgencyTierBadge(
+                  tierName: vehicle.tierName!,
+                  badgeColor: vehicle.tierBadgeColor,
+                ),
+              ],
             ],
           ),
         ),

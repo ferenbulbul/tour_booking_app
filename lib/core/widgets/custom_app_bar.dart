@@ -8,6 +8,9 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool showBack;
 
+  /// Overrides the default back behavior (context.pop) when provided.
+  final VoidCallback? onBack;
+
   /// Action button is fully provided from outside
   final IconData? actionIcon;
   final VoidCallback? onActionPressed;
@@ -21,6 +24,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
     super.key,
     required this.title,
     this.showBack = true,
+    this.onBack,
 
     // Nearby places or another custom action
     this.actionIcon,
@@ -45,8 +49,12 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: showBack
           ? IconButton(
               tooltip: 'Back',
-              icon: Icon(Icons.arrow_back_ios_new, color: scheme.onSurface, semanticLabel: 'Go back'),
-              onPressed: () => context.pop(),
+              icon: Icon(
+                Icons.arrow_back_ios_new,
+                color: scheme.onSurface,
+                semanticLabel: 'Go back',
+              ),
+              onPressed: onBack ?? () => context.pop(),
             )
           : null,
 
@@ -65,7 +73,11 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
         if (actionIcon != null)
           IconButton(
             tooltip: 'Action',
-            icon: Icon(actionIcon, color: scheme.primary, semanticLabel: 'Action'),
+            icon: Icon(
+              actionIcon,
+              color: scheme.primary,
+              semanticLabel: 'Action',
+            ),
             onPressed: onActionPressed,
           ),
 

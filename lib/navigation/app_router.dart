@@ -7,6 +7,7 @@ import 'package:tour_booking/features/driver_home_page/screen/driver_home_page.d
 import 'package:tour_booking/features/driver_home_page/screen/driver_profile_screen.dart';
 import 'package:tour_booking/features/favorite/screen/favorite_screen.dart';
 import 'package:tour_booking/features/home/screen/home_screen.dart';
+import 'package:tour_booking/features/notifications/screen/notifications_screen.dart';
 import 'package:tour_booking/features/onboarding/screen/onboarding_screen.dart';
 import 'package:tour_booking/features/profile/screen/profile_screen.dart';
 import 'package:tour_booking/features/root/screen/error_screen.dart';
@@ -121,6 +122,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/past-bookings',
       builder: (context, state) => const BookingsScreen(),
+    ),
+    GoRoute(
+      path: '/notifications',
+      builder: (context, state) => const NotificationsScreen(),
     ),
 
     // Extracted route groups

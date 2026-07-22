@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_icons/solar_icons.dart';
+import 'package:tour_booking/core/widgets/badgets/agency_tier_badge.dart';
 import 'package:tour_booking/core/theme/app_icon_size.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
@@ -118,7 +119,8 @@ class TransportVehicleCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                ],
+
+],
               ),
             ),
 
@@ -182,6 +184,14 @@ class TransportVehicleCard extends StatelessWidget {
                             ),
                           ),
                         ),
+                        if (vehicle.tierName != null &&
+                            vehicle.tierName!.isNotEmpty) ...[
+                          const SizedBox(width: AppSpacing.xs),
+                          AgencyTierBadge(
+                            tierName: vehicle.tierName!,
+                            badgeColor: vehicle.tierBadgeColor,
+                          ),
+                        ],
                       ],
                     ),
                   ),

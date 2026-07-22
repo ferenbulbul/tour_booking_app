@@ -13,6 +13,9 @@ class ProfileResponse with _$ProfileResponse {
     @Default(false) bool emailNotification,
     @Default(false) bool pushNotification,
     @Default(false) bool smsNotification,
+    // false = kullanıcı push tercihi hiç bildirmemiş (sunucu varsayılanı);
+    // OS izni açıksa tercih bir defalığına otomatik açılır
+    @Default(true) bool pushPreferenceSet,
   }) = _ProfileResponse;
 
   factory ProfileResponse.fromJson(Map<String, dynamic> json) =>

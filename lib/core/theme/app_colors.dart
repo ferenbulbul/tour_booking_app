@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // ── Brand ──────────────────────────────────────────────
-  static const primary = Color(0xFF182B40); // Tourlio Navy
-  static const primaryDark = Color(0xFF0F1D2B);
-  static const primaryLight = Color(0xFF2D4A66);
+  static const primary = Color(0xFF010E2A); // Tourlio Navy (logo zemini)
+  static const primaryDark = Color(0xFF000817);
+  static const primaryLight = Color(0xFF182B40);
 
   // ── Accent ─────────────────────────────────────────────
   static const accent = Color(0xFFEC5807); // Tourlio Orange

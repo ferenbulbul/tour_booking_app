@@ -32,6 +32,8 @@ _$VehicleDetailImpl _$$VehicleDetailImplFromJson(Map<String, dynamic> json) =>
       avgRating: (json['avgRating'] as num?)?.toDouble(),
       ratingCount: (json['ratingCount'] as num?)?.toInt(),
       companyName: json['companyName'] as String?,
+      tierName: json['tierName'] as String?,
+      tierBadgeColor: json['tierBadgeColor'] as String?,
     );
 
 Map<String, dynamic> _$$VehicleDetailImplToJson(_$VehicleDetailImpl instance) =>
@@ -54,4 +56,6 @@ Map<String, dynamic> _$$VehicleDetailImplToJson(_$VehicleDetailImpl instance) =>
       'avgRating': instance.avgRating,
       'ratingCount': instance.ratingCount,
       'companyName': instance.companyName,
+      'tierName': instance.tierName,
+      'tierBadgeColor': instance.tierBadgeColor,
     };

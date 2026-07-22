@@ -9,6 +9,7 @@ import 'package:tour_booking/core/theme/app_icon_size.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/theme/app_theme_context.dart';
+import 'package:tour_booking/core/widgets/badgets/agency_tier_badge.dart';
 import 'package:tour_booking/core/widgets/custom_app_bar.dart';
 import 'package:tour_booking/features/tour/booking/tour_vehicle_guide_viewmodel.dart';
 import 'package:tour_booking/features/tour/booking/widget/vehicle_detail_sheet.dart';
@@ -159,6 +160,14 @@ class _VehicleCard extends StatelessWidget {
                               ),
                             ),
                           ),
+                          if (vehicle.tierName != null &&
+                              vehicle.tierName!.isNotEmpty) ...[
+                            const SizedBox(width: AppSpacing.xs),
+                            AgencyTierBadge(
+                              tierName: vehicle.tierName!,
+                              badgeColor: vehicle.tierBadgeColor,
+                            ),
+                          ],
                         ],
                       ),
                     ),

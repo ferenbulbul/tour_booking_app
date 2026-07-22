@@ -17,8 +17,10 @@ import 'package:tour_booking/features/auth/login/google_viewmodel.dart';
 import 'package:tour_booking/features/tour/search/search_viewmodel.dart';
 import 'package:tour_booking/features/tour/search_result/search_result_viewmodel.dart';
 import 'package:tour_booking/features/profile/permission_viewmodel.dart';
+import 'package:tour_booking/features/notifications/notifications_viewmodel.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
+import 'package:tour_booking/navigation/deep_link_navigator.dart';
 import 'package:tour_booking/features/tour/booking/tour_detail_viewmodel.dart';
 import 'package:tour_booking/features/tour/booking/tour_booking_selection_viewmodel.dart';
 import 'package:tour_booking/features/tour/booking/tour_vehicle_guide_viewmodel.dart';
@@ -50,6 +52,7 @@ void main() async {
 
   ServiceLocator.instance.init();
   await ServiceLocator.instance.analyticsService.init();
+  await ServiceLocator.instance.metaEventsService.init();
 
   // Global error handlers for uncaught exceptions
   FlutterError.onError = (details) {
@@ -88,6 +91,57 @@ class _AppProvidersState extends State<AppProviders> {
       event.preventDefault();
       event.notification.display();
     });
+    // Backoffice'ten gönderilen bildirimlerdeki deepLink alanını yakala
+    OneSignal.Notifications.addClickListener((event) {
+      final link = event.notification.additionalData?['deepLink'];
+      if (link is! String || link.isEmpty) return;
+      _handlePushDeepLink(link);
+    });
+  }
+
+  // Soğuk başlatmada splash init'i (token/misafir girişi) bitmeden yönlendirilirse
+  // hedef ekran token'sız API çağrısıyla boş/donuk kalır; link init sonuna bekletilir.
+  String? _pendingDeepLink;
+
+  // Hem "/tour/123" hem "https://tourrentai.com/tour/123" formatlarını destekler
+  void _handlePushDeepLink(String link) {
+    final uri = Uri.tryParse(link);
+    if (uri == null) return;
+    final path = uri.hasScheme ? uri.path : link;
+    if (path.isEmpty || !path.startsWith('/')) return;
+    final location = uri.query.isNotEmpty ? '$path?${uri.query}' : path;
+
+    if (splashViewModel.isChecking) {
+      _pendingDeepLink = location;
+      splashViewModel.addListener(_goToPendingDeepLink);
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Detay sayfaları push'lanır (geri tuşu mevcut ekrana döner);
+        // sekme hedefleri go ile açılır — shell'i push'lamak Navigator'ı çökertir
+        openDeepLink(router, location);
+      });
+    }
+  }
+
+  void _goToPendingDeepLink() {
+    if (splashViewModel.isChecking) return;
+    splashViewModel.removeListener(_goToPendingDeepLink);
+    final link = _pendingDeepLink;
+    _pendingDeepLink = null;
+    if (link != null) {
+      // refreshListenable'ın '/' → /home redirect'i bu frame'de çalışır;
+      // deep link bir sonraki frame'de push'lanır → /home yığında kalır,
+      // geri tuşu ana sayfaya döner
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        openDeepLink(router, link);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    splashViewModel.removeListener(_goToPendingDeepLink);
+    super.dispose();
   }
 
   @override
@@ -110,6 +164,7 @@ class _AppProvidersState extends State<AppProviders> {
           ChangeNotifierProvider(create: (_) => BookingsViewModel()),
           ChangeNotifierProvider(create: (_) => PermissionsViewModel()),
           ChangeNotifierProvider(create: (_) => RatingsViewModel()),
+          ChangeNotifierProvider(create: (_) => NotificationsViewModel()),
           ChangeNotifierProvider(create: (_) => ThemeViewModel()),
         ],
         child: const MyApp(),

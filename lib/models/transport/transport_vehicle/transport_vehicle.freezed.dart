@@ -40,6 +40,8 @@ mixin _$TransportVehicle {
   String? get driverPhoto => throw _privateConstructorUsedError;
   String? get experienceYears => throw _privateConstructorUsedError;
   String get agencyName => throw _privateConstructorUsedError;
+  String? get tierName => throw _privateConstructorUsedError;
+  String? get tierBadgeColor => throw _privateConstructorUsedError;
   double get avgRating => throw _privateConstructorUsedError;
   int get ratingCount => throw _privateConstructorUsedError;
 
@@ -80,6 +82,8 @@ abstract class $TransportVehicleCopyWith<$Res> {
     String? driverPhoto,
     String? experienceYears,
     String agencyName,
+    String? tierName,
+    String? tierBadgeColor,
     double avgRating,
     int ratingCount,
   });
@@ -119,6 +123,8 @@ class _$TransportVehicleCopyWithImpl<$Res, $Val extends TransportVehicle>
     Object? driverPhoto = freezed,
     Object? experienceYears = freezed,
     Object? agencyName = null,
+    Object? tierName = freezed,
+    Object? tierBadgeColor = freezed,
     Object? avgRating = null,
     Object? ratingCount = null,
   }) {
@@ -200,6 +206,14 @@ class _$TransportVehicleCopyWithImpl<$Res, $Val extends TransportVehicle>
                 ? _value.agencyName
                 : agencyName // ignore: cast_nullable_to_non_nullable
                       as String,
+            tierName: freezed == tierName
+                ? _value.tierName
+                : tierName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            tierBadgeColor: freezed == tierBadgeColor
+                ? _value.tierBadgeColor
+                : tierBadgeColor // ignore: cast_nullable_to_non_nullable
+                      as String?,
             avgRating: null == avgRating
                 ? _value.avgRating
                 : avgRating // ignore: cast_nullable_to_non_nullable
@@ -243,6 +257,8 @@ abstract class _$$TransportVehicleImplCopyWith<$Res>
     String? driverPhoto,
     String? experienceYears,
     String agencyName,
+    String? tierName,
+    String? tierBadgeColor,
     double avgRating,
     int ratingCount,
   });
@@ -281,6 +297,8 @@ class __$$TransportVehicleImplCopyWithImpl<$Res>
     Object? driverPhoto = freezed,
     Object? experienceYears = freezed,
     Object? agencyName = null,
+    Object? tierName = freezed,
+    Object? tierBadgeColor = freezed,
     Object? avgRating = null,
     Object? ratingCount = null,
   }) {
@@ -362,6 +380,14 @@ class __$$TransportVehicleImplCopyWithImpl<$Res>
             ? _value.agencyName
             : agencyName // ignore: cast_nullable_to_non_nullable
                   as String,
+        tierName: freezed == tierName
+            ? _value.tierName
+            : tierName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        tierBadgeColor: freezed == tierBadgeColor
+            ? _value.tierBadgeColor
+            : tierBadgeColor // ignore: cast_nullable_to_non_nullable
+                  as String?,
         avgRating: null == avgRating
             ? _value.avgRating
             : avgRating // ignore: cast_nullable_to_non_nullable
@@ -398,6 +424,8 @@ class _$TransportVehicleImpl implements _TransportVehicle {
     this.driverPhoto,
     this.experienceYears,
     required this.agencyName,
+    this.tierName,
+    this.tierBadgeColor,
     this.avgRating = 0,
     this.ratingCount = 0,
   }) : _otherImages = otherImages;
@@ -455,6 +483,10 @@ class _$TransportVehicleImpl implements _TransportVehicle {
   @override
   final String agencyName;
   @override
+  final String? tierName;
+  @override
+  final String? tierBadgeColor;
+  @override
   @JsonKey()
   final double avgRating;
   @override
@@ -463,7 +495,7 @@ class _$TransportVehicleImpl implements _TransportVehicle {
 
   @override
   String toString() {
-    return 'TransportVehicle(vehicleId: $vehicleId, transportPricingId: $transportPricingId, vehicleImage: $vehicleImage, otherImages: $otherImages, licensePlate: $licensePlate, seatCount: $seatCount, brandName: $brandName, className: $className, modelYear: $modelYear, baseFee: $baseFee, pricePerKm: $pricePerKm, totalPrice: $totalPrice, distanceKm: $distanceKm, estimatedDurationMinutes: $estimatedDurationMinutes, currency: $currency, driverName: $driverName, driverPhoto: $driverPhoto, experienceYears: $experienceYears, agencyName: $agencyName, avgRating: $avgRating, ratingCount: $ratingCount)';
+    return 'TransportVehicle(vehicleId: $vehicleId, transportPricingId: $transportPricingId, vehicleImage: $vehicleImage, otherImages: $otherImages, licensePlate: $licensePlate, seatCount: $seatCount, brandName: $brandName, className: $className, modelYear: $modelYear, baseFee: $baseFee, pricePerKm: $pricePerKm, totalPrice: $totalPrice, distanceKm: $distanceKm, estimatedDurationMinutes: $estimatedDurationMinutes, currency: $currency, driverName: $driverName, driverPhoto: $driverPhoto, experienceYears: $experienceYears, agencyName: $agencyName, tierName: $tierName, tierBadgeColor: $tierBadgeColor, avgRating: $avgRating, ratingCount: $ratingCount)';
   }
 
   @override
@@ -513,6 +545,10 @@ class _$TransportVehicleImpl implements _TransportVehicle {
                 other.experienceYears == experienceYears) &&
             (identical(other.agencyName, agencyName) ||
                 other.agencyName == agencyName) &&
+            (identical(other.tierName, tierName) ||
+                other.tierName == tierName) &&
+            (identical(other.tierBadgeColor, tierBadgeColor) ||
+                other.tierBadgeColor == tierBadgeColor) &&
             (identical(other.avgRating, avgRating) ||
                 other.avgRating == avgRating) &&
             (identical(other.ratingCount, ratingCount) ||
@@ -542,6 +578,8 @@ class _$TransportVehicleImpl implements _TransportVehicle {
     driverPhoto,
     experienceYears,
     agencyName,
+    tierName,
+    tierBadgeColor,
     avgRating,
     ratingCount,
   ]);
@@ -584,6 +622,8 @@ abstract class _TransportVehicle implements TransportVehicle {
     final String? driverPhoto,
     final String? experienceYears,
     required final String agencyName,
+    final String? tierName,
+    final String? tierBadgeColor,
     final double avgRating,
     final int ratingCount,
   }) = _$TransportVehicleImpl;
@@ -629,6 +669,10 @@ abstract class _TransportVehicle implements TransportVehicle {
   String? get experienceYears;
   @override
   String get agencyName;
+  @override
+  String? get tierName;
+  @override
+  String? get tierBadgeColor;
   @override
   double get avgRating;
   @override

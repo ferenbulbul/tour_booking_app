@@ -6,6 +6,7 @@ import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/theme/app_theme_context.dart';
+import 'package:tour_booking/core/widgets/badgets/agency_tier_badge.dart';
 
 /// Vehicle image carousel with brand/price row, company name, and rating.
 ///
@@ -20,6 +21,8 @@ class VehicleInfoHeader extends StatelessWidget {
   final String vehicleBrand;
   final String formattedPrice;
   final String? companyName;
+  final String? tierName;
+  final String? tierBadgeColor;
   final double? avgRating;
   final int? ratingCount;
   final void Function(List<String> images, int index) onOpenGallery;
@@ -34,6 +37,8 @@ class VehicleInfoHeader extends StatelessWidget {
     required this.vehicleBrand,
     required this.formattedPrice,
     this.companyName,
+    this.tierName,
+    this.tierBadgeColor,
     this.avgRating,
     this.ratingCount,
     required this.onOpenGallery,
@@ -175,6 +180,13 @@ class VehicleInfoHeader extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (tierName != null && tierName!.isNotEmpty) ...[
+                  const SizedBox(width: AppSpacing.xs),
+                  AgencyTierBadge(
+                    tierName: tierName!,
+                    badgeColor: tierBadgeColor,
+                  ),
+                ],
               ],
             ),
           ),

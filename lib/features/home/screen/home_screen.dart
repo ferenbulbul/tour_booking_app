@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
 
 import 'package:tour_booking/core/enum/user_role.dart';
@@ -20,6 +21,7 @@ import 'package:tour_booking/features/home/widget/nearby_tour_points.dart';
 import 'package:tour_booking/services/location/location_permission_service.dart';
 
 import 'package:tour_booking/features/profile/permission_viewmodel.dart';
+import 'package:tour_booking/features/notifications/notifications_viewmodel.dart';
 import 'package:tour_booking/features/profile/profile_viewmodel.dart';
 
 import 'package:tour_booking/features/auth/login/widget/login_bottom_sheet.dart';
@@ -80,6 +82,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     context.read<ProfileViewModel>().fetchProfile();
     context.read<PermissionsViewModel>().syncPlayerId();
 
+    // NOTIFICATION BELL BADGE
+    context.read<NotificationsViewModel>().refreshUnreadCount();
+
     // ROLE LOAD
     _loadUserRole();
 
@@ -105,7 +110,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _refreshAfterAuth() {
     context.read<HomeViewModel>().init();
     context.read<HomeViewModel>().loadCityTargets();
-    context.read<ProfileViewModel>().fetchProfile();
+    context.read<ProfileViewModel>().fetchProfile().then((_) {
+      // Hesap değişti (misafir↔kayıtlı): yeni hesap tercih bildirmemişse
+      // ve OS izni açıksa push tercihini bir defalığına aç
+      if (mounted && _lastOsNotifGranted == true) {
+        context.read<ProfileViewModel>().ensureDefaultPushPreference();
+      }
+    });
+    context.read<NotificationsViewModel>().refreshUnreadCount();
     _fetchNearbyIfPermitted();
   }
 
@@ -160,13 +172,77 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   // ============================================================
   // Ask only missing permissions
   // ============================================================
+  static const _kLastOsNotifGranted = 'last_os_notif_granted';
+  bool? _lastOsNotifGranted;
+
+  static bool _isNotifGranted(OSNotificationPermission status) =>
+      status == OSNotificationPermission.authorized ||
+      status == OSNotificationPermission.provisional ||
+      status == OSNotificationPermission.ephemeral;
+
   Future<void> _askMissingPermissions() async {
+    // Steady state (permission unchanged since last run) never touches the
+    // in-app preference — an explicit in-app opt-out must survive app opens.
+    // Only a TRANSITION (user flipped the OS permission, possibly while the
+    // app was killed — hence the persisted last-known value) is mirrored.
+    final prefs = await SharedPreferences.getInstance();
+    final wasGranted = prefs.getBool(_kLastOsNotifGranted);
+    final granted =
+        _isNotifGranted(await OneSignal.Notifications.permissionNative());
+    _lastOsNotifGranted = granted;
+    await prefs.setBool(_kLastOsNotifGranted, granted);
+
+    if (granted) {
+      if (wasGranted == false && mounted) {
+        context.read<ProfileViewModel>().syncPushPreferenceWithOsPermission(true);
+      } else if (mounted) {
+        // Tercih hiç bildirilmemişse (yeni kayıt/misafir, eski sürüm hesabı)
+        // bir defalığına aç; bilinçli tercihler sunucu damgasıyla korunur
+        context.read<ProfileViewModel>().ensureDefaultPushPreference();
+      }
+      return;
+    }
+
+    // OS izni kapalı → tercih açık kalamaz (cihaz zaten alamaz; backoffice
+    // gerçek durumu görsün). Geçiş şartı yok — flag zaten kapalıysa no-op.
+    if (mounted) {
+      await context
+          .read<ProfileViewModel>()
+          .syncPushPreferenceWithOsPermission(false);
+    }
+    if (!mounted) return;
+
     final accepted = await OneSignal.Notifications.requestPermission(false);
     if (accepted && mounted) {
-      context.read<ProfileViewModel>().updateNotificationPreference(
-        type: 'push',
-        value: true,
-      );
+      _lastOsNotifGranted = true;
+      await prefs.setBool(_kLastOsNotifGranted, true);
+      if (mounted) {
+        context.read<ProfileViewModel>().syncPushPreferenceWithOsPermission(true);
+      }
+    }
+  }
+
+  // Uygulama açıkken OS ayarlarından izin değiştirildiyse (açık↔kapalı geçişi)
+  // uygulama içi push tercihini aynı yöne senkronla — kullanıcı toggle'a
+  // basmak zorunda kalmasın, backoffice de gerçek durumu görsün.
+  Future<void> _syncPushOnOsPermissionChange() async {
+    final granted =
+        _isNotifGranted(await OneSignal.Notifications.permissionNative());
+    final wasGranted = _lastOsNotifGranted;
+    _lastOsNotifGranted = granted;
+
+    if (wasGranted != granted) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_kLastOsNotifGranted, granted);
+    }
+    if (!mounted) return;
+
+    if (!granted) {
+      // Kapalı yön geçişten bağımsız: izin yokken tercih açık kalamaz
+      context.read<ProfileViewModel>().syncPushPreferenceWithOsPermission(false);
+    } else if (wasGranted == false) {
+      // Açık yön yalnızca geçişte: bilinçli uygulama içi kapatmayı ezme
+      context.read<ProfileViewModel>().syncPushPreferenceWithOsPermission(true);
     }
   }
 
@@ -177,6 +253,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed && mounted) {
       context.read<PermissionsViewModel>().loadPermissions();
+      _syncPushOnOsPermissionChange();
       await _checkLocation();
       if (!mounted) return;
       _fetchNearbyIfPermitted();

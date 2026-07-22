@@ -121,10 +121,45 @@ class ProfileViewModel extends BaseViewModel {
     if (!(result.isSuccess ?? false)) {
       _profile = oldProfile;
       message = result.message;
+    } else if (type == 'push') {
+      // Align the OneSignal device subscription so dashboard/API sends also
+      // respect the choice (server-side filtering only covers "All" sends).
+      try {
+        if (value) {
+          await OneSignal.User.pushSubscription.optIn();
+        } else {
+          await OneSignal.User.pushSubscription.optOut();
+        }
+      } catch (_) {
+        // preference is saved server-side; subscription re-syncs next launch
+      }
     }
 
     _updatingPreference = null;
     notifyListeners();
+  }
+
+  /// Called when the OS notification permission transitions (off→on or
+  /// on→off) — mirrors the change to the in-app push preference so the
+  /// backoffice reflects the real deliverability. No-op when they already
+  /// match, so a steady permission never overrides an explicit in-app choice.
+  Future<void> syncPushPreferenceWithOsPermission(bool granted) async {
+    if (_profile == null) await fetchProfile();
+    final profile = _profile;
+    if (profile == null || profile.pushNotification == granted) return;
+    await updateNotificationPreference(type: 'push', value: granted);
+  }
+
+  /// OS izni açıkken kullanıcı push tercihi HİÇ bildirmemişse (yeni kayıt,
+  /// misafir, eski sürümden gelen hesap) tercihi bir defalığına açar.
+  /// Sunucu bunu kalıcı "tercih bildirildi" olarak damgaladığı için sonraki
+  /// bilinçli kapatmalar asla ezilmez.
+  Future<void> ensureDefaultPushPreference() async {
+    if (_profile == null) await fetchProfile();
+    final profile = _profile;
+    if (profile == null) return;
+    if (profile.pushPreferenceSet || profile.pushNotification) return;
+    await updateNotificationPreference(type: 'push', value: true);
   }
 
   Future<bool> deleteAccount() async {

@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:solar_icons/solar_icons.dart';
@@ -43,6 +44,17 @@ class _PaymentScreenState extends State<PaymentScreen>
     super.dispose();
   }
 
+  /// Callback URL'i sadece substring ile değil, host bazında doğrula:
+  /// path'te payments/callback geçmeli VE host kendi API'mizin host'u olmalı.
+  bool _isCallbackUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+    if (!uri.path.toLowerCase().contains('payments/callback')) return false;
+
+    final apiHost = Uri.tryParse(dotenv.env['cloud'] ?? '')?.host;
+    return apiHost != null && apiHost.isNotEmpty && uri.host == apiHost;
+  }
+
   /// Called once when the callback URL is fully loaded (onPageFinished).
   /// The ViewModel's retry logic gives the backend time to process.
   void _onCallbackPageLoaded(PaymentViewModel vm) {
@@ -54,119 +66,188 @@ class _PaymentScreenState extends State<PaymentScreen>
 
       if (vm.resultData?.paymentStatus == "Success" &&
           vm.resultData?.bookingStatus == "Success") {
-        context.replace(
-          '/payment-success',
-          extra: widget.bookingId,
-        );
+        context.replace('/payment-success', extra: widget.bookingId);
+      } else if (vm.isResultUnknown) {
+        // Sonuç netleşmedi — para çekilmiş olabilir; başarısız GÖSTERME.
+        // Backend reconciliation birkaç dakika içinde durumu çözer.
+        _showPendingResultAndLeave();
       } else {
         context.replace('/payment-fail');
       }
     });
   }
 
+  Future<void> _showPendingResultAndLeave() async {
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(tr('payment_result_pending_title')),
+        content: Text(tr('payment_result_pending_message')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(tr('payment_result_pending_ok')),
+          ),
+        ],
+      ),
+    );
+    if (mounted) context.go('/reservations');
+  }
+
+  /// Ödeme sürerken çıkışta onay iste; ödeme başlamadıysa direkt çık.
+  Future<void> _handleBackPressed(PaymentViewModel vm) async {
+    final paymentInFlight =
+        _callbackDetected || vm.isCheckingPayment || _controller != null;
+
+    if (!paymentInFlight) {
+      Navigator.of(context).pop();
+      return;
+    }
+
+    final leave = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(tr('payment_exit_title')),
+        content: Text(tr('payment_exit_message')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(tr('payment_exit_stay')),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(tr('payment_exit_leave')),
+          ),
+        ],
+      ),
+    );
+
+    if (leave == true && mounted) {
+      // Sonuç ekranda netleşmeden çıkılıyor — rezervasyonlara yönlendir,
+      // ödeme alındıysa reconciliation rezervasyonu otomatik onaylar.
+      context.go('/reservations');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<PaymentViewModel>(
       builder: (context, vm, _) {
-        // Show checking screen first — takes priority over everything
-        if (vm.isCheckingPayment) {
-          return _buildCheckingPaymentScreen();
-        }
-
-        if (vm.isLoading) {
-          return Scaffold(
-            appBar: CommonAppBar(title: tr('payment_title')),
-            body: Center(
-              child: CircularProgressIndicator(
-                color: context.colors.secondary,
-              ),
-            ),
-          );
-        }
-
-        if (vm.errorMessage != null) {
-          return Scaffold(
-            appBar: CommonAppBar(title: tr('payment_title')),
-            body: Center(
-              child: Text("${tr("payment_error_prefix")} ${vm.errorMessage}"),
-            ),
-          );
-        }
-
-        final url = vm.initData?.paymentPageUrl;
-
-        if (url != null && _controller == null) {
-          _controller = WebViewController()
-            ..setJavaScriptMode(JavaScriptMode.unrestricted)
-            ..setNavigationDelegate(
-              NavigationDelegate(
-                onNavigationRequest: (req) {
-                  // Detect callback URL early — only switch to checking UI.
-                  // Do NOT call the API here; the backend hasn't processed
-                  // the iyzico callback yet at this point.
-                  const callbackIdentifier = "payments/callback";
-                  if (req.url.contains(callbackIdentifier) &&
-                      !_callbackDetected) {
-                    _callbackDetected = true;
-                    vm.setCheckingPayment(true);
-                  }
-                  return NavigationDecision.navigate;
-                },
-                onPageFinished: (String finishedUrl) {
-                  // Android WebView does NOT fire onNavigationRequest
-                  // for POST-based form submissions (iyzico 3DS callback).
-                  // Detect the callback URL here as a fallback.
-                  const callbackIdentifier = "payments/callback";
-                  if (!_callbackDetected &&
-                      finishedUrl.contains(callbackIdentifier)) {
-                    _callbackDetected = true;
-                    vm.setCheckingPayment(true);
-                  }
-
-                  // When the callback page finishes loading, the backend
-                  // has received iyzico's POST — safe to query the result.
-                  if (_callbackDetected) {
-                    _onCallbackPageLoaded(vm);
-                  } else {
-                    vm.setPageFinished();
-                  }
-                },
-              ),
-            )
-            ..loadRequest(Uri.parse(url));
-        }
-
-        return Scaffold(
-          appBar: CommonAppBar(title: tr("payment_title")),
-          body: _controller == null
-              ? Center(child: Text(tr("payment_page_preparing")))
-              : Stack(
-                  children: [
-                    WebViewWidget(controller: _controller!),
-                    if (!vm.isPageFinished)
-                      Scaffold(
-                        body: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CircularProgressIndicator(
-                                color: context.colors.secondary,
-                              ),
-                              const SizedBox(height: AppSpacing.l),
-                              Text(
-                                tr('payment_page_loading'),
-                                style: AppTextStyles.bodyMedium.copyWith(
-                                  color: context.colors.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
+        // Sistem geri tuşu (Android) ödeme sürerken onaysız çıkışa izin vermesin.
+        return PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, _) {
+            if (didPop) return;
+            _handleBackPressed(vm);
+          },
+          child: _buildBody(context, vm),
         );
       },
+    );
+  }
+
+  Widget _buildBody(BuildContext context, PaymentViewModel vm) {
+    // Show checking screen first — takes priority over everything
+    if (vm.isCheckingPayment) {
+      return _buildCheckingPaymentScreen();
+    }
+
+    if (vm.isLoading) {
+      return Scaffold(
+        appBar: CommonAppBar(
+          title: tr('payment_title'),
+          onBack: () => _handleBackPressed(vm),
+        ),
+        body: Center(
+          child: CircularProgressIndicator(color: context.colors.secondary),
+        ),
+      );
+    }
+
+    if (vm.errorMessage != null) {
+      return Scaffold(
+        appBar: CommonAppBar(
+          title: tr('payment_title'),
+          onBack: () => _handleBackPressed(vm),
+        ),
+        body: Center(
+          child: Text("${tr("payment_error_prefix")} ${vm.errorMessage}"),
+        ),
+      );
+    }
+
+    final url = vm.initData?.paymentPageUrl;
+
+    if (url != null && _controller == null) {
+      _controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setNavigationDelegate(
+          NavigationDelegate(
+            onNavigationRequest: (req) {
+              // Detect callback URL early — only switch to checking UI.
+              // Do NOT call the API here; the backend hasn't processed
+              // the iyzico callback yet at this point.
+              if (_isCallbackUrl(req.url) && !_callbackDetected) {
+                _callbackDetected = true;
+                vm.setCheckingPayment(true);
+              }
+              return NavigationDecision.navigate;
+            },
+            onPageFinished: (String finishedUrl) {
+              // Android WebView does NOT fire onNavigationRequest
+              // for POST-based form submissions (iyzico 3DS callback).
+              // Detect the callback URL here as a fallback.
+              if (!_callbackDetected && _isCallbackUrl(finishedUrl)) {
+                _callbackDetected = true;
+                vm.setCheckingPayment(true);
+              }
+
+              // When the callback page finishes loading, the backend
+              // has received iyzico's POST — safe to query the result.
+              if (_callbackDetected) {
+                _onCallbackPageLoaded(vm);
+              } else {
+                vm.setPageFinished();
+              }
+            },
+          ),
+        )
+        ..loadRequest(Uri.parse(url));
+    }
+
+    return Scaffold(
+      appBar: CommonAppBar(
+        title: tr("payment_title"),
+        onBack: () => _handleBackPressed(vm),
+      ),
+      body: _controller == null
+          ? Center(child: Text(tr("payment_page_preparing")))
+          : Stack(
+              children: [
+                WebViewWidget(controller: _controller!),
+                if (!vm.isPageFinished)
+                  Scaffold(
+                    body: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(
+                            color: context.colors.secondary,
+                          ),
+                          const SizedBox(height: AppSpacing.l),
+                          Text(
+                            tr('payment_page_loading'),
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: context.colors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
     );
   }
 
@@ -238,8 +319,9 @@ class _PaymentScreenState extends State<PaymentScreen>
                   borderRadius: BorderRadius.circular(AppRadius.circular),
                   child: LinearProgressIndicator(
                     minHeight: 4,
-                    backgroundColor:
-                        context.colors.secondary.withValues(alpha: 0.12),
+                    backgroundColor: context.colors.secondary.withValues(
+                      alpha: 0.12,
+                    ),
                     valueColor: AlwaysStoppedAnimation<Color>(
                       context.colors.secondary,
                     ),

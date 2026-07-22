@@ -2,7 +2,7 @@ name: tour_booking
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.1+2
+version: 1.0.1+19
 
 environment:
   sdk: '>=3.8.1 <4.0.0'
@@ -32,6 +32,7 @@ dependencies:
   geolocator: ^14.0.2
   firebase_storage: ^12.4.10
   firebase_analytics: ^11.3.6
+  facebook_app_events: ^0.30.1
   flutter_debouncer: ^2.0.0
   flutter_toggle_tab: ^1.5.1
   intl: ^0.20.2
@@ -58,6 +59,7 @@ dependencies:
   google_fonts: ^8.0.2
   solar_icons: ^0.0.5
   visibility_detector: ^0.4.0+2
+  package_info_plus: ^9.0.1
 
 
 
@@ -98,7 +100,7 @@ flutter_launcher_icons:
   remove_alpha_ios: true
 
 flutter_native_splash:
-  color: "#182b40"               
+  color: "#010E2A"               
   image: "assets/splash.png"   
   android: true
   ios: true
@@ -106,5 +108,5 @@ flutter_native_splash:
   ios_content_mode: center
 
   android_12:
-    color: "#182b40"
+    color: "#010E2A"
     image: "assets/splash.png"

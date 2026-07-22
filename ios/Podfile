@@ -41,6 +41,12 @@ target 'Runner' do
   end
 end
 
+# iOS'ta resimli bildirim (ios_attachments) için OneSignal servis extension'ı
+target 'OneSignalNotificationServiceExtension' do
+  use_frameworks!
+  pod 'OneSignalXCFramework', '>= 5.0', '< 6.0'
+end
+
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
@@ -53,6 +59,10 @@ post_install do |installer|
         'PERMISSION_LOCATION_WHENINUSE=1',
         # eğer background (Always) istiyorsanız:
         'PERMISSION_LOCATION_ALWAYS=1',
+
+        # Bildirim izni (Permission.notification.status için şart —
+        # tanımlı değilse iOS'ta her zaman denied döner)
+        'PERMISSION_NOTIFICATIONS=1',
 
         # Diğer izin örnekleri (kullanmazsanız 0 yapabilirsiniz)
         # 'PERMISSION_CAMERA=0',

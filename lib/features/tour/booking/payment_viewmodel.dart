@@ -19,6 +19,10 @@ class PaymentViewModel extends BaseViewModel {
   bool isPageFinished = false;
   bool isCheckingPayment = false;
 
+  /// True when retries were exhausted without a terminal (Success/Fail) status.
+  /// The charge may still complete server-side; reconciliation resolves it.
+  bool isResultUnknown = false;
+
   void setPageFinished() {
     if (!isPageFinished) {
       isPageFinished = true;
@@ -57,40 +61,44 @@ class PaymentViewModel extends BaseViewModel {
 
   /// Check payment result with retry.
   /// The backend may not have processed the iyzico callback yet when we first
-  /// query, so we retry a few times with increasing delays.
+  /// query, so we retry until a TERMINAL status (Success/Fail) is returned —
+  /// a "Pending" response is not a result, it means "not processed yet".
   Future<void> checkPaymentResult(String token) async {
     errorMessage = null;
+    isResultUnknown = false;
 
-    const maxRetries = 5;
+    const maxRetries = 8;
     const baseDelay = Duration(seconds: 2);
+    const maxDelay = Duration(seconds: 10);
 
     for (int attempt = 0; attempt < maxRetries; attempt++) {
       // Wait before each attempt (including the first) to give the backend
-      // time to process the iyzico callback.
-      await Future.delayed(baseDelay * (attempt + 1));
+      // time to process the iyzico callback. Delay grows but is capped.
+      final delay = baseDelay * (attempt + 1);
+      await Future.delayed(delay > maxDelay ? maxDelay : delay);
 
       try {
-        final BaseResponse<PaymentResultResponse> resp =
-            await _service.getPaymentResult(token);
+        final BaseResponse<PaymentResultResponse> resp = await _service
+            .getPaymentResult(token);
 
         if (resp.isSuccess == true && resp.data != null) {
           resultData = resp.data;
-          notifyListeners();
-          return; // Success — stop retrying.
-        }
 
-        // Last attempt — report the error.
-        if (attempt == maxRetries - 1) {
-          errorMessage = resp.message ?? tr('error_payment_result_failed');
+          // Only stop on a terminal status; keep polling while Pending.
+          if (resp.data!.paymentStatus != "Pending") {
+            notifyListeners();
+            return;
+          }
         }
-      } catch (e) {
-        if (attempt == maxRetries - 1) {
-          errorMessage =
-              tr('error_result', namedArgs: {'error': e.toString()});
-        }
+      } catch (_) {
+        // Transient error — keep retrying until attempts run out.
       }
     }
 
+    // Retries exhausted without a terminal status. Do NOT report this as a
+    // failure: the charge may have gone through. Backend reconciliation will
+    // finalize the booking; user is directed to My Reservations.
+    isResultUnknown = true;
     notifyListeners();
   }
 }

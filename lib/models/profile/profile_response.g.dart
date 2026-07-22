@@ -16,6 +16,7 @@ _$ProfileResponseImpl _$$ProfileResponseImplFromJson(
   emailNotification: json['emailNotification'] as bool? ?? false,
   pushNotification: json['pushNotification'] as bool? ?? false,
   smsNotification: json['smsNotification'] as bool? ?? false,
+  pushPreferenceSet: json['pushPreferenceSet'] as bool? ?? true,
 );
 
 Map<String, dynamic> _$$ProfileResponseImplToJson(
@@ -28,4 +29,5 @@ Map<String, dynamic> _$$ProfileResponseImplToJson(
   'emailNotification': instance.emailNotification,
   'pushNotification': instance.pushNotification,
   'smsNotification': instance.smsNotification,
+  'pushPreferenceSet': instance.pushPreferenceSet,
 };

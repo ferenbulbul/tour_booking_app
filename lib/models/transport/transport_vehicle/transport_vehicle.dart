@@ -25,6 +25,8 @@ class TransportVehicle with _$TransportVehicle {
     String? driverPhoto,
     String? experienceYears,
     required String agencyName,
+    String? tierName,
+    String? tierBadgeColor,
     @Default(0) double avgRating,
     @Default(0) int ratingCount,
   }) = _TransportVehicle;

@@ -116,7 +116,9 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
             heroTag: widget.heroTag,
             expandedHeight: expandedHeight,
             topPadding: topPadding,
-            onBack: () => Navigator.pop(context),
+            // Deep link ile açıldığında yığında geri dönülecek ekran olmayabilir
+            onBack: () =>
+                context.canPop() ? context.pop() : context.go('/home'),
             onShare: _onShareTap,
             onGalleryTap: () => _openGallery(galleryImages, 0),
           ),

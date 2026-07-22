@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:tour_booking/core/theme/app_colors.dart';
 import 'package:tour_booking/core/theme/app_icon_size.dart';
@@ -9,6 +11,7 @@ import 'package:tour_booking/core/theme/app_radius.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/features/home/widget/search_section.dart';
+import 'package:tour_booking/features/notifications/notifications_viewmodel.dart';
 
 const _kExpandedContentHeight = 195.0;
 const _kCollapsedBarHeight = 88.0;
@@ -148,10 +151,7 @@ class _HeaderContent extends StatelessWidget {
                                 fit: BoxFit.contain,
                                 excludeFromSemantics: true,
                               ),
-                              _AvatarCircle(
-                                fullName: fullName,
-                                isGuest: isGuest,
-                              ),
+                              const _NotificationBell(),
                             ],
                           ),
                         ),
@@ -206,45 +206,63 @@ class _HeaderContent extends StatelessWidget {
   }
 }
 
-class _AvatarCircle extends StatelessWidget {
-  final String? fullName;
-  final bool isGuest;
-
-  const _AvatarCircle({this.fullName, this.isGuest = false});
-
-  String _initials(String name) {
-    final parts = name.trim().split(RegExp(r'\s+'));
-    if (parts.isEmpty || parts.first.isEmpty) return '?';
-    if (parts.length == 1) return parts.first[0].toUpperCase();
-    return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
-  }
+// Bildirim kutusuna açılan zil — okunmamış varsa sayı rozeti gösterir
+class _NotificationBell extends StatelessWidget {
+  const _NotificationBell();
 
   @override
   Widget build(BuildContext context) {
-    final hasName = !isGuest && fullName != null && fullName!.isNotEmpty;
+    final unreadCount = context.select<NotificationsViewModel, int>(
+      (vm) => vm.unreadCount,
+    );
 
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: AppColors.accent,
-        shape: BoxShape.circle,
-      ),
-      child: Center(
-        child: hasName
-            ? Text(
-                _initials(fullName!),
-                style: AppTextStyles.labelLarge.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
+    return GestureDetector(
+      onTap: () => context.push('/notifications'),
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: const BoxDecoration(
+          color: AppColors.accent,
+          shape: BoxShape.circle,
+        ),
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
+          children: [
+            Icon(
+              SolarIconsOutline.bell,
+              size: AppIconSize.l,
+              color: Colors.white,
+              semanticLabel: 'Notifications',
+            ),
+            if (unreadCount > 0)
+              Positioned(
+                top: 4,
+                right: 4,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  constraints:
+                      const BoxConstraints(minWidth: 16, minHeight: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.white, width: 1),
+                  ),
+                  child: Center(
+                    child: Text(
+                      unreadCount > 99 ? '99+' : '$unreadCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        height: 1,
+                      ),
+                    ),
+                  ),
                 ),
-              )
-            : Icon(
-                SolarIconsOutline.user,
-                size: AppIconSize.l,
-                color: Colors.white,
-                semanticLabel: 'Profile',
               ),
+          ],
+        ),
       ),
     );
   }

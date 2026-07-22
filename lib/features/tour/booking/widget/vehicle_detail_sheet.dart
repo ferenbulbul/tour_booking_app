@@ -114,6 +114,8 @@ class _VehicleDetailSheetState extends State<VehicleDetailSheet> {
           vehicleBrand: v.vehicleBrand,
           formattedPrice: _formatPrice(vm.vehiclePrice ?? v.price ?? 0),
           companyName: v.companyName,
+          tierName: v.tierName,
+          tierBadgeColor: v.tierBadgeColor,
           avgRating: v.avgRating,
           ratingCount: v.ratingCount,
           onOpenGallery: _openGallery,

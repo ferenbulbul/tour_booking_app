@@ -27,7 +27,10 @@ mixin _$ProfileResponse {
   bool get phoneNumberConfirmed => throw _privateConstructorUsedError;
   bool get emailNotification => throw _privateConstructorUsedError;
   bool get pushNotification => throw _privateConstructorUsedError;
-  bool get smsNotification => throw _privateConstructorUsedError;
+  bool get smsNotification =>
+      throw _privateConstructorUsedError; // false = kullanıcı push tercihi hiç bildirmemiş (sunucu varsayılanı);
+  // OS izni açıksa tercih bir defalığına otomatik açılır
+  bool get pushPreferenceSet => throw _privateConstructorUsedError;
 
   /// Serializes this ProfileResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -54,6 +57,7 @@ abstract class $ProfileResponseCopyWith<$Res> {
     bool emailNotification,
     bool pushNotification,
     bool smsNotification,
+    bool pushPreferenceSet,
   });
 }
 
@@ -79,6 +83,7 @@ class _$ProfileResponseCopyWithImpl<$Res, $Val extends ProfileResponse>
     Object? emailNotification = null,
     Object? pushNotification = null,
     Object? smsNotification = null,
+    Object? pushPreferenceSet = null,
   }) {
     return _then(
       _value.copyWith(
@@ -110,6 +115,10 @@ class _$ProfileResponseCopyWithImpl<$Res, $Val extends ProfileResponse>
                 ? _value.smsNotification
                 : smsNotification // ignore: cast_nullable_to_non_nullable
                       as bool,
+            pushPreferenceSet: null == pushPreferenceSet
+                ? _value.pushPreferenceSet
+                : pushPreferenceSet // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -133,6 +142,7 @@ abstract class _$$ProfileResponseImplCopyWith<$Res>
     bool emailNotification,
     bool pushNotification,
     bool smsNotification,
+    bool pushPreferenceSet,
   });
 }
 
@@ -157,6 +167,7 @@ class __$$ProfileResponseImplCopyWithImpl<$Res>
     Object? emailNotification = null,
     Object? pushNotification = null,
     Object? smsNotification = null,
+    Object? pushPreferenceSet = null,
   }) {
     return _then(
       _$ProfileResponseImpl(
@@ -188,6 +199,10 @@ class __$$ProfileResponseImplCopyWithImpl<$Res>
             ? _value.smsNotification
             : smsNotification // ignore: cast_nullable_to_non_nullable
                   as bool,
+        pushPreferenceSet: null == pushPreferenceSet
+            ? _value.pushPreferenceSet
+            : pushPreferenceSet // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -204,6 +219,7 @@ class _$ProfileResponseImpl implements _ProfileResponse {
     this.emailNotification = false,
     this.pushNotification = false,
     this.smsNotification = false,
+    this.pushPreferenceSet = true,
   });
 
   factory _$ProfileResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -230,10 +246,15 @@ class _$ProfileResponseImpl implements _ProfileResponse {
   @override
   @JsonKey()
   final bool smsNotification;
+  // false = kullanıcı push tercihi hiç bildirmemiş (sunucu varsayılanı);
+  // OS izni açıksa tercih bir defalığına otomatik açılır
+  @override
+  @JsonKey()
+  final bool pushPreferenceSet;
 
   @override
   String toString() {
-    return 'ProfileResponse(fullName: $fullName, email: $email, phoneNumber: $phoneNumber, phoneNumberConfirmed: $phoneNumberConfirmed, emailNotification: $emailNotification, pushNotification: $pushNotification, smsNotification: $smsNotification)';
+    return 'ProfileResponse(fullName: $fullName, email: $email, phoneNumber: $phoneNumber, phoneNumberConfirmed: $phoneNumberConfirmed, emailNotification: $emailNotification, pushNotification: $pushNotification, smsNotification: $smsNotification, pushPreferenceSet: $pushPreferenceSet)';
   }
 
   @override
@@ -253,7 +274,9 @@ class _$ProfileResponseImpl implements _ProfileResponse {
             (identical(other.pushNotification, pushNotification) ||
                 other.pushNotification == pushNotification) &&
             (identical(other.smsNotification, smsNotification) ||
-                other.smsNotification == smsNotification));
+                other.smsNotification == smsNotification) &&
+            (identical(other.pushPreferenceSet, pushPreferenceSet) ||
+                other.pushPreferenceSet == pushPreferenceSet));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -267,6 +290,7 @@ class _$ProfileResponseImpl implements _ProfileResponse {
     emailNotification,
     pushNotification,
     smsNotification,
+    pushPreferenceSet,
   );
 
   /// Create a copy of ProfileResponse
@@ -295,6 +319,7 @@ abstract class _ProfileResponse implements ProfileResponse {
     final bool emailNotification,
     final bool pushNotification,
     final bool smsNotification,
+    final bool pushPreferenceSet,
   }) = _$ProfileResponseImpl;
 
   factory _ProfileResponse.fromJson(Map<String, dynamic> json) =
@@ -313,7 +338,10 @@ abstract class _ProfileResponse implements ProfileResponse {
   @override
   bool get pushNotification;
   @override
-  bool get smsNotification;
+  bool get smsNotification; // false = kullanıcı push tercihi hiç bildirmemiş (sunucu varsayılanı);
+  // OS izni açıksa tercih bir defalığına otomatik açılır
+  @override
+  bool get pushPreferenceSet;
 
   /// Create a copy of ProfileResponse
   /// with the given fields replaced by the non-null parameter values.

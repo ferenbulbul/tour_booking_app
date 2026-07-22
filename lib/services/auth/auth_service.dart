@@ -1,3 +1,4 @@
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tour_booking/models/base/base_response.dart';
 import 'package:tour_booking/models/firebase_token/firebase_token_request.dart';
 import 'package:tour_booking/models/login/login_request.dart';
@@ -145,9 +146,16 @@ class AuthService {
 
   Future<void> updatePlayerId(String id) async {
     final device = await DeviceInfoHelper.getDevice();
+    // Sürüm bilgisi backoffice'te "eski/yeni sürüm" ayrımı ve hedefli gönderim için kullanılır
+    final packageInfo = await PackageInfo.fromPlatform();
     await _apiClient.post<void>(
       path: '/Auth/onesignal-id',
-      body: {'playerId': id, 'deviceId': device.deviceId},
+      body: {
+        'playerId': id,
+        'deviceId': device.deviceId,
+        'appVersion': packageInfo.version,
+        'appBuild': int.tryParse(packageInfo.buildNumber),
+      },
     );
   }
 

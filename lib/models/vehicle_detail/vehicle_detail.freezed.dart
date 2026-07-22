@@ -39,6 +39,8 @@ mixin _$VehicleDetail {
   double? get avgRating => throw _privateConstructorUsedError;
   int? get ratingCount => throw _privateConstructorUsedError;
   String? get companyName => throw _privateConstructorUsedError;
+  String? get tierName => throw _privateConstructorUsedError;
+  String? get tierBadgeColor => throw _privateConstructorUsedError;
 
   /// Serializes this VehicleDetail to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -76,6 +78,8 @@ abstract class $VehicleDetailCopyWith<$Res> {
     double? avgRating,
     int? ratingCount,
     String? companyName,
+    String? tierName,
+    String? tierBadgeColor,
   });
 }
 
@@ -112,6 +116,8 @@ class _$VehicleDetailCopyWithImpl<$Res, $Val extends VehicleDetail>
     Object? avgRating = freezed,
     Object? ratingCount = freezed,
     Object? companyName = freezed,
+    Object? tierName = freezed,
+    Object? tierBadgeColor = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -187,6 +193,14 @@ class _$VehicleDetailCopyWithImpl<$Res, $Val extends VehicleDetail>
                 ? _value.companyName
                 : companyName // ignore: cast_nullable_to_non_nullable
                       as String?,
+            tierName: freezed == tierName
+                ? _value.tierName
+                : tierName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            tierBadgeColor: freezed == tierBadgeColor
+                ? _value.tierBadgeColor
+                : tierBadgeColor // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -221,6 +235,8 @@ abstract class _$$VehicleDetailImplCopyWith<$Res>
     double? avgRating,
     int? ratingCount,
     String? companyName,
+    String? tierName,
+    String? tierBadgeColor,
   });
 }
 
@@ -256,6 +272,8 @@ class __$$VehicleDetailImplCopyWithImpl<$Res>
     Object? avgRating = freezed,
     Object? ratingCount = freezed,
     Object? companyName = freezed,
+    Object? tierName = freezed,
+    Object? tierBadgeColor = freezed,
   }) {
     return _then(
       _$VehicleDetailImpl(
@@ -331,6 +349,14 @@ class __$$VehicleDetailImplCopyWithImpl<$Res>
             ? _value.companyName
             : companyName // ignore: cast_nullable_to_non_nullable
                   as String?,
+        tierName: freezed == tierName
+            ? _value.tierName
+            : tierName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        tierBadgeColor: freezed == tierBadgeColor
+            ? _value.tierBadgeColor
+            : tierBadgeColor // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -358,6 +384,8 @@ class _$VehicleDetailImpl implements _VehicleDetail {
     this.avgRating,
     this.ratingCount,
     this.companyName,
+    this.tierName,
+    this.tierBadgeColor,
   }) : _otherImages = otherImages,
        _vehicleFeatures = vehicleFeatures,
        _languages = languages;
@@ -425,10 +453,14 @@ class _$VehicleDetailImpl implements _VehicleDetail {
   final int? ratingCount;
   @override
   final String? companyName;
+  @override
+  final String? tierName;
+  @override
+  final String? tierBadgeColor;
 
   @override
   String toString() {
-    return 'VehicleDetail(vehicleId: $vehicleId, price: $price, vehicleBrand: $vehicleBrand, vehicleClass: $vehicleClass, vehicleType: $vehicleType, legRoomSpace: $legRoomSpace, seatCount: $seatCount, image: $image, modelYear: $modelYear, otherImages: $otherImages, vehicleFeatures: $vehicleFeatures, nameSurname: $nameSurname, experienceYear: $experienceYear, photoUrl: $photoUrl, languages: $languages, avgRating: $avgRating, ratingCount: $ratingCount, companyName: $companyName)';
+    return 'VehicleDetail(vehicleId: $vehicleId, price: $price, vehicleBrand: $vehicleBrand, vehicleClass: $vehicleClass, vehicleType: $vehicleType, legRoomSpace: $legRoomSpace, seatCount: $seatCount, image: $image, modelYear: $modelYear, otherImages: $otherImages, vehicleFeatures: $vehicleFeatures, nameSurname: $nameSurname, experienceYear: $experienceYear, photoUrl: $photoUrl, languages: $languages, avgRating: $avgRating, ratingCount: $ratingCount, companyName: $companyName, tierName: $tierName, tierBadgeColor: $tierBadgeColor)';
   }
 
   @override
@@ -475,12 +507,16 @@ class _$VehicleDetailImpl implements _VehicleDetail {
             (identical(other.ratingCount, ratingCount) ||
                 other.ratingCount == ratingCount) &&
             (identical(other.companyName, companyName) ||
-                other.companyName == companyName));
+                other.companyName == companyName) &&
+            (identical(other.tierName, tierName) ||
+                other.tierName == tierName) &&
+            (identical(other.tierBadgeColor, tierBadgeColor) ||
+                other.tierBadgeColor == tierBadgeColor));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     vehicleId,
     price,
@@ -500,7 +536,9 @@ class _$VehicleDetailImpl implements _VehicleDetail {
     avgRating,
     ratingCount,
     companyName,
-  );
+    tierName,
+    tierBadgeColor,
+  ]);
 
   /// Create a copy of VehicleDetail
   /// with the given fields replaced by the non-null parameter values.
@@ -536,6 +574,8 @@ abstract class _VehicleDetail implements VehicleDetail {
     final double? avgRating,
     final int? ratingCount,
     final String? companyName,
+    final String? tierName,
+    final String? tierBadgeColor,
   }) = _$VehicleDetailImpl;
 
   factory _VehicleDetail.fromJson(Map<String, dynamic> json) =
@@ -577,6 +617,10 @@ abstract class _VehicleDetail implements VehicleDetail {
   int? get ratingCount;
   @override
   String? get companyName;
+  @override
+  String? get tierName;
+  @override
+  String? get tierBadgeColor;
 
   /// Create a copy of VehicleDetail
   /// with the given fields replaced by the non-null parameter values.

@@ -67,8 +67,12 @@ List<RouteBase> tourRoutes() => [
             return MaterialPage(key: state.pageKey, child: const HomeScreen());
           }
 
+          // state.pageKey push'ta benzersizdir → aynı tur yığına iki kez
+          // girse bile key çakışmaz (Navigator duplicate-key assert'i).
+          // go'da ise rota kalıbıdır → id'yi eklemek sayfanın yeni turla
+          // yeniden kurulmasını sağlar.
           return MaterialPage(
-            key: ValueKey('searchDetail_$tourPointId'),
+            key: ValueKey('searchDetail_${tourPointId}_${state.pageKey.value}'),
             child: TourSearchDetailScreen(
               tourPointId: tourPointId,
               initialImage: initialImage,
@@ -82,8 +86,10 @@ List<RouteBase> tourRoutes() => [
         name: 'tourDetailDeepLink',
         pageBuilder: (context, state) {
           final tourPointId = state.pathParameters['id']!;
+          // Bkz. searchDetail: id + pageKey birleşimi hem push çakışmasını
+          // önler hem go'da id değişince sayfayı yeniler.
           return MaterialPage(
-            key: ValueKey('tourDetail_$tourPointId'),
+            key: ValueKey('tourDetail_${tourPointId}_${state.pageKey.value}'),
             child: TourSearchDetailScreen(tourPointId: tourPointId),
           );
         },

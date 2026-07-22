@@ -1,5 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:tour_booking/core/theme/app_icon_size.dart';
@@ -24,8 +26,64 @@ void showNotificationPreferencesSheet(BuildContext context) {
   );
 }
 
-class _NotificationPreferencesContent extends StatelessWidget {
+class _NotificationPreferencesContent extends StatefulWidget {
   const _NotificationPreferencesContent();
+
+  @override
+  State<_NotificationPreferencesContent> createState() =>
+      _NotificationPreferencesContentState();
+}
+
+class _NotificationPreferencesContentState
+    extends State<_NotificationPreferencesContent> with WidgetsBindingObserver {
+  bool _osPermissionGranted = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _checkOsPermission();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // Re-check when returning from phone settings while the sheet is open
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkOsPermission();
+    }
+  }
+
+  bool _checkedOnce = false;
+
+  Future<void> _checkOsPermission() async {
+    // OneSignal's native check — permission_handler needs the
+    // PERMISSION_NOTIFICATIONS Podfile macro and silently reports
+    // denied on iOS when it's missing.
+    final status = await OneSignal.Notifications.permissionNative();
+    if (!mounted) return;
+
+    final wasGranted = _osPermissionGranted;
+    final granted = status == OSNotificationPermission.authorized ||
+        status == OSNotificationPermission.provisional ||
+        status == OSNotificationPermission.ephemeral;
+    setState(() => _osPermissionGranted = granted);
+
+    // Kapalı yön geçişten bağımsız (izin yokken tercih açık kalamaz);
+    // açık yön yalnızca sheet açıkken gerçekleşen geçişte — bilinçli
+    // uygulama içi kapatmayı ezmemek için
+    if (!granted) {
+      context.read<ProfileViewModel>().syncPushPreferenceWithOsPermission(false);
+    } else if (_checkedOnce && !wasGranted) {
+      context.read<ProfileViewModel>().syncPushPreferenceWithOsPermission(true);
+    }
+    _checkedOnce = true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,16 +129,43 @@ class _NotificationPreferencesContent extends StatelessWidget {
 
             Divider(height: 1, color: context.colors.outline.withValues(alpha: 0.5)),
 
-            // Push
+            // Push — shown state is preference AND OS-level permission
             _NotificationToggleRow(
               icon: SolarIconsOutline.notificationUnread,
               label: tr('notification_push'),
-              value: profile.pushNotification,
-              onChanged: (val) => vm.updateNotificationPreference(
-                type: 'push',
-                value: val,
-              ),
+              value: profile.pushNotification && _osPermissionGranted,
+              onChanged: (val) {
+                if (val && !_osPermissionGranted) {
+                  // OS izni yok → ayarlara yönlendir; izin verilip dönülünce
+                  // geçiş senkronu tercihi otomatik açar
+                  openAppSettings();
+                  return;
+                }
+                vm.updateNotificationPreference(type: 'push', value: val);
+              },
             ),
+            if (!_osPermissionGranted)
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.s),
+                child: Row(
+                  children: [
+                    Icon(
+                      SolarIconsOutline.infoCircle,
+                      size: AppIconSize.s,
+                      color: context.colors.error,
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Expanded(
+                      child: Text(
+                        tr('notification_push_os_disabled'),
+                        style: text.bodySmall?.copyWith(
+                          color: context.colors.error,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
             // SMS (only if phone is registered)
             if (hasPhone) ...[

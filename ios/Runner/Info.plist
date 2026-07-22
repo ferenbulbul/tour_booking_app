@@ -32,13 +32,29 @@
 				<string>com.googleusercontent.apps.423047904244-ls89sh0e3mnp1vb01c91gg3kosogrtnm</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb4525298437725991</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FacebookAdvertiserIDCollectionEnabled</key>
+	<false/>
+	<key>FacebookAppID</key>
+	<string>4525298437725991</string>
+	<key>FacebookAutoLogAppEventsEnabled</key>
+	<true/>
+	<key>FacebookClientToken</key>
+	<string>0589ea811730f7417e54443d49c1ce44</string>
+	<key>FacebookDisplayName</key>
+	<string>Tourlio</string>
 	<key>FlutterDeepLinkingEnabled</key>
 	<true/>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 	<key>GMSApiKey</key>
 	<string>AIzaSyDZ5a2iSVzbpA8OqYQjExZaaKLrCxV-Bbg</string>
 	<key>GoogleSignIn</key>
@@ -46,25 +62,27 @@
 		<key>ClientId</key>
 		<string>423047904244-ls89sh0e3mnp1vb01c91gg3kosogrtnm.apps.googleusercontent.com</string>
 	</dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>comgooglemaps</string>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
 	</array>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Bu uygulama, yerel ağ bağlantısı gerektirir.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>İşletme olarak, müşterilerin sizi haritada canlı takip edebilmesi için uygulama arka
-			plandayken bile konum paylaşımı gereklidir.</string>
+	<string>İşletme olarak, müşterilerin sizi haritada canlı takip edebilmesi için uygulama arka plandayken bile konum paylaşımı gereklidir.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>İşletme olarak, müşterilerin sizi haritada canlı takip edebilmesi için uygulama arka
-			plandayken bile konum paylaşımı gereklidir.</string>
+	<string>İşletme olarak, müşterilerin sizi haritada canlı takip edebilmesi için uygulama arka plandayken bile konum paylaşımı gereklidir.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Yakınınızdaki turları ve etkinlikleri bulmak için konumunuza ihtiyaç duyuyoruz.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
