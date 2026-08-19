@@ -25,6 +25,7 @@ class _PaymentScreenState extends State<PaymentScreen>
   WebViewController? _controller;
   late AnimationController _pulseController;
   bool _callbackDetected = false;
+  bool _ktResultHandled = false;
 
   @override
   void initState() {
@@ -53,6 +54,41 @@ class _PaymentScreenState extends State<PaymentScreen>
 
     final apiHost = Uri.tryParse(dotenv.env['cloud'] ?? '')?.host;
     return apiHost != null && apiHost.isNotEmpty && uri.host == apiHost;
+  }
+
+  /// Kuveyt Türk hosted ödeme, successUrl'e YÖNLENDİRME YAPMAZ (2026-08-18'de
+  /// banka ortamına karşı kanıtlandı); sonucu kendi SecurePaymentResult
+  /// sayfasının URL parametrelerinde verir (Result, MerchantOrderId, OrderId...).
+  bool _isKuveytTurkResultUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+    return uri.host.toLowerCase().endsWith('kuveytturk.com.tr') &&
+        uri.path.toLowerCase().contains('ktpay/securepaymentresult');
+  }
+
+  /// KT sonucu yakalandığında kendi API'mizin kt/return ucunu webview'de açar;
+  /// backend inquiry ile teyit edip callback/done'a yönlendirir — oradan sonrası
+  /// Iyzico akışıyla aynı (callback tespiti → polling → native ekran).
+  bool _handleKuveytTurkResult(PaymentViewModel vm, String url) {
+    if (_ktResultHandled) return true;
+    final uri = Uri.tryParse(url);
+    final oid = uri?.queryParameters['MerchantOrderId'];
+    if (oid == null || oid.isEmpty) return false;
+    _ktResultHandled = true;
+
+    final result = uri!.queryParameters['Result'];
+    final status = result?.toLowerCase() == 'success' ? 'SUCCESS' : 'FAIL';
+    final apiBase = (dotenv.env['cloud'] ?? '').replaceAll(RegExp(r'/+$'), '');
+    // kt/return sayfası (302 → callback/done) yüklendiğinde polling başlasın;
+    // yüklenemese bile polling + reconciliation sonucu güvenle çözer.
+    _callbackDetected = true;
+    vm.setCheckingPayment(true);
+    _controller?.loadRequest(
+      Uri.parse('$apiBase/payments/kt/return?status=$status&oid=$oid'),
+      // ngrok free'nin tarayıcı uyarı sayfası dev'de zinciri kesmesin (prod'da etkisiz).
+      headers: const {'ngrok-skip-browser-warning': '1'},
+    );
+    return true;
   }
 
   /// Called once when the callback URL is fully loaded (onPageFinished).
@@ -185,6 +221,11 @@ class _PaymentScreenState extends State<PaymentScreen>
         ..setNavigationDelegate(
           NavigationDelegate(
             onNavigationRequest: (req) {
+              // KT hosted: bankanın sonuç sayfasını yakala, kt/return'e taşı.
+              if (_isKuveytTurkResultUrl(req.url) &&
+                  _handleKuveytTurkResult(vm, req.url)) {
+                return NavigationDecision.prevent;
+              }
               // Detect callback URL early — only switch to checking UI.
               // Do NOT call the API here; the backend hasn't processed
               // the iyzico callback yet at this point.
@@ -195,6 +236,12 @@ class _PaymentScreenState extends State<PaymentScreen>
               return NavigationDecision.navigate;
             },
             onPageFinished: (String finishedUrl) {
+              // KT sonuç sayfası POST/JS ile gelirse onNavigationRequest
+              // tetiklenmeyebilir — fallback.
+              if (_isKuveytTurkResultUrl(finishedUrl)) {
+                _handleKuveytTurkResult(vm, finishedUrl);
+              }
+
               // Android WebView does NOT fire onNavigationRequest
               // for POST-based form submissions (iyzico 3DS callback).
               // Detect the callback URL here as a fallback.
