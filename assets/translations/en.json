@@ -25,7 +25,7 @@
   "birth_date": "Birth Date",
   "birth_date_required": "Birth date is required",
   "booking_cancel_request": "Create cancellation request",
-  "booking_cancel_time_limit": "Cancellation is not allowed within 12 hours before the tour starts.",
+  "booking_cancel_time_limit": "Cancellation is not allowed within 24 hours before the tour starts.",
   "booking_days_later": "In {days} days",
   "booking_details": "Details",
   "booking_label_departure_location": "Departure Location",
@@ -538,5 +538,9 @@
   "notifications_just_now": "Just now",
   "notifications_minutes_ago": "{count} min ago",
   "notifications_hours_ago": "{count} h ago",
-  "notifications_days_ago": "{count} d ago"
+  "notifications_days_ago": "{count} d ago",
+  "payment_init_failed_title": "Payment page could not be opened",
+  "payment_init_failed_message": "The bank cannot be reached right now. This is temporary — please try again in a few seconds. Your card has not been charged.",
+  "payment_init_retry": "Try Again",
+  "payment_init_go_back": "Go Back"
 }

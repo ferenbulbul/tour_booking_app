@@ -25,7 +25,7 @@
   "birth_date": "تاريخ الميلاد",
   "birth_date_required": "تاريخ الميلاد مطلوب",
   "booking_cancel_request": "إنشاء طلب إلغاء",
-  "booking_cancel_time_limit": "لا يمكن إلغاء الحجز قبل أقل من 12 ساعة من بدء الجولة.",
+  "booking_cancel_time_limit": "لا يمكن إلغاء الحجز قبل أقل من 24 ساعة من بدء الجولة.",
   "booking_days_later": "بعد {days} أيام",
   "booking_details": "التفاصيل",
   "booking_label_departure_location": "موقع الانطلاق",
@@ -538,5 +538,9 @@
   "notifications_just_now": "الآن",
   "notifications_minutes_ago": "منذ {count} دقيقة",
   "notifications_hours_ago": "منذ {count} ساعة",
-  "notifications_days_ago": "منذ {count} يوم"
+  "notifications_days_ago": "منذ {count} يوم",
+  "payment_init_failed_title": "تعذر فتح صفحة الدفع",
+  "payment_init_failed_message": "يتعذر الوصول إلى البنك حاليًا. هذه حالة مؤقتة — يرجى المحاولة مرة أخرى بعد بضع ثوانٍ. لم يتم خصم أي مبلغ من بطاقتك.",
+  "payment_init_retry": "أعد المحاولة",
+  "payment_init_go_back": "رجوع"
 }

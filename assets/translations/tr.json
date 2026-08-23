@@ -25,7 +25,7 @@
   "birth_date": "Doğum Tarihi",
   "birth_date_required": "Doğum tarihi gerekli",
   "booking_cancel_request": "İptal talebi oluştur",
-  "booking_cancel_time_limit": "Tur başlangıcına 12 saatten az kaldığı için iptal edilemez.",
+  "booking_cancel_time_limit": "Tur başlangıcına 24 saatten az kaldığı için iptal edilemez.",
   "booking_days_later": "{days} gün sonra",
   "booking_details": "Detaylar",
   "booking_label_departure_location": "Kalkış Yeri",
@@ -538,5 +538,9 @@
   "notifications_just_now": "Az önce",
   "notifications_minutes_ago": "{count} dk önce",
   "notifications_hours_ago": "{count} sa önce",
-  "notifications_days_ago": "{count} gün önce"
+  "notifications_days_ago": "{count} gün önce",
+  "payment_init_failed_title": "Ödeme sayfası açılamadı",
+  "payment_init_failed_message": "Bankaya şu anda ulaşılamıyor. Bu geçici bir durumdur — lütfen birkaç saniye sonra tekrar deneyin. Kartınızdan ücret çekilmedi.",
+  "payment_init_retry": "Tekrar Dene",
+  "payment_init_go_back": "Geri Dön"
 }

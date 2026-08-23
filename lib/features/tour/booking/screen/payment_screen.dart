@@ -293,13 +293,66 @@ class _PaymentScreenState extends State<PaymentScreen>
     }
 
     if (vm.errorMessage != null) {
+      // Ham hata metnini (exception/HTML dökümü) ASLA gösterme — banka geçici
+      // engellerinde (WAF vb.) kullanıcıya sakin, tekrar denemeye teşvik eden
+      // bir ekran çıkar. Kartından para çekilmediği açıkça söylenir.
       return Scaffold(
         appBar: CommonAppBar(
           title: tr('payment_title'),
           onBack: () => _handleBackPressed(vm),
         ),
         body: Center(
-          child: Text("${tr("payment_error_prefix")} ${vm.errorMessage}"),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.xxl),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: context.colors.secondary.withValues(alpha: 0.1),
+                  ),
+                  child: Icon(
+                    SolarIconsOutline.cloudCross,
+                    size: 34,
+                    color: context.colors.secondary,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                Text(
+                  tr('payment_init_failed_title'),
+                  style: AppTextStyles.titleMedium.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.m),
+                Text(
+                  tr('payment_init_failed_message'),
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.xxl),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () => vm.initPayment(widget.bookingId),
+                    child: Text(tr('payment_init_retry')),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.s),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(tr('payment_init_go_back')),
+                ),
+              ],
+            ),
+          ),
         ),
       );
     }
