@@ -35,24 +35,40 @@ class PaymentViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  /// Initialize checkout form
+  /// Initialize checkout form.
+  /// Banka güvenlik katmanı (WAF) istekleri pencereler halinde engelleyebiliyor;
+  /// kullanıcıya hata göstermeden önce SESSİZCE tekrar denenir (toplam 3 tur,
+  /// aralarda bekleme — sunucu da her turda içeride 4 deneme yapar). Kullanıcı
+  /// bu süre boyunca yalnız yükleniyor durumunu görür.
   Future<void> initPayment(String bookingId) async {
     isLoading = true;
     errorMessage = null;
     notifyListeners();
 
-    try {
-      final req = PaymentRequest(bookingId: bookingId);
-      final BaseResponse<PaymentInitResponse> resp = await _service
-          .initCheckoutForm(req);
+    const maxAttempts = 3;
+    const retryDelay = Duration(seconds: 7);
 
-      if (resp.isSuccess == true && resp.data != null) {
-        initData = resp.data;
-      } else {
-        errorMessage = resp.message ?? tr('error_generic');
+    try {
+      for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+          final req = PaymentRequest(bookingId: bookingId);
+          final BaseResponse<PaymentInitResponse> resp = await _service
+              .initCheckoutForm(req);
+
+          if (resp.isSuccess == true && resp.data != null) {
+            initData = resp.data;
+            errorMessage = null;
+            return;
+          }
+          errorMessage = resp.message ?? tr('error_generic');
+        } catch (e) {
+          errorMessage = tr('error_occurred', namedArgs: {'error': e.toString()});
+        }
+
+        if (attempt < maxAttempts) {
+          await Future.delayed(retryDelay);
+        }
       }
-    } catch (e) {
-      errorMessage = tr('error_occurred', namedArgs: {'error': e.toString()});
     } finally {
       isLoading = false;
       notifyListeners();
