@@ -14,11 +14,27 @@
       },
       "oauth_client": [
         {
+          "client_id": "423047904244-22fv6dqj75a8jfgr31o4se1l72clkpf3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tourlio.app",
+            "certificate_hash": "a06e03249d8d7b313a80b08068cf9e8c30d4933d"
+          }
+        },
+        {
           "client_id": "423047904244-8s2g1ijp2kl58el6scbrk2imerclek59.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.tourlio.app",
             "certificate_hash": "a07eb8208c842d903af29906efdadf5ba64af801"
+          }
+        },
+        {
+          "client_id": "423047904244-ftaoeaj36okunm02tuditvfmt73acbpf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tourlio.app",
+            "certificate_hash": "34c2a79dbbd4f6a793e2e1f15403f2999cd29620"
           }
         },
         {
