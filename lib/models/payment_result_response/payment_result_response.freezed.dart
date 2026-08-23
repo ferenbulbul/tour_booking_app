@@ -27,6 +27,9 @@ mixin _$PaymentResultResponse {
   String get bookingStatus =>
       throw _privateConstructorUsedError; // SUCCESS / FAILURE
   String? get conversationId => throw _privateConstructorUsedError;
+  double? get amount =>
+      throw _privateConstructorUsedError; // analitik purchase event'i için
+  String? get currency => throw _privateConstructorUsedError;
 
   /// Serializes this PaymentResultResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -49,6 +52,8 @@ abstract class $PaymentResultResponseCopyWith<$Res> {
     String paymentStatus,
     String bookingStatus,
     String? conversationId,
+    double? amount,
+    String? currency,
   });
 }
 
@@ -73,6 +78,8 @@ class _$PaymentResultResponseCopyWithImpl<
     Object? paymentStatus = null,
     Object? bookingStatus = null,
     Object? conversationId = freezed,
+    Object? amount = freezed,
+    Object? currency = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -87,6 +94,14 @@ class _$PaymentResultResponseCopyWithImpl<
             conversationId: freezed == conversationId
                 ? _value.conversationId
                 : conversationId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            amount: freezed == amount
+                ? _value.amount
+                : amount // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            currency: freezed == currency
+                ? _value.currency
+                : currency // ignore: cast_nullable_to_non_nullable
                       as String?,
           )
           as $Val,
@@ -107,6 +122,8 @@ abstract class _$$PaymentResultResponseImplCopyWith<$Res>
     String paymentStatus,
     String bookingStatus,
     String? conversationId,
+    double? amount,
+    String? currency,
   });
 }
 
@@ -128,6 +145,8 @@ class __$$PaymentResultResponseImplCopyWithImpl<$Res>
     Object? paymentStatus = null,
     Object? bookingStatus = null,
     Object? conversationId = freezed,
+    Object? amount = freezed,
+    Object? currency = freezed,
   }) {
     return _then(
       _$PaymentResultResponseImpl(
@@ -143,6 +162,14 @@ class __$$PaymentResultResponseImplCopyWithImpl<$Res>
             ? _value.conversationId
             : conversationId // ignore: cast_nullable_to_non_nullable
                   as String?,
+        amount: freezed == amount
+            ? _value.amount
+            : amount // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        currency: freezed == currency
+            ? _value.currency
+            : currency // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -155,6 +182,8 @@ class _$PaymentResultResponseImpl implements _PaymentResultResponse {
     required this.paymentStatus,
     required this.bookingStatus,
     this.conversationId,
+    this.amount,
+    this.currency,
   });
 
   factory _$PaymentResultResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -167,10 +196,15 @@ class _$PaymentResultResponseImpl implements _PaymentResultResponse {
   // SUCCESS / FAILURE
   @override
   final String? conversationId;
+  @override
+  final double? amount;
+  // analitik purchase event'i için
+  @override
+  final String? currency;
 
   @override
   String toString() {
-    return 'PaymentResultResponse(paymentStatus: $paymentStatus, bookingStatus: $bookingStatus, conversationId: $conversationId)';
+    return 'PaymentResultResponse(paymentStatus: $paymentStatus, bookingStatus: $bookingStatus, conversationId: $conversationId, amount: $amount, currency: $currency)';
   }
 
   @override
@@ -183,13 +217,22 @@ class _$PaymentResultResponseImpl implements _PaymentResultResponse {
             (identical(other.bookingStatus, bookingStatus) ||
                 other.bookingStatus == bookingStatus) &&
             (identical(other.conversationId, conversationId) ||
-                other.conversationId == conversationId));
+                other.conversationId == conversationId) &&
+            (identical(other.amount, amount) || other.amount == amount) &&
+            (identical(other.currency, currency) ||
+                other.currency == currency));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, paymentStatus, bookingStatus, conversationId);
+  int get hashCode => Object.hash(
+    runtimeType,
+    paymentStatus,
+    bookingStatus,
+    conversationId,
+    amount,
+    currency,
+  );
 
   /// Create a copy of PaymentResultResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -214,6 +257,8 @@ abstract class _PaymentResultResponse implements PaymentResultResponse {
     required final String paymentStatus,
     required final String bookingStatus,
     final String? conversationId,
+    final double? amount,
+    final String? currency,
   }) = _$PaymentResultResponseImpl;
 
   factory _PaymentResultResponse.fromJson(Map<String, dynamic> json) =
@@ -225,6 +270,10 @@ abstract class _PaymentResultResponse implements PaymentResultResponse {
   String get bookingStatus; // SUCCESS / FAILURE
   @override
   String? get conversationId;
+  @override
+  double? get amount; // analitik purchase event'i için
+  @override
+  String? get currency;
 
   /// Create a copy of PaymentResultResponse
   /// with the given fields replaced by the non-null parameter values.

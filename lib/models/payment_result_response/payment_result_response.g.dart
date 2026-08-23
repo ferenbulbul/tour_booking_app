@@ -12,6 +12,8 @@ _$PaymentResultResponseImpl _$$PaymentResultResponseImplFromJson(
   paymentStatus: json['paymentStatus'] as String,
   bookingStatus: json['bookingStatus'] as String,
   conversationId: json['conversationId'] as String?,
+  amount: (json['amount'] as num?)?.toDouble(),
+  currency: json['currency'] as String?,
 );
 
 Map<String, dynamic> _$$PaymentResultResponseImplToJson(
@@ -20,4 +22,6 @@ Map<String, dynamic> _$$PaymentResultResponseImplToJson(
   'paymentStatus': instance.paymentStatus,
   'bookingStatus': instance.bookingStatus,
   'conversationId': instance.conversationId,
+  'amount': instance.amount,
+  'currency': instance.currency,
 };

@@ -9,6 +9,8 @@ class PaymentResultResponse with _$PaymentResultResponse {
     required String paymentStatus,
     required String bookingStatus, // SUCCESS / FAILURE
     String? conversationId,
+    double? amount, // analitik purchase event'i için
+    String? currency,
   }) = _PaymentResultResponse;
 
   factory PaymentResultResponse.fromJson(Map<String, dynamic> json) =>
