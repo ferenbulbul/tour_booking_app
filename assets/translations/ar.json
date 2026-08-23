@@ -542,5 +542,8 @@
   "payment_init_failed_title": "تعذر فتح صفحة الدفع",
   "payment_init_failed_message": "يتعذر الوصول إلى البنك حاليًا. هذه حالة مؤقتة — يرجى المحاولة مرة أخرى بعد بضع ثوانٍ. لم يتم خصم أي مبلغ من بطاقتك.",
   "payment_init_retry": "أعد المحاولة",
-  "payment_init_go_back": "رجوع"
+  "payment_init_go_back": "رجوع",
+  "force_update_title": "التحديث مطلوب",
+  "force_update_message": "هذا الإصدار من Tourlio لم يعد مدعومًا. يرجى تحديث التطبيق من المتجر للمتابعة.",
+  "force_update_button": "حدّث الآن"
 }

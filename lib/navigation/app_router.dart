@@ -12,6 +12,7 @@ import 'package:tour_booking/features/onboarding/screen/onboarding_screen.dart';
 import 'package:tour_booking/features/profile/screen/profile_screen.dart';
 import 'package:tour_booking/features/root/screen/error_screen.dart';
 import 'package:tour_booking/features/root/widget/root_scaffold.dart';
+import 'package:tour_booking/features/splash/screen/force_update_screen.dart';
 import 'package:tour_booking/features/splash/screen/splash_screen.dart';
 import 'package:tour_booking/features/splash/splash_view_model.dart';
 import 'package:tour_booking/features/transport/screen/transport_screen.dart';
@@ -40,6 +41,12 @@ final GoRouter router = GoRouter(
     final splashVM = splashViewModel;
 
     if (splashVM.isChecking) return null;
+
+    // ZORUNLU GÜNCELLEME — her şeyin üstünde: backend "sürüm eski" dediyse
+    // kullanıcı /force-update'e kilitlenir (ekran PopScope ile kapatılamaz).
+    if (splashVM.forceUpdateRequired) {
+      return state.uri.path == '/force-update' ? null : '/force-update';
+    }
 
     final bool loggedIn = splashVM.isLoggedInStatus;
     final bool isEmailConfirmed = splashVM.user?.emailConfirmed ?? false;
@@ -107,6 +114,11 @@ final GoRouter router = GoRouter(
   },
   routes: [
     GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
+    GoRoute(
+      path: '/force-update',
+      builder: (context, state) =>
+          ForceUpdateScreen(storeUrl: splashViewModel.forceUpdateStoreUrl),
+    ),
     GoRoute(
       path: '/onboarding',
       builder: (context, state) => const OnboardingScreen(),

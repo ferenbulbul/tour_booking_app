@@ -542,5 +542,8 @@
   "payment_init_failed_title": "Ödeme sayfası açılamadı",
   "payment_init_failed_message": "Bankaya şu anda ulaşılamıyor. Bu geçici bir durumdur — lütfen birkaç saniye sonra tekrar deneyin. Kartınızdan ücret çekilmedi.",
   "payment_init_retry": "Tekrar Dene",
-  "payment_init_go_back": "Geri Dön"
+  "payment_init_go_back": "Geri Dön",
+  "force_update_title": "Güncelleme Gerekli",
+  "force_update_message": "Tourlio'nun bu sürümü artık desteklenmiyor. Devam etmek için lütfen uygulamayı mağazadan güncelleyin.",
+  "force_update_button": "Şimdi Güncelle"
 }

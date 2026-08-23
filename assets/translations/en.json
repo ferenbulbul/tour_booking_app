@@ -542,5 +542,8 @@
   "payment_init_failed_title": "Payment page could not be opened",
   "payment_init_failed_message": "The bank cannot be reached right now. This is temporary — please try again in a few seconds. Your card has not been charged.",
   "payment_init_retry": "Try Again",
-  "payment_init_go_back": "Go Back"
+  "payment_init_go_back": "Go Back",
+  "force_update_title": "Update Required",
+  "force_update_message": "This version of Tourlio is no longer supported. Please update the app from the store to continue.",
+  "force_update_button": "Update Now"
 }

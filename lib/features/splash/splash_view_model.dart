@@ -1,5 +1,9 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tour_booking/services/app/app_version_service.dart';
 import 'package:tour_booking/core/base/base_viewmodel.dart';
 import 'package:tour_booking/core/enum/user_role.dart';
 import 'package:tour_booking/models/login/login_response.dart';
@@ -25,6 +29,11 @@ class SplashViewModel extends BaseViewModel {
   // Auth transition animation
   bool _isTransitioning = false;
 
+  // Zorunlu güncelleme: backend "sürümün minimumun altında" derse true olur;
+  // router kullanıcıyı /force-update'e kilitler.
+  bool forceUpdateRequired = false;
+  String? forceUpdateStoreUrl;
+
   bool get isChecking => _isLoggedIn == null;
   bool get isLoggedInStatus => _isLoggedIn ?? false;
   UserMe? get user => _user;
@@ -36,10 +45,39 @@ class SplashViewModel extends BaseViewModel {
 
   void clearLoginSheetFlag() => _shouldShowLoginSheet = false;
 
+  /// Zorunlu güncelleme kontrolü — FAIL-OPEN: kontrol başarısız olursa (ağ yok,
+  /// API kapalı) kullanıcı ASLA kilitlenmez, normal akış devam eder.
+  Future<void> _checkForceUpdate() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      final resp = await AppVersionService()
+          .checkVersion(
+            platform: Platform.isIOS ? 'ios' : 'android',
+            version: info.version,
+          )
+          .timeout(const Duration(seconds: 5));
+      if (resp.isSuccess == true && resp.data?.updateRequired == true) {
+        forceUpdateRequired = true;
+        forceUpdateStoreUrl = resp.data?.storeUrl;
+      }
+    } catch (_) {
+      // fail-open
+    }
+  }
+
   // Runs on first app launch (cold start)
   Future<void> initializeApp() async {
     // Bind session expired callback
     ApiClient.onSessionExpired = _handleSessionExpired;
+
+    // Zorunlu güncelleme — her şeyden önce.
+    await _checkForceUpdate();
+    if (forceUpdateRequired) {
+      _isLoggedIn = false; // isChecking'i kapat → router /force-update'e kilitler
+      FlutterNativeSplash.remove();
+      notifyListeners();
+      return;
+    }
 
     _isLoggedIn = null;
     notifyListeners();
