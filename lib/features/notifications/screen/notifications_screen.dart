@@ -136,10 +136,30 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         const SizedBox(height: AppSpacing.s),
                     itemBuilder: (context, index) {
                       final item = vm.items[index];
-                      return _NotificationCard(
-                        item: item,
-                        timeText: _formatTime(item.createdAt),
-                        onTap: () => _onTapNotification(item),
+                      return Dismissible(
+                        key: ValueKey(item.id),
+                        direction: DismissDirection.endToStart,
+                        onDismissed: (_) => vm.deleteNotification(item),
+                        background: Container(
+                          alignment: AlignmentDirectional.centerEnd,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.xl,
+                          ),
+                          decoration: BoxDecoration(
+                            color: context.colors.error,
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.large),
+                          ),
+                          child: Icon(
+                            SolarIconsOutline.trashBinTrash,
+                            color: context.colors.onError,
+                          ),
+                        ),
+                        child: _NotificationCard(
+                          item: item,
+                          timeText: _formatTime(item.createdAt),
+                          onTap: () => _onTapNotification(item),
+                        ),
                       );
                     },
                   ),

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+ yedekleme kuralları: bulut yedeği ve cihazdan-cihaza aktarım KAPALI.
+     Gerekçe: oturum verisi Keystore'a bağlı şifreli — yedekten dönen veri açılamaz
+     ve uygulamayı kilitler (AndroidManifest'teki allowBackup notuna bakınız). -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" path="." />
+    </device-transfer>
+</data-extraction-rules>

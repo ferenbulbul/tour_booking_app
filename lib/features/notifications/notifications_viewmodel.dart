@@ -78,4 +78,20 @@ class NotificationsViewModel extends ChangeNotifier {
       // Başarısız olsa bile bir sonraki fetch doğru durumu getirir
     }
   }
+
+  /// Bildirimi siler (kaydırarak). Optimistic: önce listeden düşer, API arkadan
+  /// gelir; başarısız olursa bir sonraki fetch gerçek durumu getirir.
+  Future<void> deleteNotification(UserNotificationDto item) async {
+    final index = items.indexWhere((n) => n.id == item.id);
+    if (index == -1) return;
+    final updated = List.of(items)..removeAt(index);
+    items = updated;
+    if (!item.isRead && unreadCount > 0) unreadCount--;
+    notifyListeners();
+    try {
+      await _service.deleteNotification(item.id);
+    } catch (_) {
+      // Başarısız olsa bile bir sonraki fetch doğru durumu getirir
+    }
+  }
 }

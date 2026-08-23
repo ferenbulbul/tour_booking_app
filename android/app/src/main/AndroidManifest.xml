@@ -16,10 +16,16 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 
+    <!-- allowBackup=false: şifreli depolama (Keystore) yedekten geri yüklenince
+         anahtar cihazda olmadığı için açılmaz — "sil + yeniden yükle"de uygulama
+         kilitleniyordu (2026-08-24'te dahili testte yaşandı). Yedekleme kapalı. -->
     <application
         android:label="Tourlio"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:usesCleartextTraffic="false">
 
         <!-- ⭐ Google Maps / Places API Key -->
@@ -90,7 +96,7 @@
 
                 <data
                     android:scheme="https"
-                    android:host="tourrentai.com"
+                    android:host="tourlio.com"
                     android:pathPrefix="/tour" />
             </intent-filter>
         </activity>

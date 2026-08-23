@@ -270,7 +270,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
   }
 
   void _onShareTap() {
-    final url = "https://tourrentai.com/tour/${widget.tourPointId}";
+    final url = "https://tourlio.com/tour/${widget.tourPointId}";
 
     final text = tr("share_tour_text", namedArgs: {"url": url});
 
@@ -328,6 +328,7 @@ class _TourSearchDetailScreenState extends State<TourSearchDetailScreen>
     if (detailVm.selectedCityId == null ||
         detailVm.selectedDistrictId == null ||
         selectionVm.selectedDate == null ||
+        selectionVm.selectedTime == null || // saat seçilmeden devam edilemez
         selectionVm.selectedPlaceDesc == null) {
       setState(() => _showErrors = true);
       _departureFormKey.currentState?.shakeEmptyFields();

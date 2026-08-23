@@ -35,4 +35,8 @@ class NotificationsService {
   Future<BaseResponse<void>> markAllRead() {
     return _apiClient.post<void>(path: '/Mobile/notifications/read-all');
   }
+
+  Future<BaseResponse<void>> deleteNotification(String id) {
+    return _apiClient.delete<void>(path: '/Mobile/notifications/$id');
+  }
 }

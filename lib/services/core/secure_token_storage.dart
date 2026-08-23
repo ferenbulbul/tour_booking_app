@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:tour_booking/services/core/api_client.dart';
 
@@ -14,12 +15,34 @@ class SecureTokenStorage {
     await _storage.write(key: _keyRefreshToken, value: refreshToken);
   }
 
-  Future<String?> getAccessToken() async {
-    return await _storage.read(key: _keyAccessToken);
+  Future<String?> getAccessToken() => _readSelfHealing(_keyAccessToken);
+
+  Future<String?> getRefreshToken() => _readSelfHealing(_keyRefreshToken);
+
+  /// KENDİNİ İYİLEŞTİREN okuma: Android'de yedekten geri yüklenen şifreli veri,
+  /// Keystore anahtarı cihazda olmadığı için çözülemez ve okuma exception
+  /// fırlatır — eski davranışta bu, uygulamayı açılışta kilitliyordu
+  /// (2026-08-24 dahili test bulgusu). Artık bozuk depo tespit edilince
+  /// tamamen temizlenir ve null dönülür; uygulama misafir girişine düşer.
+  Future<String?> _readSelfHealing(String key) async {
+    try {
+      return await _storage.read(key: key);
+    } on PlatformException {
+      await _wipeCorruptStorage();
+      return null;
+    } catch (_) {
+      await _wipeCorruptStorage();
+      return null;
+    }
   }
 
-  Future<String?> getRefreshToken() async {
-    return await _storage.read(key: _keyRefreshToken);
+  Future<void> _wipeCorruptStorage() async {
+    ApiClient.clearTokenCache();
+    try {
+      await _storage.deleteAll();
+    } catch (_) {
+      // Silme de başarısızsa yapacak bir şey yok — null dönüş akışı yine korur.
+    }
   }
 
   Future<void> clearTokens() async {
