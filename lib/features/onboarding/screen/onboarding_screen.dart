@@ -26,22 +26,18 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   List<Map<String, String>> get _pages => [
         {
-          'image': 'assets/images/onboarding_1.png',
           'title': tr('onboarding_title_1'),
           'description': tr('onboarding_desc_1'),
         },
         {
-          'image': 'assets/images/onboarding_2.png',
           'title': tr('onboarding_title_2'),
           'description': tr('onboarding_desc_2'),
         },
         {
-          'image': 'assets/images/onboarding_3.png',
           'title': tr('onboarding_title_3'),
           'description': tr('onboarding_desc_3'),
         },
         {
-          'image': 'assets/images/onboarding_4.png',
           'title': tr('onboarding_title_4'),
           'description': tr('onboarding_desc_4'),
         },
@@ -152,7 +148,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 itemBuilder: (context, index) {
                   final page = _pages[index];
                   return OnboardingPage(
-                    imagePath: page['image']!,
+                    index: index,
                     title: page['title']!,
                     description: page['description']!,
                   );

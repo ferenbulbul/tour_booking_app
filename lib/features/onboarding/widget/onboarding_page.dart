@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:tour_booking/core/theme/app_icon_size.dart';
 import 'package:tour_booking/core/theme/app_spacing.dart';
 import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/theme/app_theme_context.dart';
+import 'package:tour_booking/features/onboarding/widget/onboarding_illustration.dart';
 
 class OnboardingPage extends StatelessWidget {
-  final String imagePath;
+  final int index;
   final String title;
   final String description;
 
   const OnboardingPage({
     super.key,
-    required this.imagePath,
+    required this.index,
     required this.title,
     required this.description,
   });
@@ -48,27 +48,12 @@ class OnboardingPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Image
+                // Tema renkleriyle kod içinde çizilen görsel (asset gerekmez)
                 Padding(
                   padding: const EdgeInsets.all(AppSpacing.xl),
-                  child: Image.asset(
-                    imagePath,
-                    fit: BoxFit.contain,
-                    semanticLabel: title,
-                    errorBuilder: (_, __, ___) => Container(
-                      width: 140,
-                      height: 140,
-                      decoration: BoxDecoration(
-                        color: context.colors.secondary.withValues(alpha: 0.08),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.image_outlined,
-                        size: AppIconSize.massive,
-                        color: context.ext.textLight,
-                        semanticLabel: 'Image placeholder',
-                      ),
-                    ),
+                  child: Semantics(
+                    label: title,
+                    child: OnboardingIllustration(index: index),
                   ),
                 ),
               ],
