@@ -18,8 +18,11 @@ Standart: `docs/surecler/release-checklist.md` → "Sürümleme standardı" böl
    - `.env.ios` / `.env.android` → `cloud` **prod** API URL mi? (ngrok/localhost KALMIŞSA DUR)
    - `flutter analyze` temiz mi?
    - Ödeme akışına dokunulduysa: prod'da en az bir uçtan uca başarılı tur görüldü mü?
-4. **Sürümü bas:** `pubspec.yaml` güncelle → commit `release(mobil): x.y.z+N` →
-   tag `mobil-vx.y.z` → push (`--tags`).
+4. **Sürümü bas:** `pubspec.yaml` güncelle → commit `release(mobil): x.y.z+N` → push.
+   Ardından MUTLAKA `flutter build ios --config-only` çalıştır — Xcode sürümü
+   pubspec'ten değil `ios/Flutter/Generated.xcconfig`'ten okur; tazelenmezse
+   Archive ESKİ build numarasını kullanır (2026-08-24'te yaşandı: 33 yerine 31).
+   (Tag `mobil-vx.y.z` mağazada GERÇEKTEN yayınlanınca atılır.)
 5. **"Yenilikler" metni yaz:** TR + EN, kullanıcıya sun (mağaza paneline o yapıştıracak).
    Yeni izin/SDK eklendiyse App Privacy/Data Safety değişikliği gerekip gerekmediğini söyle.
 6. **Build komutlarını ver/çalıştır:**
