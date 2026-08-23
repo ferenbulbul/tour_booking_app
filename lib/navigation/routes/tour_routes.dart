@@ -195,6 +195,8 @@ List<RouteBase> tourRoutes() => [
       ),
       GoRoute(
         path: '/payment-fail',
-        builder: (context, state) => const PaymentFailScreen(),
+        builder: (context, state) => PaymentFailScreen(
+          bankMessage: state.extra is String ? state.extra as String : null,
+        ),
       ),
     ];

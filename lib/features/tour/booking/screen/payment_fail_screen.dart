@@ -9,7 +9,11 @@ import 'package:tour_booking/core/theme/app_text_styles.dart';
 import 'package:tour_booking/core/theme/app_theme_context.dart';
 
 class PaymentFailScreen extends StatelessWidget {
-  const PaymentFailScreen({super.key});
+  /// Bankanın dönüşte ilettiği sebep (ör. "Limit yetersiz") — varsa genel
+  /// açıklamanın altında gösterilir; müşteri neyi düzelteceğini bilir.
+  final String? bankMessage;
+
+  const PaymentFailScreen({super.key, this.bankMessage});
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +74,28 @@ class PaymentFailScreen extends StatelessWidget {
                   ),
                 ),
               ),
+
+              if (bankMessage != null && bankMessage!.trim().isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.m),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.ml,
+                    vertical: AppSpacing.s,
+                  ),
+                  decoration: BoxDecoration(
+                    color: context.colors.error.withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(AppRadius.medium),
+                  ),
+                  child: Text(
+                    bankMessage!,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: context.colors.error,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
 
               const SizedBox(height: AppSpacing.xxxl),
 

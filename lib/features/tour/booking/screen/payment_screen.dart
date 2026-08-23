@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -27,6 +29,17 @@ class _PaymentScreenState extends State<PaymentScreen>
   bool _callbackDetected = false;
   bool _ktResultHandled = false;
 
+  /// Webview açıkken dönen arka plan polling'i — banka yönlendirmesi hiç
+  /// gelmese bile sonucu yakalar (backend Pending KT'de bankaya anlık sorar).
+  Timer? _bgPollTimer;
+
+  /// Sonuç ekranına bir kez gidilmesini garanti eder (polling + yönlendirme
+  /// + KT yakalama aynı anda tetiklenebilir).
+  bool _finished = false;
+
+  /// Bankanın dönüş parametrelerinden yakalanan hata sebebi (fail ekranında gösterilir).
+  String? _bankMessage;
+
   @override
   void initState() {
     super.initState();
@@ -41,8 +54,54 @@ class _PaymentScreenState extends State<PaymentScreen>
 
   @override
   void dispose() {
+    _bgPollTimer?.cancel();
     _pulseController.dispose();
     super.dispose();
+  }
+
+  /// Webview açıldığı andan itibaren her 10 sn'de bir sonucu yoklar.
+  /// Terminal sonuç gelirse webview'i beklemeden native ekrana geçer.
+  void _startBackgroundPolling(PaymentViewModel vm) {
+    _bgPollTimer?.cancel();
+    _bgPollTimer = Timer.periodic(const Duration(seconds: 10), (_) async {
+      if (_finished || !mounted) return;
+      final token = vm.initData?.token;
+      if (token == null) return;
+      final terminal = await vm.checkPaymentResultOnce(token);
+      if (terminal && mounted) _finishWithResult(vm);
+    });
+  }
+
+  /// Sonucu TEK noktadan kapatır: polling, yönlendirme ve KT yakalama
+  /// hangisi önce ulaşırsa ulaşsın çifte navigasyon olmaz.
+  void _finishWithResult(PaymentViewModel vm) {
+    if (_finished || !mounted) return;
+    _finished = true;
+    _bgPollTimer?.cancel();
+
+    if (vm.resultData?.paymentStatus == "Success" &&
+        vm.resultData?.bookingStatus == "Success") {
+      context.replace('/payment-success', extra: widget.bookingId);
+    } else {
+      context.replace('/payment-fail', extra: _bankMessage);
+    }
+  }
+
+  /// Bankanın dönüş URL'lerindeki hata sebebini yakalar (kt/return ve
+  /// SecurePaymentResult, ResponseCode/ResponseMessage paramları taşır).
+  void _captureBankMessage(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return;
+    final path = uri.path.toLowerCase();
+    if (!path.contains('payments/kt/return') &&
+        !path.contains('securepaymentresult')) {
+      return;
+    }
+    final code = uri.queryParameters['ResponseCode'];
+    final message = uri.queryParameters['ResponseMessage'];
+    if (code != null && code != '00' && message != null && message.isNotEmpty) {
+      _bankMessage = message;
+    }
   }
 
   /// Callback URL'i sadece substring ile değil, host bazında doğrula:
@@ -131,17 +190,16 @@ class _PaymentScreenState extends State<PaymentScreen>
     if (token == null) return;
 
     vm.checkPaymentResult(token).then((_) {
-      if (!mounted) return;
+      if (!mounted || _finished) return;
 
-      if (vm.resultData?.paymentStatus == "Success" &&
-          vm.resultData?.bookingStatus == "Success") {
-        context.replace('/payment-success', extra: widget.bookingId);
-      } else if (vm.isResultUnknown) {
+      if (vm.isResultUnknown) {
         // Sonuç netleşmedi — para çekilmiş olabilir; başarısız GÖSTERME.
         // Backend reconciliation birkaç dakika içinde durumu çözer.
+        _finished = true;
+        _bgPollTimer?.cancel();
         _showPendingResultAndLeave();
       } else {
-        context.replace('/payment-fail');
+        _finishWithResult(vm);
       }
     });
   }
@@ -254,6 +312,8 @@ class _PaymentScreenState extends State<PaymentScreen>
         ..setNavigationDelegate(
           NavigationDelegate(
             onNavigationRequest: (req) {
+              _captureBankMessage(req.url);
+
               // KT hosted: bankanın sonuç sayfasını yakala, kt/return'e taşı.
               if (_isKuveytTurkResultUrl(req.url) &&
                   _handleKuveytTurkResult(vm, req.url)) {
@@ -269,6 +329,8 @@ class _PaymentScreenState extends State<PaymentScreen>
               return NavigationDecision.navigate;
             },
             onPageFinished: (String finishedUrl) {
+              _captureBankMessage(finishedUrl);
+
               // KT kart formu yüklendi → sayı klavyesi + autofill ipuçları enjekte et.
               if (_isKuveytTurkPaymentPageUrl(finishedUrl)) {
                 _enhanceKuveytTurkCardForm();
@@ -299,6 +361,9 @@ class _PaymentScreenState extends State<PaymentScreen>
           ),
         )
         ..loadRequest(Uri.parse(url));
+
+      // Banka yönlendirmesinden bağımsız güvenlik ağı: sonuç arka planda yoklanır.
+      _startBackgroundPolling(vm);
     }
 
     return Scaffold(

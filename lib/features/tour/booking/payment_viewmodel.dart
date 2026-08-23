@@ -59,6 +59,27 @@ class PaymentViewModel extends BaseViewModel {
     }
   }
 
+  /// Tek seferlik sonuç kontrolü — webview açıkken dönen arka plan polling'i için.
+  /// Backend, Pending KT ödemesinde bankaya anlık inquiry atar; yani bu çağrı
+  /// banka yönlendirmesi hiç gelmese bile sonucu yakalayabilir.
+  /// Terminal duruma (Success/Fail) ulaşıldıysa true döner.
+  Future<bool> checkPaymentResultOnce(String token) async {
+    try {
+      final BaseResponse<PaymentResultResponse> resp = await _service
+          .getPaymentResult(token);
+      if (resp.isSuccess == true && resp.data != null) {
+        resultData = resp.data;
+        if (resp.data!.paymentStatus != "Pending") {
+          notifyListeners();
+          return true;
+        }
+      }
+    } catch (_) {
+      // Geçici hata — sonraki tur tekrar dener.
+    }
+    return false;
+  }
+
   /// Check payment result with retry.
   /// The backend may not have processed the iyzico callback yet when we first
   /// query, so we retry until a TERMINAL status (Success/Fail) is returned —
