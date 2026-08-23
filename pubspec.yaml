@@ -2,7 +2,7 @@ name: tour_booking
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.1.0+31
+version: 1.1.0+32
 
 environment:
   sdk: '>=3.8.1 <4.0.0'
