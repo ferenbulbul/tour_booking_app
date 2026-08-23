@@ -56,6 +56,39 @@ class _PaymentScreenState extends State<PaymentScreen>
     return apiHost != null && apiHost.isNotEmpty && uri.host == apiHost;
   }
 
+  /// KT hosted kart formu sayfası mı? (sonuç sayfası DEĞİL — o ayrı ele alınır)
+  bool _isKuveytTurkPaymentPageUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+    final path = uri.path.toLowerCase();
+    return uri.host.toLowerCase().endsWith('kuveytturk.com.tr') &&
+        path.contains('ktpay/securepayment') &&
+        !path.contains('securepaymentresult');
+  }
+
+  /// Bankanın kart formu inputları type=text geliyor (tam klavye açılıyor) ve
+  /// autocomplete ipuçları yok. Sayfaya küçük bir JS enjekte edip kart/CVV/tarih
+  /// alanlarına inputmode=numeric (sayı klavyesi) + autocomplete cc-* ipuçları
+  /// basıyoruz. Banka sayfa yapısını değiştirirse enjeksiyon sessizce etkisiz
+  /// kalır — akışı hiçbir durumda bozmaz. (Alan id'leri: card-number,
+  /// card-expire-date, card-cvv, card-holder — 2026-08-23'te sayfadan doğrulandı.)
+  void _enhanceKuveytTurkCardForm() {
+    _controller?.runJavaScript('''
+      (function () {
+        function tune(id, mode, ac) {
+          var e = document.getElementById(id);
+          if (!e) return;
+          if (mode) e.setAttribute('inputmode', mode);
+          if (ac) e.setAttribute('autocomplete', ac);
+        }
+        tune('card-number', 'numeric', 'cc-number');
+        tune('card-expire-date', 'numeric', 'cc-exp');
+        tune('card-cvv', 'numeric', 'cc-csc');
+        tune('card-holder', null, 'cc-name');
+      })();
+    ''');
+  }
+
   /// Kuveyt Türk hosted ödeme, successUrl'e YÖNLENDİRME YAPMAZ (2026-08-18'de
   /// banka ortamına karşı kanıtlandı); sonucu kendi SecurePaymentResult
   /// sayfasının URL parametrelerinde verir (Result, MerchantOrderId, OrderId...).
@@ -236,6 +269,11 @@ class _PaymentScreenState extends State<PaymentScreen>
               return NavigationDecision.navigate;
             },
             onPageFinished: (String finishedUrl) {
+              // KT kart formu yüklendi → sayı klavyesi + autofill ipuçları enjekte et.
+              if (_isKuveytTurkPaymentPageUrl(finishedUrl)) {
+                _enhanceKuveytTurkCardForm();
+              }
+
               // KT sonuç sayfası POST/JS ile gelirse onNavigationRequest
               // tetiklenmeyebilir — fallback.
               if (_isKuveytTurkResultUrl(finishedUrl)) {
