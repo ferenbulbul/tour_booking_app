@@ -108,6 +108,10 @@ class _PaymentScreenState extends State<PaymentScreen>
     }
   }
 
+  /// Banka IP eşleşme reddi (ResponseCode=99) sonrası tek seferlik otomatik
+  /// yeniden başlatma yapıldı mı?
+  bool _ipMismatchRetried = false;
+
   /// Bankanın dönüş URL'lerindeki hata sebebini yakalar (kt/return ve
   /// SecurePaymentResult, ResponseCode/ResponseMessage paramları taşır).
   void _captureBankMessage(String url) {
@@ -123,6 +127,37 @@ class _PaymentScreenState extends State<PaymentScreen>
     if (code != null && code != '00' && message != null && message.isNotEmpty) {
       _bankMessage = message;
     }
+  }
+
+  /// ResponseCode=99: banka "token alınan IP ile sayfayı açan IP farklı" dedi —
+  /// mobil ağlarda cihaz Wi-Fi↔hücresel arasında geçince oluyor (2026-08-26'da
+  /// gerçek cihazda tespit edildi; para ÇEKİLMEZ, form hiç açılmaz). Kullanıcıya
+  /// hata göstermek yerine BİR kez sessizce yeni ödeme başlatıp taze sayfayı
+  /// yükleriz — ikinci denemede ağ genelde oturmuş olur. İkincisi de 99 yerse
+  /// normal hata akışı işler (fail ekranı banka mesajıyla).
+  bool _isIpMismatchRedirect(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+    if (!uri.path.toLowerCase().contains('payments/kt/return')) return false;
+    return uri.queryParameters['ResponseCode'] == '99';
+  }
+
+  Future<void> _retryAfterIpMismatch(PaymentViewModel vm) async {
+    _ipMismatchRetried = true;
+    _callbackDetected = false;
+    _ktResultHandled = false;
+    _bankMessage = null;
+    vm.setCheckingPayment(false);
+
+    await vm.initPayment(widget.bookingId); // yeni kayıt + taze hosted URL
+    if (!mounted || _finished) return;
+
+    final url = vm.initData?.paymentPageUrl;
+    if (url != null) {
+      _controller?.loadRequest(Uri.parse(url));
+    }
+    // initPayment de başarısız olduysa errorMessage dolar → mevcut nazik
+    // hata ekranı (Tekrar Dene) devreye girer.
   }
 
   /// Callback URL'i sadece substring ile değil, host bazında doğrula:
@@ -386,6 +421,12 @@ class _PaymentScreenState extends State<PaymentScreen>
         ..setNavigationDelegate(
           NavigationDelegate(
             onNavigationRequest: (req) {
+              // IP eşleşme reddi → kullanıcıya göstermeden bir kez tazele.
+              if (!_ipMismatchRetried && _isIpMismatchRedirect(req.url)) {
+                _retryAfterIpMismatch(vm);
+                return NavigationDecision.prevent;
+              }
+
               _captureBankMessage(req.url);
 
               // KT hosted: bankanın sonuç sayfasını yakala, kt/return'e taşı.
@@ -403,6 +444,12 @@ class _PaymentScreenState extends State<PaymentScreen>
               return NavigationDecision.navigate;
             },
             onPageFinished: (String finishedUrl) {
+              // Fallback: 99 redirect'i onNavigationRequest'i atlamış olabilir.
+              if (!_ipMismatchRetried && _isIpMismatchRedirect(finishedUrl)) {
+                _retryAfterIpMismatch(vm);
+                return;
+              }
+
               _captureBankMessage(finishedUrl);
 
               // KT kart formu yüklendi → sayı klavyesi + autofill ipuçları enjekte et.
