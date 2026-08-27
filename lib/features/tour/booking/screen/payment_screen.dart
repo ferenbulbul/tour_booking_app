@@ -279,11 +279,19 @@ class _PaymentScreenState extends State<PaymentScreen>
   }
 
   /// Ödeme sürerken çıkışta onay iste; ödeme başlamadıysa direkt çık.
+  /// Geri/çıkış davranışı çıkış ANINA göre ayrışır (2026-08-26):
+  ///  • Ödeme henüz DENENMEDİYSE (kart formu aşaması) → özete GERİ dön (pop):
+  ///    kullanıcı satın alma akışında kalır, "Ödemeye Geç" ile kaldığı yerden
+  ///    devam eder. Form hiç yüklenmediyse dialog bile sorulmaz (para riski yok).
+  ///  • Ödeme GÖNDERİLDİYSE (callback algılandı / sonuç kontrol ediliyor) →
+  ///    Seyahatlerim: para çekilmiş olabilir; özete döndürüp "tekrar öde"
+  ///    dedirtmek çifte ödeme riski doğurur — reconciliation arkada tamamlar.
   Future<void> _handleBackPressed(PaymentViewModel vm) async {
-    final paymentInFlight =
-        _callbackDetected || vm.isCheckingPayment || _controller != null;
+    final paymentSubmitted = _callbackDetected || vm.isCheckingPayment;
 
-    if (!paymentInFlight) {
+    // Banka sayfası daha yüklenmediyse (veya init hatası ekranındaysak):
+    // sorulacak bir şey yok, sessizce özete dön.
+    if (!paymentSubmitted && !vm.isPageFinished) {
       Navigator.of(context).pop();
       return;
     }
@@ -307,9 +315,14 @@ class _PaymentScreenState extends State<PaymentScreen>
     );
 
     if (leave == true && mounted) {
-      // Sonuç ekranda netleşmeden çıkılıyor — rezervasyonlara yönlendir,
-      // ödeme alındıysa reconciliation rezervasyonu otomatik onaylar.
-      context.go('/reservations');
+      if (paymentSubmitted) {
+        // Sonuç ekranda netleşmeden çıkılıyor — rezervasyonlara yönlendir,
+        // ödeme alındıysa polling/reconciliation rezervasyonu otomatik onaylar.
+        context.go('/reservations');
+      } else {
+        // Kart formundan vazgeçti — satın alma akışına (özet ekranına) geri dön.
+        Navigator.of(context).pop();
+      }
     }
   }
 
