@@ -173,11 +173,18 @@ class FeaturedCard extends StatelessWidget {
                         if (durationHours != null || durationMinutes != null) ...[
                           Icon(SolarIconsOutline.clockCircle, size: AppIconSize.s, color: context.ext.textLight, semanticLabel: 'Duration'),
                           const SizedBox(width: AppSpacing.xxxs),
-                          Text(
-                            _formatDuration(durationHours, durationMinutes),
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: context.colors.onSurfaceVariant,
-                              fontWeight: FontWeight.w500,
+                          // Flexible + ellipsis: puan ve uzun süre metni birlikte
+                          // gelince kart genişliğini aşabiliyor (overflow) —
+                          // esneyen tek parça süre metni olsun.
+                          Flexible(
+                            child: Text(
+                              _formatDuration(durationHours, durationMinutes),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: context.colors.onSurfaceVariant,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ],
