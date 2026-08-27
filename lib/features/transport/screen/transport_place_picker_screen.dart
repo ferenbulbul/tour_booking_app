@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tour_booking/core/theme/app_radius.dart';
@@ -56,6 +57,44 @@ class _TransportPlacePickerScreenState
   // ---------------------------------------------------------------
   void _animateCamera(LatLng pos, double zoom) {
     _mapController?.animateCamera(CameraUpdate.newLatLngZoom(pos, zoom));
+  }
+
+  bool _locating = false;
+
+  /// Konumum düğmesi: GPS'i alır, kamerayı götürür VE aktif alanı (alış/varış)
+  /// seçer — haritaya dokunmakla birebir aynı yol (onMapTap: şehir doğrulaması
+  /// + reverse geocode dahil). Tur tarafındaki full_screen_map ile aynı davranış.
+  Future<void> _locateAndSelect() async {
+    if (_locating) return;
+    final vm = context.read<TransportPlacePickerViewModel>();
+    setState(() => _locating = true);
+    try {
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.deniedForever) {
+        await Geolocator.openAppSettings();
+        return;
+      }
+      if (permission == LocationPermission.denied) return;
+
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 10),
+        ),
+      );
+
+      if (!mounted) return;
+      final target = LatLng(position.latitude, position.longitude);
+      _animateCamera(target, 16);
+      vm.onMapTap(target);
+    } catch (_) {
+      // Zaman aşımı/hata — sessiz geç; kullanıcı elle dokunabilir.
+    } finally {
+      if (mounted) setState(() => _locating = false);
+    }
   }
 
   void _fitBounds() {
@@ -157,6 +196,8 @@ class _TransportPlacePickerScreenState
             bottomPadding: bottomH,
             onBack: () => Navigator.pop(context),
             modeToggle: _buildModeToggle(vm),
+            onLocateMe: _locateAndSelect,
+            locating: _locating,
           ),
 
           // -- BOTTOM CARD (extracted) --

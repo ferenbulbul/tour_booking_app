@@ -18,6 +18,12 @@ class PlacePickerMapView extends StatelessWidget {
   final VoidCallback onBack;
   final Widget modeToggle;
 
+  /// Konumum düğmesi: yerleşik Google düğmesi yalnız kamerayı taşıdığı için
+  /// kullanıcı ikinci kez dokunmak zorunda kalıyordu — bizimki konumu aktif
+  /// alana (alış/varış) SEÇER (tur tarafındaki full_screen_map ile aynı davranış).
+  final VoidCallback onLocateMe;
+  final bool locating;
+
   const PlacePickerMapView({
     super.key,
     required this.vm,
@@ -26,6 +32,8 @@ class PlacePickerMapView extends StatelessWidget {
     required this.bottomPadding,
     required this.onBack,
     required this.modeToggle,
+    required this.onLocateMe,
+    this.locating = false,
   });
 
   @override
@@ -48,7 +56,8 @@ class PlacePickerMapView extends StatelessWidget {
           onMapCreated: onMapCreated,
           onTap: vm.onMapTap,
           myLocationEnabled: true,
-          myLocationButtonEnabled: true,
+          // Yerleşik düğme seçim yapmaz (yalnız kamera) — kendi düğmemiz seçiyor.
+          myLocationButtonEnabled: false,
           zoomControlsEnabled: false,
           padding: EdgeInsets.only(top: AppSpacing.huge, bottom: bottomPadding),
         ),
@@ -88,6 +97,46 @@ class PlacePickerMapView extends StatelessWidget {
               ),
             ),
           ),
+
+        // -- KONUMUM (sağ alt): kamera + SEÇİM birlikte --
+        Positioned(
+          right: AppSpacing.l,
+          bottom: bottomPadding + AppSpacing.l,
+          child: Semantics(
+            button: true,
+            label: 'Go to my location',
+            child: GestureDetector(
+              onTap: locating ? null : onLocateMe,
+              child: Container(
+                width: AppSpacing.xxxxxl,
+                height: AppSpacing.xxxxxl,
+                decoration: BoxDecoration(
+                  color: context.colors.surface,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.15),
+                      blurRadius: 8,
+                    ),
+                  ],
+                ),
+                child: locating
+                    ? Padding(
+                        padding: const EdgeInsets.all(AppSpacing.ml),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: context.colors.secondary,
+                        ),
+                      )
+                    : Icon(
+                        Icons.my_location_rounded,
+                        size: AppIconSize.l,
+                        color: context.colors.secondary,
+                      ),
+              ),
+            ),
+          ),
+        ),
 
         // -- TOP: Back + Mode toggle --
         SafeArea(

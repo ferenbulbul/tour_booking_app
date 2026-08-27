@@ -68,45 +68,7 @@ class _FullMapViewState extends State<FullMapView> {
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
             onMapCreated: (ctrl) => _mapController = ctrl,
-            onTap: (LatLng newPos) async {
-              final result = await vm.validateTap(
-                lat: newPos.latitude,
-                lng: newPos.longitude,
-                expectedCity: widget.city,
-                expectedDistrict: widget.district,
-              );
-
-              if (result == null) return;
-
-              if (!result.isValid) {
-                // Return to valid bounds
-                Future.delayed(const Duration(milliseconds: 300), () {
-                  if (!mounted || _mapController == null) return;
-                  _mapController!.animateCamera(
-                    CameraUpdate.newLatLngZoom(
-                      LatLng(widget.lat, widget.lng),
-                      16,
-                    ),
-                  );
-                });
-
-                // Remove warning after a few seconds
-                Future.delayed(const Duration(seconds: 3), () {
-                  if (mounted) vm.clearWarning();
-                });
-                return;
-              }
-
-              setState(() {
-                selectedPos = newPos;
-                markers = {
-                  Marker(
-                    markerId: const MarkerId("selected"),
-                    position: newPos,
-                  ),
-                };
-              });
-            },
+            onTap: _selectPosition,
           ),
 
           // ---------------- WARNING (animasyon) ----------------
@@ -191,6 +153,43 @@ class _FullMapViewState extends State<FullMapView> {
     );
   }
 
+  /// Haritaya dokunma VE "konumum" düğmesinin ortak seçim mantığı:
+  /// şehir/ilçe sınırı doğrulaması + adres çözümleme + marker.
+  Future<void> _selectPosition(LatLng newPos) async {
+    final vm = context.read<FullScreenMapViewModel>();
+    final result = await vm.validateTap(
+      lat: newPos.latitude,
+      lng: newPos.longitude,
+      expectedCity: widget.city,
+      expectedDistrict: widget.district,
+    );
+
+    if (result == null || !mounted) return;
+
+    if (!result.isValid) {
+      // Return to valid bounds
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (!mounted || _mapController == null) return;
+        _mapController!.animateCamera(
+          CameraUpdate.newLatLngZoom(LatLng(widget.lat, widget.lng), 16),
+        );
+      });
+
+      // Remove warning after a few seconds
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) vm.clearWarning();
+      });
+      return;
+    }
+
+    setState(() {
+      selectedPos = newPos;
+      markers = {
+        Marker(markerId: const MarkerId("selected"), position: newPos),
+      };
+    });
+  }
+
   // ----------------------------------------------------------
   // GO TO MY LOCATION
   // ----------------------------------------------------------
@@ -228,6 +227,10 @@ class _FullMapViewState extends State<FullMapView> {
       _mapController?.animateCamera(
         CameraUpdate.newLatLngZoom(myLatLng, 16),
       );
+      // Kamerayı taşımak yetmez — konumu SEÇ de (2026-08-26 UX düzeltmesi:
+      // kullanıcı ikinci kez haritaya dokunmak zorunda kalıyordu). Sınır
+      // dışındaysa _selectPosition'ın şehir doğrulaması zaten uyarır.
+      await _selectPosition(myLatLng);
     } catch (e) {
       // Timeout or error -- silently ignore
     } finally {
