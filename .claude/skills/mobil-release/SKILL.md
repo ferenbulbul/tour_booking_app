@@ -10,8 +10,11 @@ Standart: `docs/surecler/release-checklist.md` → "Sürümleme standardı" böl
 
 ## Adımlar (sırayla yürüt)
 
-1. **Değişiklikleri topla:** son `mobil-v*` tag'inden bu yana commit'leri listele
-   (`git log <son-tag>..HEAD --oneline`). Kullanıcıya 2-3 cümlelik özet ver.
+1. **Değişiklikleri topla:** ÖNCE `CHANGELOG.md` → "Yayınlanmamış" bölümünü oku —
+   sürüm notunun ana kaynağı budur. Sonra son `mobil-v*` tag'inden bu yana
+   commit'leri listele (`git log <son-tag>..HEAD --oneline`) ve CHANGELOG'da
+   eksik kalan kullanıcıya-görünür iş var mı çapraz kontrol et (varsa önce ekle).
+   Kullanıcıya 2-3 cümlelik özet ver.
 2. **Sürüm öner:** değişikliklere göre PATCH mi MINOR mü (MAJOR nadir) gerekçesiyle öner;
    build = mevcut build + 1 (pubspec'ten oku). Kullanıcı onaylasın.
 3. **Ön kontroller:**
@@ -33,8 +36,17 @@ Standart: `docs/surecler/release-checklist.md` → "Sürümleme standardı" böl
 7. **Mağaza adımlarını listele:** TestFlight internal → App Store review (review notu:
    "Payments are for real-world services (tours/transfers) via bank's hosted page — IAP not
    applicable" + demo hesap); Play'de kademeli yayın (%20 → %100) öner.
-8. **Kayıt:** release-checklist'teki tarihçe satırını güncelle
-   (hangi sürüm+build, hangi tarih, hangi mağaza).
+8. **Kayıt (yayın gerçekleşince):**
+   - `CHANGELOG.md`: "Yayınlanmamış" bölümünü sürüm başlığına taşı (tarih + mağazalarla)
+   - Tag at: `git tag mobil-vX.Y.Z && git push --tags` (yalnız mağazada GERÇEKTEN yayınlanınca)
+   - release-checklist tarihçesini güncelle (sürüm+build, tarih, mağaza)
+   - Demo hesap kontrolü hatırlat: iki inceleme hesabı da giriş yapabiliyor mu
+     (çalışmayan demo hesap = klasik Apple reddi)
+
+## Geliştirme sırasında (release dışı) kural
+Kullanıcıya görünür bir özellik/düzeltme commit'lenirken `CHANGELOG.md` →
+"Yayınlanmamış" bölümüne TR tek satır eklenir. Bu, release anında sürüm notunun
+hazır birikmiş olmasını sağlar.
 
 ## Kurallar
 - Build sayacı HİÇBİR koşulda geri gitmez/sıfırlanmaz; yayınlanmayan build'ler sorun değildir.
