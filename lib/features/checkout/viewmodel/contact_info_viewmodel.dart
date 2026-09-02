@@ -7,6 +7,8 @@ import 'package:tour_booking/services/tour/tour_service.dart';
 import 'package:tour_booking/navigation/app_router.dart';
 
 class ContactInfoViewModel extends BaseViewModel {
+  static final _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
   final TourService _tourService = ServiceLocator.instance.tourService;
 
   final firstNameController = TextEditingController();
@@ -61,7 +63,12 @@ class ContactInfoViewModel extends BaseViewModel {
         lastNameController.text = parts.sublist(1).join(' ');
       }
     }
-    emailController.text = profile.email;
+    // Profildeki e-posta geçersiz olabilir (ör. Apple "Hide My Email" ile
+    // e-postasız açılan hesaplar) — geçersizse boş bırak, kullanıcı kendisi girer.
+    final profileEmail = profile.email.trim();
+    if (_emailRegex.hasMatch(profileEmail)) {
+      emailController.text = profileEmail;
+    }
     _initialPhone = profile.phoneNumber;
     _phoneCompleteNumber = profile.phoneNumber;
   }
@@ -78,8 +85,7 @@ class ContactInfoViewModel extends BaseViewModel {
 
   String? validateEmail(String? value) {
     if (value == null || value.trim().isEmpty) return tr('validation_email_required');
-    final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-    if (!emailRegex.hasMatch(value.trim())) return tr('validation_email_invalid');
+    if (!_emailRegex.hasMatch(value.trim())) return tr('validation_email_invalid');
     return null;
   }
 
