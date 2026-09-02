@@ -67,7 +67,7 @@ bool canCancelWithTimeLimit(String departureDate, String departureTime) {
   if (departureDate.isEmpty || departureTime.isEmpty) return false;
   final departure = parseDepartureDateTime(departureDate, departureTime);
 
-  return departure.isAfter(DateTime.now().add(const Duration(hours: 12)));
+  return departure.isAfter(DateTime.now().add(const Duration(hours: 24)));
 }
 
 DateTime parseDepartureDateTime(String date, String time) {
