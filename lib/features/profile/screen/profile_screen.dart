@@ -305,13 +305,16 @@ class AppearanceTile extends StatelessWidget {
   ) {
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       backgroundColor: scheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppSpacing.l),
         ),
       ),
-      builder: (_) => SafeArea(
+      // Pop, sheet'in açıldığı navigator'dan (root) yapılmalı; dış context
+      // shell navigator'ını pop edip son sayfayı düşürüyordu (siyah ekran).
+      builder: (sheetCtx) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(
             vertical: AppSpacing.l,
@@ -339,11 +342,11 @@ class AppearanceTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.m),
-              _themeOption(context, themeVM, ThemeMode.system,
+              _themeOption(sheetCtx, themeVM, ThemeMode.system,
                   SolarIconsOutline.smartphone, tr('theme_system')),
-              _themeOption(context, themeVM, ThemeMode.light,
+              _themeOption(sheetCtx, themeVM, ThemeMode.light,
                   SolarIconsOutline.sun, tr('theme_light')),
-              _themeOption(context, themeVM, ThemeMode.dark,
+              _themeOption(sheetCtx, themeVM, ThemeMode.dark,
                   SolarIconsOutline.moon, tr('theme_dark')),
             ],
           ),

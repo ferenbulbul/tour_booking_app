@@ -8,7 +8,14 @@
 
 ## Yayınlanmamış
 
-_(boş — sıradaki geliştirmeler buraya)_
+- Koyu temaya geçişte oluşan siyah ekran / donma düzeltildi
+- Koyu temada "Google ile Giriş Yap" düğmesi artık net görünüyor
+- Giriş ekranında Google ve Apple simge boyutları eşitlendi
+- Alt menüde "Seyahatlerim" yazısının bazı telefonlarda taşması düzeltildi
+- Açılır pencereler (filtre, rezervasyon detayı, giriş) alt menünün üstünde görüntülenir
+- Rezervasyon iptali için son süre kalkıştan 24 saat öncesine çekildi (12 saatti)
+- Apple gizli e-posta ile açılan hesaplarda ödeme adımında e-posta alanı boş gelir, kullanıcı kendisi girer
+- tourlio.com bağlantıları doğrudan uygulamayı açar (iOS)
 
 ## 1.1.0 — build 34 (iOS: 2026-09-01 incelemede · Android: yayın bekliyor)
 

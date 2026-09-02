@@ -17,6 +17,7 @@ Future<bool> guestGate(BuildContext context) async {
 
   await showModalBottomSheet<void>(
     context: context,
+    useRootNavigator: true,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xxl)),
     ),

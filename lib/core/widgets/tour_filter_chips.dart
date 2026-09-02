@@ -72,6 +72,7 @@ void showFilterModal({
 }) {
   showModalBottomSheet(
     context: context,
+    useRootNavigator: true,
     backgroundColor: context.colors.surface,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
