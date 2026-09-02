@@ -27,9 +27,14 @@ class SocialLoginButtons extends StatelessWidget {
     final scheme = context.colors;
     final text = context.textStyles;
 
+    // Dark temada scheme.primary koyu lacivert (0xFF182B40) — koyu zeminde
+    // görünmez; dark'ta onSurface/outline kullanılır.
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final googleFg = isDark ? scheme.onSurface : scheme.primary;
+
     final googleButtonStyle = OutlinedButton.styleFrom(
       minimumSize: const Size.fromHeight(AppSpacing.xxxxxl),
-      side: BorderSide(color: scheme.primary),
+      side: BorderSide(color: isDark ? scheme.outline : scheme.primary),
       backgroundColor: scheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.medium)),
     );
@@ -56,14 +61,14 @@ class SocialLoginButtons extends StatelessWidget {
               children: [
                 Image.asset(
                   'assets/images/google_logo.png',
-                  width: AppIconSize.xl - 2,
-                  height: AppIconSize.xl - 2,
+                  width: AppIconSize.l,
+                  height: AppIconSize.l,
                   semanticLabel: 'Google',
                 ),
                 const SizedBox(width: AppSpacing.m),
                 Text(
                   'login_with_google'.tr(),
-                  style: text.labelLarge?.copyWith(color: scheme.primary),
+                  style: text.labelLarge?.copyWith(color: googleFg),
                 ),
               ],
             ),
@@ -83,7 +88,9 @@ class SocialLoginButtons extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.apple, color: scheme.onInverseSurface, size: AppIconSize.xxl - 2, semanticLabel: 'Apple'),
+                // Apple font-ikonu kutusunda dolgulu geldiğinden görsel eşitlik
+                // için Google logosundan (l=20) iki kademe büyük tutulur.
+                Icon(Icons.apple, color: scheme.onInverseSurface, size: AppIconSize.xxl, semanticLabel: 'Apple'),
                 const SizedBox(width: AppSpacing.m),
                 Text(
                   tr('sign_in_with_apple'),
