@@ -87,51 +87,64 @@ class _PremiumNavBar extends StatelessWidget {
           ),
         ],
       ),
-      child: SafeArea(
-        top: false,
-        child: SizedBox(
-          height: 64,
-          child: Row(
-            children: List.generate(items.length, (i) {
-              final active = i == currentIndex;
+      // Sistem yazı boyutu ne kadar büyütülürse büyütülsün navbar 64px'e sığsın
+      child: MediaQuery.withClampedTextScaling(
+        maxScaleFactor: 1.2,
+        child: SafeArea(
+          top: false,
+          child: SizedBox(
+            height: 64,
+            child: Row(
+              children: List.generate(items.length, (i) {
+                final active = i == currentIndex;
 
-              return Expanded(
-                child: Semantics(
-                  button: true,
-                  selected: active,
-                  label: items[i]['label']!.toString().tr(),
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onTap: () => onTap(i),
-                    child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        items[i]['icon'] as IconData,
-                        size: AppIconSize.xl,
-                        color: active
-                            ? context.colors.secondary
-                            : context.ext.textLight,
-                        semanticLabel: items[i]['label']!.toString().tr(),
+                return Expanded(
+                  child: Semantics(
+                    button: true,
+                    selected: active,
+                    label: items[i]['label']!.toString().tr(),
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () => onTap(i),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            items[i]['icon'] as IconData,
+                            size: AppIconSize.xl,
+                            color: active
+                                ? context.colors.secondary
+                                : context.ext.textLight,
+                            semanticLabel: items[i]['label']!.toString().tr(),
+                          ),
+                          const SizedBox(height: AppSpacing.xs),
+                          // Uzun etiketler (Seyahatlerim) dar ekranda/büyük sistem
+                          // fontunda alt satıra sarmasın: tek satır + sığmazsa küçült
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 2),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                items[i]['label']!.toString().tr(),
+                                maxLines: 1,
+                                style: AppTextStyles.caption.copyWith(
+                                  fontWeight: active
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                  color: active
+                                      ? context.colors.secondary
+                                      : context.ext.textLight,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        items[i]['label']!.toString().tr(),
-                        style: AppTextStyles.caption.copyWith(
-                          fontWeight: active
-                              ? FontWeight.w600
-                              : FontWeight.w400,
-                          color: active
-                              ? context.colors.secondary
-                              : context.ext.textLight,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-                ),
-              );
-            }),
+                );
+              }),
+            ),
           ),
         ),
       ),
