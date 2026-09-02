@@ -103,7 +103,7 @@ class _AppProvidersState extends State<AppProviders> {
   // hedef ekran token'sız API çağrısıyla boş/donuk kalır; link init sonuna bekletilir.
   String? _pendingDeepLink;
 
-  // Hem "/tour/123" hem "https://tourrentai.com/tour/123" formatlarını destekler
+  // Hem "/tour/123" hem "https://tourlio.com/tour/123" formatlarını destekler
   void _handlePushDeepLink(String link) {
     final uri = Uri.tryParse(link);
     if (uri == null) return;
